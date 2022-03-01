@@ -4,15 +4,26 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { FirebaseModule } from 'shared/firebase.module';
+import { MaterialModule } from 'shared/material.module';
+import { MarxaModule } from 'shared/marxa.module';
+import { PanelLoginComponent } from './components/panel-login/panel-login.component';
+import { AngularFireModule } from '@angular/fire';
+import { environment } from 'src/environments/environment';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    PanelLoginComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    AngularFireModule.initializeApp(environment.firebaseConfig),
+    FirebaseModule,
+    MaterialModule,
+    MarxaModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
