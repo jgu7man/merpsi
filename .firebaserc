@@ -1,0 +1,11 @@
+{
+  "targets": {
+    "merpsi": {
+      "hosting": {
+        "merpsi": [
+          "merpsi"
+        ]
+      }
+    }
+  }
+}
