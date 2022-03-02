@@ -10,6 +10,7 @@ export class ManagerModel {
   constructor (
     public email: string,
     public name: string,
+    /** ID otorgado por la autenticación de firebase */
     public uid: string,
     role?: ROLE
   ) {
@@ -18,6 +19,12 @@ export class ManagerModel {
     this.registered = new Date()
   }
 
+}
+
+export interface iManagerRegist {
+  email: string,
+  name: string,
+  password: string
 }
 
 export interface iManager extends ManagerModel {
