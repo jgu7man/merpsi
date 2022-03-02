@@ -1,18 +1,19 @@
 import firebase from 'firebase/app'
 
+/** Usuarios que van a administrar/consumir el sistema */
 export class ManagerModel {
 
   public registered: Date | firebase.firestore.Timestamp
   public lastAccess: Date | firebase.firestore.Timestamp
-  public rol: ROL
+  public rol: ROLE
   
   constructor (
     public email: string,
-    public nombre: string,
+    public name: string,
     public uid: string,
-    rol?: ROL
+    role?: ROLE
   ) {
-    this.rol = rol || 'propietario'
+    this.rol = role || 'propietario'
     this.lastAccess = new Date()
     this.registered = new Date()
   }
@@ -20,11 +21,12 @@ export class ManagerModel {
 }
 
 export interface iManager extends ManagerModel {
-  sede?: string
+  /** Sede - Almacen */
+  store?: string
   photoURL?: string
   registered: firebase.firestore.Timestamp
 }
 
 
 
-export type ROL = 'propietario' | 'administrador' | 'gerente' | 'asesor' | 'mecanico' | 'revoke'
+export type ROLE = 'propietario' | 'administrador' | 'gerente' | 'asesor' | 'mecanico' | 'revoke'
