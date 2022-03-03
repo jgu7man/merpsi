@@ -10,17 +10,24 @@ import { MarxaModule } from 'shared/marxa.module';
 import { PanelLoginComponent } from './components/panel-login/panel-login.component';
 import { AngularFireModule } from '@angular/fire';
 import { environment } from 'src/environments/environment';
+import { RegistComponent } from './components/regist/regist.component';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { GenericRegistFormComponent } from './components/generic-regist-form/generic-regist-form.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    PanelLoginComponent
+    PanelLoginComponent,
+    RegistComponent,
+    GenericRegistFormComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
-    AngularFireModule.initializeApp(environment.firebaseConfig),
+    AngularFireModule.initializeApp( environment.firebaseConfig ),
+    ReactiveFormsModule,
+    FormsModule,
     FirebaseModule,
     MaterialModule,
     MarxaModule,

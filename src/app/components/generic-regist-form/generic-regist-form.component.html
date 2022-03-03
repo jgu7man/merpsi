@@ -1,0 +1,86 @@
+<form [formGroup]="form" class="row">
+
+  <!-- NOMBRE -->
+  <mat-form-field appearance="outline" class="col s12">
+    <mat-label>{{labelsConfig.name.label}}</mat-label>
+    <input
+    matInput
+    type="text"
+    name="name"
+    formControlName="name"
+    required
+    >
+    <mat-error *ngIf="form.controls.email.invalid">
+      {{errorMessage('name', labelsConfig.name.errors)}}
+    </mat-error>
+  </mat-form-field>
+
+  <!-- EMAIL -->
+  <mat-form-field appearance="outline" class="col s12">
+    <mat-label>{{labelsConfig.email.label}}</mat-label>
+    <input
+    matInput
+    type="email"
+    name="email"
+    formControlName="email"
+    required
+    >
+    <mat-error *ngIf="form.controls.email.invalid">
+      {{errorMessage('email', labelsConfig.email.errors)}}
+    </mat-error>
+  </mat-form-field>
+
+  <!-- CLAVE -->
+  <mat-form-field appearance="outline" class="col s12">
+    <mat-label>{{labelsConfig.password.label}}</mat-label>
+    <input
+    matInput
+    [type]="hide?'password':'text'"
+    name="password"
+    formControlName="password"
+    required
+    >
+    <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide"
+    [matTooltip]="hide ? 'Mostrar contraseña' : 'Ocultar contraseña'">
+      <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+    </button>
+
+    <mat-error *ngIf="form.controls.password.invalid">
+      {{errorMessage('password', labelsConfig.password.errors)}}
+    </mat-error>
+  </mat-form-field>
+
+  <!-- CONFIRM CLAVE -->
+  <mat-form-field appearance="outline" class="col s12">
+    <mat-label>{{labelsConfig.confirmPwd.label}}</mat-label>
+    <input
+    matInput
+    [type]="hide?'password':'text'"
+    name="confirmPwd"
+    formControlName="confirmPwd"
+    required
+    [errorStateMatcher]="matcher"
+    >
+    <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide"
+    [matTooltip]="hide ? 'Mostrar contraseña' : 'Ocultar contraseña'">
+      <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+    </button>
+    <mat-error *ngIf="form.controls.confirmPwd.invalid">
+      {{errorMessage('confirmPwd', labelsConfig.confirmPwd.errors)}}
+    </mat-error>
+
+  </mat-form-field>
+
+  <div class="col s12">
+    <mat-checkbox name="acept" formControlName="acept">
+      {{labelsConfig.acept.label}}
+    </mat-checkbox>
+    <ng-container *ngFor="let error of labelsConfig.acept.errors">
+      <mat-error *ngIf="form.controls.acept.invalid">
+      {{errorMessage('acept', labelsConfig.acept.errors)}}
+    </mat-error>
+    </ng-container>
+  </div>
+
+
+</form>

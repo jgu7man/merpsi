@@ -1,0 +1,90 @@
+<div class="container">
+  <div class="row">
+    <div class="col s12">
+      
+      <form  class="row" [formGroup]="registForm">
+
+        <mat-form-field appearance="outline" class="col s12">
+          <mat-label>Pais</mat-label>
+          <input
+          matInput
+          type="text"
+          name="country"
+          formControlName="country"
+          required
+          >
+          <mat-error *ngIf="registForm.hasError('required', 'country')">
+            Pais es necesario
+          </mat-error>
+        </mat-form-field>
+      
+        <mat-form-field appearance="outline" class="col s12">
+          <mat-label>CRF</mat-label>
+          <input
+          matInput
+          type="text"
+          name="name"
+          formControlName="CRF"
+          >
+          <mat-error *ngIf="registForm.hasError('required', 'CRF')">
+            Este dato es necesario
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="col s12">
+          <mat-label>Nombre comercial</mat-label>
+          <input
+          matInput
+          type="text"
+          name="name"
+          formControlName="name"
+          required
+          >
+          <mat-error *ngIf="registForm.hasError('required', 'name')">
+            Nombre comercial es necesario
+          </mat-error>
+        </mat-form-field>
+
+        <div class="col s12">
+          <mat-button-toggle-group  name="fontStyle" aria-label="Font Style"
+          formControlName="type">
+            <mat-button-toggle value="natural">Persona natural</mat-button-toggle>
+            <mat-button-toggle value="juridica">Persona Jurídica</mat-button-toggle>
+          </mat-button-toggle-group>
+        </div>
+
+        <mat-form-field appearance="outline" class="col s12">
+          <mat-label>Razón Social</mat-label>
+          <input
+          matInput
+          type="text"
+          name="businessName"
+          formControlName="businessName"
+          required
+          >
+          <mat-error *ngIf="registForm.hasError('required', 'businessName')">
+            Razón Social es necesario
+          </mat-error>
+        </mat-form-field>
+
+
+      
+      </form>
+      
+      <app-generic-regist-form
+      (changes)="onManagerFormChanges($event)"
+      ></app-generic-regist-form>
+
+      <div class="row">
+        <div class="col s12">
+          <button mat-raised-button color="primary" 
+          [disabled]="registForm.invalid || !managerFormValid"
+          (click)="onSubmit()">
+            Registrar
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
