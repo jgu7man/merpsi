@@ -26,7 +26,21 @@ export class AuthService {
   async regist( business: BusinessModel, register: iManagerRegist ): Promise<void> {
     try {
       
-      /* Se deconstruye el objeto manager para obtner los datos necesarios */
+      /*validamos que el CRF (clave de registro fiscal) no exista en base de datos */
+      let business_result = await this._afs.doc(`business/${business.CRF}`).ref.get()
+      if ( business_result.exists ) {
+
+        Swal.fire( 
+          {
+            icon:'info',
+            text:'El CRF que estas registrando ya existe,' +
+            'por favor ingresa uno nuevo o inicia sesion'
+          }
+        )
+        throw { message: 'El CRF que estas registrando ya existe'}
+      } 
+      
+      /* Se deconstruye el objeto manager para obtener los datos necesarios */
       let {email, password} = register
 
       /* Paso 1: Registrar en Firebase Auth */
@@ -57,8 +71,11 @@ export class AuthService {
       
       /* Paso 4: Redirección a el dashboard */
       this._router.navigate(['dashboard'])
-      /* IMPORTANTE: Hacer return para terminar la promesa */
-      return
+      
+    
+
+    /* IMPORTANTE: Hacer return para terminar la promesa */
+    return
 
     } catch (error: any) {
       /* Cerrar la sesión en cualquier error */
