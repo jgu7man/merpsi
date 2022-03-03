@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { BusinessModel } from '../models/empresa.model';
 import { iManagerRegist, ManagerModel } from '../models/manager.model';
+import { BusinessService } from './business.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -13,6 +14,7 @@ export class AuthService {
     private _afAuth: AngularFireAuth,
     private _afs: AngularFirestore,
     private _router: Router,
+    private _business: BusinessService
   ) { }
 
 
@@ -27,16 +29,9 @@ export class AuthService {
     try {
       
       /*validamos que el CRF (clave de registro fiscal) no exista en base de datos */
-      let business_result = await this._afs.doc(`business/${business.CRF}`).ref.get()
-      if ( business_result.exists ) {
+      let business_result = await this._business.validateBusiness(business.CRF)
+      if ( !business_result ) {
 
-        Swal.fire( 
-          {
-            icon:'info',
-            text:'El CRF que estas registrando ya existe,' +
-            'por favor ingresa uno nuevo o inicia sesion'
-          }
-        )
         throw { message: 'El CRF que estas registrando ya existe'}
       } 
       
