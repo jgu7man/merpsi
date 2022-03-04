@@ -22,4 +22,4 @@ export interface iBusiness extends BusinessModel{
     readonly CRF: string
 }
 /** Tipo de contribuyente */
-export type TAXPAYER_TYPE = 'natural' | 'juridica'
+export type TAXPAYER_TYPE = 'natural' | 'Jurídica'

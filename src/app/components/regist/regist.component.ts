@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { iManagerRegist } from 'src/app/models/manager.model';
+import { AdminService } from 'src/app/services/admin.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { BusinessService } from 'src/app/services/business.service';
 import { iRegistFormChanges } from '../generic-regist-form/generic-regist-form.model';
@@ -17,7 +18,7 @@ export class RegistComponent implements OnInit {
     CRF: new FormControl('', [Validators.required]),
     name: new FormControl('', [Validators.required]),
     businessName: new FormControl('', [Validators.required]),
-    type: new FormControl( 'juridica', [ Validators.required ] ),
+    type: new FormControl( 'Jurídica', [ Validators.required ] ),
   } )
   
   register?: iManagerRegist
@@ -25,8 +26,11 @@ export class RegistComponent implements OnInit {
   
   constructor (
     private _auth: AuthService,
-    private _business: BusinessService
-  ) { }
+    private _business: BusinessService,
+    private _admin: AdminService
+  ) { 
+    
+  }
 
   ngOnInit(): void {
   }
