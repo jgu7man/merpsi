@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { iManagerRegist } from 'src/app/models/manager.model';
+import { AuthService } from 'src/app/services/auth.service';
 import { iRegistFormChanges } from '../generic-regist-form/generic-regist-form.model';
 
 @Component({
@@ -22,6 +23,7 @@ export class RegistComponent implements OnInit {
   managerFormValid: boolean = false
   
   constructor (
+    private _auth: AuthService
   ) { }
 
   ngOnInit(): void {
@@ -32,9 +34,11 @@ export class RegistComponent implements OnInit {
     this.managerFormValid = event.valid
   }
 
-  onSubmit() {
+  async onSubmit() {
     console.log( this.register )
     console.log(this.registForm.value)
+    await this._auth.regist(this.registForm.value,this.register!)
+
   }
 
 }

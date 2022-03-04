@@ -30,7 +30,7 @@ export class AuthService {
       
       /*validamos que el CRF (clave de registro fiscal) no exista en base de datos */
       let business_result = await this._business.validateBusiness(business.CRF)
-      if ( !business_result ) {
+      if ( !!business_result ) {
 
         throw { message: 'El CRF que estas registrando ya existe'}
       } 
