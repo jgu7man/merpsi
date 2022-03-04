@@ -28,6 +28,7 @@
     "@marxa/storage": "0.0.21",
     "@sweetalert2/theme-material-ui": "^5.0.10",
     "firebase": "^7.0 || ^8.0",
+    "ngx-mask": "^13.1.1",
     "rxjs": "~6.6.0",
     "sweetalert2": "^11.4.4",
     "tslib": "^2.3.0",

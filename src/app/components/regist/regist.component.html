@@ -30,6 +30,9 @@
           <mat-error *ngIf="registForm.hasError('required', 'CRF')">
             Este dato es necesario
           </mat-error>
+          <mat-error *ngIf="registForm.hasError('caca', 'CRF')">
+            Esto es caca
+          </mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="col s12">

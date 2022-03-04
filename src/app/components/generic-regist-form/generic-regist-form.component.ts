@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormControl, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { MyErrorStateMatcher } from './app-Validador';
@@ -29,7 +29,7 @@ export class GenericRegistFormComponent implements OnInit, OnDestroy {
   ) { 
     this.form = this.formBuilder.group( {
       name: new FormControl(''),
-      email: new FormControl('', [Validators.required]),
+      email: new FormControl('', [Validators.required, Validators.email]),
       password: new FormControl( '', [
         Validators.required,
         Validators.pattern( '(?=\\D*\\d)(?=[^a-z]*[a-z]).{8,30}' ),
@@ -61,7 +61,7 @@ export class GenericRegistFormComponent implements OnInit, OnDestroy {
         })
   }
 
-  checkPasswords(group: FormGroup) {
+  checkPasswords(group: FormGroup): ValidationErrors | null {
     let pass = group.controls.password.value;
     let confirmPass = group.controls.confirmPwd.value;
     return pass === confirmPass ? null : { notSame: true };

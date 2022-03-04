@@ -13,16 +13,31 @@ import { iRegistFormChanges } from '../generic-regist-form/generic-regist-form.m
 export class RegistComponent implements OnInit {
 
 
-  registForm: FormGroup = new FormGroup( {
+
+  /** 
+   * Modelo reactivo del formulario de la empresa
+   * 
+   * @type {FormGroup}
+   */
+  public registForm: FormGroup = new FormGroup( {
     country: new FormControl('', [Validators.required]),
-    CRF: new FormControl('', [Validators.required]),
+    CRF: new FormControl('', [Validators.required] ),
     name: new FormControl('', [Validators.required]),
     businessName: new FormControl('', [Validators.required]),
     type: new FormControl( 'Jurídica', [ Validators.required ] ),
   } )
-  
-  register?: iManagerRegist
-  managerFormValid: boolean = false
+  /** 
+   * Objeto que recibe los datos del manager que registra la empresa
+   *
+   * @type {iManagerRegist | undefined}
+   */
+  public register?: iManagerRegist
+  /**
+   * Adminsitra la validación del formulario de manager
+   *
+   * @type {boolean}
+   */
+  public managerFormValid: boolean = false
   
   constructor (
     private _auth: AuthService,
@@ -35,26 +50,29 @@ export class RegistComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  
+  /** Recibe los cambios realizados en el formulario del Manager
+   * @param {iRegistFormChanges} event Recibe 2 propiedades: la data y la validación del formulario
+   */
   onManagerFormChanges(event: iRegistFormChanges) {
     this.register = event.values
     this.managerFormValid = event.valid
   }
 
-  async onSubmit() {
-    console.log( this.register )
-    console.log(this.registForm.value)
-    await this._auth.regist(this.registForm.value,this.register!)
 
+
+  /** Llamado al servicio de registro de empresa y manager */
+  async onSubmit() {
+    await this._auth.regist(this.registForm.value,this.register!)
   }
 
-  /**
-   *Funcion para validar CRF en el imput con onblur
-   *
+  /** Funcion para validar CRF en el imput con onblur
    * @param {string} CRF
    * @memberof RegistComponent
    */
-  public async validateCRF(CRF: string) {
-      let validation = CRF ? await this._business.validateBusiness(this.registForm.controls.CRF.value) : null
+  public async validateCRF( CRF: string ) {
+    let validation = CRF ? await this._business.validateBusiness( this.registForm.controls.CRF.value ) : null
+    if (validation) this.registForm.controls.CRF.setErrors({exists: true})
   }
 
 }
