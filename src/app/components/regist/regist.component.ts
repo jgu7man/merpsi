@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormControl, FormGroup, ValidatorFn, Validators } from '@angular/forms';
+import { debounceTime, last, take } from 'rxjs/operators';
 import { iManagerRegist } from 'src/app/models/manager.model';
 import { AuthService } from 'src/app/services/auth.service';
 import { BusinessService } from 'src/app/services/business.service';
@@ -14,7 +15,7 @@ export class RegistComponent implements OnInit {
 
   registForm: FormGroup = new FormGroup( {
     country: new FormControl('', [Validators.required]),
-    CRF: new FormControl('', [Validators.required]),
+    CRF: new FormControl('', [Validators.required] ),
     name: new FormControl('', [Validators.required]),
     businessName: new FormControl('', [Validators.required]),
     type: new FormControl( 'juridica', [ Validators.required ] ),
@@ -26,7 +27,9 @@ export class RegistComponent implements OnInit {
   constructor (
     private _auth: AuthService,
     private _business: BusinessService
-  ) { }
+  ) { 
+    
+  }
 
   ngOnInit(): void {
   }
@@ -49,8 +52,9 @@ export class RegistComponent implements OnInit {
    * @param {string} CRF
    * @memberof RegistComponent
    */
-  public async validateCRF(CRF: string) {
-      let validation = CRF ? await this._business.validateBusiness(this.registForm.controls.CRF.value) : null
+  public async validateCRF( CRF: string ) {
+    let validation = CRF ? await this._business.validateBusiness( this.registForm.controls.CRF.value ) : null
+    if (validation) this.registForm.controls.CRF.setErrors({exists: true})
   }
 
 }
