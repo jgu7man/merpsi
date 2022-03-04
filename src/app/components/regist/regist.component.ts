@@ -43,10 +43,14 @@ export class RegistComponent implements OnInit {
 
   }
 
-   public async validateCRF(CRF: string) {
-      console.log(CRF);
+  /**
+   *Funcion para validar CRF en el imput con onblur
+   *
+   * @param {string} CRF
+   * @memberof RegistComponent
+   */
+  public async validateCRF(CRF: string) {
       let validation = CRF ? await this._business.validateBusiness(this.registForm.controls.CRF.value) : null
-      console.log(validation)
   }
 
 }
