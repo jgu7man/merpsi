@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AbstractControl, FormControl, FormGroup, ValidatorFn, Validators } from '@angular/forms';
-import { debounceTime, last, take } from 'rxjs/operators';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { iManagerRegist } from 'src/app/models/manager.model';
 import { AuthService } from 'src/app/services/auth.service';
 import { BusinessService } from 'src/app/services/business.service';
@@ -13,16 +12,31 @@ import { iRegistFormChanges } from '../generic-regist-form/generic-regist-form.m
 export class RegistComponent implements OnInit {
 
 
-  registForm: FormGroup = new FormGroup( {
+
+  /** 
+   * Modelo reactivo del formulario de la empresa
+   * 
+   * @type {FormGroup}
+   */
+  public registForm: FormGroup = new FormGroup( {
     country: new FormControl('', [Validators.required]),
     CRF: new FormControl('', [Validators.required] ),
     name: new FormControl('', [Validators.required]),
     businessName: new FormControl('', [Validators.required]),
     type: new FormControl( 'juridica', [ Validators.required ] ),
   } )
-  
-  register?: iManagerRegist
-  managerFormValid: boolean = false
+  /** 
+   * Objeto que recibe los datos del manager que registra la empresa
+   *
+   * @type {iManagerRegist | undefined}
+   */
+  public register?: iManagerRegist
+  /**
+   * Adminsitra la validación del formulario de manager
+   *
+   * @type {boolean}
+   */
+  public managerFormValid: boolean = false
   
   constructor (
     private _auth: AuthService,
@@ -34,21 +48,23 @@ export class RegistComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  
+  /** Recibe los cambios realizados en el formulario del Manager
+   * @param {iRegistFormChanges} event Recibe 2 propiedades: la data y la validación del formulario
+   */
   onManagerFormChanges(event: iRegistFormChanges) {
     this.register = event.values
     this.managerFormValid = event.valid
   }
 
-  async onSubmit() {
-    console.log( this.register )
-    console.log(this.registForm.value)
-    await this._auth.regist(this.registForm.value,this.register!)
 
+
+  /** Llamado al servicio de registro de empresa y manager */
+  async onSubmit() {
+    await this._auth.regist(this.registForm.value,this.register!)
   }
 
-  /**
-   *Funcion para validar CRF en el imput con onblur
-   *
+  /** Funcion para validar CRF en el imput con onblur
    * @param {string} CRF
    * @memberof RegistComponent
    */
