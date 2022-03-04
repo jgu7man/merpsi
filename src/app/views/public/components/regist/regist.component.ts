@@ -5,7 +5,7 @@ import { iManagerRegist } from 'src/app/models/manager.model';
 import { AdminService } from 'src/app/services/admin.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { BusinessService } from 'src/app/services/business.service';
-import { iRegistFormChanges } from '../generic-regist-form/generic-regist-form.model';
+import { iRegistFormChanges } from '../../../../components/generic-regist-form/generic-regist-form.model';
 
 @Component({
   templateUrl: './regist.component.html',
