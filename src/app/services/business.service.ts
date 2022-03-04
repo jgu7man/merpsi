@@ -22,7 +22,7 @@ export class BusinessService {
    */
   async validateBusiness(CRF: string):Promise<iBusiness | null> {
     try{
-      let business_result = await this._afs.doc<iBusiness>(`business/${CRF}`).ref.get();
+      let business_result = await this._afs.doc<iBusiness>(`businesses/${CRF}`).ref.get();
        
       return business_result.exists ? business_result.data()! : null
      

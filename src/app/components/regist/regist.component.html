@@ -25,6 +25,7 @@
           type="text"
           name="name"
           formControlName="CRF"
+          (blur)="validateCRF(registForm.controls.CRF.value)"
           >
           <mat-error *ngIf="registForm.hasError('required', 'CRF')">
             Este dato es necesario

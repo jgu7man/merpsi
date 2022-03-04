@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { iManagerRegist } from 'src/app/models/manager.model';
 import { AuthService } from 'src/app/services/auth.service';
+import { BusinessService } from 'src/app/services/business.service';
 import { iRegistFormChanges } from '../generic-regist-form/generic-regist-form.model';
 
 @Component({
@@ -23,7 +24,8 @@ export class RegistComponent implements OnInit {
   managerFormValid: boolean = false
   
   constructor (
-    private _auth: AuthService
+    private _auth: AuthService,
+    private _business: BusinessService
   ) { }
 
   ngOnInit(): void {
@@ -39,6 +41,12 @@ export class RegistComponent implements OnInit {
     console.log(this.registForm.value)
     await this._auth.regist(this.registForm.value,this.register!)
 
+  }
+
+   public async validateCRF(CRF: string) {
+      console.log(CRF);
+      let validation = CRF ? await this._business.validateBusiness(this.registForm.controls.CRF.value) : null
+      console.log(validation)
   }
 
 }
