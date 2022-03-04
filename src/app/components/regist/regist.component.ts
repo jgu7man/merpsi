@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { iCountry } from 'src/app/models/country.model';
 import { iManagerRegist } from 'src/app/models/manager.model';
 import { AdminService } from 'src/app/services/admin.service';
 import { AuthService } from 'src/app/services/auth.service';
@@ -38,7 +39,7 @@ export class RegistComponent implements OnInit {
    * @type {boolean}
    */
   public managerFormValid: boolean = false
-  
+  public countryList: iCountry[] = []
   constructor (
     private _auth: AuthService,
     private _business: BusinessService,
@@ -47,7 +48,8 @@ export class RegistComponent implements OnInit {
     
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
+    this.countryList = await this._admin.getCountry()
   }
 
   
