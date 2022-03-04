@@ -13,6 +13,10 @@ import { environment } from 'src/environments/environment';
 import { RegistComponent } from './components/regist/regist.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { GenericRegistFormComponent } from './components/generic-regist-form/generic-regist-form.component';
+import { NgxMaskModule, IConfig  } from 'ngx-mask';
+const maskConfig: Partial<IConfig> = {
+  validation: false,
+};
 
 @NgModule({
   declarations: [
@@ -28,6 +32,7 @@ import { GenericRegistFormComponent } from './components/generic-regist-form/gen
     AngularFireModule.initializeApp( environment.firebaseConfig ),
     ReactiveFormsModule,
     FormsModule,
+    NgxMaskModule.forRoot(maskConfig),
     FirebaseModule,
     MaterialModule,
     MarxaModule,

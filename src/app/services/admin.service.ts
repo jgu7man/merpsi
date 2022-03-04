@@ -13,9 +13,9 @@ export class AdminService {
 
   async getCountry(): Promise<iCountry[]> {
     try {
-      let countriesList = await this._afs.doc<iCountry[]>("_admin/countries").ref.get()
-
-      return countriesList.data() || []
+      let countriesList = await this._afs.doc<{list:iCountry[]}>("_admin/countries").ref.get()
+      let result = countriesList.data()
+      return result?.list || []
 
     } catch (error) {
 

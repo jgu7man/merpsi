@@ -25,7 +25,7 @@ export class RegistComponent implements OnInit {
     CRF: new FormControl('', [Validators.required] ),
     name: new FormControl('', [Validators.required]),
     businessName: new FormControl('', [Validators.required]),
-    type: new FormControl( 'Jurídica', [ Validators.required ] ),
+    type: new FormControl( '', [ Validators.required ] ),
   } )
   /** 
    * Objeto que recibe los datos del manager que registra la empresa
