@@ -12,6 +12,7 @@ export class ManagerModel {
     public name: string,
     /** ID otorgado por la autenticación de firebase */
     public uid: string,
+    public CRF?: string,
     role?: ROLE
   ) {
     this.rol = role || 'propietario'
@@ -32,6 +33,13 @@ export interface iManager extends ManagerModel {
   store?: string
   photoURL?: string
   registered: firebase.firestore.Timestamp
+  businesses: string[]
+  
+}
+
+export interface iManagerLogin{
+  readonly email: string,
+  readonly password: string
 }
 
 
