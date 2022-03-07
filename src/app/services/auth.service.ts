@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
-import { catchError, first, map } from 'rxjs/operators';
+import { catchError, first, map, tap } from 'rxjs/operators';
 import Swal from 'sweetalert2';
 import { BusinessModel } from '../models/empresa.model';
 import { iManager, iManagerLogin, iManagerRegist, ManagerModel } from '../models/manager.model';
@@ -116,12 +116,12 @@ export class AuthService {
     } catch (error: any) {
 
       console.error(error)
-      this._afAuth.signOut()
+      // this._afAuth.signOut()
 
-      Swal.fire({
-        icon: 'error',
-        text: error.message
-      })
+      // Swal.fire({
+      //   icon: 'error',
+      //   text: error.message
+      // })
       return
     }
 
@@ -135,10 +135,7 @@ export class AuthService {
     return this._afs.collectionGroup<ManagerModel>('managers',
       ref => ref.where('uid', '==', uid)).get()
       .pipe(
-        catchError(error=> {
-          console.error(error)
-          return of(null)
-        }),/*
+        tap(error=> console.log(error)),
         map(list => {
         if (list.docs.length > 0) {
           let documento = list.docs[0].data()
@@ -149,13 +146,14 @@ export class AuthService {
           }
           return manager
         } else  return null
-      } ),*/
-        catchError( (error, user) => {
-          Swal.fire({
-            icon: 'error',
-            text: error.message
-          })
-          return user
+      } ),
+        catchError( ( error, user ) => {
+          console.log( error )
+          // Swal.fire({
+          //   icon: 'error',
+          //   text: error.message
+          // })
+          throw error
         } )
       )
   }
