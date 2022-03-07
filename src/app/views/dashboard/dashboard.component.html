@@ -1,0 +1,24 @@
+<mat-drawer-container id="dashboard" [hasBackdrop]="!responsive.large">
+
+  <!-- SIDEBAR -->
+  <mat-drawer #menuSidebar="matDrawer"
+  id="sidebar"
+  [position]="'start'"
+  [mode]="responsive.large ? 'side' : 'over'"
+  [opened]="responsive.large">
+    <app-sidebar (closePanel)="menuSidebar.close()" ></app-sidebar>
+  </mat-drawer>
+
+  <!-- MAIN -->
+  <mat-drawer-content>
+    <div class="row" *ngIf="!responsive.large">
+      <div class="col s12" id="mobile-navbar" >
+        <button mat-icon-button color="primary" class="rigth" (click)="menuSidebar.open()">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+    </div>
+    <router-outlet></router-outlet>
+  </mat-drawer-content>
+
+</mat-drawer-container>

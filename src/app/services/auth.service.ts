@@ -2,23 +2,51 @@ import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
-import { catchError, first, map, tap } from 'rxjs/operators';
+import { catchError, distinctUntilChanged, first, map, switchMap, tap } from 'rxjs/operators';
 import Swal from 'sweetalert2';
 import { BusinessModel } from '../models/empresa.model';
 import { iManager, iManagerLogin, iManagerRegist, ManagerModel } from '../models/manager.model';
 import { BusinessService } from './business.service';
 import firebase from 'firebase/app'
-import { of } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
+
+  /** Observable de el usuario autenticado */
+  user$: Observable<iManager | null> = new Observable();
+  /** Estado actualizado de los cambios del usuario autenticado */
+  userState$ = new BehaviorSubject<iManager | null>( null )
 
   constructor (
     private _afAuth: AngularFireAuth,
     private _afs: AngularFirestore,
     private _router: Router,
     private _business: BusinessService
-  ) { }
+  ) { 
+    
+    this.authVerification()
+  }
+
+  authVerification() {
+    /*  Método para cargar el usuario autenticado de manera asíncrona */
+    this.user$ = this._afAuth.authState.pipe(
+      switchMap( user => {
+        /* Si user no es null consulta a el usuario autenticado y su data, de lo contrario también emite null */
+        return user ?
+          this.retriveManager( user.uid )  :
+          of( null );
+      } ),
+      distinctUntilChanged((x, y) => JSON.stringify(x) == JSON.stringify(y)),
+      tap( user => {
+        /* Si no existe el usuario, redirige a el login */
+        if ( !user ) this._router.navigate( [ '/login' ] );
+        /* Guarda la data en BehaivorSubject */
+        this.userState$.next( user )
+
+      } )
+    )
+  }
 
 
   /**
@@ -98,6 +126,7 @@ export class AuthService {
       if (uid) {
         var manager = await this.retriveManager(uid).pipe(first()).toPromise()
 
+        console.log( manager )
         if (manager && manager?.businesses.length==0) {
           Swal.fire( {
             icon: 'warning',
@@ -105,7 +134,7 @@ export class AuthService {
           })
         }
       
-        this._router.navigate(['dashboard'])
+        this._router.navigate(['/dashboard'])
         return manager
       } else {
         let error = { message: 'No se pudo iniciar sesión, Lamentamos los inconvenientes técnicos. Intenta de nuevo o más tarde' }
@@ -116,12 +145,12 @@ export class AuthService {
     } catch (error: any) {
 
       console.error(error)
-      // this._afAuth.signOut()
+      this._afAuth.signOut()
 
-      // Swal.fire({
-      //   icon: 'error',
-      //   text: error.message
-      // })
+      Swal.fire({
+        icon: 'error',
+        text: error.message
+      })
       return
     }
 
@@ -131,11 +160,10 @@ export class AuthService {
    * @param {string} uid
    * @returns {*}
    */
-   retriveManager( uid: string ) {
+  retriveManager( uid: string ) {
     return this._afs.collectionGroup<ManagerModel>('managers',
       ref => ref.where('uid', '==', uid)).get()
       .pipe(
-        tap(error=> console.log(error)),
         map(list => {
         if (list.docs.length > 0) {
           let documento = list.docs[0].data()
@@ -149,19 +177,16 @@ export class AuthService {
       } ),
         catchError( ( error, user ) => {
           console.log( error )
-          // Swal.fire({
-          //   icon: 'error',
-          //   text: error.message
-          // })
+          Swal.fire({
+            icon: 'error',
+            text: error.message
+          })
           throw error
         } )
       )
   }
 
-  getBusinesses( manager: iManager[]) {
-    manager.forEach(data =>{
-
-    })
-
+  signOut() {
+    this._afAuth.signOut()
   }
 }

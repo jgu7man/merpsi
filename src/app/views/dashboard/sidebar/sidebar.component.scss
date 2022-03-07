@@ -1,0 +1,103 @@
+#sidenav-menu {
+  margin: 0;
+  border: none;
+  height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  width: 100%;
+  background: hsla(207, 100%, 18%, 1);
+  box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.3);
+  z-index: 1;
+  padding: 0 !important;
+  a.collection-item {
+      padding: 1em 4em;
+      color: #fff;
+      background: hsla(207, 100%, 18%, 1);
+      border-bottom: 1px solid hsla(207, 100%, 15%, 1);
+      cursor: pointer;
+  }
+  .collection .collection-item.active {
+      background-color: #155a90 !important;
+  }
+  .collection a.collection-item:not(.active):hover {
+      background: hsla(207, 100%, 26%, 1);
+  }
+  .collection {
+      border-radius: 0;
+  }
+  ::ng-deep {
+    .mat-accordion .mat-expansion-panel:first-of-type,
+    .mat-accordion .mat-expansion-panel:last-of-type,
+    .mat-expansion-panel {
+        background-color: hsla(207, 100%, 23%, 1);
+        border-radius: none !important;
+        margin: 0 !important;
+        color: #fff;
+        mat-panel-title {
+          color: #fff;
+          width:100%;
+          .fas {
+            margin-right: 1em;
+          }
+        }
+    }
+    .mat-expansion-panel-body {
+        padding: 0 !important;
+    }
+    .mat-expansion-indicator::after {
+        color: #fff;
+    }
+    .mat-expansion-panel:not(.mat-expanded) .mat-expansion-panel-header:not([aria-disabled='true']):hover {
+        background: rgba(0, 0, 0, 0.1) !important;
+    }
+  }
+  @media (max-width: 768px) {
+    width: 100%
+  }
+}
+
+#sidenav-menu::-webkit-scrollbar {
+  display: none;
+}
+
+#main-menu .collection {
+  display: flex !important;
+  flex-direction: column;
+}
+
+
+#admin-logo {
+  background: #005daa;
+  width: 100%;
+  height: 10vh;
+  padding: .5em 3em;
+  position: relative;
+  img {
+    width:100%;
+    position: relative;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    left: 50%;
+  }
+  @media (max-width: 768px) {
+    padding: 0;
+    img {
+      width: 50%;
+      transform: translate(-90%, -50%);
+      left: 50%;
+    }
+  }
+  button {
+    left:35%
+  }
+}
+
+.version {
+  bottom: 0;
+  position: absolute;
+  color: white;
+  font-size: medium;
+  ::ng-deep mx-version-notifier small {
+    font-size: 75%;
+  }
+}
