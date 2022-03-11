@@ -7,6 +7,7 @@ import { PanelLoginComponent } from './components/panel-login/panel-login.compon
 import { RegistComponent } from './components/regist/regist.component';
 import { SharedModule } from 'shared/shared.module';
 import { ComponentsModule } from '../../components/components.module';
+import { RegistManagerComponent } from './components/regist/regist-manager/regist-manager.component';
 
 
 @NgModule({
@@ -14,6 +15,7 @@ import { ComponentsModule } from '../../components/components.module';
     PublicComponent,
     PanelLoginComponent,
     RegistComponent,
+    RegistManagerComponent,
   ],
   imports: [
     CommonModule,

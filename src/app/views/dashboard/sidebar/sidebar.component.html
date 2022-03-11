@@ -165,13 +165,13 @@
         > -->
         <a *ngIf="user.rol == ('propietario')"
           class="collection-item"
-          [routerLink]="['/dashboard/admin/personal']"
+          [routerLink]="['admin/personal']"
           routerLinkActive="active"
           >Personal</a
         >
         <a *ngIf="user.rol == ('propietario')"
           class="collection-item"
-          [routerLink]="['/dashboard/admin/sedes']"
+          [routerLink]="['admin/sedes']"
           routerLinkActive="active"
           >Sedes</a
         >

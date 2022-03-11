@@ -6,28 +6,34 @@ import { MxAuth } from '@marxa/auth';
 import { MxAlert, MxCache } from '@marxa/devkit';
 import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
+import Swal from 'sweetalert2';
+import { ManagerModel } from '../models/manager.model';
 import { UsuarioModel } from '../models/personal.model';
+import { EmailService } from './email.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PersonalService {
 
+  businessCRF: string = this._cache.getDataKey('eid')!
   constructor(
     private _afs: AngularFirestore,
     private _afAuth: AngularFireAuth,
     private _alert: MxAlert,
     private _cache: MxCache,
-    private _router: Router
+    private _router: Router,
+    private _mails: EmailService
   ) { }
 
-  getAll(): Observable<UsuarioModel[]> {
-    return this._afs.collection<UsuarioModel>('admins').valueChanges()
+  getAll(): Observable<ManagerModel[]> {
+    console.log('paso por aqui :p')
+    return this._afs.collection<ManagerModel>(`businesses/${this.businessCRF}/managers`).valueChanges()
       .pipe(
         map(list => {
-          const users: UsuarioModel[] = []
+          const users: ManagerModel[] = []
           list.forEach( user => {
-            users.push(new UsuarioModel(user))
+            users.push(new ManagerModel(user.email,user.name,user.uid,user.CRF,user.rol))
           })
           return users
         }),
@@ -39,11 +45,14 @@ export class PersonalService {
       )
   }
 
-  async update(user: UsuarioModel) {
+  async update(user: ManagerModel) {
     try {
-      await this._afs.collection<UsuarioModel>('admins').doc(user.uid)
+      
+      let uid_email = user.uid ? user.uid : user.email
+      console.log(uid_email)
+      await this._afs.collection<ManagerModel>(`businesses/${this.businessCRF}/managers`).doc(uid_email)
         .update({ ...user })
-      this._alert.notify('Usuario actualizado')
+      Swal.fire('Usuario actualizado')
       return
     } catch (error) {
       console.error(error)
@@ -52,17 +61,26 @@ export class PersonalService {
     }
   }
 
-  async add(user: UsuarioModel) {
+  /**
+   *metodo para agregar un manager
+   *
+   * @param {ManagerModel} user
+   * @memberof PersonalService
+   */
+  async add(user: ManagerModel) {
     try {
-      let {email, ...usuario} = user
-      await this._afs.collection('admins')
-        .doc(email)
-        .set({
-          ...usuario, email,
-          displayName: `${usuario.nombre} ${usuario.apellido}`,
-          registered: new Date(),
-        })
-      this._alert.notify('Usuario agregado')
+      
+      user.CRF = this.businessCRF
+      await this._afs.collection<ManagerModel>(`businesses/${this.businessCRF}/managers`)
+          .doc(user.email)
+          .set({ ...user })
+      Swal.fire('Usuario agregado')
+
+      /** enviamos correo de notificacion para el manager */
+      await this.sendInvitationEmail(user.email,user.CRF)
+
+      console.log(user)
+      
       return
 
     } catch (error) {
@@ -112,6 +130,45 @@ export class PersonalService {
       this._alert.error('No  se pudo revocar accesos', error)
       return
     }
+  }
+
+
+/**
+ * Metodo que arma el correo de invitacion para el manager
+ *
+ * @param {string} email
+ * @param {string} CRF
+ * @memberof PersonalService
+ */
+async sendInvitationEmail(email: string, CRF: string){
+
+    const splitDomain = window.location.href.split('/')
+    const domain = splitDomain[0] === 'localhost' ? splitDomain[0]
+      : 'https://' + splitDomain[2]
+
+      let mail = {
+        to: email,
+        message: {
+          subject:`Invitacion`,
+          html: `
+          <p> se te ha invitado a registrarte en MERPSI
+          <br>
+          <p> Por Favor da click en este en el siguiente enlace para registrarte:
+          <a href='${domain}/registro/create?email=${ email }&crf=${ CRF}'>
+          ${domain }/registro/create?email=${ email }&crf=${ CRF}
+          </a>
+          <br>
+          </p>`
+        }
+      }
+
+      await this._mails.sendEmail(mail).catch(error => {
+        throw Swal.fire({
+          icon: 'error',
+          title: 'No pudo enviarse el correo de notificación.',
+          text: error})
+      })
+
   }
 
 

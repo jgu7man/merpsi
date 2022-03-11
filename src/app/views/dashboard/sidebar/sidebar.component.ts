@@ -1,9 +1,9 @@
 import { MxAuth } from '@marxa/auth';
 import { Location } from '@angular/common';
 import { Component, EventEmitter, OnDestroy, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AngularFireAuth } from '@angular/fire/auth';
-import { distinctUntilChanged, take } from 'rxjs/operators';
+import { distinctUntilChanged, mergeMap, take } from 'rxjs/operators';
 import { MxCache, MxResponsive } from '@marxa/devkit';
 import { UsuarioModel } from 'src/app/models/personal.model';
 import { Subscription } from 'rxjs';
@@ -31,11 +31,35 @@ export class SidebarComponent implements OnInit, OnDestroy {
     private _router: Router,
     private _cache: MxCache,
     private _personal: PersonalService,
+    private route: ActivatedRoute
   ) {
     this.responsive.smallWidth = 415
 
     /* Suscripción a los cambios de autenticación */
-    this.userSubscription = this.auth.user$.subscribe()
+    // this.userSubscription = this.auth.userState$.subscribe((state)=>{
+    //   console.log(state)
+    //   let eid = this.route.snapshot.params
+    //   if (!eid) {
+    //     if (state?.businesses.length==1){
+    //       this._router.navigate(['/d/empresa',state.businesses[0]])
+    //     }
+    //   }
+      
+    // })
+    this.userSubscription = this.auth.user$.pipe(
+      mergeMap(() => this.auth.userState$)
+    ).subscribe(user => {
+      console.log(user)
+      let eid = this.route.snapshot.params.id
+      if (!eid) {
+        if (user?.businesses.length==1){
+          this._router.navigate(['/d/empresa',user.businesses[0]])
+        }
+      }else{
+        this._cache.updateData('eid', eid)
+        // let empresa = this._cache.getDataKey('eid')
+      }
+    })
   }
 
   ngOnInit(): void {

@@ -4,7 +4,7 @@ import { AngularFirestore } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
 import { catchError, distinctUntilChanged, first, map, switchMap, tap } from 'rxjs/operators';
 import Swal from 'sweetalert2';
-import { BusinessModel } from '../models/empresa.model';
+import { BusinessModel, iBusiness } from '../models/empresa.model';
 import { iManager, iManagerLogin, iManagerRegist, ManagerModel } from '../models/manager.model';
 import { BusinessService } from './business.service';
 import firebase from 'firebase/app'
@@ -96,7 +96,7 @@ export class AuthService {
         .set({...manager})
       
       /* Paso 4: Redirección a el dashboard */
-      this._router.navigate(['dashboard'])
+      this._router.navigate(['d'])
       
     
 
@@ -134,7 +134,7 @@ export class AuthService {
           })
         }
       
-        this._router.navigate(['/dashboard'])
+        this._router.navigate(['/d'])
         return manager
       } else {
         let error = { message: 'No se pudo iniciar sesión, Lamentamos los inconvenientes técnicos. Intenta de nuevo o más tarde' }
@@ -189,4 +189,63 @@ export class AuthService {
   signOut() {
     this._afAuth.signOut()
   }
+/**
+ *metodo que crea la cuenta del manager (en auth) y actualiza el manager
+ *
+ * @param {iManagerRegist} register
+ * @param {string} CRF_
+ * @return {*} 
+ * @memberof AuthService
+ */
+async registManagerInvited(register: iManagerRegist,CRF_: string) {
+    try{
+    let {email,password} = register
+    // se crea la cuenta en auth 
+    const credentials = await this._afAuth.createUserWithEmailAndPassword( email, password ).catch( error => {
+      throw {message:'Falló la creación de la cuenta'}
+    } )
+    /* Validamos la existencia de user y credenciales */
+    if ( !credentials.user ) {
+      let error = { message: 'No se obtuvieron las credenciales de Firebase' }
+      console.error(error);
+      throw error
+    }
+    //Se busca en base de datos la informacion con la cual se hizo la invitacion 
+     let manager =  this._afs.doc<ManagerModel>( `businesses/${CRF_}/managers/${email}`).ref
+     let managerRef = await manager.get()
+
+      
+     if ( managerRef.exists){
+       // se obtiene el rol y la sede a la que se asigno el manager 
+       let {rol,sede} = managerRef.data() as ManagerModel;
+
+       // se guarda la informacion del manager pero ahora con el uid como referencia 
+       await this._afs.collection(`businesses/${CRF_}/managers/`).doc(credentials.user.uid).set({
+         CRF:CRF_,
+         email: register.email,
+         lastAccess: new Date(),
+         name: register.name,
+         registered: new Date(),
+         rol:rol,
+         sede:sede,
+         uid: credentials.user.uid
+       })
+
+       // Eliminamos el registro que se guardo anteriormente 
+       await manager.delete()
+
+       this._router.navigate(['login'])
+
+     }else {
+      throw { message: 'No se encontró esta petición quizá se perdió o ya se aceptó antes'}
+    }
+    return
+  }catch ( error: any ) {
+    Swal.fire(error.message);
+      return console.error(error);
+  }
+
+  }
+      
+
 }

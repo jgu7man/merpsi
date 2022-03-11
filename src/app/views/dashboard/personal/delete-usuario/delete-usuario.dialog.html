@@ -1,0 +1,19 @@
+<p mat-dialog-title class="center">¿De verdad desear revocar el acceso a este usuario?</p>
+<mat-dialog-content class="center">
+  <p>
+    Las cuentas no pueden ser borradas remotamete. <br>
+    Pero se puede revocar el acceso para que este usuario no pueda acceder más. <br>
+    Si deseas borrar definitivamente una cuenta creada. <br>
+    Contacta con Jorge o visita <a href="https://console.firebase.google.com/u/0/project/tiendalasmotos/authentication/users" target="_blank">Firebase Console</a> con la cuenta de <b>lasmotosauteco@gmail.com</b>.
+  </p>
+</mat-dialog-content>
+<mat-dialog-actions
+style="display: flex; justify-content: space-around;">
+    <button mat-raised-button
+    (click)="dialog.close()"
+    >Cancelar</button>
+    <button mat-raised-button
+    color="warn"
+    (click)="dialog.close(true)"
+    >Confirmar</button>
+</mat-dialog-actions>

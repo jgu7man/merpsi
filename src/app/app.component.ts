@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
+import { MxCache } from '@marxa/devkit';
 import { iCountry } from './models/country.model';
 
 @Component({
@@ -10,7 +11,11 @@ import { iCountry } from './models/country.model';
 export class AppComponent {
   title = 'merpsi';
 
-  constructor(private _afs: AngularFirestore){
+  constructor(private _afs: AngularFirestore,
+		private _cache: MxCache,
+		){
+			this._cache.cacheTagName = 'merpsi';
+			this._cache.storage = 'session'
 
      // this._afs.doc("_admin/countries").set({list: this.countryList})
   }

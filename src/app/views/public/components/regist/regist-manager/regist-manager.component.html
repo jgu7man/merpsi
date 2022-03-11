@@ -1,0 +1,18 @@
+<div class="container">
+  <div class="row">
+    <div class="col s12">
+      <app-generic-regist-form
+      (changes)="onManagerFormChanges($event)">
+    </app-generic-regist-form>
+      <div class="row">
+        <div class="col s12">
+          <button mat-raised-button color="primary" 
+          [disabled]="!managerFormValid"
+          (click)="onSubmit()">
+            Registrar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

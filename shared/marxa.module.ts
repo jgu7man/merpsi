@@ -13,13 +13,13 @@ import { MxIndexModule } from "@marxa/index";
 // import { MxSliderModule } from "@marxa/slider";
 import { MxStorageModule } from '@marxa/storage';
 // import { MxSocialShareModule } from "@marxa/social-share";
-// import { MxCrudPanelModule } from '@marxa/crud-panel';
+ import { MxCrudPanelModule } from '@marxa/crud-panel';
 
 @NgModule({
   exports: [
     MxAuthModule,
     MxCacheModule,
-    // MxCrudPanelModule,
+    MxCrudPanelModule,
     MxColorsModule,
     MxResponsiveModule,
     MxDateTimeModule,

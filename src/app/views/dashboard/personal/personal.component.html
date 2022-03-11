@@ -1,0 +1,26 @@
+<div class="container">
+  <div class="row">
+    <div class="col s12">
+      <mx-crud-panel
+      listName="Personal"
+      [selectTemplate]="select"
+      [addTemplate]="add"
+      [list]="personal"
+      [height_vh]="100"
+      itemSelector="name"
+      #crudPanel
+      (onDelete)="onDeleteItem($event)"
+       >
+
+        <ng-template #add>
+          <app-set-usuario (submited)="crudPanel.closeAll()" ></app-set-usuario>
+        </ng-template>
+
+        <ng-template #select let-user="item" >
+          <app-set-usuario (submited)="crudPanel.closeAll()" [usuario]="user"></app-set-usuario>
+        </ng-template>
+      </mx-crud-panel>
+    </div>
+  </div>
+</div>
+    

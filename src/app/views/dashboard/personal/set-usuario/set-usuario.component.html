@@ -1,0 +1,106 @@
+<div class="container">
+  <div class="row" *ngIf="usuario.rol == 'revoke'">
+    <mat-toolbar color="warn">
+      <mat-toolbar-row>
+        <p class="white-text">
+          Este usuario tiene denegado el acceso a la plataforma
+        </p>
+      </mat-toolbar-row>
+
+    </mat-toolbar>
+  </div>
+  <div class="row">
+    <div class="col s12 m8">
+      <form class="row" #usuarioForm="ngForm">
+        <mat-form-field appearance="outline" class="col s12">
+          <mat-label>Nombre</mat-label>
+          <input
+          type="text"
+          matInput
+          name="nombre"
+          [(ngModel)]="usuario.name"
+          #nombre="ngModel"
+          [required]="true"
+          >
+        </mat-form-field>
+        <!-- <mat-form-field appearance="outline" class="col s12">
+          <mat-label>Apellido</mat-label>
+          <input
+          type="text"
+          matInput
+          name="apellido"
+          [(ngModel)]="usuario.apellido"
+          #apellido="ngModel"
+          [required]="true"
+          >
+        </mat-form-field> -->
+        <mat-form-field appearance="outline" class="col s12">
+          <mat-label>Email</mat-label>
+          <input
+          type="email"
+          matInput
+          name="email"
+          [(ngModel)]="usuario.email"
+          #email="ngModel"
+          [required]="true"
+          >
+        </mat-form-field>
+        <!-- <mat-form-field appearance="outline" class="col s12" *ngIf="isNew">
+          <mat-label>Contraseña</mat-label>
+          <input
+          [type]="hide ? 'password' : 'text'"
+          matInput
+          name="password"
+          [(ngModel)]="usuario.password"
+          #password="ngModel"
+          [required]="true"
+          >
+          <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
+            <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+          </button>
+        </mat-form-field> -->
+        <mat-form-field appearance="outline" class="col s12">
+          <mat-label>Rol</mat-label>
+          <mat-select [required]="true" placeholder="Rol del usuario" [(ngModel)]="usuario.rol" name="rol">
+            <mat-option *ngFor="let rol of roles" [value]="rol">{{rol}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="col s12" *ngIf="usuario.rol != 'administrador'">
+          <mat-label>Sede</mat-label>
+          <mat-select required placeholder="Sede" [(ngModel)]="usuario.sede" name="sede">
+            <mat-option *ngFor="let sede of sedes$ | async" [value]="sede.id">
+              {{sede.referencia}} <span class="small-text">({{sede.tipo}})</span>
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </form>
+    </div>
+    <div class="col s12 m4">
+      <p *ngIf="usuario.registered">
+        Registrado: <span class="data-text"> {{usuario.registered | mxTimestamp | date: 'short'}} </span>
+      </p>
+      <p *ngIf="usuario.lastAccess">
+        Último acceso: <span class="data-text"> {{usuario.lastAccess | mxTimestamp | date: 'short'}} </span>
+      </p>
+      <button mat-raised-button color='accent'
+      (click)="onRestore()"
+      *ngIf="!isNew"
+      >Cambiar contraseña</button>
+      <button mat-raised-button color='primary'
+      (click)="onSubmit()"
+      [disabled]="usuarioForm.invalid || usuarioForm.pristine"
+      >Guardar</button>
+    </div>
+  </div>
+  <div class="row" *ngIf="usuario.rol == 'revoke'">
+    <mat-toolbar>
+      <mat-toolbar-row>
+        <p>
+          Para dar accesos de nuevo, asígnale un rol. <br>
+          Para borrarla contacta con Jorge o visita <a href="https://console.firebase.google.com/u/0/project/tiendalasmotos/authentication/users" target="_blank">Firebase Console</a> con la cuenta de <b>lasmotosauteco@gmail.com</b>.
+        </p>
+      </mat-toolbar-row>
+    </mat-toolbar>
+  </div>
+</div>
