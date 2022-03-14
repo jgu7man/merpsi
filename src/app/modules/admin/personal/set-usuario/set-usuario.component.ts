@@ -2,11 +2,11 @@ import { EventEmitter, Input, Output } from '@angular/core';
 import { Component, OnInit } from '@angular/core';
 import { MxAuth } from '@marxa/auth';
 import { Observable } from 'rxjs';
-import { ManagerModel } from 'src/app/models/manager.model';
+import { ManagerModel } from 'src/app/modules/admin/personal/manager.model';
 import { iUsuario, ROL, UsuarioModel } from 'src/app/models/personal.model';
-import { iSede } from 'src/app/models/sede.model';
-import { PersonalService } from 'src/app/services/personal.service';
-import { SedesService } from 'src/app/services/sedes.service';
+import { iSede } from 'src/app/modules/admin/sedes/sede.model';
+import { PersonalService } from 'src/app/modules/admin/personal/personal.service';
+import { SedesService } from 'src/app/modules/admin/sedes/sedes.service';
 
 @Component({
   selector: 'app-set-usuario',

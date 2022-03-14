@@ -1,5 +1,5 @@
 import firebase from 'firebase/app'
-import { iSede } from './sede.model'
+import { iSede } from '../sedes/sede.model'
 
 /** Usuarios que van a administrar/consumir el sistema */
 export class ManagerModel {

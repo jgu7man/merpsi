@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { iCountry } from 'src/app/models/country.model';
-import { iManagerRegist } from 'src/app/models/manager.model';
+import { iManagerRegist } from 'src/app/modules/admin/personal/manager.model';
 import { AdminService } from 'src/app/services/admin.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { BusinessService } from 'src/app/services/business.service';

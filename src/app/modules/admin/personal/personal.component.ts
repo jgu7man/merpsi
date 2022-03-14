@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { ManagerModel } from 'src/app/models/manager.model';
+import { ManagerModel } from 'src/app/modules/admin/personal/manager.model';
 import { UsuarioModel } from 'src/app/models/personal.model';
-import { PersonalService } from 'src/app/services/personal.service';
+import { PersonalService } from 'src/app/modules/admin/personal/personal.service';
 import { DeleteUsuarioDialog } from './delete-usuario/delete-usuario.dialog';
 
 @Component({

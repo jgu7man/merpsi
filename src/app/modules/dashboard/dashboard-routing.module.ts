@@ -1,20 +1,17 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { DashboardComponent } from './dashboard.component';
-import { PersonalComponent } from './personal/personal.component';
-import { SedesComponent } from './sedes/sedes.component';
 
 const routes: Routes = [
-{ path: '', redirectTo: 'empresa' },
-{ path: 'empresa', component: DashboardComponent },
+// { path: '', redirectTo: 'empresa' },
+{ path: '', component: DashboardComponent },
 {
-  path: 'empresa/:id',
+  path: ':eid',
   component: DashboardComponent,
   children: [
-    { path: 'admin/personal', component: PersonalComponent },
-    { path: 'admin/sedes', component: SedesComponent },
+    { path: 'admin', loadChildren: () => import('../admin/admin.module').then(m => m.AdminModule) },
   ]
-}
+  },
 ];
 
 @NgModule({

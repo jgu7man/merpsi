@@ -5,8 +5,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { iUploadedFile } from '@marxa/storage';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
-import { iSede, SedeModel } from 'src/app/models/sede.model';
-import { SedesService } from 'src/app/services/sedes.service';
+import { iSede, SedeModel } from 'src/app/modules/admin/sedes/sede.model';
+import { SedesService } from 'src/app/modules/admin/sedes/sedes.service';
 
 @Component({
   selector: 'app-set-sede',

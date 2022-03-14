@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Observable } from 'rxjs';
-import { iSede, SedeModel } from 'src/app/models/sede.model';
-import { SedesService } from 'src/app/services/sedes.service';
+import { iSede, SedeModel } from 'src/app/modules/admin/sedes/sede.model';
+import { SedesService } from 'src/app/modules/admin/sedes/sedes.service';
 import { DeleteSedeDialog } from './delete-sede/delete-sede.dialog';
 
 @Component({

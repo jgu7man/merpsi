@@ -4,7 +4,7 @@ import { MxCache } from '@marxa/devkit';
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import Swal from 'sweetalert2';
-import { iSede } from '../models/sede.model';
+import { iSede } from './sede.model';
 
 @Injectable({
   providedIn: 'root'

@@ -8,9 +8,9 @@ import { MxCache, MxResponsive } from '@marxa/devkit';
 import { UsuarioModel } from 'src/app/models/personal.model';
 import { Subscription } from 'rxjs';
 import { Output } from '@angular/core';
-import { PersonalService } from 'src/app/services/personal.service';
+import { PersonalService } from 'src/app/modules/admin/personal/personal.service';
 import { AuthService } from 'src/app/services/auth.service';
-import { iManager } from 'src/app/models/manager.model';
+import { iManager } from 'src/app/modules/admin/personal/manager.model';
 
 @Component({
   selector: 'app-sidebar',
@@ -49,11 +49,12 @@ export class SidebarComponent implements OnInit, OnDestroy {
     this.userSubscription = this.auth.user$.pipe(
       mergeMap(() => this.auth.userState$)
     ).subscribe(user => {
-      console.log(user)
-      let eid = this.route.snapshot.params.id
+      console.log( this.route.snapshot.params )
+      let eid = this.route.snapshot.params.eid
+      console.log( eid )
       if (!eid) {
         if (user?.businesses.length==1){
-          this._router.navigate(['/d/empresa',user.businesses[0]])
+          this._router.navigate(['/d',user.businesses[0]])
         }
       }else{
         this._cache.updateData('eid', eid)

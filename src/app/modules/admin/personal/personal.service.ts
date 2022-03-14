@@ -7,9 +7,9 @@ import { MxAlert, MxCache } from '@marxa/devkit';
 import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import Swal from 'sweetalert2';
-import { ManagerModel } from '../models/manager.model';
-import { UsuarioModel } from '../models/personal.model';
-import { EmailService } from './email.service';
+import { ManagerModel } from './manager.model';
+import { UsuarioModel } from '../../../models/personal.model';
+import { EmailService } from '../../../services/email.service';
 
 @Injectable({
   providedIn: 'root'

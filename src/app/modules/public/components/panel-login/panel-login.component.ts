@@ -6,7 +6,7 @@ import firebase from 'firebase/app'
 import { take, takeWhile } from "rxjs/operators";
 import { Router } from '@angular/router';
 import { AngularFireAuth } from '@angular/fire/auth';
-import { PersonalService } from 'src/app/services/personal.service';
+import { PersonalService } from 'src/app/modules/admin/personal/personal.service';
 import { UsuarioModel } from 'src/app/models/personal.model';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { MxRestorePasswordLabels } from '@marxa/auth/lib/models/labels.model';
