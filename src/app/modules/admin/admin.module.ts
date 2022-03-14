@@ -9,15 +9,23 @@ import { SetUsuarioComponent } from './personal/set-usuario/set-usuario.componen
 import { SedesComponent } from './sedes/sedes.component';
 import { SetSedeComponent } from './sedes/set-sede/set-sede.component';
 import { DeleteSedeDialog } from './sedes/delete-sede/delete-sede.dialog';
+import { SharedModule } from 'shared/shared.module';
 
 
 @NgModule({
   declarations: [
-    AdminComponent
+    AdminComponent,
+    PersonalComponent,
+    DeleteUsuarioDialog,
+    SetUsuarioComponent,
+    SedesComponent,
+    SetSedeComponent,
+    DeleteSedeDialog
   ],
   imports: [
     CommonModule,
-    AdminRoutingModule
+    AdminRoutingModule,
+    SharedModule
   ]
 })
 export class AdminModule { }
