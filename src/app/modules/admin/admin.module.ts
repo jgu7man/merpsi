@@ -20,7 +20,8 @@ import { SharedModule } from 'shared/shared.module';
     SetUsuarioComponent,
     SedesComponent,
     SetSedeComponent,
-    DeleteSedeDialog
+    DeleteSedeDialog,
+    
   ],
   imports: [
     CommonModule,

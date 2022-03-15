@@ -27,7 +27,6 @@ export class PersonalService {
   ) { }
 
   getAll(): Observable<ManagerModel[]> {
-    console.log('paso por aqui :p')
     return this._afs.collection<ManagerModel>(`businesses/${this.businessCRF}/managers`).valueChanges()
       .pipe(
         map(list => {
@@ -49,7 +48,6 @@ export class PersonalService {
     try {
       
       let uid_email = user.uid ? user.uid : user.email
-      console.log(uid_email)
       await this._afs.collection<ManagerModel>(`businesses/${this.businessCRF}/managers`).doc(uid_email)
         .update({ ...user })
       Swal.fire('Usuario actualizado')

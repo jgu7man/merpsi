@@ -13,13 +13,14 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { GenericRegistFormComponent } from './components/generic-regist-form/generic-regist-form.component';
 import { NgxMaskModule, IConfig  } from 'ngx-mask';
 import { SharedModule } from 'shared/shared.module';
+import { ProviderComponent } from './modules/compras/provider/provider.component';
 const maskConfig: Partial<IConfig> = {
   validation: false,
 };
 
 @NgModule({
   declarations: [
-    AppComponent,
+    AppComponent
   ],
   imports: [
     BrowserModule,

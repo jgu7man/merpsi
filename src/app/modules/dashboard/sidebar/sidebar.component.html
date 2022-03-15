@@ -147,6 +147,24 @@
           > -->
         </div>
     </mat-expansion-panel>
+    <!-- COMPRAS -->
+    <mat-expansion-panel *ngIf="user.rol == 'administrador' || user.rol == 'propietario'" [expanded]="onActive('finanzas')">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <i class="fas fa-wallet"></i>
+          Compras
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+        <div class="collection">
+          <a
+            class="collection-item"
+            [routerLink]="['compras/proveedores']"
+            routerLinkActive="active"
+            >Proveedores</a
+          >
+        </div>
+    </mat-expansion-panel>
+
 
     <!-- ADMINISTRACIÓN -->
     <mat-expansion-panel [expanded]="onActive('admin')">

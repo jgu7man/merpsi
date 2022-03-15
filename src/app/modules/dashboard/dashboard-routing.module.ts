@@ -10,6 +10,7 @@ const routes: Routes = [
   component: DashboardComponent,
   children: [
     { path: 'admin', loadChildren: () => import('../admin/admin.module').then(m => m.AdminModule) },
+    { path: 'compras', loadChildren: () => import('../compras/compras.module').then(m => m.ComprasModule) },
   ]
   },
 ];

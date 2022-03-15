@@ -1,13 +1,10 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { ProviderComponent } from '../compras/provider/provider.component';
-import { PersonalComponent } from './personal/personal.component';
-import { SedesComponent } from './sedes/sedes.component';
 
 const routes: Routes = [
-  { path: '', redirectTo: 'personal' },
-  { path: 'personal', component: PersonalComponent },
-  { path: 'sedes', component: SedesComponent },
+  { path: '', redirectTo: 'proveedores' },
+  { path: 'proveedores', component: ProviderComponent },
 ];
 
 @NgModule({
