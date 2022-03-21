@@ -1,0 +1,42 @@
+.codigo-input {
+  margin-bottom: 2em;
+}
+
+.has-hint {
+  margin-bottom: 1em;
+}
+
+#almacenes-container{
+  border-top: 1px solid #ccc;
+  padding: 1em 0;
+  position: relative;
+  #almacenes-label{
+    position: absolute;
+    top: -1em;
+    left: 1.5em;
+    background: white;
+    padding: 0 7.5px;
+  }
+}
+
+::ng-deep{
+  .almacen-container{
+    border-radius: 5px;
+    border: 2px solid #00325c;
+    padding: 0 !important;
+    mat-expansion-panel-header {
+      background: #00325c;
+      color: white;
+      border-radius: 0 !important;
+      .mat-expansion-indicator::after{
+        color: aliceblue;
+      }
+      &:focus, &:hover {
+        background: #005daa !important;
+      }
+      &.mat-expanded {
+        margin-bottom: 1em;
+      }
+    }
+  }
+}

@@ -1,0 +1,48 @@
+.table-row {
+  transition: all 0.3s;
+  cursor: pointer;
+  &:hover{
+    background: #ececec;
+  }
+}
+
+
+#productos-container {
+  height: 100vh;
+  mat-drawer {
+    height: 100vh
+  }
+  #producto-panel {
+    width: 100%;
+    height:100vh;
+  }
+  #lista-productos{
+    min-height: 80vh;
+    width: 100%;
+    overflow-x: auto;
+    table {
+      min-width: 800px;
+    }
+  }
+}
+
+td.mat-column-star {
+  width: 20px;
+  padding-right: 8px;
+}
+
+th.mat-column-position, td.mat-column-position {
+  padding-left: 8px;
+}
+
+th.mat-header-cell, td.mat-cell, td.mat-footer-cell {
+  padding: 0 .5em;
+}
+
+.mat-table-sticky-border-elem-right {
+  border-left: 1px solid #ccc;
+}
+
+.mat-table-sticky-border-elem-left {
+  border-right: 1px solid #ccc;
+}

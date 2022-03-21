@@ -1,0 +1,18 @@
+<mat-dialog-content>
+  <mx-scanner
+  [enabled]="scannerUI.enabled || true"
+  [title]="scannerUI.title || false"
+  [showToggleButtons]="scannerUI.showToggleButtons || false"
+  [vwlargeSize]="scannerUI.vwlargeSize || 33"
+  [vwsmallSize]="scannerUI.vwsmallSize || 75"
+  [preventShadow]="scannerUI.preventShadow || true"
+  (scanned)="dialog.close($event)"
+  ></mx-scanner>
+</mat-dialog-content>
+<mat-dialog-actions
+style="display: flex; justify-content: center;">
+    <button mat-raised-button
+    color="accent"
+    (click)="dialog.close()"
+    >Cerrar</button>
+</mat-dialog-actions>

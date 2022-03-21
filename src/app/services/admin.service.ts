@@ -18,9 +18,7 @@ export class AdminService {
       return result?.list || []
 
     } catch (error) {
-
       console.error(error)
-
       return []
     }
   }

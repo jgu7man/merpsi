@@ -1,6 +1,6 @@
 @use '~@angular/material' as mat;
 @include mat.core();
-@import '~@marxa/devkit/styles/responsive.scss';
+@import 'libs/@marxa/devkit/styles/responsive.scss';
 
 $merpsi-primary: mat.define-palette(mat.$indigo-palette);
 $merpsi-accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);

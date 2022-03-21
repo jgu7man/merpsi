@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
-import { MxAlert } from '@marxa/devkit';
+import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
 import { filter, map, takeWhile } from 'rxjs/operators';
 import Swal from 'sweetalert2';
 import { iMail, iMailResponse } from '../models/email.model';

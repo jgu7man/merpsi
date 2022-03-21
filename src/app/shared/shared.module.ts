@@ -4,6 +4,8 @@ import { FirebaseModule } from './firebase.module';
 import { MaterialModule } from './material.module';
 import { MarxaModule } from './marxa.module';
 import { MxCrudPanelModule } from '@marxa/crud-panel';
+import { NgxMaskModule } from 'ngx-mask';
+import { PipesModule } from '../pipes/pipes.module';
 
 
 
@@ -13,7 +15,12 @@ import { MxCrudPanelModule } from '@marxa/crud-panel';
     FormsModule,
     FirebaseModule,
     MaterialModule,
-    MarxaModule
+    MarxaModule,
+    NgxMaskModule,
+    PipesModule
+  ],
+  imports: [
+    PipesModule
   ]
 })
 export class SharedModule { }

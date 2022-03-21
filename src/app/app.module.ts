@@ -4,23 +4,18 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { FirebaseModule } from 'shared/firebase.module';
-import { MaterialModule } from 'shared/material.module';
-import { MarxaModule } from 'shared/marxa.module';
 import { AngularFireModule } from '@angular/fire';
 import { environment } from 'src/environments/environment';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { GenericRegistFormComponent } from './components/generic-regist-form/generic-regist-form.component';
 import { NgxMaskModule, IConfig  } from 'ngx-mask';
-import { SharedModule } from 'shared/shared.module';
-import { ProviderComponent } from './modules/compras/provider/provider.component';
+import { SharedModule } from './shared/shared.module';
+
 const maskConfig: Partial<IConfig> = {
   validation: false,
 };
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
   ],
   imports: [
     BrowserModule,

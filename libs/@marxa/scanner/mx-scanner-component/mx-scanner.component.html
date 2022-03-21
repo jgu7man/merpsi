@@ -1,0 +1,85 @@
+<mat-card [ngClass]="{'mat-elevation-z0': preventShadow}">
+  <mat-card-header *ngIf="title">
+    <!-- <mat-card-title class="center" >
+      <i class="fas fa-camera fa-2x"></i>
+      <br>
+      Escaner QR
+    </mat-card-title> -->
+    <mat-card-subtitle class="center">
+      <ng-container *ngIf="enabled; else push">
+      Enfoca el código para ser escanerado.
+      </ng-container>
+      <ng-template #push>
+      Toca el CÓDIGO para empezar a usar el escaner
+      </ng-template>
+    </mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+      <ng-container *ngIf="enabled; else pause">
+        <div class="scanner-box"
+        [style.width.vw]="small ? vwsmallSize : vwlargeSize"
+        [style.height.vw]="small ? vwsmallSize : vwlargeSize"
+        >
+          <div id="scanner-container">
+            <zxing-scanner
+              #scanner
+              (scanSuccess)="scanSuccessHandler($event)"
+            >
+            </zxing-scanner>
+            <!-- <qr-scanner
+              #ngScanner
+              [debug]="false"
+              [updateTime]="500">
+            </qr-scanner> -->
+          </div>
+          <div class="turn-camera-btn"
+          *ngIf="videoDevices.length > 1"
+
+          >
+            <button mat-mini-fab color="accent"
+            (click)="turnCamera()" >
+              <i class="fas fa-share" [ngClass]="{'turned': turned}"></i>
+            </button>
+          </div>
+          <div class="box-corner a"></div>
+          <div class="box-corner b"></div>
+          <div class="box-corner c"></div>
+          <div class="box-corner d"></div>
+        </div>
+
+      </ng-container>
+      <ng-template #pause>
+        <div id="scanner-paused"
+        (click)="startNgScanner()"
+        [style.height.vw]="small ? vwsmallSize : vwlargeSize"
+        >
+          <img src="https://firebasestorage.googleapis.com/v0/b/marxa-d.appspot.com/o/frame.png?alt=media&token=0f5d79a5-5bb1-4700-b93e-9332e55d7e38" alt="Marxa Digital QR">
+        </div>
+      </ng-template>
+  </mat-card-content>
+  <mat-card-actions
+  *ngIf="showToggleButtons"
+  style="display: flex; justify-content: center;">
+  <!-- input button -->
+  <ng-container *ngIf="enabled; else input">
+    <button mat-raised-button
+    (click)="turnOff()"
+    color="primary">
+      <i class="fas fa-pause-circle fa-lg"></i>
+    </button>
+  </ng-container>
+
+  <!-- camera button -->
+  <ng-template #input>
+    <button mat-raised-button
+    (click)="startNgScanner()"
+    color="primary">
+      <i class="fas fa-camera fa-lg"></i>
+    </button>
+    </ng-template>
+  </mat-card-actions>
+</mat-card>
+
+
+
+

@@ -3,14 +3,17 @@ import { RouterModule, Routes } from '@angular/router';
 import { DashboardComponent } from './dashboard.component';
 
 const routes: Routes = [
-// { path: '', redirectTo: 'empresa' },
-{ path: '', component: DashboardComponent },
+// { path: '', component: DashboardComponent },
 {
-  path: ':eid',
+  path: '',
   component: DashboardComponent,
   children: [
     { path: 'admin', loadChildren: () => import('../admin/admin.module').then(m => m.AdminModule) },
-    { path: 'compras', loadChildren: () => import('../compras/compras.module').then(m => m.ComprasModule) },
+    { path: 'compras', loadChildren: () => import( '../compras/compras.module' ).then( m => m.ComprasModule ) },
+    { path: 'products', loadChildren: () => import('../inventory/inventory.module').then(m => m.InventoryModule) },
+    { path: 'sales', loadChildren: () => import('../sales/sales.module').then(m => m.SalesModule) },
+    { path: 'clients', loadChildren: () => import('../clients/clients.module').then(m => m.ClientsModule) },
+    { path: 'finances', loadChildren: () => import('../finances/finances.module').then(m => m.FinancesModule) },
   ]
   },
 ];

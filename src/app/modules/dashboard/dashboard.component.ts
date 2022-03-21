@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatDrawer } from '@angular/material/sidenav';
 import { NavigationEnd, Router } from '@angular/router';
-import { MxResponsive } from '@marxa/devkit';
+import { MxResponsive } from 'libs/@marxa/devkit/responsive/mx-responsive.service';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 

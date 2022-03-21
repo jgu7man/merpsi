@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
-import { MxAlert, MxCache } from '@marxa/devkit';
+import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
+import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import { Observable, of } from 'rxjs';
 import { map,catchError, tap } from 'rxjs/operators';
 import { iProvider, ProviderModel } from 'src/app/models/provider.model';

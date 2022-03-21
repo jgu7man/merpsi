@@ -24,6 +24,8 @@
   }
   .collection {
       border-radius: 0;
+      display: flex;
+      flex-direction: column;  
   }
   ::ng-deep {
     .mat-accordion .mat-expansion-panel:first-of-type,
@@ -42,7 +44,7 @@
         }
     }
     .mat-expansion-panel-body {
-        padding: 0 !important;
+      padding: 0;
     }
     .mat-expansion-indicator::after {
         color: #fff;
@@ -70,7 +72,6 @@
   background: #005daa;
   width: 100%;
   height: 10vh;
-  padding: .5em 3em;
   position: relative;
   img {
     width:100%;
@@ -100,4 +101,13 @@
   ::ng-deep mx-version-notifier small {
     font-size: 75%;
   }
+}
+
+
+mat-icon {
+  margin-right: 10px !important;
+}
+
+a { 
+  text-decoration: none !important;
 }

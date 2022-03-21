@@ -11,25 +11,24 @@ import { AuthService } from 'src/app/services/auth.service';
 export class RegistManagerComponent implements OnInit {
   params: any;
 
-    /** 
-   * Objeto que recibe los datos del manager que registra la empresa
-   *
-   * @type {iManagerRegist | undefined}
-   */
-     public register?: iManagerRegist
-     /**
-      * Adminsitra la validación del formulario de manager
-      *
-      * @type {boolean}
-      * */
+  /** 
+ * Objeto que recibe los datos del manager que registra la empresa
+ *
+ * @type {iManagerRegist | undefined}
+ */
+  public register?: iManagerRegist
+  /**
+  * Adminsitra la validación del formulario de manager
+  *
+  * @type {boolean}
+  * */
   public managerFormValid: boolean = false
 
   constructor(
-    private _ruta: ActivatedRoute,
+    private _route: ActivatedRoute,
     private _auth: AuthService
   ) { 
-    this.params = this._ruta.snapshot.queryParams
-    console.log(this.params)
+    this.params = this._route.snapshot.queryParams
   }
 
   ngOnInit(): void {

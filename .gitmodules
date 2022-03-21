@@ -1,0 +1,3 @@
+[submodule "libs/@marxa/devkit"]
+	path = libs/@marxa/devkit
+	url = https://github.com/jgu7man/mx-devkit

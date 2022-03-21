@@ -3,13 +3,14 @@ import { AngularFireAuth } from '@angular/fire/auth';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
 import { MxAuth } from '@marxa/auth';
-import { MxAlert, MxCache } from '@marxa/devkit';
 import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import Swal from 'sweetalert2';
 import { ManagerModel } from './manager.model';
 import { UsuarioModel } from '../../../models/personal.model';
 import { EmailService } from '../../../services/email.service';
+import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
+import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 
 @Injectable({
   providedIn: 'root'

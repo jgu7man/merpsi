@@ -1,38 +1,48 @@
-import { Component, OnInit } from '@angular/core';
-import { MxAuth, MxLoginFields, RestorePasswordDialog } from '@marxa/auth';
-import { MxAlert, MxCache } from "@marxa/devkit";
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { MxLoginFields, RestorePasswordDialog } from '@marxa/auth';
 import { MatDialog } from "@angular/material/dialog";
-import firebase from 'firebase/app'
-import { take, takeWhile } from "rxjs/operators";
+import { distinctUntilChanged } from "rxjs/operators";
 import { Router } from '@angular/router';
-import { AngularFireAuth } from '@angular/fire/auth';
-import { PersonalService } from 'src/app/modules/admin/personal/personal.service';
-import { UsuarioModel } from 'src/app/models/personal.model';
-import { AngularFirestore } from '@angular/fire/firestore';
 import { MxRestorePasswordLabels } from '@marxa/auth/lib/models/labels.model';
-import Swal from 'sweetalert2';
 import { AuthService } from 'src/app/services/auth.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   templateUrl: './panel-login.component.html',
   styleUrls: ['./panel-login.component.scss']
 })
-export class PanelLoginComponent implements OnInit {
+export class PanelLoginComponent implements OnInit, OnDestroy {
+
+  /** Suscripción de los cambios de autenticación */
+  private _authSubscription: Subscription
 
   constructor(
     private _dialog: MatDialog,
-    private _authService: AuthService
-  ) {  }
+    private _auth: AuthService,
+    private _router: Router
+  ) {  
+
+    /* Suscripción a los cambios de estado de autenticación */
+    this._authSubscription = this._auth.authUser$.pipe(
+      distinctUntilChanged( ( x, y ) => JSON.stringify( x ) == JSON.stringify( y ))
+    ).subscribe( user => {
+      if ( user ) {
+        if ( user.businesses.length == 1 ) {
+          this._router.navigate(['business', user.businesses[0]])
+        } else {
+          this._router.navigate(['/profile', user.uid])
+        }
+      }
+    } )
+
+  }
 
   ngOnInit(): void {
   }
 
   async onSubmit(manager: MxLoginFields) {
     console.log(manager);
-    
-    this._authService.login(manager)
-    
-
+    this._auth.login(manager)
   }
 
   onRestore() {
@@ -43,6 +53,10 @@ export class PanelLoginComponent implements OnInit {
         confirmationMessage: 'Un mensaje fue enviado a tu correo'
       }
     })
+  }
+
+  ngOnDestroy() {
+    this._authSubscription.unsubscribe()
   }
 
 }

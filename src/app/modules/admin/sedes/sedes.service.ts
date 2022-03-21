@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
-import { MxCache } from '@marxa/devkit';
+import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import Swal from 'sweetalert2';

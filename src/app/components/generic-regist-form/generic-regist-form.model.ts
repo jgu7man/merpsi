@@ -1,9 +1,19 @@
+import { AbstractControl, FormGroup } from "@angular/forms"
+
 export interface iFieldLabels {
-  'email': iFieldLabel,
-  'name': iFieldLabel,
-  'password': iFieldLabel,
-  'confirmPwd': iFieldLabel,
-  'acept': iFieldLabel,
+  email: iFieldLabel;
+  name: iFieldLabel;
+  password: iFieldLabel;
+  confirmPwd: iFieldLabel;
+  acept: iFieldLabel;
+}
+
+export interface iRegist {
+  email: string;
+  name: string;
+  password: string;
+  confirmPwd: string;
+  acept: boolean;
 }
 
 export interface iFieldLabel {
@@ -16,7 +26,17 @@ export interface iErrorMessage {
   message: string
 }
 
-export interface iRegistFormChanges {values: any, valid: boolean}
+export interface iRegistFormChanges { values: any, valid: boolean }
+export interface RegistForm extends FormGroup {
+  value: iRegist;
+  controls: {
+    email: AbstractControl;
+    name: AbstractControl;
+    password: AbstractControl;
+    confirmPwd: AbstractControl;
+    acept: AbstractControl;
+  };
+}
 
 export const defaultLabelsValue: iFieldLabels = {
   email: {

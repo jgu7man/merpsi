@@ -1,0 +1,29 @@
+<ng-container [ngSwitch]="type">
+
+  <ng-container *ngSwitchCase="'plain'">
+    <button mat-button [color]="color"
+    (click)="openScanner()"
+    >
+      {{label}}
+    </button>
+  </ng-container>
+
+  
+  <ng-container *ngSwitchCase="'raised'">
+    <button mat-raised-button [color]="color"
+    (click)="openScanner()"
+    >
+      {{label}}
+    </button>
+  </ng-container>
+
+  <ng-container *ngSwitchCase="'icon'">
+    <button mat-icon-button [color]="color"
+    (click)="openScanner()"
+    >
+      {{label}}
+    </button>
+  </ng-container>
+
+
+</ng-container>
