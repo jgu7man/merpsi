@@ -1,7 +1,7 @@
 import firebase from 'firebase/app'
 export class BusinessModel {
     /** Fecha en la que se registro la empresa */
-    public registered: Date | firebase.firestore.Timestamp
+    public registered: Date 
 
     constructor(
         /** Clave de Registro Fiscal */
@@ -9,7 +9,7 @@ export class BusinessModel {
         public country: string,
         public name: string,
         /**Razon social */
-        public bussinesName: string,
+        public businessName: string,
         public type: TAXPAYER_TYPE
     ) {
         this.registered = new Date()
@@ -17,7 +17,7 @@ export class BusinessModel {
 
 }
 
-export interface iBusiness extends BusinessModel{
+export interface iBusiness extends Omit<BusinessModel,'registered'>{
     readonly registered : firebase.firestore.Timestamp
     readonly CRF: string
 }

@@ -10,7 +10,11 @@ export class ProviderModel {
       public country: string,
       public name: string,
       /**Razon social */
+<<<<<<< HEAD
       public bussinesName: string,
+=======
+      public businessName: string,
+>>>>>>> mari
       public type: TAXPAYER_TYPE,
       public businessRef: firebase.firestore.DocumentReference | null
     ) {
@@ -19,6 +23,11 @@ export class ProviderModel {
 
 }
 
+<<<<<<< HEAD
 interface iProvider extends Omit< iBusiness, 'registered' >{
   businessRef: firebase.firestore.DocumentReference
+=======
+export interface iProvider extends Omit< ProviderModel, 'registered' >{
+ 
+>>>>>>> mari
 }

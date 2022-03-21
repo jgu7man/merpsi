@@ -1,0 +1,112 @@
+<div class="container">
+  <div class="row">
+    <div class="col s12">
+      <div class="container">
+        <div class="row">
+          <div class="col s12">
+            <!-- PAIS -->
+            <form  class="row" [formGroup]="providerForm">
+                <!-- CRF -->
+                <mat-form-field appearance="outline" class="col s12">
+                  <mat-label>CRF</mat-label>
+                  <input
+                  matInput
+                  type="text"
+                  name="name"
+                  formControlName="CRF"
+                  mask="S-00000000-0"
+                  (blur)="searchProvider(providerForm.value.CRF)"
+                  >
+                  <mat-error *ngIf="providerForm.hasError('required', 'CRF')">
+                    Este dato es necesario
+                  </mat-error>
+                  <mat-error *ngIf="providerForm.hasError('caca', 'CRF')">
+                    Esto es caca
+                  </mat-error>
+                </mat-form-field>
+                <ng-container *ngIf="showForm == true">
+              <!-- PAIS -->
+              <mat-form-field class="col s12" appearance="outline">
+                <mat-label>Pais</mat-label>
+                <mat-select placeholder="Selecciona un país"
+                formControlName="country" 
+                name="country"
+                required
+                (selectionChange)="countrySelected($event)">
+                  <mat-option *ngFor="let country of countryList" [value]="country.alpha3">
+                    {{country.name}}
+                  </mat-option>
+                </mat-select>
+                <mat-error *ngIf="providerForm.hasError('required', 'country')">
+                  Pais es necesario
+                </mat-error>
+              </mat-form-field>
+      
+              <!-- TIPO DE PERSONA -->
+              <ng-container *ngIf="selectedCountry">
+      
+                <div class="col s12">
+                  <mat-button-toggle-group  name="fontStyle" aria-label="Font Style"
+                  formControlName="type">
+                    <mat-button-toggle [value]="selectedCountry.natural_format.name">
+                      {{selectedCountry.natural_format.name}}
+                    </mat-button-toggle>
+                    <mat-button-toggle [value]="selectedCountry.legal_format.name">
+                      {{selectedCountry.legal_format.name}}
+                    </mat-button-toggle>
+                  </mat-button-toggle-group>
+                </div>
+      
+                <ng-container *ngIf="providerForm.controls.type.value as selectedType">
+                  
+      
+                  <!-- NOMBRE COMERCIAL -->
+                  <mat-form-field appearance="outline" class="col s12">
+                    <mat-label>Nombre comercial</mat-label>
+                    <input
+                    matInput
+                    type="text"
+                    name="name"
+                    formControlName="name"
+                    required
+                    >
+                    <mat-error *ngIf="providerForm.hasError('required', 'name')">
+                      Nombre comercial es necesario
+                    </mat-error>
+                  </mat-form-field>
+      
+                  <!-- RAZON SOCIAL -->
+                  <mat-form-field appearance="outline" class="col s12">
+                    <mat-label>Razón Social</mat-label>
+                    <input
+                    matInput
+                    type="text"
+                    name="businessName"
+                    formControlName="businessName"
+                    required
+                    >
+                    <mat-error *ngIf="providerForm.hasError('required', 'businessName')">
+                      Razón Social es necesario
+                    </mat-error>
+                  </mat-form-field> 
+                </ng-container>
+              </ng-container>   
+            </ng-container>      
+            </form>
+
+            <div class="row">
+              <div class="col s12">
+                <button mat-raised-button color="primary" 
+                [disabled]="providerForm.invalid"
+                (click)="onSubmit()">
+                  Registrar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+</div>

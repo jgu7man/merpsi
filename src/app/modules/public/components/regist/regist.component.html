@@ -9,8 +9,9 @@
           <mat-select placeholder="Selecciona un país"
           formControlName="country" 
           name="country"
-          required>
-            <mat-option *ngFor="let country of countryList" [value]="country">
+          required
+          (selectionChange)="countrySelected($event)">
+            <mat-option *ngFor="let country of countryList" [value]="country.alpha3">
               {{country.name}}
             </mat-option>
           </mat-select>
@@ -19,15 +20,15 @@
           </mat-error>
         </mat-form-field>
 
-        <ng-container *ngIf="registForm.controls.country.value as selectedCountry">
+        <ng-container *ngIf="selectedCountry">
 
           <div class="col s12">
             <mat-button-toggle-group  name="fontStyle" aria-label="Font Style"
             formControlName="type">
-              <mat-button-toggle [value]="selectedCountry.natural_format">
+              <mat-button-toggle [value]="selectedCountry.natural_format.name">
                 {{selectedCountry.natural_format.name}}
               </mat-button-toggle>
-              <mat-button-toggle [value]="selectedCountry.legal_format">
+              <mat-button-toggle [value]="selectedCountry.legal_format.name">
                 {{selectedCountry.legal_format.name}}
               </mat-button-toggle>
             </mat-button-toggle-group>

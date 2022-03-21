@@ -20,11 +20,11 @@ export class BusinessService {
    * @return {*}  {(Promise<iBusiness | null>)}
    * @memberof BusinessService
    */
-  async validateBusiness(CRF: string):Promise<iBusiness | null> {
+  async validateBusiness(CRF: string) {
     try{
       let business_result = await this._afs.doc<iBusiness>(`businesses/${CRF}`).ref.get();
        
-      return business_result.exists ? business_result.data()! : null
+      return business_result.exists ? business_result : null
      
     }catch (error: any){
       Swal.fire( {

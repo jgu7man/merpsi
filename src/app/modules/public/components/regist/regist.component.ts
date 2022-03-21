@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatSelectChange } from '@angular/material/select';
 import { iCountry } from 'src/app/models/country.model';
 import { iManagerRegist } from 'src/app/modules/admin/personal/manager.model';
 import { AdminService } from 'src/app/services/admin.service';
@@ -8,6 +9,7 @@ import { BusinessService } from 'src/app/services/business.service';
 import { iRegistFormChanges } from '../../../../components/generic-regist-form/generic-regist-form.model';
 
 @Component({
+  selector: 'app-regist',
   templateUrl: './regist.component.html',
   styleUrls: ['./regist.component.scss']
 })
@@ -40,6 +42,7 @@ export class RegistComponent implements OnInit {
    */
   public managerFormValid: boolean = false
   public countryList: iCountry[] = []
+  selectedCountry: iCountry | undefined;
   constructor (
     private _auth: AuthService,
     private _business: BusinessService,
@@ -50,6 +53,7 @@ export class RegistComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     this.countryList = await this._admin.getCountry()
+
   }
 
   
@@ -75,6 +79,10 @@ export class RegistComponent implements OnInit {
   public async validateCRF( CRF: string ) {
     let validation = CRF ? await this._business.validateBusiness( this.registForm.controls.CRF.value ) : null
     if (validation) this.registForm.controls.CRF.setErrors({exists: true})
+  }
+
+  countrySelected(event: MatSelectChange) {
+    this.selectedCountry = this.countryList.find(c => c.alpha3 == event.value)
   }
 
 }
