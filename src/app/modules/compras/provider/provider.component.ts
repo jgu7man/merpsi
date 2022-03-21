@@ -1,11 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-<<<<<<< HEAD
-=======
 import { MatDialog } from '@angular/material/dialog';
 import { ProviderModel } from 'src/app/models/provider.model';
 import Swal from 'sweetalert2';
 import { ProviderService } from './provider.service';
->>>>>>> mari
 
 @Component({
   selector: 'app-provider',
@@ -14,9 +11,6 @@ import { ProviderService } from './provider.service';
 })
 export class ProviderComponent implements OnInit {
 
-<<<<<<< HEAD
-  constructor() { }
-=======
   providers: ProviderModel[] = [];
   constructor(
     private _provider: ProviderService,
@@ -27,13 +21,10 @@ export class ProviderComponent implements OnInit {
         this.providers = provider
     })
    }
->>>>>>> mari
 
   ngOnInit(): void {
   }
 
-<<<<<<< HEAD
-=======
   async onDeleteItem(item: ProviderModel) {
     Swal.fire({
       text: "Estas seguro de querer eliminar este proveedor?",
@@ -49,5 +40,4 @@ export class ProviderComponent implements OnInit {
     })
   }
 
->>>>>>> mari
 }
