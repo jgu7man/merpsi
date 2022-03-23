@@ -1,0 +1,74 @@
+<form class="row" [formGroup]="productStoredForm">
+ 
+  <!-- STOCK -->
+  <mat-form-field appearance="outline" class="col s6">
+    <mat-label>Existencias</mat-label>
+    <input
+      matInput
+      type="number"
+      name="stock"
+      formControlName="stock"
+      required
+    />
+    <mat-error *ngIf="productStoredForm.hasError('required', 'stock')">
+      Existencias es necesario
+    </mat-error>
+  </mat-form-field>
+ 
+  <!-- UNIT_PRICE -->
+  <mat-form-field appearance="outline" class="col s6">
+    <mat-label>Precio unitario</mat-label>
+    <input
+      matInput
+      type="number"
+      name="unit_price"
+      formControlName="unit_price"
+      required
+    />
+    <mat-error *ngIf="productStoredForm.hasError('required', 'unit_price')">
+      El precio unitario es necesario
+    </mat-error>
+  </mat-form-field>
+  
+  <!-- MINIMO REQUERIDO -->
+  <mat-form-field appearance="outline" class="col s6">
+    <mat-label>Mínimo requerido</mat-label>
+    <input
+      matInput
+      type="number"
+      name="min_requerido"
+      formControlName="min_requerido"
+      required
+    />
+    <mat-error *ngIf="productStoredForm.hasError('required', 'min_requerido')">
+      Mínimo requerido es necesario
+    </mat-error>
+  </mat-form-field>
+  
+  <!-- ESTANTERIAS -->
+  <app-chips-crud
+    [listValue]="bookshelves"
+    (change)="(bookshelves)"
+    label="Estanterías"
+    placeholder="Agrega una palabra clave"
+    hint="Escribe una etiqueta de estantería y después presiona COMA o TAB para que se agreguen a la lista."
+  >
+  </app-chips-crud>
+  
+  <!-- PROVIDER SELECT -->
+  <!-- Proveedor -->
+  <mat-form-field appearance="outline" class="col s3">
+    <mat-label>Proveedor</mat-label>
+    <mat-select
+      placeholder="Placeholder"
+      formControlName="provider"
+      name="provider"
+    >
+      <!-- <mat-option
+            *ngFor="let provider of items"
+            [value]="provider">
+              {{provider.name}}
+          </mat-option> -->
+    </mat-select>
+  </mat-form-field>
+</form>

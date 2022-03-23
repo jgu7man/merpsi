@@ -5,14 +5,24 @@
   [disableClose]="true"
   [position]="'start'"
   [mode]="'side'"
-  [opened]="productoSelected ? true : false">
-    <!-- <app-view-producto *ngIf="productoSelected"
-    [producto]="productoSelected"
-    (close)="closeProductPanel($event)"
-    (deleted)="onDeleted($event)"
-    ></app-view-producto> -->
+  [opened]="(current.product$ | async) ? true : false">
+  
+    <div class="row">
+      
+      <div class="col s12 l2">
+        <button mat-icon-button (click)="productDrawer.close()">
+          <i class="fas fa-times fa-lg"></i>
+        </button>
+      </div>
+
+      <div class="col s12 l10">
+        <app-product-single></app-product-single>
+      </div>
+
+    </div>
 
   </mat-drawer>
+  
   <!-- CATEGORIA PANEL -->
   <mat-drawer #categoriasDrawer="matDrawer"
   [position]="'end'"
@@ -20,15 +30,21 @@
   [opened]="false">
 
   </mat-drawer>
+
+
+  <!-- DRAWER CONTENT -->
   <mat-drawer-content>
 
     <mat-tab-group>
       <mat-tab label="Productos">
         <div class="container list-container">
+
+          <!-- SEARCHER -->
+          <!-- Zona para realizar búsquedas por código en un input o scanner -->
           <div class="row">
 
+            <!-- Bucar por código -->
             <div class="col s6 m4 l3">
-              <!-- Bucar por código -->
               <mat-form-field appearance="outline">
                 <mat-label>Bucar por código</mat-label>
                 <input
@@ -43,67 +59,106 @@
                 </mat-error> -->
               </mat-form-field>
             </div>
+
+            <!-- Buscar por scanner -->
             <div class="col s6 m4 l3">
               <mx-scanner-button 
               [label]="'Escanear mediante código'"
               (result)="onScanned($event)"
               ></mx-scanner-button>
             </div>
+            
+            <!-- Restablecer -->
             <div class="col s6 m4 l3">
-              <button mat-button color='warn'
+              <button mat-button color="warn"
               (click)="restoreCriteria()"
               >Restablecer criterios de búsqueda</button>
             </div>
           </div>
+
+
+          <!-- Tabla de resultados -->
           <div class="row">
+            <!-- Controla la búsqueda -->
             <div class="col s12">
-              <mx-sort-options [filterOption]="false" [fields]="['codigo', 'referencia']" ></mx-sort-options>
+              <mx-sort-options [filterOption]="false" [fields]="['UPC', 'reference']" ></mx-sort-options>
             </div>
+
             <div class="col s12">
-              <div id="lista-productos" class="mat-elevation-z3">
+              <div id="product-list" class="mat-elevation-z3">
+
+                <!-- RESULT TEMPLATE -->
                 <ng-container *ngIf="products.length > 0; else emptyProducts">
                   <table  mat-table #table [dataSource]="products">
-                    <ng-container matColumnDef="codigo" sticky>
-                      <th mat-header-cell *matHeaderCellDef> Código </th>
-                      <td mat-cell *matCellDef="let product"> {{product.codigo}} </td>
+
+                    <!-- UPC COL -->
+                    <ng-container matColumnDef="UPC" sticky>
+                      <th mat-header-cell *matHeaderCellDef> UPC (Código de Producto Universal) </th>
+                      <td mat-cell *matCellDef="let product"> {{product.UPC}} </td>
                     </ng-container>
-                    <ng-container matColumnDef="referencia">
+
+                    <!-- REFERENCE COL -->
+                    <ng-container matColumnDef="reference">
                       <th mat-header-cell *matHeaderCellDef> Referencia </th>
-                      <td mat-cell *matCellDef="let product"> {{product.referencia}} </td>
+                      <td mat-cell *matCellDef="let product"> {{product.reference}} </td>
                     </ng-container>
-                    <ng-container matColumnDef="existencias_totales">
+
+                    <!-- TOTAL STOCK COL (BETA) -->
+                    <!-- <ng-container matColumnDef="existencias_totales">
                       <th mat-header-cell *matHeaderCellDef> Existencias </th>
                       <td mat-cell *matCellDef="let product">
                         {{product.existencias_totales}}
                         {{product.existencias_totales | mxPlurals:product.unidad_medida:'Unidades' }}
                       </td>
+                    </ng-container> -->
+
+                    <!-- BRAND COL -->
+                    <ng-container matColumnDef="brand">
+                      <th mat-header-cell *matHeaderCellDef> Marca </th>
+                      <td mat-cell *matCellDef="let product"> {{product.brand}} </td>
                     </ng-container>
-                    <ng-container matColumnDef="costoUnitario">
-                      <th mat-header-cell *matHeaderCellDef> Costo Unitario </th>
-                      <td mat-cell *matCellDef="let product">
-                        ${{product.costoUnitario | mask: 'separator':','}}
-                      </td>
-                    </ng-container>
-                    <ng-container matColumnDef="iva">
-                      <th mat-header-cell *matHeaderCellDef> IVA </th>
-                      <td mat-cell *matCellDef="let product"> {{product.iva}} </td>
-                    </ng-container>
-                    <ng-container matColumnDef="proveedor">
+
+                    <!-- PROVIDER COL -->
+                    <ng-container matColumnDef="provider">
                       <th mat-header-cell *matHeaderCellDef> Proveedor </th>
-                      <td mat-cell *matCellDef="let product"> {{product.proveedor}} </td>
+                      <td mat-cell *matCellDef="let product"> {{product.provider.name}} </td>
                     </ng-container>
-                    <ng-container matColumnDef="categorias">
+                    
+                    <!-- LAST UPDATE COL -->
+                    <ng-container matColumnDef="last_update">
+                      <th mat-header-cell *matHeaderCellDef> Actualizado </th>
+                      <td mat-cell *matCellDef="let product"> {{product.last_update.date}} </td>
+                    </ng-container>
+
+                    <!-- CATEGORIES COL (BETA) -->
+                    <ng-container matColumnDef="categories">
                       <th mat-header-cell *matHeaderCellDef> Categorias </th>
                       <td mat-cell *matCellDef="let product">
-                        <span *ngFor="let catego of product.categorias; index as i">
+                        <span *ngFor="let catego of product.categories; index as i">
                           {{ catego }}<span *ngIf="i != product.categorias.length -1">,</span>
                         </span>
                       </td>
                     </ng-container>
+
+                    <!-- OPTIONS COL -->
+                    <ng-container matColumnDef="options">
+                      <th mat-header-cell *matHeaderCellDef></th>
+                      <td mat-cell *matCellDef="let product"></td>
+                    </ng-container>
+
+                    <!-- ROW MANAGE -->
                     <tr mat-header-row *matHeaderRowDef="prodCols"></tr>
-                    <tr mat-row class="table-row" *matRowDef="let product; columns: prodCols;" (click)="productoSelected = product"></tr>
+                    
+                    <tr mat-row 
+                    class="table-row" 
+                    *matRowDef="let product; columns: prodCols;" 
+                    (click)="current.product$.next(product)"
+                    ></tr>
+
                   </table>
                 </ng-container>
+
+                <!-- EMPTY TEMPLATE -->
                 <ng-template #emptyProducts >
                   <div class="row">
                     <div class="col s12 center">
@@ -114,16 +169,19 @@
               </div>
             </div>
           </div>
+
+          <!-- INDEX DE LA TABLA -->
           <div class="row">
             <div class="col s12">
               <mx-index-caller></mx-index-caller>
             </div>
           </div>
         </div>
-      </mat-tab>
-      <mat-tab label="Categorías">
 
       </mat-tab>
+      <!-- <mat-tab label="Categorías">
+
+      </mat-tab> -->
     </mat-tab-group>
 
   </mat-drawer-content>

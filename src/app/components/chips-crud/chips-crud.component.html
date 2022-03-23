@@ -1,0 +1,24 @@
+<mat-form-field appearance="outline" class="has-hint">
+  <mat-label>{{label}}</mat-label>
+  <mat-chip-list #chipList>
+    <mat-chip
+      *ngFor="let item of listValue; index as i"
+      [selectable]="true"
+      [removable]="true"
+      (removed)="remove(item)"
+    >
+      {{ item }}
+      <mat-icon matChipRemove>cancel</mat-icon>
+    </mat-chip>
+    <input
+      [placeholder]="placeholder"
+      [matChipInputFor]="chipList"
+      [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+      [matChipInputAddOnBlur]="true"
+      (matChipInputTokenEnd)="add($event)"
+    />
+  </mat-chip-list>
+  <mat-hint>{{hint}}</mat-hint>
+</mat-form-field>
+
+<!-- almacenForm.value['estanterias'] -->

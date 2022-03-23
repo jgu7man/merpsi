@@ -24,7 +24,7 @@ export class ProductModel {
   public gallery: string[] = []
   
   constructor (
-    /** Código del producto. Se espera que pueda ser el  (Código Universal del Producto).*/
+    /** Código del producto. Se espera que pueda ser el UPC (Código Universal del Producto).*/
     UPC: string,
     /** Nombre o referencia del producto */
     public reference: string,
@@ -116,7 +116,7 @@ export class ProductEventModel {
 export declare namespace ProductModel {
   
   /**
-   * Clase principal para la consulta y renderizado de productos en la base de datos
+   * Clase principal para la consulta y renderizado de productos de la base de datos
    *
    * @path businesses/{CRF}/products/{product_code}
    */
@@ -141,20 +141,22 @@ export declare namespace ProductModel {
     /** ID del almacen como llave foranea */
     store_id: string
     /** ID del producto como llave foranea */
-    product_code: string,
+    UPC: string,
     /** Existencias del producto en el almacen */
     stock: number,
-    /** Precio unitario designado para su venta  */
+    /** Precio unitario designado para su venta */
     unit_price: number,
     /** Costo unitario establecido por la factura de comprado */
-    unit_cost: number,
+    readonly unit_cost: number,
     /** Mínimo requerido */
     min_required: number,
     /** (Opcional) Estanterías o notas de referencia donde se encuentra la existencia del producto */
     bookshelves: string[],
     /** (Opcional) Referencia al documento del proveedor de este producto en esta store de la lista de proveedores de la misma empresa. */
-    provider?: firebase.firestore.DocumentReference,
+    provider?: ProviderReference,
   }
+
+  
 
   /**
    * Modelo de la consulta de un producto y sus múltiples existencias en los stores
@@ -187,6 +189,23 @@ export declare namespace ProductModel {
       categories: AbstractControl
       notes: AbstractControl
       reference_codes: AbstractControl
+    }
+  }
+
+
+  namespace StoreReference {
+    interface StoreForm extends FormGroup {
+      value: StoreReference
+      controls: {
+        store_id: AbstractControl,
+        product_code: AbstractControl,
+        stock: AbstractControl,
+        unit_price: AbstractControl,
+        unit_cost: AbstractControl,
+        min_required: AbstractControl,
+        bookshelves: AbstractControl,
+        provider: AbstractControl,
+      }
     }
   }
 

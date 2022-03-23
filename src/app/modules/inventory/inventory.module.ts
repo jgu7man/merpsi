@@ -5,21 +5,25 @@ import { InventoryRoutingModule } from './inventory-routing.module';
 import { InventoryComponent } from './inventory.component';
 import { ProductsComponent } from './products/products.component';
 import { SharedModule } from 'src/app/shared/shared.module';
-import { ViewProductoComponent } from './products/view-producto/view-producto.component';
-import { ProductFormComponent } from './products/product-form/product-form.component';
+import { ProductFormComponent } from './product-single/product-form/product-form.component';
+import { ProductStorageComponent } from './product-single/product-storage/product-storage.component';
+import { ProductSingleComponent } from './product-single/product-single.component';
+import { ProductStoredFormComponent } from './product-single/product-stored-form/product-stored-form.component';
 
 
 @NgModule({
   declarations: [
     InventoryComponent,
     ProductsComponent,
-    ViewProductoComponent,
-    ProductFormComponent
+    ProductFormComponent,
+    ProductStorageComponent,
+    ProductSingleComponent,
+    ProductStoredFormComponent
   ],
   imports: [
     CommonModule,
     InventoryRoutingModule,
-    SharedModule
+    SharedModule,
   ]
 })
 export class InventoryModule { }

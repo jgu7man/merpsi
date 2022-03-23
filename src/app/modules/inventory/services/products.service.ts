@@ -22,15 +22,15 @@ export class InventoryProductsService {
   }
 
   /** Consulta en sessionStorage el ID de la empresa en la cuál se está presente */
-  get bid() {
-    const bid = this._cache.getDataKey( 'eid' )
-    if ( bid === undefined ) throw { message: 'No se encuentró el ID de la empresa' }
-    return bid
+  get CRF() {
+    const CRF = this._cache.getDataKey( 'eid' )
+    if ( CRF === undefined ) throw { message: 'No se encuentró el ID de la empresa' }
+    return CRF
   }
 
   /** Crea la referencia a firestore para la empresa en la cuál se está presente */
   get businessRef() {
-    return this._afs.doc(`businesess/${this.bid}`)
+    return this._afs.doc(`businesess/${this.CRF}`)
   }
 
   /**
@@ -107,29 +107,7 @@ export class InventoryProductsService {
     }
   }
 
-  /**
-   * Consulta y se suscribe a las existencias del producto en los diferentes almacenes de la empresa presente
-   *
-   * @param {string} product_code
-   * @returns {*} 
-   */
-  retriveStoresRef( product_code: string ): Observable<ProductModel.StoreReference[]> {
-    const productId =  this._text.slugify(product_code);
-    
-    return this.businessRef.collection
-      <ProductModel.StoreReference>( `products/${ productId }/stores` )
-      .valueChanges().pipe(
-        catchError( ( error ) => {
-          this._alert.error(
-            'No se pudo tener contacto con la base de datos',
-            error,
-            'productos.service#retriveAlamacenesRef'
-          );
-          return of([])
-        })
-      )
-
-  }
+  
 
   /**
    * Actualiza campos editables desde la vista de productos.
@@ -139,7 +117,7 @@ export class InventoryProductsService {
    * @returns {*}  {Promise<void>}
    */
   async patchStoreRef(
-    { product_code, store_id, bookshelves, min_required }: ProductModel.StoreReference
+    { UPC: product_code, store_id, bookshelves, min_required }: ProductModel.StoreReference
   ): Promise<void>{
     try {
       const productId =  this._text.slugify(product_code)

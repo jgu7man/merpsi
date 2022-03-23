@@ -8,6 +8,7 @@ import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import { MxScannerDialog } from 'libs/@marxa/scanner/mx-scanner-dialog/mx-scanner.dialog';
 import { Subscription } from 'rxjs';
 import { ProductModel,  } from 'src/app/models/products.model';
+import { CurrentProductService } from '../services/current-product.service';
 import { InventoryProductsService } from '../services/products.service';
 
 
@@ -24,7 +25,7 @@ export class ProductsComponent implements OnInit, OnDestroy {
   /** Input del código de producto que se buscará */
   public codeScannedCtrl: FormControl = new FormControl( '' )
   /** Columnas para mostrar en la tabla */
-  readonly prodCols: string[] = [ 'codigo', 'referencia', 'existencias_totales', 'costoUnitario', 'iva', 'categorias', 'proveedor' ]
+  readonly prodCols: string[] = [ 'UPC', 'reference', 'brand', 'provider', 'last_update', 'categories', 'options' ]
   /** Suscripción a la lista de productos */
   private _listSubscription: Subscription
   /** Panel del producto */
@@ -34,12 +35,13 @@ export class ProductsComponent implements OnInit, OnDestroy {
     private _cache: MxCache,
     private _index: MxIndex,
     private _dialog: MatDialog,
-    private _productos: InventoryProductsService
+    private _productos: InventoryProductsService,
+    public current: CurrentProductService
   ) {
     /* Obtiene el Business ID */
-    const bid = this._cache.getDataKey('eid')
+    const CRF = this._cache.getDataKey('eid')
     /* Se inicializa el indexado de productos */
-    this._index.initIndex( `businesess/${ bid }/products`, 'product_code', 20 )
+    this._index.initIndex( `businesess/${ CRF }/products`, 'UPC', 20 )
     /* Se suscribe a la respuesta del índice */
     this._listSubscription =
     this._index.queryData.subscribe( data => {
@@ -52,8 +54,6 @@ export class ProductsComponent implements OnInit, OnDestroy {
 
   /**
    * Cierra el Panel del producto
-   *
-   * @param {DataReference} product
    */
   closeProductPanel(product: ProductModel.DataReference): void {
     this.productDrawer.close()
@@ -61,6 +61,10 @@ export class ProductsComponent implements OnInit, OnDestroy {
     this.products.map(p =>  p.UPC == product.UPC ? product : p)
   }
 
+
+  /**
+   * Cierra el panel cuando el producto fue borrado
+   */
   onDeleted(product: ProductModel.DataReference): void {
     this.productDrawer.close()
     delete this.productoSelected
@@ -68,10 +72,17 @@ export class ProductsComponent implements OnInit, OnDestroy {
   }
 
   
+  /**
+   * Toma el valor obtenido del scanner
+   */
   async onScanned(result: string){
     this.products = await this._productos.searchByIdentifier(result)
   }
 
+
+  /**
+   * Realiza una búsqueda de producto a través del parámetro a buscar
+   */
   async searchCode() {
     let code = this.codeScannedCtrl.value
     if ( code ) {
@@ -81,7 +92,7 @@ export class ProductsComponent implements OnInit, OnDestroy {
   }
 
   restoreCriteria() {
-    this._index.setCriteriaFilter('', 'codigo', 'asc');
+    this._index.setCriteriaFilter('', 'UPC', 'asc');
   }
 
   ngOnDestroy(): void {

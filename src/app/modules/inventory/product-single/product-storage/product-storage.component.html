@@ -1,0 +1,35 @@
+<div class="row" id="almacenes-container">
+  <div class="col s12">
+    <p id="almacenes-label"><small>Existencia en almacenes</small></p>
+
+    <mat-accordion>
+
+      <!-- VALIDATE STORAGE CONNECTION -->
+      <ng-container *ngIf="(current.storage$ | async) as storage">
+
+        <!-- VALIDATE STORAGE LENGTH -->
+        <ng-container *ngIf="storage.length > 0">
+          
+          <!-- ITERATE STORAGE -->
+          <mat-expansion-panel class="mat-elevation-z0 col s12 almacen-container"
+          *ngFor="let store of storage; let i = index"
+          [expanded]="i === 0">
+            
+            <mat-expansion-panel-header>
+              {{store.store_id}}
+            </mat-expansion-panel-header>
+    
+            <app-product-stored-form
+            [store_id]="store.store_id"
+            ></app-product-stored-form>
+            
+          </mat-expansion-panel>
+
+        </ng-container>
+      
+      
+      </ng-container>
+
+    </mat-accordion>
+  </div>
+</div>
