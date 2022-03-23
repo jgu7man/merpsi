@@ -8,9 +8,9 @@ import { iProvider, ProviderModel } from 'src/app/models/provider.model';
 import { AdminService } from 'src/app/services/admin.service';
 import { BusinessService } from 'src/app/services/business.service';
 import Swal from 'sweetalert2';
-import { ProviderService } from '../provider.service';
 import firebase from 'firebase/app'
 import { iBusiness } from 'src/app/models/empresa.model';
+import { ProviderService } from 'src/app/services/provider.service';
 
 @Component({
   selector: 'app-set-provider',
@@ -25,12 +25,14 @@ export class SetProviderComponent implements OnInit, OnDestroy {
   @Input() set provider(pro: ProviderModel) { this._provider_.next(pro); }
   get provider() { return this._provider_.getValue() }
 
+  @Input() crf_: any | null = null
+
   @Output() submited: EventEmitter<void> = new EventEmitter();
 
   public countryList: iCountry[] = []
   showForm: boolean = false
   selected: boolean = false
-  providerDR : firebase.firestore.DocumentReference<iBusiness> | undefined = undefined
+  providerDR: firebase.firestore.DocumentReference<iBusiness> | undefined = undefined
 
   provider_: iProvider | null = null
 
@@ -63,47 +65,50 @@ export class SetProviderComponent implements OnInit, OnDestroy {
         this.providerForm.patchValue(prv)
         this.selectedCountry = this.countryList.find(c => c.alpha3 == prv.country)
         //se valida que si la data que se inyecta al formulario no viene vacia se muestra todo el formulario deshabilitado
-        if (prv.CRF!='') {
+        if (prv.CRF != '') {
           this.showForm = true;
           // valida que si el proveedor es una empresa registrada en merpsi actualiza los datos del mismo en caso de tener algun cambio
-          if ( prv.businessRef!=null){
+          if (prv.businessRef != null) {
 
-           let businessDocRef =  await this._business.validateBusiness(prv.CRF)
-           let businessUpdate = businessDocRef!.data()!
-           if ( businessUpdate.CRF != prv.CRF || businessUpdate.businessName != prv.businessName || 
-            businessUpdate.country != prv.country || businessUpdate.name != prv.name){
-              let business = new ProviderModel(businessUpdate.CRF,businessUpdate.country,businessUpdate.name,businessUpdate.businessName,businessUpdate.type,null)
-              this._provider.create(business,businessDocRef!.ref)
+            let businessDocRef = await this._business.validateBusiness(prv.CRF)
+            let businessUpdate = businessDocRef!.data()!
+            if (businessUpdate.CRF != prv.CRF || businessUpdate.businessName != prv.businessName ||
+              businessUpdate.country != prv.country || businessUpdate.name != prv.name) {
+              let business = new ProviderModel(businessUpdate.CRF, businessUpdate.country, businessUpdate.name, businessUpdate.businessName, businessUpdate.type, null)
+              this._provider.create(business, businessDocRef!.ref)
               console.log("el proveedor se acaba de actualizadar")
               this.providerForm.patchValue(business)
             }
             this.disableForm()
 
-          }else{
+          } else {
             this.providerForm.controls.CRF.disable()
           }
         }
       }
     })
 
-   
+    if (this.crf_ != null) {
+      this.providerForm.patchValue({ CRF: this.crf_.crf })
+    }
 
-  }
 
-/**
- * Funcion que guarda el proveedor
- */
-  async onSubmit() {
-      await this._provider.create(this.providerForm.getRawValue(),this.providerDR)
-      Swal.fire("El proveedor se ha guardado con exito")
-      console.log(this.providerDR)
-      this.submited.emit()
-    
   }
 
   /**
-   * funcion que busca una empresa en base de datos por el crf 
-   * @param crf 
+   * Funcion que guarda el proveedor
+   */
+  async onSubmit() {
+    await this._provider.create(this.providerForm.getRawValue(), this.providerDR)
+    Swal.fire("El proveedor se ha guardado con exito")
+    console.log(this.providerDR)
+    this.submited.emit()
+
+  }
+
+  /**
+   * funcion que busca una empresa en base de datos por el crf
+   * @param crf
    */
   async searchProvider(crf: string) {
     if (crf.length > 4) {
@@ -113,10 +118,10 @@ export class SetProviderComponent implements OnInit, OnDestroy {
       // si la empresa no existe en la base de datos se muestra el formulario con los campos vacios
       if (providerDoc == null) {
         this.showForm = true
-       this.cleanForm()
+        this.cleanForm()
 
       } else {
-        let provider =  providerDoc.data()
+        let provider = providerDoc.data()
         this.providerDR = providerDoc.ref
         Swal.fire({
           text: "Encontramos a este Proveedor: " + provider?.businessName.toUpperCase() + " Deseas agregarlo?",
@@ -132,13 +137,13 @@ export class SetProviderComponent implements OnInit, OnDestroy {
             this.selectedCountry = this.countryList.find(c => c.alpha3 == provider!.country)
             this.disableForm()
             this.showForm = true
-          }else{
+          } else {
             /** Mostramos el resto de los campos del formulario vacio */
             this.showForm = true
             this.cleanForm()
           }
         })
-        
+
       }
     }
 
@@ -146,13 +151,13 @@ export class SetProviderComponent implements OnInit, OnDestroy {
 
   /**
    * funcion que se encarga de buscar el pais por el codigo alpha3 que se le envia
-   * @param event 
+   * @param event
    */
   countrySelected(event: MatSelectChange) {
     this.selectedCountry = this.countryList.find(c => c.alpha3 == event.value)
   }
 
-  cleanForm(){
+  cleanForm() {
     this.providerForm.patchValue({
       country: '',
       name: '',
@@ -161,7 +166,7 @@ export class SetProviderComponent implements OnInit, OnDestroy {
     })
   }
 
-  disableForm(){
+  disableForm() {
     this.providerForm.controls.country.disable()
     this.providerForm.controls.name.disable()
     this.providerForm.controls.businessName.disable()

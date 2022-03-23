@@ -1,21 +1,31 @@
 import { AbstractControl, FormGroup } from '@angular/forms'
 import firebase from 'firebase/app'
 import { uniq } from 'lodash'
-import { iTax } from './taxes.model'
 
+/**
+ * Clase para crear productos desde 0. 
+ * @note Procurar sólo usarlo para creación de productos
+ * @path businesses/{CRF}/products/{product_code}
+ */
 export class ProductModel {
   /** Código del producto. Se espera que pueda ser el UPC (Código Universal del Producto).*/
-  public readonly product_code: string
+  public readonly UPC: string
   /** Última modificación del producto en la base de datos de la empresa */
-  public last_update: ProductUpdate
+  public last_update: ProductModel.history.Event
   /** Referencia sin caracteres especiales */
   public slug: string
   /** Códigos adicionales o necesarios para el manejo de inventarios y consultas */
-  public readonly reference_codes: string[] = []
+  public reference_codes: string[] = []
+  /** Lista de ID de categorias */
+  public categories: string[] = []
+  /** Notas adicionales que la empresa decida agregar al producto */
+  public notes: string[] = []
+  /** Rutas de imágenes del producto */
+  public gallery: string[] = []
   
   constructor (
-    /** Código del producto. Se espera que pueda ser el UPC (Código Universal del Producto).*/
-    product_code: string,
+    /** Código del producto. Se espera que pueda ser el  (Código Universal del Producto).*/
+    UPC: string,
     /** Nombre o referencia del producto */
     public reference: string,
     /** (Opcional) descripcion del producto */
@@ -24,8 +34,8 @@ export class ProductModel {
     public brand: string,
     /** Unidad de medida */
     public measure_unit: string,
-    /** CRF de la empresa que crea el producto */
-    public owner?: string,
+    /** Datos de referencia de la empresa que provee el producto */
+    public provider?: ProductModel.ProviderReference,
     /** Reference del manager creador del producto */
     manager?: firebase.firestore.DocumentReference,
     /** Si el proveedor existe en la DB se asignará la referencia de firestore. Si no se tiene proveedor en base de datos, se le solictará a la empresa, que lo cree en su panel en su propia lista de proveedores. NOTA: Si no se tiene el registro del proveedor, el CRF de la empresa registradora del producto, será asignada como el creador del producto */
@@ -33,17 +43,21 @@ export class ProductModel {
     /** Referencia de firestore del producto si le pertenece a un tercero */
     public third_reference?: firebase.firestore.DocumentReference,
   ) {
-    this.product_code = product_code;
-    // this.provider = this.provider || owner
+    this.UPC = UPC;
+    /* Genera un slug basado en la referencia (nombre del producto)
+    TODO: Realizar un método que pueda actualizar el slug, 
+    este no debe ser editable tan fácil
+    */
     this.slug = this.createSlug(reference)
     this.description = description || ''
+    /* Genera un array de códigos de referencia para que el producto pueda ser buscado */
     this.reference_codes = this.getReferenceCodes()
-
-    this.last_update = new ProductUpdate(
-      'create', manager
-    )
+    /* Se genera un primer evento de creación */
+    const event = new ProductEventModel( 'create', manager )
+    this.last_update = {...event}
   }
 
+  /** Crea un texto con guiones a partir del texto proveído */
   private createSlug( text: string ): string {
     return text.toLowerCase()
     .replace(/\//g, '-')
@@ -53,9 +67,10 @@ export class ProductModel {
     .replace( /\s/g, '_' );
   }
 
+  /** Toma los códigos de esta clase y los convierte en strings consultables desde firestore */
   private getReferenceCodes(): string[] {
     let reference_codes = [
-      this.product_code,
+      this.UPC,
       this.slug,
       ...this.reference_codes,
       ...this.reference.toLowerCase().split( ' ' ),
@@ -68,38 +83,60 @@ export class ProductModel {
 }
 
 
+/**
+ * Clase para crear un evento del historial del producto
+ *
+ * @path businesses/{CRF}/products/{product_code}/history/{event.id}
+ */
+export class ProductEventModel {
+  /**
+   * Fecha momento en que se realizó el evento
+   */
+  public date: firebase.firestore.Timestamp
 
-
-export class ProductUpdate {
-  public date: Date
   constructor (
+    /** El tipo de evento que se está registrando */
     public type: ProductModel.history.UpdateType,
+    /** Referencia de manager que realiza el evento */
     public manager?: firebase.firestore.DocumentReference,
   ) {
-    this.date = new Date()
+    this.date = firebase.firestore.Timestamp.fromDate( new Date() )
+    return {
+      date: this.date,
+      type: this.type,
+      manager: this.manager ? this.manager : undefined
+    } as ProductModel.history.Event
   }
+
+  
 }
 
-export declare namespace ProductModel.history {
-  type UpdateType = 'sale' | 'purchase' | 'edit' | 'create' | 'balancing'
 
-  interface Event extends Omit<ProductUpdate, 'date'> {
-    date: firebase.firestore.Timestamp
-  }
-}
-
+/** Segmento de interfaces del producto */
 export declare namespace ProductModel {
-  export interface DataReference extends Omit<ProductModel, 'last_update'> {
-    /** Última modificación del producto en la base de datos de la empresa */
-    last_update: ProductModel.history.Event
-    /** Lista de ID de categorias */
-    categories: string[],
-    /** Notas adicionales que la empresa decida agregar al producto */
-    notes: string[],
-    /** Rutas de imágenes del producto */
-    gallery: string[]
+  
+  /**
+   * Clase principal para la consulta y renderizado de productos en la base de datos
+   *
+   * @path businesses/{CRF}/products/{product_code}
+   */
+  interface DataReference
+    extends Omit<ProductModel,
+    | 'getReferenceCodes'
+    | 'createSlug'
+    >{ }
+  
+  interface ProviderReference {
+    reference?: firebase.firestore.DocumentReference
+    CRF: string,
+    name: string,
   }
 
+  /**
+   * Modelo de objeto para la referencia de un producto en una store
+   * 
+   * @path businesses/{CRF}/products/{product_code}/store/{store.id}
+   */
   interface StoreReference  {
     /** ID del almacen como llave foranea */
     store_id: string
@@ -119,16 +156,25 @@ export declare namespace ProductModel {
     provider?: firebase.firestore.DocumentReference,
   }
 
+  /**
+   * Modelo de la consulta de un producto y sus múltiples existencias en los stores
+   */
   interface StockReference {
     product: Partial<DataReference>,
     stores: StoreReference[]
   }
 
+  /**
+   * Modelo de la consulta de un producto y su último cambio en una store
+   */
   interface UpdateReference {
     product: ProductModel,
     lastStoreState?: StoreReference
   }
 
+  /**
+   * Modelo del formulario de un producto
+   */
   interface Form extends FormGroup {
     value: DataReference | ProductModel
     controls: {
@@ -137,12 +183,28 @@ export declare namespace ProductModel {
       description: AbstractControl
       brand: AbstractControl
       mesure_unit: AbstractControl
-      // owner: AbstractControl
-      // provider: AbstractControl
       third_reference: AbstractControl
       categories: AbstractControl
       notes: AbstractControl
       reference_codes: AbstractControl
     }
   }
+
+  
+  /** Segemento de modelos para eventos del producto*/
+  namespace history {
+
+    /** Tipo de evento de un producto */
+    type UpdateType = 'sale' | 'purchase' | 'edit' | 'create' | 'balancing'
+    
+    
+    /**
+     * Modelo de consulta para eventos de producto
+     */
+    interface Event extends ProductEventModel {}
+  }
 }
+
+
+// export declare namespace ProductModel.history {
+// }

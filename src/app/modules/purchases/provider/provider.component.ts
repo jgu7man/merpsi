@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
-import { ProviderModel } from 'src/app/models/provider.model';
+import {Component, OnInit} from '@angular/core';
+import {MatDialog} from '@angular/material/dialog';
+import {ProviderModel} from 'src/app/models/provider.model';
+import { ProviderService } from 'src/app/services/provider.service';
 import Swal from 'sweetalert2';
-import { ProviderService } from './provider.service';
 
 @Component({
   selector: 'app-provider',

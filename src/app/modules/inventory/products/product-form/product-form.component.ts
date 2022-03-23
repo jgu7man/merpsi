@@ -91,7 +91,7 @@ export class ProductFormComponent implements OnInit, OnDestroy {
     this._storesSubscription = (
       !this.product
         ? of(<ProductModel.StoreReference[]>[])
-        : this._products.retriveStoresRef(this.product.product_code)
+        : this._products.retriveStoresRef(this.product.UPC)
     )
       .pipe(first())
       .subscribe(async (stores) => {
@@ -105,7 +105,7 @@ export class ProductFormComponent implements OnInit, OnDestroy {
             new FormGroup({
               // product_code: new FormControl( store.product_code ),
               product_code: new FormControl(
-                this.product?.product_code || store.product_code
+                this.product?.UPC || store.product_code
               ),
               stock: new FormControl(
                 {
@@ -127,7 +127,7 @@ export class ProductFormComponent implements OnInit, OnDestroy {
             this.storesForm.push(
               new FormGroup({
                 store_id: new FormControl(this.store_id),
-                product_code: new FormControl(this.product?.product_code || ''),
+                product_code: new FormControl(this.product?.UPC || ''),
                 stock: new FormControl(0, [Validators.required]),
                 bookshelves: new FormControl([]),
                 min_required: new FormControl(0),
@@ -200,7 +200,7 @@ export class ProductFormComponent implements OnInit, OnDestroy {
       const store = stores.find((a) => a.store_id === this.store_id)!;
 
       let product: ProductModel = new ProductModel(
-        this.productForm.value['product_code'],
+        this.productForm.value['UPC'],
         this.productForm.value['reference'],
         this.productForm.value['description'],
         this.productForm.value['brand'],

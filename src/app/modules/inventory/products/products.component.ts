@@ -58,13 +58,13 @@ export class ProductsComponent implements OnInit, OnDestroy {
   closeProductPanel(product: ProductModel.DataReference): void {
     this.productDrawer.close()
     delete this.productoSelected
-    this.products.map(p =>  p.product_code == product.product_code ? product : p)
+    this.products.map(p =>  p.UPC == product.UPC ? product : p)
   }
 
   onDeleted(product: ProductModel.DataReference): void {
     this.productDrawer.close()
     delete this.productoSelected
-    this.products.filter(p => p.product_code != product.product_code)
+    this.products.filter(p => p.UPC != product.UPC)
   }
 
   

@@ -9,7 +9,7 @@ const routes: Routes = [
   component: DashboardComponent,
   children: [
     { path: 'admin', loadChildren: () => import('../admin/admin.module').then(m => m.AdminModule) },
-    { path: 'compras', loadChildren: () => import( '../compras/compras.module' ).then( m => m.ComprasModule ) },
+    { path: 'purchases', loadChildren: () => import( '../purchases/purchases.module' ).then(m => m.PurchasesModule ) },
     { path: 'products', loadChildren: () => import('../inventory/inventory.module').then(m => m.InventoryModule) },
     { path: 'sales', loadChildren: () => import('../sales/sales.module').then(m => m.SalesModule) },
     { path: 'clients', loadChildren: () => import('../clients/clients.module').then(m => m.ClientsModule) },

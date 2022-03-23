@@ -42,7 +42,7 @@ export class InventoryProductsService {
   async create(product: ProductModel): Promise<void>{
     try {
       
-      const pid = this._text.slugify(product.product_code)
+      const pid = this._text.slugify(product.UPC)
       await this.businessRef
         .collection( 'products' )
         .doc( pid ).ref
@@ -68,7 +68,7 @@ export class InventoryProductsService {
       
       await this.businessRef
         .collection( 'products' )
-        .doc( product.product_code ).ref
+        .doc( product.UPC ).ref
         .set( { ...product }, { merge: true } )
       
       this._alert.notify( 'Producto guardado' )

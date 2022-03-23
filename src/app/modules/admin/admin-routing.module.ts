@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { ProviderComponent } from '../compras/provider/provider.component';
+import { ProviderComponent } from '../purchases/provider/provider.component';
 import { PersonalComponent } from './personal/personal.component';
 import { SedesComponent } from './sedes/sedes.component';
 
