@@ -7,7 +7,7 @@ import { MxLoading } from 'libs/@marxa/devkit/loading/loading.service';
 import { MxText } from 'libs/@marxa/devkit/text/mx-text.service';
 import { of, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, first, map, skip, tap } from 'rxjs/operators';
-import { ProductModel } from 'src/app/models/products.model';
+import { Product } from 'src/app/models/products.model';
 import { CurrentProductService } from '../../services/current-product.service';
 import { InventoryProductsService } from '../../services/products.service';
 
@@ -19,20 +19,20 @@ import { InventoryProductsService } from '../../services/products.service';
 export class ProductFormComponent implements OnInit, OnDestroy {
   
   
-  @Input() product?: ProductModel.DataReference;
+  @Input() product?: Product.DataReference;
   
   
-  public productForm: ProductModel.Form 
+  public productForm: Product.Form 
   public reference_codes: string[] = [];
   public categories: string[] = [];
   public aplicacion_modelos: string[] = [];
   public proveedores_ref: any[] = [];
-  public currentStore?: ProductModel.StoreReference;
+  public currentStore?: Product.StoreReference;
   
   public validForm: boolean = false;
   
-  @Output() update: EventEmitter<ProductModel.UpdateReference> = new EventEmitter();
-  @Output() patch: EventEmitter<ProductModel.StockReference> = new EventEmitter();
+  @Output() update: EventEmitter<Product.UpdateReference> = new EventEmitter();
+  @Output() patch: EventEmitter<Product.StockReference> = new EventEmitter();
   
   
   private _storesSubscription!: Subscription;
@@ -59,7 +59,7 @@ export class ProductFormComponent implements OnInit, OnDestroy {
       categories: new FormControl( [] ),
       notes: new FormControl( [] ),
       reference_codes: new FormControl( [] )
-    }) as ProductModel.Form;
+    }) as Product.Form;
 
     this._productFormSubscription = this.productForm
       .valueChanges.pipe(

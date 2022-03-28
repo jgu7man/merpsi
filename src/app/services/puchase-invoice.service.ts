@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { ProductModel } from '../models/products.model';
 import { ProductPurchasedModel, PurchaseInvoiceModel } from '../models/pucharce-invoice.model';
-import firebase from "firebase/app";
+import { FireDoc } from '../models/firestore.model';
 
 
 @Injectable({
@@ -19,7 +19,7 @@ export class PuchaseInvoiceService {
     //this._afs.collection<PurchaseInvoiceModel>(``).set({invoice})
   }
 
-  addProduct(productRef: firebase.firestore.DocumentReference, cant: number, cost: number) {
+  addProduct(productRef: FireDoc<ProductModel>, cant: number, cost: number) {
 
     return new ProductPurchasedModel(cost, cant, productRef)
 

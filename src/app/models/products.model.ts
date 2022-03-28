@@ -35,7 +35,7 @@ export class ProductModel {
     /** Unidad de medida */
     public measure_unit: string,
     /** Datos de referencia de la empresa que provee el producto */
-    public provider?: ProductModel.ProviderReference,
+    public provider?: Product.ProviderReference,
     /** Reference del manager creador del producto */
     manager?: firebase.firestore.DocumentReference,
     /** Si el proveedor existe en la DB se asignará la referencia de firestore. Si no se tiene proveedor en base de datos, se le solictará a la empresa, que lo cree en su panel en su propia lista de proveedores. NOTA: Si no se tiene el registro del proveedor, el CRF de la empresa registradora del producto, será asignada como el creador del producto */
@@ -96,7 +96,7 @@ export class ProductEventModel {
 
   constructor (
     /** El tipo de evento que se está registrando */
-    public type: ProductModel.history.UpdateType,
+    public type: Product.history.UpdateType,
     /** Referencia de manager que realiza el evento */
     public manager?: firebase.firestore.DocumentReference,
   ) {
@@ -108,7 +108,7 @@ export class ProductEventModel {
 
 
 /** Segmento de interfaces del producto */
-export declare namespace ProductModel {
+export declare namespace Product {
   
   /**
    * Clase principal para la consulta y renderizado de productos de la base de datos

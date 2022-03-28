@@ -1,11 +1,9 @@
-import { I } from '@angular/cdk/keycodes';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
-import { add } from 'lodash';
 import { Observable } from 'rxjs';
-import { ProductModel } from 'src/app/models/products.model';
+import { Product, ProductModel } from 'src/app/models/products.model';
 import { ProviderModel } from 'src/app/models/provider.model';
 import { iSede } from 'src/app/models/sede.model';
 import { SedesService } from 'src/app/modules/admin/sedes/sedes.service';
@@ -16,6 +14,7 @@ import { ProviderNewDialog } from '../provider-new.dialog/provider-new.dialog';
 import firebase from "firebase/app";
 import { PuchaseInvoiceService } from 'src/app/services/puchase-invoice.service';
 import { ProductPurchasedModel } from 'src/app/models/pucharce-invoice.model';
+import { FireDoc } from 'src/app/models/firestore.model';
 
 
 @Component({
@@ -134,8 +133,12 @@ export class CreateInvoiceComponent implements OnInit {
 
   }
 
-  add(producto: firebase.firestore.DocumentReference, cant: number, amount: number) {
-    this.productList.push(this._purchase.addProduct(producto, cant, amount))
+  add(
+    product: FireDoc<ProductModel>,
+    cant: number,
+    amount: number
+  ) {
+    this.productList.push(this._purchase.addProduct(product, cant, amount))
   }
 
 

@@ -1,6 +1,6 @@
 import { AngularFirestore } from "@angular/fire/firestore";
 import firebase from "firebase/app";
-import { ProductModel } from "./products.model";
+import { Product, ProductModel } from "./products.model";
 import { iTax } from "./taxes.model";
 
 
@@ -57,7 +57,7 @@ export interface iInvoiceFooter {
 }
 
 /** Modelo de agregado de productos a la factura de compra */
-export class ProductPurchasedModel implements ProductModel.MainData {
+export class ProductPurchasedModel implements Product.MainData {
   /** Resultado de multiplicar cantidad por costo unitario del producto */
   public amount: number;
   UPC: string
@@ -73,17 +73,20 @@ export class ProductPurchasedModel implements ProductModel.MainData {
     /** Cantidad de productos comprados */
     public cant: number,
     
-    concept: ProductModel.MainData,
+    // concept: Product.MainData,
     /** Referencia del producto comprado (Debe seleccionarse de la lista de productos registrados de la empresa) */
-    // public reference: firebase.firestore.DocumentReference
+    public concept: firebase.firestore.DocumentSnapshot<ProductModel>
   ) {
+
+    let data = concept.data()!
+
 		this.amount = this.unit_cost * this.cant;
-    this.UPC = concept.UPC
-    this.reference = concept.reference
-    this.description = concept.description
-    this.brand = concept.brand
-    this.measure_unit = concept.measure_unit
-    this.document_ref = concept.document_ref
+    this.UPC = data.UPC
+    this.reference = data.reference
+    this.description = data.description
+    this.brand = data.brand
+    this.measure_unit = data.measure_unit
+    this.document_ref = concept.ref
 	}
 }
 

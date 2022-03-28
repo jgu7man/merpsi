@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { ProductModel } from 'src/app/models/products.model';
+import { Product, ProductModel } from 'src/app/models/products.model';
 import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import { MxText } from 'libs/@marxa/devkit/text/mx-text.service';
@@ -39,7 +39,7 @@ export class InventoryProductsService {
   /**
    * Crea un producto
    *
-   * @param {Partial<ProductModel.DataReference>} product
+   * @param {Partial<Product.DataReference>} product
    * @returns {void}  {Promise<void>}
    */
   async create(product: ProductModel): Promise<void>{
@@ -63,10 +63,10 @@ export class InventoryProductsService {
   /**
    * Actualiza un producto
    *
-   * @param {Partial<ProductModel.DataReference>} product
+   * @param {Partial<Product.DataReference>} product
    * @returns {void}  {Promise<void>}
    */
-  async set(product: Partial<ProductModel.DataReference>): Promise<void>{
+  async set(product: Partial<Product.DataReference>): Promise<void>{
     try {
       
       await this.businessRef
@@ -90,11 +90,11 @@ export class InventoryProductsService {
    * @param {string} query
    * @returns {*}  {Promise<iProduct[]>}
    */
-  async searchByIdentifier( query: string ): Promise<ProductModel.DataReference[]> {
+  async searchByIdentifier( query: string ): Promise<Product.DataReference[]> {
     try {
-      const result: ProductModel.DataReference[] = []
+      const result: Product.DataReference[] = []
       const queryCol = await this.businessRef
-        .collection<ProductModel.DataReference>( 'products' ).ref
+        .collection<Product.DataReference>( 'products' ).ref
         .where( 'reference_codes', 'array-contains', query )
         .get()
 
@@ -116,11 +116,11 @@ export class InventoryProductsService {
    * Actualiza campos editables desde la vista de productos.
    * @note Actualizar las existencias, sólo es posible por ventas, compras o arqueos
    *
-   * @param {ProductModel.StoreReference} { pid, sid, bookshelves, min_required }
+   * @param {Product.StoreReference} { pid, sid, bookshelves, min_required }
    * @returns {*}  {Promise<void>}
    */
   async patchStoreRef(
-    { UPC: product_code, store_id, bookshelves, min_required }: ProductModel.StoreReference
+    { UPC: product_code, store_id, bookshelves, min_required }: Product.StoreReference
   ): Promise<void>{
     try {
       const productId =  this._text.slugify(product_code)
@@ -165,12 +165,12 @@ export class InventoryProductsService {
    * @memberof InventoryProductsService
    */
   async findProductProvider(code: string) {
-    return  this._afs.collectionGroup<ProductModel.DataReference>('products',  ref => 
+    return  this._afs.collectionGroup<Product.DataReference>('products',  ref => 
     ref.where('reference_codes', 'array-contains', code)).get().pipe(
           map(list=> {
             if (list.docs.length > 0) {
               let productResult = list.docs[0].data()
-              let producto: ProductModel.DataReference = {
+              let producto: Product.DataReference = {
                 ...productResult
               }
               return producto
@@ -190,7 +190,7 @@ export class InventoryProductsService {
    */
   async findProductBusiness(code: string) {
     try {
-      const productResult = await this._afs.collection<ProductModel.DataReference>(`businesses/${this.businessCRF}/products`).ref
+      const productResult = await this._afs.collection<Product.DataReference>(`businesses/${this.businessCRF}/products`).ref
         .where('references_codes', 'array-contains', code).get()
 
       let productDocument = productResult?.docs.length > 0 ? productResult.docs[0] : null

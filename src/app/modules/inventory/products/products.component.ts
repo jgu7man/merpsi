@@ -7,7 +7,7 @@ import { MxIndex } from '@marxa/index';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import { MxScannerDialog } from 'libs/@marxa/scanner/mx-scanner-dialog/mx-scanner.dialog';
 import { Subscription } from 'rxjs';
-import { ProductModel,  } from 'src/app/models/products.model';
+import { Product,  } from 'src/app/models/products.model';
 import { CurrentProductService } from '../services/current-product.service';
 import { InventoryProductsService } from '../services/products.service';
 
@@ -19,9 +19,9 @@ import { InventoryProductsService } from '../services/products.service';
 export class ProductsComponent implements OnInit, OnDestroy {
 
   /** Lista de productos obtenida de la consulta */
-  public products: ProductModel.DataReference[] = []
+  public products: Product.DataReference[] = []
   /** Producto que se mostrará en el panel */
-  public productoSelected?: ProductModel.DataReference
+  public productoSelected?: Product.DataReference
   /** Input del código de producto que se buscará */
   public codeScannedCtrl: FormControl = new FormControl( '' )
   /** Columnas para mostrar en la tabla */
@@ -55,7 +55,7 @@ export class ProductsComponent implements OnInit, OnDestroy {
   /**
    * Cierra el Panel del producto
    */
-  closeProductPanel(product: ProductModel.DataReference): void {
+  closeProductPanel(product: Product.DataReference): void {
     this.productDrawer.close()
     delete this.productoSelected
     this.products.map(p =>  p.UPC == product.UPC ? product : p)
@@ -65,7 +65,7 @@ export class ProductsComponent implements OnInit, OnDestroy {
   /**
    * Cierra el panel cuando el producto fue borrado
    */
-  onDeleted(product: ProductModel.DataReference): void {
+  onDeleted(product: Product.DataReference): void {
     this.productDrawer.close()
     delete this.productoSelected
     this.products.filter(p => p.UPC != product.UPC)
