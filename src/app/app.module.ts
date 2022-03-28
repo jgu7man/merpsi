@@ -15,7 +15,7 @@ const maskConfig: Partial<IConfig> = {
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
   ],
   imports: [
     BrowserModule,
@@ -23,7 +23,7 @@ const maskConfig: Partial<IConfig> = {
     BrowserAnimationsModule,
     AngularFireModule.initializeApp( environment.firebaseConfig ),
     NgxMaskModule.forRoot(maskConfig),
-    SharedModule
+    SharedModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

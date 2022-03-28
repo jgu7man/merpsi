@@ -1,6 +1,7 @@
 import { AngularFirestore } from "@angular/fire/firestore";
 import firebase from "firebase/app";
-import { iTax } from "./taxes.model"
+import { ProductModel } from "./products.model";
+import { iTax } from "./taxes.model";
 
 
 /** Modelo para crear una factura de compra */
@@ -56,19 +57,33 @@ export interface iInvoiceFooter {
 }
 
 /** Modelo de agregado de productos a la factura de compra */
-export class ProductPurchasedModel {
+export class ProductPurchasedModel implements ProductModel.MainData {
   /** Resultado de multiplicar cantidad por costo unitario del producto */
-	public amount: number;
+  public amount: number;
+  UPC: string
+  reference: string
+  description: string
+  brand: string
+  measure_unit: string
+  document_ref?: firebase.firestore.DocumentReference
 
   constructor (
     /** Costo unitario del producto comprado*/
     public unit_cost: number,
     /** Cantidad de productos comprados */
     public cant: number,
+    
+    concept: ProductModel.MainData,
     /** Referencia del producto comprado (Debe seleccionarse de la lista de productos registrados de la empresa) */
-    public reference: firebase.firestore.DocumentReference
+    // public reference: firebase.firestore.DocumentReference
   ) {
 		this.amount = this.unit_cost * this.cant;
+    this.UPC = concept.UPC
+    this.reference = concept.reference
+    this.description = concept.description
+    this.brand = concept.brand
+    this.measure_unit = concept.measure_unit
+    this.document_ref = concept.document_ref
 	}
 }
 

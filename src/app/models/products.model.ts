@@ -121,6 +121,16 @@ export declare namespace ProductModel {
     | 'createSlug'
     >{ }
   
+  /** Modelo de datos principales del concepto */
+  interface MainData {
+    UPC: string,
+    reference: string,
+    description: string,
+    brand: string,
+    measure_unit: string,
+    document_ref?: firebase.firestore.DocumentReference
+  }
+  
   interface ProviderReference {
     reference?: firebase.firestore.DocumentReference
     CRF: string,

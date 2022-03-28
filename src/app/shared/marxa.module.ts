@@ -13,6 +13,7 @@ import { MxScannerModule } from 'libs/@marxa/scanner/mx-scanner.module';
 // import { MxSocialShareModule } from "@marxa/social-share";
 import { MxStorageModule } from '@marxa/storage';
 import { MxCrudPanelModule } from '@marxa/crud-panel';
+import { MxTestModule } from 'libs/@marxa/devkit/test/mx-test.module';
 
 @NgModule({
   exports: [
@@ -28,7 +29,8 @@ import { MxCrudPanelModule } from '@marxa/crud-panel';
     // MxSliderModule,
     MxStorageModule,
     // MxSocialShareModule,
-    MxScannerModule
+    MxScannerModule,
+    MxTestModule
   ]
 })
 export class MarxaModule {}

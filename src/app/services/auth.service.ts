@@ -10,6 +10,7 @@ import { BusinessService } from './business.service';
 import firebase from 'firebase/app'
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { MxLoading } from 'libs/@marxa/devkit/loading/loading.service';
+import { MxTest } from 'libs/@marxa/devkit/test/mx-test.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -24,7 +25,8 @@ export class AuthService {
     private _afs: AngularFirestore,
     private _router: Router,
     private _business: BusinessService,
-    private _loading: MxLoading
+    private _loading: MxLoading,
+    private _test: MxTest
   ) { 
     // this._test.testOn( this.regist )
     //   .then( async ( {business, regist} ) => {

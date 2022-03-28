@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
+import { MxTest } from 'libs/@marxa/devkit/test/mx-test.service';
 import { iCountry } from '../models/country.model';
 
 @Injectable({
@@ -8,8 +9,11 @@ import { iCountry } from '../models/country.model';
 export class AdminService {
 
   constructor(
-    private _afs: AngularFirestore
-  ) { }
+    private _afs: AngularFirestore,
+    private _test: MxTest
+  ) { 
+    this._test.testOn(this.getCountry)
+  }
 
   async getCountry(): Promise<iCountry[]> {
     try {
