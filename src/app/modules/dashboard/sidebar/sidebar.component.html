@@ -88,7 +88,7 @@
       
 
       <!-- PRODUCTS -->
-      <mat-expansion-panel [expanded]="onActive('products')"
+      <mat-expansion-panel [expanded]="onActive('inventory')"
       *ngIf="user.rol == 'administrador' || user.rol == 'propietario'">
         <mat-expansion-panel-header>
           <mat-panel-title>
@@ -100,13 +100,13 @@
           
           <a 
             class="collection-item"
-            [routerLink]="['products/inventory']"
+            [routerLink]="['inventory/products']"
             routerLinkActive="active"
             >Productos</a
           >
           <a 
             class="collection-item"
-            [routerLink]="['/dashboard/store-db']"
+            [routerLink]="['inventory/store-db']"
             routerLinkActive="active"
             >Base de datos</a
           >

@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { InventoryRoutingModule } from './inventory-routing.module';
@@ -24,6 +24,9 @@ import { ProductStoredFormComponent } from './product-single/product-stored-form
     CommonModule,
     InventoryRoutingModule,
     SharedModule,
+  ],
+  schemas: [
+    // CUSTOM_ELEMENTS_SCHEMA
   ]
 })
 export class InventoryModule { }

@@ -3,8 +3,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatDrawer } from '@angular/material/sidenav';
-import { MxIndex } from '@marxa/index';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
+import { MxIndex } from 'libs/@marxa/index/src/public-api';
 import { MxScannerDialog } from 'libs/@marxa/scanner/mx-scanner-dialog/mx-scanner.dialog';
 import { Subscription } from 'rxjs';
 import { Product,  } from 'src/app/models/products.model';
@@ -36,7 +36,7 @@ export class ProductsComponent implements OnInit, OnDestroy {
     private _index: MxIndex,
     private _dialog: MatDialog,
     private _productos: InventoryProductsService,
-    public current: CurrentProductService
+    public current: CurrentProductService,
   ) {
     /* Obtiene el Business ID */
     const CRF = this._cache.getDataKey('eid')
