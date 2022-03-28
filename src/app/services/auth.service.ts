@@ -26,6 +26,11 @@ export class AuthService {
     private _business: BusinessService,
     private _loading: MxLoading
   ) { 
+    // this._test.testOn( this.regist )
+    //   .then( async ( {business, regist} ) => {
+    //     console.log( await this.regist(business, regist))
+    //   } )
+    //   .catch( console.error ) 
     
     this.authVerification()
   }
@@ -114,7 +119,8 @@ export class AuthService {
       /* IMPORTANTE: Hacer return para terminar la promesa */
       return
 
-    } catch (error: any) {
+    } catch ( error: any ) {
+      // console.log( error )
       /* Cerrar la sesión en cualquier error */
       this._afAuth.signOut()
       
@@ -123,7 +129,7 @@ export class AuthService {
         text: error.message
       } )
 
-      return 
+      throw error
     }
   }
 

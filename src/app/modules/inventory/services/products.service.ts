@@ -1,16 +1,19 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { Observable, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 import { ProductModel } from 'src/app/models/products.model';
 import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import { MxText } from 'libs/@marxa/devkit/text/mx-text.service';
+import firebase from "firebase/app";
 
 @Injectable({
   providedIn: 'root'
 })
 export class InventoryProductsService {
+
+  businessCRF: string = this._cache.getDataKey('eid')!
 
   constructor (
     private _afs: AngularFirestore,
@@ -154,4 +157,64 @@ export class InventoryProductsService {
     }
   }
 
+  /**
+   *funcion que se encarga de buscar un producto registrado en la empresa ((proveedor)) mediante un codigo (pid, code o reference ) 
+   *
+   * @param {string} code
+   * @return {*} 
+   * @memberof InventoryProductsService
+   */
+  async findProductProvider(code: string) {
+    return  this._afs.collectionGroup<ProductModel.DataReference>('products',  ref => 
+    ref.where('reference_codes', 'array-contains', code)).get().pipe(
+          map(list=> {
+            if (list.docs.length > 0) {
+              let productResult = list.docs[0].data()
+              let producto: ProductModel.DataReference = {
+                ...productResult
+              }
+              return producto
+            }else return null
+          })
+        )
+  }
+
+
+  /**
+   *
+   * funcion que se encarga de buscar un producto registrado en la empresa mediante un codigo (pid, code o reference ) 
+   *
+   * @param {string} code
+   * @return {*} 
+   * @memberof InventoryProductsService
+   */
+  async findProductBusiness(code: string) {
+    try {
+      const productResult = await this._afs.collection<ProductModel.DataReference>(`businesses/${this.businessCRF}/products`).ref
+        .where('references_codes', 'array-contains', code).get()
+
+      let productDocument = productResult?.docs.length > 0 ? productResult.docs[0] : null
+
+      if (productDocument != null) {
+        let product = productDocument.data()
+        this._alert.message('Se ha encontrado este producto' +
+          + product.reference + '-' + product.description +
+          ' deseas agregarlo?', 'text', 'request')
+          .then(response => {
+            if (response.isDenied) {
+              productDocument = null
+            }
+          })
+      } else {
+        this._alert.message('No se ha encontrado este producto, deseas crearlo?')
+        //TODO abrir formulario basico de productos
+
+      }
+      return productDocument
+    } catch (error) {
+      this._alert.error('Error haciendo la busqueda de productos', error)
+      console.error(error);
+      return null
+    }
+  }
 }

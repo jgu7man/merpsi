@@ -2,9 +2,10 @@ import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
+import { MxTest } from 'libs/@marxa/devkit/test/mx-test.service';
 import { Observable, of } from 'rxjs';
 import { map,catchError, tap } from 'rxjs/operators';
-import { iProvider, ProviderModel } from 'src/app/models/provider.model';
+import { iProvider, ProviderModel, QueryProvider } from 'src/app/models/provider.model';
 import Swal from 'sweetalert2';
 import { iBusiness } from '../models/empresa.model';
 
@@ -21,7 +22,14 @@ export class ProviderService {
     private _afs: AngularFirestore,
     private _cache: MxCache,
     private _alert: MxAlert,
-  ) { }
+    private _test: MxTest,
+  ) { 
+    this._test.testOn( this.findProviderByCRF )
+      .then( async ( { crf } ) => {
+        const provider = await this.findProviderByCRF( crf );
+        console.log( provider )
+      })
+  }
 
 
   /**
@@ -121,17 +129,23 @@ export class ProviderService {
 
   async findProviderByCRF(crf: string) {
     try {
-      let provider: iBusiness | any = null
-      let providerResult = await this._afs.collection(`businesses/${this.businessCRF}/providers`).ref.where('CRF', '==', crf).get()
-      provider = providerResult.docs.length > 0 ? providerResult.docs[0].data() : null
+      let providerResult = await this._afs
+        .collection<QueryProvider>
+        ( `businesses/${ this.businessCRF }/providers` ).ref
+        .where( 'CRF', '==', crf )
+        .get()
+      let providerDoc = providerResult.docs.length > 0 ? providerResult.docs[0] : null
 
+      if ( !providerDoc ) throw { message: 'No se enontró el proveedor' }
+      let provider = await (new QueryProvider(providerDoc.data())) .get()
+ 
       return provider
     } catch (error: any) {
       Swal.fire({
         icon: 'error',
         text: error.message
       })
-      return console.error(error);
+      throw console.error(error);
     }
 
   }
@@ -139,7 +153,9 @@ export class ProviderService {
   async findBusinessByCRF(crf: string) {
     try {
 
-      let providerResult = await this._afs.collection('businesses').ref.where('CRF', '==', crf).get()
+      let providerResult = await this._afs
+        .collection<iBusiness>( 'businesses' )
+        .ref.where( 'CRF', '==', crf ).get()
       let providerRef = providerResult.docs.length > 0 ? providerResult.docs[0] : null
 
       return providerRef

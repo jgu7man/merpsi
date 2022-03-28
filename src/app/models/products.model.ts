@@ -11,7 +11,7 @@ export class ProductModel {
   /** Código del producto. Se espera que pueda ser el UPC (Código Universal del Producto).*/
   public readonly UPC: string
   /** Última modificación del producto en la base de datos de la empresa */
-  public last_update: ProductModel.history.Event
+  public last_update: ProductEventModel
   /** Referencia sin caracteres especiales */
   public slug: string
   /** Códigos adicionales o necesarios para el manejo de inventarios y consultas */
@@ -101,14 +101,9 @@ export class ProductEventModel {
     public manager?: firebase.firestore.DocumentReference,
   ) {
     this.date = firebase.firestore.Timestamp.fromDate( new Date() )
-    return {
-      date: this.date,
-      type: this.type,
-      manager: this.manager ? this.manager : undefined
-    } as ProductModel.history.Event
+    
   }
 
-  
 }
 
 
@@ -217,10 +212,6 @@ export declare namespace ProductModel {
     type UpdateType = 'sale' | 'purchase' | 'edit' | 'create' | 'balancing'
     
     
-    /**
-     * Modelo de consulta para eventos de producto
-     */
-    interface Event extends ProductEventModel {}
   }
 }
 

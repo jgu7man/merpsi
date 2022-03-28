@@ -1,10 +1,12 @@
+import { AngularFirestore } from "@angular/fire/firestore";
 import firebase from "firebase/app";
-import { iTax } from "./taxes.model";
+import { iTax } from "./taxes.model"
+
 
 /** Modelo para crear una factura de compra */
 export class PurchaseInvoiceModel {
   /** Momento de registro de la factura */
-  public registered_date: Date;
+  public registered_date: firebase.firestore.Timestamp;
   /** Productos comprados */
   public details: iProductPurchased[]
 
@@ -26,7 +28,7 @@ export class PurchaseInvoiceModel {
     /** Balances y cálculos ya procesados */
 		public footer: iInvoiceFooter
 	) {
-		this.registered_date = new Date();
+		this.registered_date = firebase.firestore.Timestamp.fromDate( new Date() );
     /* Forzamos a que los details sean interface */
     this.details = details.map( p => ({...p})) 
   }
@@ -35,8 +37,7 @@ export class PurchaseInvoiceModel {
 }
 
 /** Modelo de consulta de una factura de compra  */
-interface iInvoice extends Omit<PurchaseInvoiceModel, "purshase_date" | "registered_date"> {
-	registered_date: firebase.firestore.Timestamp;
+interface iInvoice extends Omit<PurchaseInvoiceModel, "purshase_date"> {
 	purshase_date: firebase.firestore.Timestamp;
 }
 
