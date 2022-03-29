@@ -6,8 +6,11 @@
         
         <mat-form-field appearance="outline" class="col s12">
           <mat-label>Sede</mat-label>
-          <mat-select required placeholder="Sede" name="store">
-            <mat-option *ngFor="let sede of stores" [value]="sede">
+          <mat-select required placeholder="Sede" name="store"
+          (selectionChange)="onStoreSelected($event)">
+            <mat-option 
+            *ngFor="let sede of (stores$ | async)" 
+            [value]="sede">
               {{sede.referencia || ''}} <span class="small-text">({{sede.tipo || ''}})</span>
             </mat-option>
           </mat-select>
@@ -26,13 +29,17 @@
             </mat-error>
           </mat-form-field>
           
-          <ng-container *ngIf="nameProvider">
-            <!-- Nombre del proovedor -->
-            <mat-form-field appearance="outline" class="col s12">
-              <mat-label>Proveedor</mat-label>
-              <input matInput type="text" name="nameProvider" formControlName="nameProvider">
-            </mat-form-field>
+          <ng-container *ngIf="(purchase.current$ | async) as purchase">
+            <ng-container *ngIf="purchase.provider.businessName">
+              <!-- Nombre del proovedor -->
+              <mat-form-field appearance="outline" class="col s12">
+                <mat-label>Proveedor</mat-label>
+                <input matInput type="text" name="nameProvider" formControlName="nameProvider">
+              </mat-form-field>
+            </ng-container>
           </ng-container>
+
+          
         </ng-container>
       </form>
 

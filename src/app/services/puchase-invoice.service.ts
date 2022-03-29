@@ -19,7 +19,7 @@ export class PurchaseInvoiceService {
 
   create( ){
     
-    this.current$.next(new PurchaseInvoiceModel())
+    // this.current$.next(new PurchaseInvoiceModel())
   }
 
   addProduct(productRef: FireDoc<ProductModel>, cant: number, cost: number) {
@@ -65,6 +65,20 @@ export class PurchaseInvoiceService {
     }
   }
 
+
+  updateCurrent(
+    param: keyof PurchaseInvoiceModel,
+    value: PurchaseInvoiceModel[ typeof param ]
+  ) {
+    if ( this.current$.value !== null ) {
+      this.current$.next( {
+        ...this.current$.value,
+        [param]: value
+      })
+    }
+  }
   
 
 }
+
+// type PropType<TObj, TProp extends keyof TObj> = TObj[TProp];

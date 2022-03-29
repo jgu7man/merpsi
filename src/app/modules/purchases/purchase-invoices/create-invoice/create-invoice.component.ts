@@ -14,7 +14,7 @@ import Swal from 'sweetalert2';
 import { ProviderNewDialog } from '../provider-new.dialog/provider-new.dialog';
 import firebase from "firebase/app";
 import { PurchaseInvoiceService } from 'src/app/services/puchase-invoice.service';
-import { ProductPurchasedModel } from 'src/app/models/pucharce-invoice.model';
+import { InvoiceProvider, InvoiceStore, ProductPurchasedModel } from 'src/app/models/pucharce-invoice.model';
 import { FireDoc } from 'src/app/models/firestore.model';
 import { AuthService } from 'src/app/services/auth.service';
 import { iManager } from 'src/app/modules/admin/personal/manager.model';
@@ -29,21 +29,19 @@ import { S } from '@angular/cdk/keycodes';
 })
 export class CreateInvoiceComponent implements OnInit {
 
-  storeDocs: FireDoc<iSede>[] = []
-  stores: iSede[] = []
-  storeSelected?: FireDoc<iSede>
+  stores$: Observable<iSede[]>
+  storeSelected?: InvoiceStore
 
   invoiceForm: FormGroup = new FormGroup({
     store: new FormControl('', [Validators.required]),
     provider: new FormControl('', [Validators.required]),
-    nameProvider: new FormControl('', [Validators.required]),
     purshase_date: new FormControl('', [Validators.required]),
     invoice_ID : new FormControl('', [Validators.required]),
     payment_method: new FormControl('', [Validators.required]),
 
   })
 
-  nameProvider: boolean = false;
+  // nameProvider: boolean = false;
   productList: ProductPurchasedModel[] = []
   manager: iManager | null = null
   providerRef: firebase.firestore.DocumentReference | null = null
@@ -58,55 +56,55 @@ export class CreateInvoiceComponent implements OnInit {
     private _alert: MxAlert,
     private _dialog: MatDialog,
     private _products: InventoryProductsService,
-    private _purchase: PurchaseInvoiceService,
-    private _auth: AuthService
+    private _auth: AuthService,
+    public purchase: PurchaseInvoiceService,
   ) {
+    this.stores$ = this._stores.listenAll()
     
     this.manager = this._auth.userState$.value
   }
   
   async ngOnInit(): Promise<void> {
-    this.storeDocs = await this._stores.getAll()
-    this.stores = this.storeDocs.map(store => store.data()!)
-    console.log(this.storeDocs)
+    
   }
 
-  onStoreSelected(event: MatSelectChange){
-    this.storeSelected = this.storeDocs.find(store => store.id === event.value.id)
+  onStoreSelected( event: MatSelectChange ) {
+    const store: iSede = event.value
+    this.purchase.updateCurrent( 'store', {
+      id: store.id!,
+      name: store.name
+    } )
   }
 
   async findProvider(crf: string) {
     if (crf.length >= 8) {
       let providerDoc = await this._provider.findProviderByCRF(crf)
       let provider = providerDoc.data()
-      console.log(provider)
+      console.log( provider )
+      
       if (provider) {
         let message = `Proveedor ${provider.businessName.toUpperCase()} encontrado , Deseas agregarlo a la Factura?`
         const result = await this.alertProviderFinded( message )
         
         if (result.isConfirmed) {
-          this.nameProvider = true;
-          this.providerRef = providerDoc.ref
-          this.invoiceForm.patchValue({ nameProvider: provider.businessName });
-          this.invoiceForm.controls.nameProvider.disable()
+          this.purchase.updateCurrent( 'provider', {
+            CRF: provider.CRF,
+            businessName: provider.businessName
+          })
         } 
 
       } else {
-        let businessDoc = await this._provider.findBusinessByCRF(crf)
-        if (businessDoc != null) {
-          let providerRef = businessDoc.ref
-          let providerData = businessDoc.data()
+        let business = await this._provider.findBusinessByCRF(crf)
+        if (business != null) {
 
-          const message = `Encontramos a este Proveedor: ${providerData.businessName.toUpperCase()}  Deseas agregarlo?`;
+          const message = `Encontramos a este Proveedor: ${business.businessName.toUpperCase()}  Deseas agregarlo?`;
           const result = await this.alertProviderFinded( message)
             
-          if (result.isConfirmed) {
-            // como obtengo la ref del proveedor que se
-            let newProvide = new ProviderModel(providerData.CRF, providerData.country, providerData.name, providerData.businessName, providerData.type, null)
-            this.providerRef = await this._provider.create(newProvide, providerRef)
-            this.nameProvider = true;
-            this.invoiceForm.patchValue({ nameProvider: providerData.businessName });
-            this.invoiceForm.controls.nameProvider.disable()
+          if ( result.isConfirmed ) {
+            this.purchase.updateCurrent( 'provider', {
+              CRF: business.CRF,
+              businessName: business.businessName
+            })
           } else {
             this.openProviderNew()
           }
@@ -133,7 +131,6 @@ export class CreateInvoiceComponent implements OnInit {
       maxWidth: '100%',
       data: {
         crf: this.invoiceForm.controls.provider.value
-
       }
     })
   }
@@ -158,7 +155,7 @@ export class CreateInvoiceComponent implements OnInit {
     cant: number,
     amount: number
   ) {
-    this.productList.push(this._purchase.addProduct(product, cant, amount))
+    this.productList.push(this.purchase.addProduct(product, cant, amount))
   }
   
   delete(index: number) {

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ProviderModel } from 'src/app/models/provider.model';
+import { PurchaseInvoiceModel } from 'src/app/models/pucharce-invoice.model';
 import { iSede } from 'src/app/models/sede.model';
 import { ProviderService } from 'src/app/services/provider.service';
 import { PurchaseInvoiceService } from 'src/app/services/puchase-invoice.service';
@@ -24,6 +25,11 @@ export class PurchaseInvoicesComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
   }
+
+  onCreate() {
+    this.purchases.current$.next(new PurchaseInvoiceModel())
+  }
+
   async listStores() {
     await this._stores.listenAll().subscribe(stores => {
       this.stores = stores;

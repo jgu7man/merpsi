@@ -1,4 +1,3 @@
-import { AngularFirestore } from "@angular/fire/firestore";
 import firebase from "firebase/app";
 import { FireTime } from "./firestore.model";
 import { Product, ProductModel } from "./products.model";
@@ -7,28 +6,38 @@ import { iTax } from "./taxes.model";
 
 /** Modelo para crear una factura de compra */
 export class PurchaseInvoiceModel {
-  /** Momento de registro de la factura */
-  public registered_date: FireTime;
+  /** Folio de la factura (Generado por el proveedor) */
+  public invoice_ID: string = ''
+  /** Fecha de la compra */
+  public purshase_date: Date = new Date()
+  
+  /** Proveedor de la factura: CRF o referencia de firestore */
+  public provider: InvoiceProvider = {
+    CRF: '',
+    businessName: '',
+  }
+  /** ID de la Sede a la que se agregará la compra */
+  public store: InvoiceStore = {
+    id: '',
+    name: '',
+  }
+  
   /** Productos comprados */
   public details: iProductPurchased[] = []
 
-  /** Fecha de la compra */
-  public purshase_date: Date = new Date()
-  /** Folio de la factura (Generado por el proveedor) */
-  public invoice_ID: string = ''
   /** Método de pago */
   public payment_method: string = ''
   /** Balances y cálculos ya procesados */
   public footer: iInvoiceFooter
+  
+
+  /** UID del Manager que está agregando la compra */
+  public readonly manager: string = ''
+  /** Momento de registro de la factura */
+  public readonly registered_date: FireTime;
 
   constructor (
-    /** Proveedor de la factura: CRF o referencia de firestore */
-    public provider: firebase.firestore.DocumentReference, 
-    /** ID de la Sede a la que se agregará la compra */
-    public store: firebase.firestore.DocumentReference,
-    /** Manager que está agregando la compra */
-    public manager: firebase.firestore.DocumentReference,
-    
+    invoice?: PurchaseInvoiceModel
 	) {
 		this.registered_date = firebase.firestore.Timestamp.fromDate( new Date() );
     this.footer = {
@@ -42,6 +51,18 @@ export class PurchaseInvoiceModel {
   
   
 }
+
+export interface InvoiceProvider {
+  CRF: string,
+  businessName: string,
+}
+
+export interface InvoiceStore {
+  id: string,
+  name: string,
+}
+
+
 
 /** Modelo de consulta de una factura de compra  */
 interface iInvoice extends Omit<PurchaseInvoiceModel, "purshase_date"> {

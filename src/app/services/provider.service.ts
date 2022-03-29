@@ -25,11 +25,11 @@ export class ProviderService {
     private _alert: MxAlert,
     private _test: MxTest,
   ) { 
-    this._test.testOn( this.findProviderByCRF )
-      .then( async ( { crf } ) => {
-        const provider = await this.findProviderByCRF( crf );
-        console.log( provider )
-      })
+    // this._test.testOn( this.findProviderByCRF )
+    //   .then( async ( { crf } ) => {
+    //     const provider = await this.findProviderByCRF( crf );
+    //     console.log( provider )
+    //   })
   }
 
 
@@ -158,9 +158,12 @@ export class ProviderService {
       let providerResult = await this._afs
         .collection<iBusiness>( 'businesses' )
         .ref.where( 'CRF', '==', crf ).get()
-      let providerRef = providerResult.docs.length > 0 ? providerResult.docs[0] : null
+      
+      let provider = providerResult.docs.length > 0
+        ? providerResult.docs[ 0 ].data()
+        : null
 
-      return providerRef
+      return provider
     } catch (error: any) {
       Swal.fire({
         icon: 'error',
