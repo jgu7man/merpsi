@@ -12,8 +12,8 @@ import { MxScannerModule } from 'libs/@marxa/scanner/mx-scanner.module';
 // import { MxSliderModule } from "@marxa/slider";
 // import { MxSocialShareModule } from "@marxa/social-share";
 import { MxStorageModule } from '@marxa/storage';
-import { MxCrudPanelModule } from '@marxa/crud-panel';
 import { MxTestModule } from 'libs/@marxa/devkit/test/mx-test.module';
+import { MxCrudPanelModule } from 'libs/@marxa/crud-panel/src/public-api';
 
 @NgModule({
   exports: [
