@@ -24,7 +24,7 @@ export class SedesService {
  * @memberof SedesService
  */
 getAll(): Observable<iSede[]> {
-    return this._afs.collection<iSede>(`businesses/${this.businessCRF}/store`).valueChanges()
+    return this._afs.collection<iSede>(`businesses/${this.businessCRF}/store`).valueChanges({ ref: 'sede_id' })
       .pipe(
         catchError( error => {
         Swal.fire( {

@@ -32,7 +32,7 @@ export class SetProviderComponent implements OnInit, OnDestroy {
   public countryList: iCountry[] = []
   showForm: boolean = false
   selected: boolean = false
-  providerDR: firebase.firestore.DocumentReference<iBusiness> | undefined = undefined
+  providerRef: firebase.firestore.DocumentReference<iBusiness> | null = null
 
   provider_: iProvider | null = null
 
@@ -54,7 +54,7 @@ export class SetProviderComponent implements OnInit, OnDestroy {
   ) { }
 
   async ngOnInit(): Promise<void> {
-    this.providerDR = undefined;
+    this.providerRef = null;
     this.countryList = await this._admin.getCountry()
 
     /** nos suscribimos a los cambios de proveedor y patcheamos los valos al formulario, y le inyectamos el pais en la variable selectedCountry */
@@ -99,9 +99,11 @@ export class SetProviderComponent implements OnInit, OnDestroy {
    * Funcion que guarda el proveedor
    */
   async onSubmit() {
-    await this._provider.create(this.providerForm.getRawValue(), this.providerDR)
+    await this._provider.create(this.providerForm.getRawValue(), this.providerRef)
     Swal.fire("El proveedor se ha guardado con exito")
-    console.log(this.providerDR)
+    //console.log(this.providerRef)
+    
+
     this.submited.emit()
 
   }
@@ -122,7 +124,7 @@ export class SetProviderComponent implements OnInit, OnDestroy {
 
       } else {
         let provider = providerDoc.data()
-        this.providerDR = providerDoc.ref
+        this.providerRef = providerDoc.ref
         Swal.fire({
           text: "Encontramos a este Proveedor: " + provider?.businessName.toUpperCase() + " Deseas agregarlo?",
           icon: 'warning',

@@ -2,8 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
-import { Observable } from 'rxjs';
-import { Product, ProductModel } from 'src/app/models/products.model';
+import { add } from 'lodash';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { ProductModel } from 'src/app/models/products.model';
 import { ProviderModel } from 'src/app/models/provider.model';
 import { iSede } from 'src/app/models/sede.model';
 import { SedesService } from 'src/app/modules/admin/sedes/sedes.service';
@@ -15,6 +16,8 @@ import firebase from "firebase/app";
 import { PuchaseInvoiceService } from 'src/app/services/puchase-invoice.service';
 import { ProductPurchasedModel } from 'src/app/models/pucharce-invoice.model';
 import { FireDoc } from 'src/app/models/firestore.model';
+import { AuthService } from 'src/app/services/auth.service';
+import { iManager } from 'src/app/modules/admin/personal/manager.model';
 
 
 @Component({
@@ -30,11 +33,16 @@ export class CreateInvoiceComponent implements OnInit {
     store: new FormControl('', [Validators.required]),
     provider: new FormControl('', [Validators.required]),
     nameProvider: new FormControl('', [Validators.required]),
-    product: new FormControl('')
+    purshase_date: new FormControl('', [Validators.required]),
+    invoice_ID : new FormControl('', [Validators.required]),
+    payment_method: new FormControl('', [Validators.required]),
+
   })
 
   nameProvider: boolean = false;
   productList: ProductPurchasedModel[] = []
+  manager: iManager | null = null
+  providerRef: firebase.firestore.DocumentReference | null = null
   
 
 
@@ -45,9 +53,12 @@ export class CreateInvoiceComponent implements OnInit {
     private _alert: MxAlert,
     private _dialog: MatDialog,
     private _products: InventoryProductsService,
-    private _purchase: PuchaseInvoiceService
+    private _purchase: PuchaseInvoiceService,
+    private _auth: AuthService
   ) {
     this.stores$ = this._stores.getAll()
+    console.log(this.stores$)
+    this.manager = this._auth.userState$.value
   }
 
   async ngOnInit(): Promise<void> {
@@ -56,7 +67,8 @@ export class CreateInvoiceComponent implements OnInit {
 
   async findProvider(crf: string) {
     if (crf.length >= 8) {
-      let provider = await this._provider.findProviderByCRF(crf)
+      let providerDoc = await this._provider.findProviderByCRF(crf)
+      let provider = providerDoc.data()
       console.log(provider)
       if (provider != null) {
         Swal.fire({
@@ -69,6 +81,7 @@ export class CreateInvoiceComponent implements OnInit {
         }).then((result) => {
           if (result.isConfirmed) {
             this.nameProvider = true;
+            this.providerRef = providerDoc.ref
             this.invoiceForm.patchValue({ nameProvider: provider.businessName });
             this.invoiceForm.controls.nameProvider.disable()
 
@@ -87,10 +100,11 @@ export class CreateInvoiceComponent implements OnInit {
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
             confirmButtonText: 'agregar'
-          }).then((result) => {
+          }).then(async (result) => {
             if (result.isConfirmed) {
+              // como obtengo la ref del proveedor que se
               let newProvide = new ProviderModel(providerData.CRF, providerData.country, providerData.name, providerData.businessName, providerData.type, null)
-              this._provider.create(newProvide, providerRef)
+              this.providerRef = await this._provider.create(newProvide, providerRef)
               this.nameProvider = true;
               this.invoiceForm.patchValue({ nameProvider: providerData.businessName });
               this.invoiceForm.controls.nameProvider.disable()
@@ -140,6 +154,13 @@ export class CreateInvoiceComponent implements OnInit {
   ) {
     this.productList.push(this._purchase.addProduct(product, cant, amount))
   }
+  
+  delete(index: number) {
+    this.productList.splice(index, 1)
+  }
 
 
+  save(){
+
+  }
 }

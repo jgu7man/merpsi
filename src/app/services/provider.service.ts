@@ -8,6 +8,7 @@ import { map,catchError, tap } from 'rxjs/operators';
 import { iProvider, ProviderModel, QueryProvider } from 'src/app/models/provider.model';
 import Swal from 'sweetalert2';
 import { iBusiness } from '../models/empresa.model';
+import firebase from "firebase/app";
 
 
 @Injectable({
@@ -65,14 +66,15 @@ export class ProviderService {
    * @param {ProviderModel} provider
    * @memberof ProviderService
    */
-  async create(provider: ProviderModel, documentRef: any | null){
+  async create(provider: ProviderModel, documentRef: firebase.firestore.DocumentReference | null){
     try{
-      await this._afs.collection<ProviderModel>(`businesses/${this.businessCRF}/providers`)
-      .doc(provider.CRF)
-      .set({...provider,
+      const providerRef =  this._afs.collection<ProviderModel>(`businesses/${this.businessCRF}/providers`)
+      .doc(provider.CRF).ref
+      
+      await providerRef.set({...provider,
         businessRef: documentRef})
 
-      return
+      return providerRef
     }catch (error: any) {
       console.error(error)
       Swal.fire(
@@ -81,7 +83,7 @@ export class ProviderService {
           text: error.message
         }
       )
-      return
+      return null
     }
   }
 
@@ -139,7 +141,7 @@ export class ProviderService {
       if ( !providerDoc ) throw { message: 'No se enontró el proveedor' }
       let provider = await (new QueryProvider(providerDoc.data())) .get()
  
-      return provider
+      return providerDoc
     } catch (error: any) {
       Swal.fire({
         icon: 'error',
