@@ -7,6 +7,7 @@ import {SharedModule} from 'src/app/shared/shared.module';
 import { PurchaseInvoicesComponent } from './purchase-invoices/purchase-invoices.component';
 import { CreateInvoiceComponent } from './purchase-invoices/create-invoice/create-invoice.component';
 import { ProviderNewDialog } from './purchase-invoices/provider-new.dialog/provider-new.dialog';
+import { InvoiceConceptComponent } from './purchase-invoices/create-invoice/invoice-concept/invoice-concept.component';
 
 
 @NgModule({
@@ -16,6 +17,7 @@ import { ProviderNewDialog } from './purchase-invoices/provider-new.dialog/provi
     PurchaseInvoicesComponent,
     CreateInvoiceComponent,
     ProviderNewDialog,
+    InvoiceConceptComponent,
   ],
   imports: [
     CommonModule,

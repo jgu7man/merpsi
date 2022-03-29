@@ -1,5 +1,6 @@
 import { AngularFirestore } from "@angular/fire/firestore";
 import firebase from "firebase/app";
+import { FireTime } from "./firestore.model";
 import { Product, ProductModel } from "./products.model";
 import { iTax } from "./taxes.model";
 
@@ -7,9 +8,18 @@ import { iTax } from "./taxes.model";
 /** Modelo para crear una factura de compra */
 export class PurchaseInvoiceModel {
   /** Momento de registro de la factura */
-  public registered_date: firebase.firestore.Timestamp;
+  public registered_date: FireTime;
   /** Productos comprados */
-  public details: iProductPurchased[]
+  public details: iProductPurchased[] = []
+
+  /** Fecha de la compra */
+  public purshase_date: Date = new Date()
+  /** Folio de la factura (Generado por el proveedor) */
+  public invoice_ID: string = ''
+  /** Método de pago */
+  public payment_method: string = ''
+  /** Balances y cálculos ya procesados */
+  public footer: iInvoiceFooter
 
   constructor (
     /** Proveedor de la factura: CRF o referencia de firestore */
@@ -18,20 +28,16 @@ export class PurchaseInvoiceModel {
     public store: firebase.firestore.DocumentReference,
     /** Manager que está agregando la compra */
     public manager: firebase.firestore.DocumentReference,
-    /** Productos comprados */
-    details: ProductPurchasedModel[],
-    /** Fecha de la compra */
-    public purshase_date: Date,
-    /** Folio de la factura (Generado por el proveedor) */
-    public invoice_ID: string,
-    /** Método de pago */
-		public payment_method: string,
-    /** Balances y cálculos ya procesados */
-		public footer: iInvoiceFooter
+    
 	) {
 		this.registered_date = firebase.firestore.Timestamp.fromDate( new Date() );
-    /* Forzamos a que los details sean interface */
-    this.details = details.map( p => ({...p})) 
+    this.footer = {
+      subtotal: 0,
+      discount: 0,
+      taxes: [],
+      shipping: 0,
+      total: 0,
+    }
   }
   
   
@@ -58,6 +64,10 @@ export interface iInvoiceFooter {
 
 /** Modelo de agregado de productos a la factura de compra */
 export class ProductPurchasedModel implements Product.MainData {
+  /** Costo unitario del producto comprado*/
+  public unit_cost: number = 0
+  /** Cantidad de productos comprados */
+  public cant: number = 0
   /** Resultado de multiplicar cantidad por costo unitario del producto */
   public amount: number;
   UPC: string
@@ -68,14 +78,8 @@ export class ProductPurchasedModel implements Product.MainData {
   document_ref?: firebase.firestore.DocumentReference
 
   constructor (
-    /** Costo unitario del producto comprado*/
-    public unit_cost: number,
-    /** Cantidad de productos comprados */
-    public cant: number,
-    
-    // concept: Product.MainData,
     /** Referencia del producto comprado (Debe seleccionarse de la lista de productos registrados de la empresa) */
-    public concept: firebase.firestore.DocumentSnapshot<ProductModel>
+    concept: firebase.firestore.DocumentSnapshot<ProductModel>
   ) {
 
     let data = concept.data()!

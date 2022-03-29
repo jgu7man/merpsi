@@ -2,15 +2,19 @@
   <div class="row">
     <div class="col s12 m8">
       <form [formGroup]="invoiceForm">
+        
+        
         <mat-form-field appearance="outline" class="col s12">
           <mat-label>Sede</mat-label>
           <mat-select required placeholder="Sede" name="store">
-            <mat-option *ngFor="let sede of stores$ | async" [value]="sede.id">
-              {{sede.referencia}} <span class="small-text">({{sede.tipo}})</span>
+            <mat-option *ngFor="let sede of stores" [value]="sede">
+              {{sede.referencia || ''}} <span class="small-text">({{sede.tipo || ''}})</span>
             </mat-option>
           </mat-select>
         </mat-form-field>
-        <!-- CRF -->
+
+
+        <!-- Seleccionar proveedor -->
         <ng-container>
           <mat-form-field appearance="outline" class="col s12">
             <!-- crf del provedor -->
@@ -20,10 +24,8 @@
             <mat-error *ngIf="invoiceForm.hasError('required', 'CRF')">
               Este dato es necesario
             </mat-error>
-            <mat-error *ngIf="invoiceForm.hasError('caca', 'CRF')">
-              Esto es caca
-            </mat-error>
           </mat-form-field>
+          
           <ng-container *ngIf="nameProvider">
             <!-- Nombre del proovedor -->
             <mat-form-field appearance="outline" class="col s12">
@@ -32,8 +34,11 @@
             </mat-form-field>
           </ng-container>
         </ng-container>
-
       </form>
+
+     <!-- <app-invoice-concept
+     [product]="productSelect">
+    </app-invoice-concept> -->
 
     </div>
   </div>

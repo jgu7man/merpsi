@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ProviderModel } from 'src/app/models/provider.model';
 import { iSede } from 'src/app/models/sede.model';
 import { ProviderService } from 'src/app/services/provider.service';
+import { PurchaseInvoiceService } from 'src/app/services/puchase-invoice.service';
 import { SedesService } from '../../admin/sedes/sedes.service';
 
 @Component({
@@ -17,13 +18,14 @@ export class PurchaseInvoicesComponent implements OnInit {
   
   constructor(
     private _provider: ProviderService,
-    private _stores : SedesService
+    private _stores : SedesService,
+    public purchases: PurchaseInvoiceService
   ) { }
 
   async ngOnInit(): Promise<void> {
   }
   async listStores() {
-    await this._stores.getAll().subscribe(stores => {
+    await this._stores.listenAll().subscribe(stores => {
       this.stores = stores;
     })
   }

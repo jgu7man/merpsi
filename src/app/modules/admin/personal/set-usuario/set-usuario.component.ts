@@ -31,7 +31,7 @@ export class SetUsuarioComponent implements OnInit {
   ) {
     
     this.usuario = new ManagerModel('','','','','asesor')
-    this.sedes$ = this._sedes.getAll()
+    this.sedes$ = this._sedes.listenAll()
   }
   
   ngOnInit(): void {

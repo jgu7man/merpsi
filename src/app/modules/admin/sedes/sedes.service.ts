@@ -3,6 +3,7 @@ import { AngularFirestore } from '@angular/fire/firestore';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { FireDoc } from 'src/app/models/firestore.model';
 import Swal from 'sweetalert2';
 import { iSede } from '../../../models/sede.model';
 
@@ -17,14 +18,16 @@ export class SedesService {
     private _afs: AngularFirestore,
     private _cache: MxCache,
   ) { }
-/**
- *metodo que obtine todas las sedes de una empresa
- *
- * @return {*}  {Observable<iSede[]>}
- * @memberof SedesService
- */
-getAll(): Observable<iSede[]> {
-    return this._afs.collection<iSede>(`businesses/${this.businessCRF}/store`).valueChanges({ ref: 'sede_id' })
+  
+  /**
+  * metodo que escucha los cambios en la colección de las sedes de una empresa
+  *
+  * @return {*}  {Observable<iSede[]>}
+  * @memberof SedesService
+  */
+  listenAll(): Observable<iSede[]> {
+    return this._afs.collection<iSede>(`businesses/${this.businessCRF}/store`)
+    .valueChanges({ ref: 'sede_id' })
       .pipe(
         catchError( error => {
         Swal.fire( {
@@ -34,6 +37,18 @@ getAll(): Observable<iSede[]> {
         return of([])
       })
     )
+  }
+
+  /**
+  * metodo que regresa documentos de firestore de tipo iStore
+  *
+  * @return {*}  {Observable<iSede[]>}
+  * @memberof SedesService
+  */
+  async getAll(): Promise<FireDoc<iSede>[]> {
+    const storesRef = this._afs.collection<iSede>(`businesses/${this.businessCRF}/store`).ref
+    const storesCol = await storesRef.get()
+    return storesCol.size > 0 ? storesCol.docs : []
   }
 
   /**

@@ -16,7 +16,7 @@ export class SedesComponent implements OnInit {
     private _dialog: MatDialog,
     private _sedes: SedesService
   ) {
-    this.sedes$ = this._sedes.getAll()
+    this.sedes$ = this._sedes.listenAll()
    }
 
   ngOnInit(): void {
