@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ClientModel } from 'src/app/models/clients.model';
 
 @Component({
   selector: 'app-clients',
@@ -7,9 +8,14 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ClientsComponent implements OnInit {
 
+  clients: ClientModel[] = []
   constructor() { }
 
   ngOnInit(): void {
+  }
+
+  onDeleteItem(event: Event): void {
+
   }
 
 }

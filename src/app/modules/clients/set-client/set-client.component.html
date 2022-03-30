@@ -1,0 +1,108 @@
+<div class="container">
+  <div class="row">
+    <div class="col s12 m8">
+      <form class="row"[formGroup]="clientForm">
+        <!-- NOMBRE -->
+      <mat-form-field appearance="outline" class="col s12">
+        <mat-label>Nombre</mat-label>
+        <input
+        matInput
+        type="text"
+        name="nombre"
+        formControlName="nombre"
+        required
+        >
+        <mat-error *ngIf="clientForm.hasError('required', 'nombre')">
+        Nombre es necesario
+        </mat-error>
+      </mat-form-field>
+
+      <!-- CELULAR -->
+      <mat-form-field appearance="outline" class="col s12">
+        <mat-label>Celular</mat-label>
+        <input
+        matInput
+        type="text"
+        name="celular"
+        formControlName="celular"
+        required
+        maxlength="10"
+        >
+        <mat-error *ngIf="clientForm.hasError('required', 'celular')">
+        Por favor déjanos tu número de celular para comunicarnos
+        </mat-error>
+        <mat-error *ngIf="clientForm.hasError('prefix', 'celular')">
+          El número de celular debe iniciar con el número 3 para ser válido
+        </mat-error>
+        <mat-error *ngIf="clientForm.hasError('minlength', 'celular')">
+          El número de celular debe contener al menos 10 dígitos
+        </mat-error>
+        <mat-error *ngIf="clientForm.hasError('maxlength', 'celular')">
+          El número de celular no debe tener más de 10 dígitos
+        </mat-error>
+      </mat-form-field>
+
+      <!-- CIUDAD -->
+      <!-- <mat-form-field appearance="outline" class="col s12">
+        <mat-label>Ciudad</mat-label>
+        <input type="text"
+              matInput
+              formControlName="ciudad"
+              placeholder="Escribe la ciudad donde te encuentras"
+              [matAutocomplete]="autoGroup">
+          <mat-autocomplete #autoGroup="matAutocomplete"
+          (optionSelected)="onCitySelected($event)">
+            <mat-optgroup *ngFor="let deptoGroup of colombia_states | async" [label]="deptoGroup.departamento">
+              <mat-option *ngFor="let ciudad of deptoGroup.ciudades" [value]="ciudad">
+                {{ciudad}}
+              </mat-option>
+          </mat-optgroup>
+        </mat-autocomplete>
+      </mat-form-field> -->
+
+      <!-- EMAIL -->
+      <mat-form-field appearance="outline" class="col s12">
+        <mat-label>Email</mat-label>
+        <input
+        matInput
+        type="email"
+        name="email"
+        formControlName="email"
+        required
+        >
+        <mat-error *ngIf="clientForm.hasError('email', 'email')">
+        Ingresa un formato de Email correcto
+        </mat-error>
+      </mat-form-field>
+
+      <!-- CEDULA -->
+      <mat-form-field appearance="outline" class="col s12">
+        <mat-label>Cedula</mat-label>
+        <input
+        matInput
+        type="text"
+        name="cedula"
+        formControlName="cedula"
+        >
+      </mat-form-field>
+
+      <!-- FACEBOOK ID -->
+      <mat-form-field appearance="outline" class="col s12">
+        <mat-label>Facebook ID</mat-label>
+        <input matInput
+              type="text"
+              name="facebookId"
+              formControlName="facebookId"
+        >
+      </mat-form-field>
+      </form>
+    </div>
+    <div class="col s12 m4">
+      <button mat-raised-button color='primary'
+      (click)="onSubmit()"
+      [disabled]="clientForm.invalid || clientForm.pristine"
+      >Guardar</button>
+    </div>
+  </div>
+</div>
+
