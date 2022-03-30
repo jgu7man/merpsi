@@ -2,24 +2,21 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
-import { add } from 'lodash';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { Product, ProductModel } from 'src/app/models/products.model';
-import { ProviderModel } from 'src/app/models/provider.model';
 import { iSede } from 'src/app/models/sede.model';
 import { SedesService } from 'src/app/modules/admin/sedes/sedes.service';
 import { InventoryProductsService } from 'src/app/modules/inventory/services/products.service';
 import { ProviderService } from 'src/app/services/provider.service';
-import Swal from 'sweetalert2';
+import  Swal from 'sweetalert2';
 import { ProviderNewDialog } from '../provider-new.dialog/provider-new.dialog';
 import firebase from "firebase/app";
 import { PurchaseInvoiceService } from 'src/app/services/puchase-invoice.service';
-import { InvoiceProvider, InvoiceStore, ProductPurchasedModel } from 'src/app/models/pucharce-invoice.model';
+import { InvoiceStore, ProductPurchasedModel } from 'src/app/models/pucharce-invoice.model';
 import { FireDoc } from 'src/app/models/firestore.model';
 import { AuthService } from 'src/app/services/auth.service';
 import { iManager } from 'src/app/modules/admin/personal/manager.model';
 import { MatSelectChange } from '@angular/material/select';
-import { S } from '@angular/cdk/keycodes';
 
 
 @Component({
@@ -31,6 +28,7 @@ export class CreateInvoiceComponent implements OnInit {
 
   stores$: Observable<iSede[]>
   storeSelected?: InvoiceStore
+  
 
   invoiceForm: FormGroup = new FormGroup({
     store: new FormControl('', [Validators.required]),
@@ -41,15 +39,11 @@ export class CreateInvoiceComponent implements OnInit {
 
   })
 
-  // nameProvider: boolean = false;
   productList: ProductPurchasedModel[] = []
   manager: iManager | null = null
   providerRef: firebase.firestore.DocumentReference | null = null
   productSelect : FireDoc<Product.DataReference> | null = null
   
-
-
-
   constructor(
     private _provider: ProviderService,
     private _stores: SedesService,
@@ -165,5 +159,16 @@ export class CreateInvoiceComponent implements OnInit {
 
   save(){
 
+  }
+
+  async findInvoice( invoice_id: string ){
+    if (invoice_id.length>5){
+      const validation = await this.purchase.findInvoice( invoice_id )
+      if (validation) {
+        this.invoiceForm.controls.invoice_ID.setErrors( { exist: true } )
+      } else {
+        this.purchase.updateCurrent('invoice_ID',invoice_id)
+      }
+    }
   }
 }

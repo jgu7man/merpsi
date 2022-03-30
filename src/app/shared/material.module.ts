@@ -101,6 +101,7 @@ import {ClipboardModule} from '@angular/cdk/clipboard';
         MatToolbarModule,
         MatTooltipModule,
         MatTreeModule,
+        MatDatepickerModule
     ]
 })
 export class MaterialModule {}

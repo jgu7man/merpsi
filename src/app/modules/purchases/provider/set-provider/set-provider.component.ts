@@ -20,7 +20,7 @@ import { ProviderService } from 'src/app/services/provider.service';
 export class SetProviderComponent implements OnInit, OnDestroy {
 
   private _providerSuscription?: Subscription
-  private _provider_: BehaviorSubject<ProviderModel> = new BehaviorSubject(new ProviderModel('', '', '', '', 'Jurídica', null));
+  private _provider_: BehaviorSubject<ProviderModel> = new BehaviorSubject(new ProviderModel());
 
   @Input() set provider(pro: ProviderModel) { this._provider_.next(pro); }
   get provider() { return this._provider_.getValue() }
@@ -67,20 +67,16 @@ export class SetProviderComponent implements OnInit, OnDestroy {
         //se valida que si la data que se inyecta al formulario no viene vacia se muestra todo el formulario deshabilitado
         if (prv.CRF != '') {
           this.showForm = true;
-          // valida que si el proveedor es una empresa registrada en merpsi actualiza los datos del mismo en caso de tener algun cambio
+          // valida que si el proveedor es una empresa registrada en merpsi actualiza los datos del mismo
           if (prv.businessRef != null) {
 
-            let businessDocRef = await this._business.validateBusiness(prv.CRF)
-            let businessUpdate = businessDocRef!.data()!
-            if (businessUpdate.CRF != prv.CRF || businessUpdate.businessName != prv.businessName ||
-              businessUpdate.country != prv.country || businessUpdate.name != prv.name) {
-              let business = new ProviderModel(businessUpdate.CRF, businessUpdate.country, businessUpdate.name, businessUpdate.businessName, businessUpdate.type, null)
-              this._provider.create(business, businessDocRef!.ref)
+            let provider: ProviderModel | null = await this._business.validateBusiness(prv.CRF)
+            if (provider) {
+              this._provider.create(provider, provider.businessRef!)
               console.log("el proveedor se acaba de actualizadar")
-              this.providerForm.patchValue(business)
+              this.providerForm.patchValue(provider)
+              this.disableForm()
             }
-            this.disableForm()
-
           } else {
             this.providerForm.controls.CRF.disable()
           }
@@ -123,10 +119,9 @@ export class SetProviderComponent implements OnInit, OnDestroy {
         this.cleanForm()
 
       } else {
-        let provider = providerDoc.data()
-        this.providerRef = providerDoc.ref
+        
         Swal.fire({
-          text: "Encontramos a este Proveedor: " + provider?.businessName.toUpperCase() + " Deseas agregarlo?",
+          text: "Encontramos a este Proveedor: " + providerDoc?.businessName.toUpperCase() + " Deseas agregarlo?",
           icon: 'warning',
           showCancelButton: true,
           confirmButtonColor: '#3085d6',
@@ -135,10 +130,11 @@ export class SetProviderComponent implements OnInit, OnDestroy {
         }).then(async (result) => {
           if (result.isConfirmed) {
             /** Mostramos el formulario completo prellenado y deshabilitado */
-            this.providerForm.patchValue(provider!)
-            this.selectedCountry = this.countryList.find(c => c.alpha3 == provider!.country)
+            this.providerForm.patchValue(providerDoc!)
+            this.selectedCountry = this.countryList.find(c => c.alpha3 == providerDoc!.country)
             this.disableForm()
             this.showForm = true
+            this.providerRef = providerDoc!.businessRef
           } else {
             /** Mostramos el resto de los campos del formulario vacio */
             this.showForm = true

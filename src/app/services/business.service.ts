@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
 import Swal from 'sweetalert2';
 import { iBusiness } from '../models/empresa.model';
+import { ProviderModel } from '../models/provider.model';
 
 @Injectable({
   providedIn: 'root'
@@ -23,8 +24,9 @@ export class BusinessService {
   async validateBusiness(CRF: string) {
     try{
       let business_result = await this._afs.doc<iBusiness>(`businesses/${CRF}`).ref.get();
+        let provider = business_result.exists ? new ProviderModel(business_result.data()!,business_result.ref) : null
        
-      return business_result.exists ? business_result : null
+      return provider
      
     }catch (error: any){
       Swal.fire( {

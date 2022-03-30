@@ -11,7 +11,7 @@ export class DashboardService {
     private _cache: MxCache,
     private _afs: AngularFirestore,
   ) { }
-  
+
   /** Consulta en sessionStorage el ID de la empresa en la cuál se está presente */
   get CRF() {
     const CRF = this._cache.getDataKey( 'eid' )

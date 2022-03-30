@@ -9,6 +9,7 @@ import { iProvider, ProviderModel, QueryProvider } from 'src/app/models/provider
 import Swal from 'sweetalert2';
 import { iBusiness } from '../models/empresa.model';
 import firebase from "firebase/app";
+import { FireRef } from '../models/firestore.model';
 
 
 @Injectable({
@@ -45,7 +46,7 @@ export class ProviderService {
         map(list => {
           const providers: ProviderModel[] = []
           list.forEach( prv => {
-            providers.push(new ProviderModel(prv.CRF,prv.country,prv.name,prv.businessName,prv.type,prv.businessRef))
+            providers.push(new ProviderModel(prv))
           })
           return providers
         }),
@@ -66,7 +67,7 @@ export class ProviderService {
    * @param {ProviderModel} provider
    * @memberof ProviderService
    */
-  async create(provider: ProviderModel, documentRef: firebase.firestore.DocumentReference | null){
+  async create(provider: ProviderModel, documentRef: FireRef<iBusiness> | null){
     try{
       const providerRef =  this._afs.collection<ProviderModel>(`businesses/${this.businessCRF}/providers`)
       .doc(provider.CRF).ref

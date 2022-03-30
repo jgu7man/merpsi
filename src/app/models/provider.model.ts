@@ -1,5 +1,6 @@
 import { BusinessModel, iBusiness, TAXPAYER_TYPE } from "./empresa.model";
 import firebase from 'firebase/app'
+import { FireRef } from "./firestore.model";
 
 export class QueryProvider {
   public CRF: string
@@ -43,17 +44,26 @@ export class QueryProvider {
 
 export class ProviderModel {
     public registered: Date 
+    /** Clave de Registro Fiscal */
+    public CRF: string
+    public country: string
+    public name: string
+    /**Razon social */
+    public businessName: string
+    public type: TAXPAYER_TYPE
+    public businessRef: FireRef<iBusiness> | null
     constructor(
-      /** Clave de Registro Fiscal */
-      public CRF: string,
-      public country: string,
-      public name: string,
-      /**Razon social */
-      public businessName: string,
-      public type: TAXPAYER_TYPE,
-      public businessRef: firebase.firestore.DocumentReference | null
+      provider?: ProviderModel | iBusiness,
+      businessRef?: FireRef<iBusiness> | null
+
     ) {
         this.registered = new Date()
+        this.CRF = provider?.CRF || ''
+        this.country = provider?.country || ''
+        this.name = provider?.name || ''
+        this.businessName = provider?.businessName || ''
+        this.type = provider?.type || 'Jurídica'
+        this.businessRef = businessRef  || null
     }
 
 }

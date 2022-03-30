@@ -65,7 +65,7 @@ export interface InvoiceStore {
 
 
 /** Modelo de consulta de una factura de compra  */
-interface iInvoice extends Omit<PurchaseInvoiceModel, "purshase_date"> {
+export interface iInvoice extends Omit<PurchaseInvoiceModel, "purshase_date"> {
 	purshase_date: firebase.firestore.Timestamp;
 }
 

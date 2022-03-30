@@ -1,9 +1,12 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { ProductModel } from '../models/products.model';
-import { ProductPurchasedModel, PurchaseInvoiceModel } from '../models/pucharce-invoice.model';
+import { iInvoice, ProductPurchasedModel, PurchaseInvoiceModel } from '../models/pucharce-invoice.model';
 import { FireDoc } from '../models/firestore.model';
 import { BehaviorSubject } from 'rxjs';
+import { DashboardService } from '../modules/dashboard/dashboard.service';
+import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
+import Swal from 'sweetalert2';
 
 
 @Injectable({
@@ -12,10 +15,13 @@ import { BehaviorSubject } from 'rxjs';
 export class PurchaseInvoiceService {
 
   current$ = new BehaviorSubject<PurchaseInvoiceModel | null>(null)
-
+  businessCRF: string = this._cache.getDataKey('eid')!
   constructor(
-    private _afs: AngularFirestore
-  ) { }
+    private _afs: AngularFirestore,
+    private _cache: MxCache,
+    private _dashboard: DashboardService
+  ) { 
+  }
 
   create( ){
     
@@ -78,7 +84,20 @@ export class PurchaseInvoiceService {
     }
   }
   
+ async findInvoice( invoiceId: string){
+   try {
+     
+     const invoiceResult = await this._afs.doc<iInvoice>(`businesses/${this.businessCRF}/purchases/${invoiceId}`).ref.get()
+     return invoiceResult.exists ? invoiceResult : null
 
+   }catch (error: any) {
+    Swal.fire( {
+      icon: 'error',
+      text: error.message
+    } )
+   return null
+   }
+ }
 }
 
 // type PropType<TObj, TProp extends keyof TObj> = TObj[TProp];
