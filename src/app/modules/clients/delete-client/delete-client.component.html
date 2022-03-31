@@ -1,0 +1,12 @@
+<p mat-dialog-title>¿En verdad deseas eliminar esta Cliente?</p>
+<mat-dialog-actions
+style="display: flex; justify-content: space-around;">
+    <button mat-raised-button
+    color="accent"
+    (click)="dialog.close()"
+    >Cancelar</button>
+    <button mat-raised-button
+    (click)="dialog.close(true)"
+    color="warn"
+    >Confirmar</button>
+</mat-dialog-actions>

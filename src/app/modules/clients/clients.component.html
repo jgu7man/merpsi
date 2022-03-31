@@ -2,7 +2,7 @@
   <div class="row">
     <div class="col s12">
       <mx-crud-panel
-      listName="Personal"
+      listName="Clientes"
       [selectTemplate]="select"
       [addTemplate]="add"
       [list]="clients"
@@ -12,11 +12,11 @@
       (onDelete)="onDeleteItem($event)"
        >
         <ng-template #add>
-          <app-set-client (submited)="crudPanel.closeAll()" ></app-set-client>
+          <app-set-client (saved)="crudPanel.closeAll()" ></app-set-client>
         </ng-template>
 
         <ng-template #select let-client="item" >
-          <app-set-client (submited)="crudPanel.closeAll()" [client]="client"></app-set-client>
+          <app-set-client (saved)="crudPanel.closeAll()" [client]="client"></app-set-client>
         </ng-template>
       </mx-crud-panel>
     </div>

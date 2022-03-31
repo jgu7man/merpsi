@@ -8,11 +8,11 @@
         <input
         matInput
         type="text"
-        name="nombre"
-        formControlName="nombre"
+        name="name"
+        formControlName="name"
         required
         >
-        <mat-error *ngIf="clientForm.hasError('required', 'nombre')">
+        <mat-error *ngIf="clientForm.hasError('required', 'name')">
         Nombre es necesario
         </mat-error>
       </mat-form-field>
@@ -23,42 +23,24 @@
         <input
         matInput
         type="text"
-        name="celular"
-        formControlName="celular"
+        name="cellphone"
+        formControlName="cellphone"
         required
         maxlength="10"
         >
-        <mat-error *ngIf="clientForm.hasError('required', 'celular')">
+        <mat-error *ngIf="clientForm.hasError('required', 'cellphone')">
         Por favor déjanos tu número de celular para comunicarnos
         </mat-error>
-        <mat-error *ngIf="clientForm.hasError('prefix', 'celular')">
+        <mat-error *ngIf="clientForm.hasError('prefix', 'cellphone')">
           El número de celular debe iniciar con el número 3 para ser válido
         </mat-error>
-        <mat-error *ngIf="clientForm.hasError('minlength', 'celular')">
+        <mat-error *ngIf="clientForm.hasError('minlength', 'cellphone')">
           El número de celular debe contener al menos 10 dígitos
         </mat-error>
-        <mat-error *ngIf="clientForm.hasError('maxlength', 'celular')">
+        <mat-error *ngIf="clientForm.hasError('maxlength', 'cellphone')">
           El número de celular no debe tener más de 10 dígitos
         </mat-error>
       </mat-form-field>
-
-      <!-- CIUDAD -->
-      <!-- <mat-form-field appearance="outline" class="col s12">
-        <mat-label>Ciudad</mat-label>
-        <input type="text"
-              matInput
-              formControlName="ciudad"
-              placeholder="Escribe la ciudad donde te encuentras"
-              [matAutocomplete]="autoGroup">
-          <mat-autocomplete #autoGroup="matAutocomplete"
-          (optionSelected)="onCitySelected($event)">
-            <mat-optgroup *ngFor="let deptoGroup of colombia_states | async" [label]="deptoGroup.departamento">
-              <mat-option *ngFor="let ciudad of deptoGroup.ciudades" [value]="ciudad">
-                {{ciudad}}
-              </mat-option>
-          </mat-optgroup>
-        </mat-autocomplete>
-      </mat-form-field> -->
 
       <!-- EMAIL -->
       <mat-form-field appearance="outline" class="col s12">
@@ -81,8 +63,8 @@
         <input
         matInput
         type="text"
-        name="cedula"
-        formControlName="cedula"
+        name="cip"
+        formControlName="cip"
         >
       </mat-form-field>
 
@@ -100,7 +82,7 @@
     <div class="col s12 m4">
       <button mat-raised-button color='primary'
       (click)="onSubmit()"
-      [disabled]="clientForm.invalid || clientForm.pristine"
+      [disabled]="clientForm.invalid"
       >Guardar</button>
     </div>
   </div>
