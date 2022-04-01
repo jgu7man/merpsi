@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { FireDoc } from 'src/app/models/firestore.model';
-import { ProductPurchasedModel } from 'src/app/models/pucharce-invoice.model';
+import { ProductInvoiceModel } from 'src/app/models/products.model';
 
 @Component({
   selector: 'app-invoice-concept',
@@ -10,7 +10,7 @@ import { ProductPurchasedModel } from 'src/app/models/pucharce-invoice.model';
 })
 export class InvoiceConceptComponent implements OnInit {
 
-  @Input() concept: FireDoc<ProductPurchasedModel> | null = null
+  @Input() concept: FireDoc<ProductInvoiceModel> | null = null
 
   formAddProduct: FormGroup = new FormGroup({
     product: new FormControl('', [Validators.required]),

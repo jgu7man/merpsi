@@ -1,0 +1,75 @@
+<div class="container">
+  <div class="row">
+    <div class="col s6 m8">
+      <form [formGroup]="salesForm">
+        <!-- clientes -->
+        <mat-form-field appearance="outline" class="col s12">
+          <mat-label>Nro de Factura</mat-label>
+          <input matInput type="text" name="client" formControlName="client"
+          (blur)="findClient(salesForm.controls.client.value)">
+          <mat-error *ngIf="salesForm.hasError('required', 'invoice_ID')">
+            Este dato es necesario
+          </mat-error>
+        </mat-form-field>
+        <!-- fecha de emision -->
+        <mat-form-field appearance="outline" class="col s12">
+          <mat-label>Fecha de Emision</mat-label>
+          <input
+          matInput
+          formControlName="date_emition"
+          [matDatepicker]="emition">
+          <mat-datepicker-toggle matSuffix [for]="emition"></mat-datepicker-toggle>
+          <mat-datepicker #emition startView="year"
+          ></mat-datepicker>
+        </mat-form-field>
+        <!-- fecha de Vencimiento -->
+        <mat-form-field appearance="outline" class="col s12">
+          <mat-label>Fecha de Emision</mat-label>
+          <input
+          matInput
+          formControlName="date_expiration"
+          [matDatepicker]="expire">
+          <mat-datepicker-toggle matSuffix [for]="expire"></mat-datepicker-toggle>
+          <mat-datepicker #expire startView="year"
+          ></mat-datepicker>
+        </mat-form-field>
+        <!-- Vendedor -->
+        <mat-form-field appearance="outline" class="col s12">
+          <mat-label>Vendedor</mat-label>
+          <input matInput type="text" name="seller" formControlName="seller"
+          (blur)="findClient(salesForm.controls.seller.value)">
+          <mat-error *ngIf="salesForm.hasError('required', 'seller')">
+            Este dato es necesario
+          </mat-error>
+        </mat-form-field>
+        <!-- Moneda -->
+        <mat-form-field appearance="outline" class="col s12">
+          <mat-label>Moneda</mat-label>
+          <input matInput type="text" name="coin" formControlName="coin"
+          (blur)="findClient(salesForm.controls.seller.value)">
+          <mat-error *ngIf="salesForm.hasError('required', 'coin')">
+            Este dato es necesario
+          </mat-error>
+        </mat-form-field>
+        <!-- metodos de pago -->
+        <mat-form-field appearance="outline" class="col s12">
+          <mat-label>Metodo de Pago</mat-label>
+          <input matInput type="text" name="payment_method" formControlName="payment_method"
+          (blur)="findClient(salesForm.controls.seller.value)">
+          <mat-error *ngIf="salesForm.hasError('required', 'payment_method')">
+            Este dato es necesario
+          </mat-error>
+        </mat-form-field>
+      </form>
+    </div>
+    <div class="row">
+      <div class="col s12">
+        <button mat-raised-button color="primary" 
+        [disabled]="salesForm.invalid"
+        (click)="onSubmit()">
+          guardar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

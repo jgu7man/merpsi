@@ -3,7 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
 import { Observable } from 'rxjs';
-import { Product, ProductModel } from 'src/app/models/products.model';
+import { Product, ProductInvoiceModel, ProductModel } from 'src/app/models/products.model';
 import { iSede } from 'src/app/models/sede.model';
 import { SedesService } from 'src/app/modules/admin/sedes/sedes.service';
 import { InventoryProductsService } from 'src/app/modules/inventory/services/products.service';
@@ -12,11 +12,11 @@ import  Swal from 'sweetalert2';
 import { ProviderNewDialog } from '../provider-new.dialog/provider-new.dialog';
 import firebase from "firebase/app";
 import { PurchaseInvoiceService } from 'src/app/services/puchase-invoice.service';
-import { InvoiceStore, ProductPurchasedModel } from 'src/app/models/pucharce-invoice.model';
 import { FireDoc } from 'src/app/models/firestore.model';
 import { AuthService } from 'src/app/services/auth.service';
 import { iManager } from 'src/app/modules/admin/personal/manager.model';
 import { MatSelectChange } from '@angular/material/select';
+import { InvoiceStore } from 'src/app/models/invoice.model';
 
 
 @Component({
@@ -39,7 +39,7 @@ export class CreateInvoiceComponent implements OnInit {
 
   })
 
-  productList: ProductPurchasedModel[] = []
+  productList: ProductInvoiceModel[] = []
   manager: iManager | null = null
   providerRef: firebase.firestore.DocumentReference | null = null
   productSelect : FireDoc<Product.DataReference> | null = null

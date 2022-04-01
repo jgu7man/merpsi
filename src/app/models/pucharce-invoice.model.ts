@@ -1,13 +1,10 @@
 import firebase from "firebase/app";
-import { FireTime } from "./firestore.model";
-import { Product, ProductModel } from "./products.model";
-import { iTax } from "./taxes.model";
+import { iInvoiceFooter, InvoiceModel, InvoiceStore } from "./invoice.model";
+import { ProductInvoiceModel } from "./products.model";
 
 
 /** Modelo para crear una factura de compra */
-export class PurchaseInvoiceModel {
-  /** Folio de la factura (Generado por el proveedor) */
-  public invoice_ID: string = ''
+export class PurchaseInvoiceModel implements InvoiceModel{
   /** Fecha de la compra */
   public purshase_date: Date = new Date()
   
@@ -16,26 +13,10 @@ export class PurchaseInvoiceModel {
     CRF: '',
     businessName: '',
   }
-  /** ID de la Sede a la que se agregará la compra */
   public store: InvoiceStore = {
     id: '',
     name: '',
   }
-  
-  /** Productos comprados */
-  public details: iProductPurchased[] = []
-
-  /** Método de pago */
-  public payment_method: string = ''
-  /** Balances y cálculos ya procesados */
-  public footer: iInvoiceFooter
-  
-
-  /** UID del Manager que está agregando la compra */
-  public readonly manager: string = ''
-  /** Momento de registro de la factura */
-  public readonly registered_date: FireTime;
-
   constructor (
     invoice?: PurchaseInvoiceModel
 	) {
@@ -48,6 +29,13 @@ export class PurchaseInvoiceModel {
       total: 0,
     }
   }
+  public invoice_ID?: string ;
+  public document_date?: Date ;
+  public details?: ProductInvoiceModel[] ;
+  public payment_method?: string ;
+  public footer?: iInvoiceFooter ;
+  public manager?: string ;
+  public registered_date: Date | firebase.firestore.Timestamp;
   
   
 }
@@ -57,65 +45,16 @@ export interface InvoiceProvider {
   businessName: string,
 }
 
-export interface InvoiceStore {
-  id: string,
-  name: string,
-}
-
-
 
 /** Modelo de consulta de una factura de compra  */
 export interface iInvoice extends Omit<PurchaseInvoiceModel, "purshase_date"> {
 	purshase_date: firebase.firestore.Timestamp;
 }
 
-/** Modelo de consulta de balances de factura */
-export interface iInvoiceFooter {
-  /** Suma de los montos de los productos */
-  subtotal: number;
-  /** Descuento aplicado a la compra en moneda */
-  discount: number;
-  /** Lista de impuestos aplicados a la compra */
-  taxes: iTax[];
-  /** Costo generado por envío */
-  shipping: number;
-  /** Total de restar descuentos e impuestos y agregado de costo de envío */
-	total: number;
-}
-
 /** Modelo de agregado de productos a la factura de compra */
-export class ProductPurchasedModel implements Product.MainData {
-  /** Costo unitario del producto comprado*/
-  public unit_cost: number = 0
-  /** Cantidad de productos comprados */
-  public cant: number = 0
-  /** Resultado de multiplicar cantidad por costo unitario del producto */
-  public amount: number;
-  UPC: string
-  reference: string
-  description: string
-  brand: string
-  measure_unit: string
-  document_ref?: firebase.firestore.DocumentReference
 
-  constructor (
-    /** Referencia del producto comprado (Debe seleccionarse de la lista de productos registrados de la empresa) */
-    concept: firebase.firestore.DocumentSnapshot<ProductModel>
-  ) {
-
-    let data = concept.data()!
-
-		this.amount = this.unit_cost * this.cant;
-    this.UPC = data.UPC
-    this.reference = data.reference
-    this.description = data.description
-    this.brand = data.brand
-    this.measure_unit = data.measure_unit
-    this.document_ref = concept.ref
-	}
-}
-
-
-interface iProductPurchased extends ProductPurchasedModel {}
+interface iProductPurchased extends ProductInvoiceModel {}
 
 interface iPurchaseInvoice extends PurchaseInvoiceModel {}
+
+

@@ -1,19 +1,21 @@
-import * as firebase from "firebase"
+import firebase from "firebase"
 import { FireTime } from "./firestore.model"
-import { ProductPurchasedModel } from "./pucharce-invoice.model"
+import { Product, ProductModel } from "./products.model"
 import { iTax } from "./taxes.model"
 
 export class InvoiceModel {
+  /**folio de la factura */
   public invoice_ID?: string = ''
+  /** fecha de la factura */
   public document_date?: Date = new Date()
-  public store?: InvoiceStore = {
-    id: '',
-    name: '',
-  }
-  public details?: ProductPurchasedModel[] = []
+  /** metodos de pagos */
   public payment_method?: string = ''
+
+/** calculos de totales de la factura */
   public footer?: iInvoiceFooter
+  /** personal que registro la factura */
   public readonly manager?: string = ''
+  /**fecha de registro */
   public readonly registered_date: FireTime | Date
   constructor (
     invoice?: InvoiceModel
@@ -47,3 +49,35 @@ export interface InvoiceStore {
   id: string,
   name: string,
 }
+
+export class ProductInvoiceModel implements Product.MainData {
+  /** Costo unitario del producto comprado*/
+  public unit_cost: number = 0
+  /** Cantidad de productos comprados */
+  public cant: number = 0
+  /** Resultado de multiplicar cantidad por costo unitario del producto */
+  public amount: number;
+  UPC: string
+  reference: string
+  description: string
+  brand: string
+  measure_unit: string
+  document_ref?: firebase.firestore.DocumentReference
+
+  constructor (
+    /** Referencia del producto comprado (Debe seleccionarse de la lista de productos registrados de la empresa) */
+    concept: firebase.firestore.DocumentSnapshot<ProductModel>
+  ) {
+
+    let data = concept.data()!
+
+		this.amount = this.unit_cost * this.cant;
+    this.UPC = data.UPC
+    this.reference = data.reference
+    this.description = data.description
+    this.brand = data.brand
+    this.measure_unit = data.measure_unit
+    this.document_ref = concept.ref
+	}
+}
+

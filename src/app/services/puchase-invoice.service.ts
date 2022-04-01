@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
-import { ProductModel } from '../models/products.model';
-import { iInvoice, ProductPurchasedModel, PurchaseInvoiceModel } from '../models/pucharce-invoice.model';
+import { ProductInvoiceModel, ProductModel } from '../models/products.model';
+import { iInvoice, PurchaseInvoiceModel } from '../models/pucharce-invoice.model';
 import { FireDoc } from '../models/firestore.model';
 import { BehaviorSubject } from 'rxjs';
 import { DashboardService } from '../modules/dashboard/dashboard.service';
@@ -40,14 +40,14 @@ export class PurchaseInvoiceService {
       //   ]
       // })
       
-      const details = this.current$.value.details
-      details.push( new ProductPurchasedModel( productRef) )
+      const details = this.current$.value.details!
+      details.push( new ProductInvoiceModel( productRef) )
       this.current$.next({
         ...this.current$.value,
         details
       }) 
     }
-    return new ProductPurchasedModel(productRef)
+    return new ProductInvoiceModel(productRef)
 
   }
 
@@ -66,7 +66,7 @@ export class PurchaseInvoiceService {
 
       this.current$.next({
         ...this.current$.value,
-        details: this.current$.value.details.filter( c => c.UPC !== UPC)
+        details: this.current$.value.details!.filter( c => c.UPC !== UPC)
       })
     }
   }
