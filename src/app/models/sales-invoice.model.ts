@@ -9,6 +9,7 @@ export class SalesInvoiceModel implements InvoiceModel {
   public client: FireDoc<ClientModel> | ''
   public seller: string | ''
   public date_expiration : firebase.firestore.Timestamp | ''
+  public currency: string | ''
   constructor (
     salesI?:SalesInvoiceModel
     ) {
@@ -16,11 +17,12 @@ export class SalesInvoiceModel implements InvoiceModel {
       this.client = salesI?.client || ''
       this.seller = salesI?.seller || ''
       this.date_expiration = salesI?.date_expiration || ''
+      this.currency = salesI?.currency || ''
     }
     
     public invoice_ID?: string;
     public document_date?: Date;
-    public store?: InvoiceStore;
+    //public store?: InvoiceStore;
     public details?: ProductInvoiceSalesModel[];
     public payment_method?: string;
     public footer?: iInvoiceFooter;

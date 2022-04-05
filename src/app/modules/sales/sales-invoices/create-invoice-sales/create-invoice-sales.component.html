@@ -24,7 +24,7 @@
         </mat-form-field>
         <!-- fecha de Vencimiento -->
         <mat-form-field appearance="outline" class="col s12">
-          <mat-label>Fecha de Emision</mat-label>
+          <mat-label>Fecha de Vencimiento</mat-label>
           <input
           matInput
           formControlName="date_expiration"
@@ -33,11 +33,20 @@
           <mat-datepicker #expire startView="year"
           ></mat-datepicker>
         </mat-form-field>
+        <!-- cliente -->
+        <mat-form-field appearance="outline" class="col s12">
+          <mat-label>cliente</mat-label>
+          <input matInput type="text" name="client" formControlName="seller"
+          >
+          <mat-error *ngIf="salesForm.hasError('required', 'seller')">
+            Este dato es necesario
+          </mat-error>
+        </mat-form-field>
         <!-- Vendedor -->
         <mat-form-field appearance="outline" class="col s12">
           <mat-label>Vendedor</mat-label>
           <input matInput type="text" name="seller" formControlName="seller"
-          (blur)="findClient(salesForm.controls.seller.value)">
+          >
           <mat-error *ngIf="salesForm.hasError('required', 'seller')">
             Este dato es necesario
           </mat-error>
@@ -45,8 +54,8 @@
         <!-- Moneda -->
         <mat-form-field appearance="outline" class="col s12">
           <mat-label>Moneda</mat-label>
-          <input matInput type="text" name="coin" formControlName="coin"
-          (blur)="findClient(salesForm.controls.seller.value)">
+          <input matInput type="text" name="coin" formControlName="currency"
+          >
           <mat-error *ngIf="salesForm.hasError('required', 'coin')">
             Este dato es necesario
           </mat-error>
@@ -55,7 +64,7 @@
         <mat-form-field appearance="outline" class="col s12">
           <mat-label>Metodo de Pago</mat-label>
           <input matInput type="text" name="payment_method" formControlName="payment_method"
-          (blur)="findClient(salesForm.controls.seller.value)">
+          >
           <mat-error *ngIf="salesForm.hasError('required', 'payment_method')">
             Este dato es necesario
           </mat-error>

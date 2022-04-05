@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormControlName, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-create-invoice-sales',
@@ -13,7 +13,7 @@ export class CreateInvoiceSalesComponent implements OnInit {
     date_expiration: new FormControl( '' ),
     date_emition: new FormControl( '' ),
     seller: new FormControl( '' ),
-    coin: new FormControl( '' ),
+    currency: new FormControl( '' ),
     payment_method: new FormControl( '' )
 
   })
