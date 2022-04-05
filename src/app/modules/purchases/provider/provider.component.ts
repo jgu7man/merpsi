@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
+import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import {ProviderModel} from 'src/app/models/provider.model';
 import { ProviderService } from 'src/app/services/provider.service';
 import Swal from 'sweetalert2';
@@ -12,9 +13,11 @@ import Swal from 'sweetalert2';
 export class ProviderComponent implements OnInit {
 
   providers: ProviderModel[] = [];
+  businessRef = this._cache.getDataKey('eid')
   constructor(
     private _provider: ProviderService,
-    private _dialog: MatDialog
+    private _dialog: MatDialog,
+    private _cache: MxCache,
   ) {
 
     this._provider.getAll().subscribe(provider => {

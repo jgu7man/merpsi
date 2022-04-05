@@ -21,7 +21,8 @@ import { ComponentsModule } from '../components/components.module';
     ComponentsModule
   ],
   imports: [
-    PipesModule
+    PipesModule,
+    MarxaModule
   ]
 })
 export class SharedModule { }

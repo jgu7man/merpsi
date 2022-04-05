@@ -12,7 +12,7 @@ export class AdminService {
     private _afs: AngularFirestore,
     private _test: MxTest
   ) { 
-    this._test.testOn(this.getCountry)
+    // this._test.testOn(this.getCountry)
   }
 
   async getCountry(): Promise<iCountry[]> {
