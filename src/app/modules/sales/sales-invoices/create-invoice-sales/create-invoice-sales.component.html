@@ -2,15 +2,7 @@
   <div class="row">
     <div class="col s6 m8">
       <form [formGroup]="salesForm">
-        <!-- clientes -->
-        <mat-form-field appearance="outline" class="col s12">
-          <mat-label>Nro de Factura</mat-label>
-          <input matInput type="text" name="client" formControlName="client"
-          (blur)="findClient(salesForm.controls.client.value)">
-          <mat-error *ngIf="salesForm.hasError('required', 'invoice_ID')">
-            Este dato es necesario
-          </mat-error>
-        </mat-form-field>
+        
         <!-- fecha de emision -->
         <mat-form-field appearance="outline" class="col s12">
           <mat-label>Fecha de Emision</mat-label>
@@ -24,7 +16,7 @@
         </mat-form-field>
         <!-- fecha de Vencimiento -->
         <mat-form-field appearance="outline" class="col s12">
-          <mat-label>Fecha de Emision</mat-label>
+          <mat-label>Fecha de Vencimiento</mat-label>
           <input
           matInput
           formControlName="date_expiration"
@@ -33,33 +25,64 @@
           <mat-datepicker #expire startView="year"
           ></mat-datepicker>
         </mat-form-field>
+        <!-- clientes -->
+        <mx-searcher-list
+        [collection]="'businesses/' + businessRef + '/clients'"
+        [param]="'name'"
+        [label]="'clientes'"
+        (results)="getValue($event)"
+        ></mx-searcher-list>
+        <ng-container *ngIf="client!= null">
+          <mat-form-field appearance="outline" class="col s12">
+            <mat-label>Clave de Identificacion Personal</mat-label>
+            <input matInput type="text" name="cip" formControlName="cip"
+            >
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="col s12">
+            <mat-label>email</mat-label>
+            <input matInput type="text" name="email" formControlName="email"
+            >
+          </mat-form-field>
+        </ng-container>
         <!-- Vendedor -->
         <mat-form-field appearance="outline" class="col s12">
           <mat-label>Vendedor</mat-label>
           <input matInput type="text" name="seller" formControlName="seller"
-          (blur)="findClient(salesForm.controls.seller.value)">
+          >
           <mat-error *ngIf="salesForm.hasError('required', 'seller')">
             Este dato es necesario
           </mat-error>
         </mat-form-field>
         <!-- Moneda -->
         <mat-form-field appearance="outline" class="col s12">
-          <mat-label>Moneda</mat-label>
-          <input matInput type="text" name="coin" formControlName="coin"
-          (blur)="findClient(salesForm.controls.seller.value)">
+          <mat-label >Moneda</mat-label>
+          <mat-select formControlName="currency">
+            <mat-option value="USD">USD</mat-option>
+            <mat-option value="COP">COP</mat-option>
+          </mat-select>
           <mat-error *ngIf="salesForm.hasError('required', 'coin')">
             Este dato es necesario
           </mat-error>
         </mat-form-field>
         <!-- metodos de pago -->
         <mat-form-field appearance="outline" class="col s12">
-          <mat-label>Metodo de Pago</mat-label>
-          <input matInput type="text" name="payment_method" formControlName="payment_method"
-          (blur)="findClient(salesForm.controls.seller.value)">
+          <mat-label>Formas de Pago</mat-label>
+          <mat-select formControlName="payment_method">
+            <mat-option value="01">Efectivo</mat-option>
+            <mat-option value="02">Tarjeta de Crédito</mat-option>
+            <mat-option value="03">Tarjeta de Débito</mat-option>
+            <mat-option value="04">Crédito</mat-option>
+          </mat-select>
           <mat-error *ngIf="salesForm.hasError('required', 'payment_method')">
             Este dato es necesario
           </mat-error>
         </mat-form-field>
+            <button mat-raised-button color="accent"
+            click=""
+            >
+              Agregar Concepto
+            </button>
+            <app-add-concept></app-add-concept>
       </form>
     </div>
     <div class="row">

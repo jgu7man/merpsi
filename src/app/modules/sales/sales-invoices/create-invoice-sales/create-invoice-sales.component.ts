@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormControlName, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
+import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
+import { ClientModel } from 'src/app/models/clients.model';
 
 @Component({
   selector: 'app-create-invoice-sales',
@@ -8,16 +10,23 @@ import { FormControl, FormControlName, FormGroup } from '@angular/forms';
 })
 export class CreateInvoiceSalesComponent implements OnInit {
 
+  businessRef: string = this._cache.getDataKey('eid')!
+  client: ClientModel | null= null
+
   salesForm: FormGroup = new FormGroup({
     client: new FormControl( '' ),
+    cip: new FormControl( ''),
+    email: new FormControl(''),
     date_expiration: new FormControl( '' ),
     date_emition: new FormControl( '' ),
     seller: new FormControl( '' ),
-    coin: new FormControl( '' ),
+    currency: new FormControl( '' ),
     payment_method: new FormControl( '' )
 
   })
-  constructor() { }
+  constructor(
+    private _cache: MxCache
+  ) { }
 
   ngOnInit(): void {
   }
@@ -28,5 +37,16 @@ export class CreateInvoiceSalesComponent implements OnInit {
 
   onSubmit(){
     console.log(this.salesForm.getRawValue())
+  }
+
+  getValue(client_: ClientModel){
+    this.client = client_
+    this.salesForm.patchValue({
+      client: this.client.name,
+      cip: this.client.cip,
+      email: this.client.email
+    })
+    this.salesForm.controls.cip.disable()
+    //console.log(list)
   }
 }

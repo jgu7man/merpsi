@@ -11,6 +11,7 @@ import Swal from 'sweetalert2';
 import firebase from 'firebase/app'
 import { iBusiness } from 'src/app/models/empresa.model';
 import { ProviderService } from 'src/app/services/provider.service';
+import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 
 @Component({
   selector: 'app-set-provider',
@@ -33,7 +34,7 @@ export class SetProviderComponent implements OnInit, OnDestroy {
   showForm: boolean = false
   selected: boolean = false
   providerRef: firebase.firestore.DocumentReference<iBusiness> | null = null
-
+  businessRef = this._cache.getDataKey('eid')
   provider_: iProvider | null = null
 
   /** variable que contiene el pais seleccionado */
@@ -51,6 +52,7 @@ export class SetProviderComponent implements OnInit, OnDestroy {
     private _admin: AdminService,
     private _provider: ProviderService,
     private _business: BusinessService,
+    private _cache: MxCache,
   ) { }
 
   async ngOnInit(): Promise<void> {
@@ -112,7 +114,8 @@ export class SetProviderComponent implements OnInit, OnDestroy {
     if (crf.length > 4) {
       // se busca la empresa en la base de datos
       let providerDoc = await this._business.validateBusiness(crf)
-
+      console.log(providerDoc)
+      
       // si la empresa no existe en la base de datos se muestra el formulario con los campos vacios
       if (providerDoc == null) {
         this.showForm = true
@@ -176,6 +179,10 @@ export class SetProviderComponent implements OnInit, OnDestroy {
     if (this._providerSuscription) {
       this._providerSuscription.unsubscribe()
     }
+  }
+
+  getValue(provider: iProvider){
+    
   }
 
 }
