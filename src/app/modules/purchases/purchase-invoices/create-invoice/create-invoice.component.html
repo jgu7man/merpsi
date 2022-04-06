@@ -2,11 +2,17 @@
   <div class="row">
     <div class="col s12 m8">
       <form [formGroup]="invoiceForm">
+        
         <!-- numero de factura -->
         <mat-form-field appearance="outline" class="col s12">
           <mat-label>Nro de Factura</mat-label>
-          <input matInput type="text" name="invoice_ID" formControlName="invoice_ID"
-          (blur)="findInvoice(invoiceForm.controls.invoice_ID.value)">
+          <input
+            matInput
+            type="text"
+            name="invoice_ID"
+            formControlName="invoice_ID"
+            (blur)="findInvoice(invoiceForm.controls.invoice_ID.value)"
+          />
           <mat-error *ngIf="invoiceForm.hasError('required', 'invoice_ID')">
             Este dato es necesario
           </mat-error>
@@ -14,73 +20,93 @@
             Este factura ya esta registrada
           </mat-error>
         </mat-form-field>
-        <ng-container *ngIf="(purchase.current$ | async) as purchase"> 
-        <ng-container *ngIf="purchase.invoice_ID"> 
 
-          <!-- SEDE -->
-          <mat-form-field appearance="outline" class="col s12">
-            <mat-label>Sede</mat-label>
-            <mat-select required placeholder="Sede" name="store"
-            (selectionChange)="onStoreSelected($event)">
-              <mat-option 
-              *ngFor="let sede of (stores$ | async)" 
-              [value]="sede">
-                {{sede.referencia || ''}} <span class="small-text">({{sede.tipo || ''}})</span>
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
-
-
-          <!-- Seleccionar proveedor -->
-          <ng-container>
-            <mat-form-field appearance="outline" class="col s12">
-              <!-- crf del provedor -->
-              <mat-label>CRF</mat-label>
-              <input matInput type="text" name="provider" formControlName="provider"
-                (blur)="findProvider(invoiceForm.controls.provider.value)">
-              <mat-error *ngIf="invoiceForm.hasError('required', 'CRF')">
-                Este dato es necesario
-              </mat-error>
-            </mat-form-field>
+        <ng-container *ngIf="purchase.current$ | async as purchase">
+          <ng-container *ngIf="purchase.invoice_ID">
             
+            <!-- SEDE -->
+            <mat-form-field appearance="outline" class="col s12">
+              <mat-label>Sede</mat-label>
+              <mat-select
+                required
+                placeholder="Sede"
+                name="store"
+                (selectionChange)="onStoreSelected($event)"
+              >
+                <mat-option *ngFor="let sede of stores$ | async" [value]="sede">
+                  {{ sede.referencia || "" }}
+                  <span class="small-text">({{ sede.tipo || "" }})</span>
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <!-- Seleccionar proveedor -->
+            <ng-container>
+              <mat-form-field appearance="outline" class="col s12">
+                <!-- crf del provedor -->
+                <mat-label>CRF</mat-label>
+                <input
+                  matInput
+                  type="text"
+                  name="provider"
+                  formControlName="provider"
+                  (blur)="findProvider(invoiceForm.controls.provider.value)"
+                />
+                <mat-error *ngIf="invoiceForm.hasError('required', 'CRF')">
+                  Este dato es necesario
+                </mat-error>
+              </mat-form-field>
+
               <ng-container *ngIf="purchase.provider.businessName">
                 <!-- Nombre del proovedor -->
                 <mat-form-field appearance="outline" class="col s12">
                   <mat-label>Proveedor</mat-label>
-                  <input matInput type="text" name="nameProvider" formControlName="nameProvider">
+                  <input
+                    matInput
+                    type="text"
+                    name="nameProvider"
+                    formControlName="nameProvider"
+                  />
                 </mat-form-field>
 
                 <!-- fecha de la factura -->
                 <mat-form-field appearance="outline" class="col s12">
                   <mat-label>Fecha de Compra</mat-label>
                   <input
-                  matInput
-                  formControlName="purshase_date"
-                  [matDatepicker]="picker">
-                  <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-                  <mat-datepicker #picker startView="year"
-                  ></mat-datepicker>
+                    matInput
+                    formControlName="purshase_date"
+                    [matDatepicker]="picker"
+                  />
+                  <mat-datepicker-toggle
+                    matSuffix
+                    [for]="picker"
+                  ></mat-datepicker-toggle>
+                  <mat-datepicker #picker startView="year"></mat-datepicker>
                 </mat-form-field>
                 <!-- metodo de pago -->
                 <mat-form-field appearance="outline" class="col s12">
                   <mat-label>Método de pago</mat-label>
-                  <input matInput type="text" name="payment_method" formControlName="payment_method">
-                  <mat-error *ngIf="invoiceForm.hasError('required', 'payment_method')">
+                  <input
+                    matInput
+                    type="text"
+                    name="payment_method"
+                    formControlName="payment_method"
+                  />
+                  <mat-error
+                    *ngIf="invoiceForm.hasError('required', 'payment_method')"
+                  >
                     Este dato es necesario
                   </mat-error>
                 </mat-form-field>
               </ng-container>
             </ng-container>
-
-            
           </ng-container>
         </ng-container>
       </form>
 
-     <!-- <app-invoice-concept
+      <!-- <app-invoice-concept
      [product]="productSelect">
     </app-invoice-concept> -->
-
     </div>
   </div>
 </div>

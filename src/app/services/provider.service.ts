@@ -139,15 +139,18 @@ export class ProviderService {
         .get()
       let providerDoc = providerResult.docs.length > 0 ? providerResult.docs[0] : null
 
-      if ( !providerDoc ) throw { message: 'No se enontró el proveedor' }
-      let provider = await (new QueryProvider(providerDoc.data())) .get()
+      if ( providerDoc ) {
+        let provider = await (new QueryProvider(providerDoc.data())) .get()
+        return provider
+      } else {
+        return undefined
+      }
  
-      return providerDoc
     } catch (error: any) {
-      Swal.fire({
-        icon: 'error',
-        text: error.message
-      })
+      // Swal.fire({
+      //   icon: 'error',
+      //   text: error.message
+      // })
       throw console.error(error);
     }
 

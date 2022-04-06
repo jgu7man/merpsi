@@ -1,12 +1,19 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ProviderService } from 'src/app/services/provider.service';
 
 import { CreateInvoiceComponent } from './create-invoice.component';
 
 describe('CreateInvoiceComponent', () => {
   let component: CreateInvoiceComponent;
   let fixture: ComponentFixture<CreateInvoiceComponent>;
+  let spyProvider: jasmine.SpyObj<ProviderService>;
 
-  beforeEach(async () => {
+  beforeEach( async () => {
+    
+    spyProvider = jasmine.createSpyObj<ProviderService>( 'ProviderService', [
+      'getAll'  
+    ] )
+    
     await TestBed.configureTestingModule({
       declarations: [ CreateInvoiceComponent ]
     })

@@ -72,8 +72,8 @@ export class CreateInvoiceComponent implements OnInit {
 
   async findProvider(crf: string) {
     if (crf.length >= 8) {
-      let providerDoc = await this._provider.findProviderByCRF(crf)
-      let provider = providerDoc.data()
+      
+      let provider = await this._provider.findProviderByCRF( crf )
       console.log( provider )
       
       if (provider) {
