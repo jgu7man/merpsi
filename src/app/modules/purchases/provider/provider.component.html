@@ -1,8 +1,8 @@
-<mx-searcher-input
+<mx-searcher-list
 [collection]="'businesses/'+ businessRef + '/providers'"
 [param]="'name'"
 [caseValidation]="false"
-></mx-searcher-input>
+></mx-searcher-list>
 
 <div class="container">
   <div class="row">
@@ -16,7 +16,7 @@
       itemSelector="name"
       #crudPanel
       (onDelete)="onDeleteItem($event)"
-       >
+      >
 
         <ng-template #add>
           <app-set-provider (submited)="crudPanel.closeAll()" ></app-set-provider>
