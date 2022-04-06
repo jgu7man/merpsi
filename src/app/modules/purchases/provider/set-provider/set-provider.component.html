@@ -14,7 +14,6 @@
                   type="text"
                   name="name"
                   formControlName="CRF"
-                  mask="S-00000000-0"
                   (blur)="searchProvider(providerForm.value.CRF)"
                   >
                   <mat-error *ngIf="providerForm.hasError('required', 'CRF')">
@@ -24,6 +23,12 @@
                     Esto es caca
                   </mat-error>
                 </mat-form-field>
+                <!-- <mx-searcher-list
+                [label]="'CRF'"
+                [collection]="'businesses'"
+                [param]="'CRF'">
+                (results)="getValue($event)"
+                ></mx-searcher-list> -->
                 <ng-container *ngIf="showForm == true">
               <!-- PAIS -->
               <mat-form-field class="col s12" appearance="outline">

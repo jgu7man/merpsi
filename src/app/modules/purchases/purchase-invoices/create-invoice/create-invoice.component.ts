@@ -17,6 +17,8 @@ import { AuthService } from 'src/app/services/auth.service';
 import { iManager } from 'src/app/modules/admin/personal/manager.model';
 import { MatSelectChange } from '@angular/material/select';
 import { InvoiceStore } from 'src/app/models/invoice.model';
+import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
+import { iProvider } from 'src/app/models/provider.model';
 
 
 @Component({
@@ -28,11 +30,12 @@ export class CreateInvoiceComponent implements OnInit {
 
   stores$: Observable<iSede[]>
   storeSelected?: InvoiceStore
-  
+  businessRef = this._cache.getDataKey('eid')
 
   invoiceForm: FormGroup = new FormGroup({
     store: new FormControl('', [Validators.required]),
     provider: new FormControl('', [Validators.required]),
+    businessName: new FormControl('', [Validators.required]),
     purshase_date: new FormControl('', [Validators.required]),
     invoice_ID : new FormControl('', [Validators.required]),
     payment_method: new FormControl('', [Validators.required]),
@@ -50,8 +53,10 @@ export class CreateInvoiceComponent implements OnInit {
     private _alert: MxAlert,
     private _dialog: MatDialog,
     private _products: InventoryProductsService,
+    private _cache: MxCache,
     private _auth: AuthService,
     public purchase: PurchaseInvoiceService,
+    
   ) {
     this.stores$ = this._stores.listenAll()
     
@@ -170,5 +175,18 @@ export class CreateInvoiceComponent implements OnInit {
         this.purchase.updateCurrent('invoice_ID',invoice_id)
       }
     }
+  }
+
+  getValue(provider_seleted: iProvider){
+    this.invoiceForm.patchValue({
+      businessName: provider_seleted.businessName,
+      provider: provider_seleted.CRF
+    })
+    this.purchase.updateCurrent( 'provider', {
+      CRF: provider_seleted.CRF,
+      businessName: provider_seleted.businessName
+    })
+
+    this.invoiceForm.controls.businessName.disable()
   }
 }

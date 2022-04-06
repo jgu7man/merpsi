@@ -33,21 +33,17 @@
 
           <!-- Seleccionar proveedor -->
           <ng-container>
-            <mat-form-field appearance="outline" class="col s12">
-              <!-- crf del provedor -->
-              <mat-label>CRF</mat-label>
-              <input matInput type="text" name="provider" formControlName="provider"
-                (blur)="findProvider(invoiceForm.controls.provider.value)">
-              <mat-error *ngIf="invoiceForm.hasError('required', 'CRF')">
-                Este dato es necesario
-              </mat-error>
-            </mat-form-field>
-            
+            <mx-searcher-list
+            [collection]="'businesses/' + businessRef + '/providers'"
+            [param]="'CRF'"
+            [label]="'CRF'"
+            (results)="getValue($event)"
+            ></mx-searcher-list>
               <ng-container *ngIf="purchase.provider.businessName">
                 <!-- Nombre del proovedor -->
                 <mat-form-field appearance="outline" class="col s12">
                   <mat-label>Proveedor</mat-label>
-                  <input matInput type="text" name="nameProvider" formControlName="nameProvider">
+                  <input matInput type="text" name="nameProvider" formControlName="businessName">
                 </mat-form-field>
 
                 <!-- fecha de la factura -->
