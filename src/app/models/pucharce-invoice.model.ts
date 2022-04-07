@@ -1,12 +1,19 @@
 import firebase from "firebase/app";
+import { FireTime, createDate } from "./firestore.model";
 import { iInvoiceFooter, InvoiceModel, InvoiceStore } from "./invoice.model";
 import { ProductInvoiceModel } from "./products.model";
 
 
 /** Modelo para crear una factura de compra */
-export class PurchaseInvoiceModel implements InvoiceModel{
+export class PurchaseInvoiceModel extends InvoiceModel{
   /** Fecha de la compra */
-  public purshase_date: Date = new Date()
+  public purshase_date: FireTime =  createDate(new Date());
+  // public invoice_ID: string = '';
+  // public document_date: FireTime =  createDate(new Date());
+  // public payment_method: string = '';
+  // public manager: string = '';
+  // public registered_date: Date | firebase.firestore.Timestamp;
+  
   
   /** Proveedor de la factura: CRF o referencia de firestore */
   public provider: InvoiceProvider = {
@@ -19,8 +26,8 @@ export class PurchaseInvoiceModel implements InvoiceModel{
   }
   constructor (
     invoice?: PurchaseInvoiceModel
-	) {
-		this.registered_date = firebase.firestore.Timestamp.fromDate( new Date() );
+  ) {
+    super(invoice)
     this.footer = {
       subtotal: 0,
       discount: 0,
@@ -29,13 +36,8 @@ export class PurchaseInvoiceModel implements InvoiceModel{
       total: 0,
     }
   }
-  public invoice_ID?: string ;
-  public document_date?: Date ;
-  public details?: ProductInvoiceModel[] ;
-  public payment_method?: string ;
-  public footer?: iInvoiceFooter ;
-  public manager?: string ;
-  public registered_date: Date | firebase.firestore.Timestamp;
+
+  
   
   
 }

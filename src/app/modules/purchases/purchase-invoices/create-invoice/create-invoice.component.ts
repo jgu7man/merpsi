@@ -18,7 +18,8 @@ import { iManager } from 'src/app/modules/admin/personal/manager.model';
 import { MatSelectChange } from '@angular/material/select';
 import { InvoiceStore } from 'src/app/models/invoice.model';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
-import { iProvider } from 'src/app/models/provider.model';
+import { iProvider, ProviderModel } from 'src/app/models/provider.model';
+import { debounce, debounceTime, distinctUntilChanged, first } from 'rxjs/operators';
 
 
 @Component({
@@ -30,16 +31,24 @@ export class CreateInvoiceComponent implements OnInit {
 
   stores$: Observable<iSede[]>
   storeSelected?: InvoiceStore
-  businessRef = this._cache.getDataKey('eid')
+  businessRef = this._cache.getDataKey( 'eid' )
+  
+  storeForm: FormGroup = new FormGroup( {
+    id: new FormControl( '', [ Validators.required ] ),
+    name: new FormControl( '', [ Validators.required])
+  } )
+  
+  providerForm: FormGroup = new FormGroup( {
+    CRF: new FormControl( '', [ Validators.required ] ),
+    businessName: new FormControl('', [Validators.required]),
+  })
 
   invoiceForm: FormGroup = new FormGroup({
-    store: new FormControl('', [Validators.required]),
-    provider: new FormControl('', [Validators.required]),
-    businessName: new FormControl('', [Validators.required]),
-    purshase_date: new FormControl('', [Validators.required]),
+    store: this.storeForm,
+    provider: this.providerForm,
+    document_date: new FormControl('', [Validators.required]),
     invoice_ID : new FormControl('', [Validators.required]),
     payment_method: new FormControl('', [Validators.required]),
-
   })
 
   productList: ProductInvoiceModel[] = []
@@ -59,23 +68,41 @@ export class CreateInvoiceComponent implements OnInit {
     
   ) {
     this.stores$ = this._stores.listenAll()
-    
     this.manager = this._auth.userState$.value
   }
   
   async ngOnInit(): Promise<void> {
-    
+    this.invoiceForm.valueChanges.pipe(
+      debounceTime( 500 ),
+      distinctUntilChanged( ( x, y ) => JSON.stringify( x ) == JSON.stringify(y)),
+    ).subscribe( changes => {
+      this.purchase.current$.next( {
+        ...this.purchase.current$.value,
+        ...changes
+      } )
+    })
   }
 
   onStoreSelected( event: MatSelectChange ) {
     const store: iSede = event.value
-    this.purchase.updateCurrent( 'store', {
+    this.storeForm.patchValue( {
       id: store.id!,
-      name: store.name
-    } )
+      name: store.name  
+    })
+    // this.purchase.updateCurrent( 'store', {
+    //   id: store.id!,
+    //   name: store.name
+    // } )
   }
 
-  async findProvider(crf: string) {
+  get provider() {
+    return this.providerForm.value
+  }
+
+  async findProvider() {
+    // let provider = this.invoiceForm.controls.provider as FormGroup
+    let crf = this.provider.CRF
+
     if (crf.length >= 8) {
       
       let provider = await this._provider.findProviderByCRF( crf )
@@ -86,9 +113,13 @@ export class CreateInvoiceComponent implements OnInit {
         const result = await this.alertProviderFinded( message )
         
         if (result.isConfirmed) {
-          this.purchase.updateCurrent( 'provider', {
+          // this.purchase.updateCurrent( 'provider', {
+          //   CRF: provider.CRF,
+          //   businessName: provider.businessName
+          // } )
+          this.providerForm.patchValue( {
+            businessName: provider.businessName,
             CRF: provider.CRF,
-            businessName: provider.businessName
           })
         } 
 
@@ -100,9 +131,13 @@ export class CreateInvoiceComponent implements OnInit {
           const result = await this.alertProviderFinded( message)
             
           if ( result.isConfirmed ) {
-            this.purchase.updateCurrent( 'provider', {
+            // this.purchase.updateCurrent( 'provider', {
+            //   CRF: business.CRF,
+            //   businessName: business.businessName
+            // })
+            this.providerForm.patchValue( {
+              businessName: business.businessName,
               CRF: business.CRF,
-              businessName: business.businessName
             })
           } else {
             this.openProviderNew()
@@ -129,8 +164,17 @@ export class CreateInvoiceComponent implements OnInit {
     this._dialog.open(ProviderNewDialog, {
       maxWidth: '100%',
       data: {
-        crf: this.invoiceForm.controls.provider.value
+        crf: this.providerForm.value
       }
+    } ).afterClosed().pipe( first() ).subscribe( (provider: ProviderModel) => {
+      // this.purchase.updateCurrent( 'provider', {
+      //   CRF: provider.CRF,
+      //   businessName: provider.businessName
+      // })
+      this.providerForm.patchValue( {
+        businessName: provider.businessName,
+        CRF: provider.CRF,
+      })
     })
   }
 

@@ -195,7 +195,8 @@ export declare namespace Product {
       notes: AbstractControl
       reference_codes: AbstractControl
     }
-  }
+
+}
 
 
   namespace StoreReference {

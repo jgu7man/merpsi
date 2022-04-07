@@ -28,7 +28,7 @@ export class SetProviderComponent implements OnInit, OnDestroy {
 
   @Input() crf_: any | null = null
 
-  @Output() submited: EventEmitter<void> = new EventEmitter();
+  @Output() submited: EventEmitter<ProviderModel> = new EventEmitter();
 
   public countryList: iCountry[] = []
   showForm: boolean = false
@@ -45,7 +45,7 @@ export class SetProviderComponent implements OnInit, OnDestroy {
     CRF: new FormControl('', [Validators.required]),
     name: new FormControl('', [Validators.required]),
     businessName: new FormControl('', [Validators.required]),
-    type: new FormControl('', [Validators.required]),
+    type: new FormControl(null, [Validators.required]),
   })
 
   constructor(
@@ -59,15 +59,17 @@ export class SetProviderComponent implements OnInit, OnDestroy {
     this.providerRef = null;
     this.countryList = await this._admin.getCountry()
 
-    /** nos suscribimos a los cambios de proveedor y patcheamos los valos al formulario, y le inyectamos el pais en la variable selectedCountry */
+    /* nos suscribimos a los cambios del input del proveedor gestionado en el componente padre y patcheamos los valores al formulario*/
     this._providerSuscription = this._provider_.pipe(
       distinctUntilChanged((x, y) => JSON.stringify(x) == JSON.stringify(y))
     ).subscribe(async prv => {
-      if (prv) {
+      if ( prv ) {
+        console.log( prv )
         this.providerForm.patchValue(prv)
-        this.selectedCountry = this.countryList.find(c => c.alpha3 == prv.country)
-        //se valida que si la data que se inyecta al formulario no viene vacia se muestra todo el formulario deshabilitado
-        if (prv.CRF != '') {
+        /* se valida que si la data que se inyecta al formulario no viene vacia se muestra todo el formulario deshabilitado */
+        if ( prv.CRF != '' ) {
+          /* le inyectamos el pais en la variable selectedCountry  */
+          this.selectedCountry = this.countryList.find(c => c.alpha3 == prv.country)
           this.showForm = true;
           // valida que si el proveedor es una empresa registrada en merpsi actualiza los datos del mismo
           if (prv.businessRef != null) {
@@ -97,12 +99,12 @@ export class SetProviderComponent implements OnInit, OnDestroy {
    * Funcion que guarda el proveedor
    */
   async onSubmit() {
-    await this._provider.create(this.providerForm.getRawValue(), this.providerRef)
-    Swal.fire("El proveedor se ha guardado con exito")
-    //console.log(this.providerRef)
-    
-
-    this.submited.emit()
+    const provider = await this._provider.create( this.providerForm.getRawValue(), this.providerRef )
+    if ( provider ) {
+      Swal.fire("El proveedor se ha guardado con exito")
+      //console.log(this.providerRef)
+      this.submited.emit(provider)
+    }
 
   }
 
@@ -119,7 +121,7 @@ export class SetProviderComponent implements OnInit, OnDestroy {
       // si la empresa no existe en la base de datos se muestra el formulario con los campos vacios
       if (providerDoc == null) {
         this.showForm = true
-        this.cleanForm()
+        // this.cleanForm()
 
       } else {
         
@@ -141,7 +143,7 @@ export class SetProviderComponent implements OnInit, OnDestroy {
           } else {
             /** Mostramos el resto de los campos del formulario vacio */
             this.showForm = true
-            this.cleanForm()
+            // this.cleanForm()
           }
         })
 
@@ -155,7 +157,8 @@ export class SetProviderComponent implements OnInit, OnDestroy {
    * @param event
    */
   countrySelected(event: MatSelectChange) {
-    this.selectedCountry = this.countryList.find(c => c.alpha3 == event.value)
+    this.selectedCountry = this.countryList.find( c => c.alpha3 == event.value )
+    console.log( this.providerForm.value )
   }
 
   cleanForm() {

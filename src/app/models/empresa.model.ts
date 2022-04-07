@@ -22,4 +22,4 @@ export interface iBusiness extends Omit<BusinessModel,'registered'>{
     readonly CRF: string
 }
 /** Tipo de contribuyente */
-export type TAXPAYER_TYPE = 'natural' | 'Jurídica'
+export type TAXPAYER_TYPE = 'natural' | 'juridica'

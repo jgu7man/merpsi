@@ -1,26 +1,28 @@
 import firebase from "firebase"
-import { FireTime } from "./firestore.model"
+import { FireTime, createDate } from "./firestore.model"
 import { Product, ProductModel } from "./products.model"
 import { iTax } from "./taxes.model"
 
 export class InvoiceModel {
   /**folio de la factura */
-  public invoice_ID?: string = ''
+  public invoice_ID: string = ''
   /** fecha de la factura */
-  public document_date?: Date = new Date()
+  public document_date: FireTime = createDate(new Date())
   /** metodos de pagos */
-  public payment_method?: string = ''
+  public payment_method: string = ''
 
 /** calculos de totales de la factura */
-  public footer?: iInvoiceFooter
+  public footer: iInvoiceFooter
   /** personal que registro la factura */
-  public readonly manager?: string = ''
+  public readonly manager: string = ''
   /**fecha de registro */
-  public readonly registered_date: FireTime | Date
+  public readonly registered_date: FireTime = createDate( new Date() )
+  
+  public details: ProductInvoiceModel[] = [] ;
+  // public footer: iInvoiceFooter;
   constructor (
     invoice?: InvoiceModel
 	) {
-		this.registered_date = new Date()
     this.footer = {
       subtotal: 0,
       discount: 0,
@@ -63,6 +65,7 @@ export class ProductInvoiceModel implements Product.MainData {
   brand: string
   measure_unit: string
   document_ref?: firebase.firestore.DocumentReference
+  
 
   constructor (
     /** Referencia del producto comprado (Debe seleccionarse de la lista de productos registrados de la empresa) */

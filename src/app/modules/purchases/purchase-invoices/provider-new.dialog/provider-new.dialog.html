@@ -1,5 +1,6 @@
 <mat-dialog-content>
   <app-set-provider 
   [crf_]="crf"
+  (submited)="dialog.close($event)"
   ></app-set-provider>
 </mat-dialog-content>

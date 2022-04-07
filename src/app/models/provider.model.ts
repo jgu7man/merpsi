@@ -50,7 +50,7 @@ export class ProviderModel {
     public name: string
     /**Razon social */
     public businessName: string
-    public type: TAXPAYER_TYPE
+    public type?: TAXPAYER_TYPE
     public businessRef: FireRef<iBusiness> | null
     constructor(
       provider?: ProviderModel | iBusiness,
@@ -62,7 +62,7 @@ export class ProviderModel {
         this.country = provider?.country || ''
         this.name = provider?.name || ''
         this.businessName = provider?.businessName || ''
-        this.type = provider?.type || 'Jurídica'
+        this.type = provider?.type || undefined
         this.businessRef = businessRef  || null
     }
 

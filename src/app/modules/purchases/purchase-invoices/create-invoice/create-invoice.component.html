@@ -1,112 +1,109 @@
-<div class="container">
-  <div class="row">
-    <div class="col s12 m8">
-      <form [formGroup]="invoiceForm">
-        
-        <!-- numero de factura -->
-        <mat-form-field appearance="outline" class="col s12">
-          <mat-label>Nro de Factura</mat-label>
+<form class="row" [formGroup]="invoiceForm">
+  
+  <!-- numero de factura -->
+  <mat-form-field appearance="outline" class="col s12 l4 ">
+    <mat-label>Nro de Factura</mat-label>
+    <input
+      matInput
+      type="text"
+      name="invoice_ID"
+      formControlName="invoice_ID"
+      (blur)="findInvoice(invoiceForm.controls.invoice_ID.value)"
+    />
+    <mat-error *ngIf="invoiceForm.hasError('required', 'invoice_ID')">
+      Este dato es necesario
+    </mat-error>
+    <mat-error *ngIf="invoiceForm.hasError('exist', 'true')">
+      Este factura ya esta registrada
+    </mat-error>
+  </mat-form-field>
+
+  <!-- fecha de la factura -->
+  <mat-form-field appearance="outline" class="col s12 l4 offset-l4">
+    <mat-label>Fecha de Compra</mat-label>
+    <input
+      matInput
+      formControlName="document_date"
+      [matDatepicker]="picker"
+    />
+    <mat-datepicker-toggle
+      matSuffix
+      [for]="picker"
+    ></mat-datepicker-toggle>
+    <mat-datepicker #picker startView="year"></mat-datepicker>
+  </mat-form-field>
+
+  <ng-container *ngIf="purchase.current$ | async as purchase">
+    <ng-container *ngIf="purchase.invoice_ID">
+      
+      <!-- SEDE -->
+      <mat-form-field appearance="outline" class="col s12 l3">
+        <mat-label>Sede</mat-label>
+        <mat-select
+          required
+          placeholder="Sede"
+          name="store"
+          (selectionChange)="onStoreSelected($event)"
+        >
+          <mat-option *ngFor="let sede of stores$ | async" [value]="sede">
+            {{ sede.referencia || "" }}
+            <span class="small-text">({{ sede.tipo || "" }})</span>
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- PROVIDER -->
+      <div class="col s12 l9">
+        <form class="row" formGroupName="provider">
+          <!-- Seleccionar proveedor -->
+          <mat-form-field appearance="outline" class="col s6">
+            <!-- crf del provedor -->
+            <mat-label>CRF</mat-label>
+            <input
+              matInput
+              type="text"
+              name="CRF"
+              formControlName="CRF"
+              (blur)="findProvider()"
+            />
+            <mat-error *ngIf="invoiceForm.hasError('required', 'CRF')">
+              Este dato es necesario
+            </mat-error>
+          </mat-form-field>
+          <!-- Nombre del proovedor -->
+          <mat-form-field appearance="outline" class="col s6"
+          *ngIf="provider.businessName">
+            <mat-label>Proveedor</mat-label>
+            <input
+              matInput
+              type="text"
+              name="businessName"
+              formControlName="businessName"
+            />
+          </mat-form-field>
+        </form>
+      </div>
+      
+      <!-- <ng-container *ngIf="provider.businessName">
+        <mat-form-field appearance="outline" class="col s6 l3">
+          <mat-label>Método de pago</mat-label>
           <input
             matInput
             type="text"
-            name="invoice_ID"
-            formControlName="invoice_ID"
-            (blur)="findInvoice(invoiceForm.controls.invoice_ID.value)"
+            name="payment_method"
+            formControlName="payment_method"
           />
-          <mat-error *ngIf="invoiceForm.hasError('required', 'invoice_ID')">
+          <mat-error
+            *ngIf="invoiceForm.hasError('required', 'payment_method')"
+          >
             Este dato es necesario
           </mat-error>
-          <mat-error *ngIf="invoiceForm.hasError('exist', 'true')">
-            Este factura ya esta registrada
-          </mat-error>
         </mat-form-field>
+      </ng-container> -->
+    </ng-container>
+  </ng-container>
+</form>
 
-        <ng-container *ngIf="purchase.current$ | async as purchase">
-          <ng-container *ngIf="purchase.invoice_ID">
-            
-            <!-- SEDE -->
-            <mat-form-field appearance="outline" class="col s12">
-              <mat-label>Sede</mat-label>
-              <mat-select
-                required
-                placeholder="Sede"
-                name="store"
-                (selectionChange)="onStoreSelected($event)"
-              >
-                <mat-option *ngFor="let sede of stores$ | async" [value]="sede">
-                  {{ sede.referencia || "" }}
-                  <span class="small-text">({{ sede.tipo || "" }})</span>
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
-
-            <!-- Seleccionar proveedor -->
-            <ng-container>
-              <mat-form-field appearance="outline" class="col s12">
-                <!-- crf del provedor -->
-                <mat-label>CRF</mat-label>
-                <input
-                  matInput
-                  type="text"
-                  name="provider"
-                  formControlName="provider"
-                  (blur)="findProvider(invoiceForm.controls.provider.value)"
-                />
-                <mat-error *ngIf="invoiceForm.hasError('required', 'CRF')">
-                  Este dato es necesario
-                </mat-error>
-              </mat-form-field>
-
-              <ng-container *ngIf="purchase.provider.businessName">
-                <!-- Nombre del proovedor -->
-                <mat-form-field appearance="outline" class="col s12">
-                  <mat-label>Proveedor</mat-label>
-                  <input
-                    matInput
-                    type="text"
-                    name="nameProvider"
-                    formControlName="nameProvider"
-                  />
-                </mat-form-field>
-
-                <!-- fecha de la factura -->
-                <mat-form-field appearance="outline" class="col s12">
-                  <mat-label>Fecha de Compra</mat-label>
-                  <input
-                    matInput
-                    formControlName="purshase_date"
-                    [matDatepicker]="picker"
-                  />
-                  <mat-datepicker-toggle
-                    matSuffix
-                    [for]="picker"
-                  ></mat-datepicker-toggle>
-                  <mat-datepicker #picker startView="year"></mat-datepicker>
-                </mat-form-field>
-                <!-- metodo de pago -->
-                <mat-form-field appearance="outline" class="col s12">
-                  <mat-label>Método de pago</mat-label>
-                  <input
-                    matInput
-                    type="text"
-                    name="payment_method"
-                    formControlName="payment_method"
-                  />
-                  <mat-error
-                    *ngIf="invoiceForm.hasError('required', 'payment_method')"
-                  >
-                    Este dato es necesario
-                  </mat-error>
-                </mat-form-field>
-              </ng-container>
-            </ng-container>
-          </ng-container>
-        </ng-container>
-      </form>
-
-      <!-- <app-invoice-concept
-     [product]="productSelect">
-    </app-invoice-concept> -->
-    </div>
-  </div>
-</div>
+<!-- <app-invoice-concept
+[product]="productSelect">
+</app-invoice-concept> -->

@@ -75,7 +75,7 @@ export class ProviderService {
       await providerRef.set({...provider,
         businessRef: documentRef})
 
-      return providerRef
+      return provider
     }catch (error: any) {
       console.error(error)
       Swal.fire(
