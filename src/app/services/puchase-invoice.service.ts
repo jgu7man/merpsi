@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
-import { ProductInvoiceModel, ProductModel } from '../models/products.model';
+import { ProductModel } from '../models/products.model';
 import { iInvoice, PurchaseInvoiceModel } from '../models/pucharce-invoice.model';
 import { FireDoc } from '../models/firestore.model';
 import { BehaviorSubject } from 'rxjs';
 import { DashboardService } from '../modules/dashboard/dashboard.service';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import Swal from 'sweetalert2';
+import { ProductInvoiceModel } from '../models/invoice.model';
 
 
 @Injectable({
@@ -98,6 +99,15 @@ export class PurchaseInvoiceService {
    return null
    }
  }
+
+  addConcept() {
+    if (this.current$.value !== null) {
+      let details: ProductInvoiceModel[] = this.current$.value.details
+      details.push(new ProductInvoiceModel())
+      this.updateCurrent('details', details)
+      console.log(this.current$.value)
+    }
+  }
 }
 
 // type PropType<TObj, TProp extends keyof TObj> = TObj[TProp];
