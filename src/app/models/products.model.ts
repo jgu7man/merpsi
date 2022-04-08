@@ -1,6 +1,8 @@
 import { AbstractControl, FormGroup } from '@angular/forms'
 import firebase from 'firebase/app'
 import { uniq } from 'lodash'
+import { ManagerModel } from '../modules/admin/personal/manager.model'
+import { FireDoc, FireRef } from './firestore.model'
 
 /**
  * Clase para crear productos desde 0. 
@@ -9,52 +11,60 @@ import { uniq } from 'lodash'
  */
 export class ProductModel {
   /** Código del producto. Se espera que pueda ser el UPC (Código Universal del Producto).*/
-  public readonly UPC: string
-  /** Última modificación del producto en la base de datos de la empresa */
-  public last_update: ProductEventModel
+  public UPC: string = '|'
+  /** Nombre o referencia del producto */
+  public reference: string
+  /** (Opcional) descripcion del producto */
+  public description: string
+  /** Marca del producto */
+  public brand?: string
+  /** Unidad de medida */
+  public measure_unit: string
   /** Referencia sin caracteres especiales */
   public slug: string
   /** Códigos adicionales o necesarios para el manejo de inventarios y consultas */
-  public reference_codes: string[] = []
+  public reference_codes: string[]
   /** Lista de ID de categorias */
-  public categories: string[] = []
+  public categories: string[]
   /** Notas adicionales que la empresa decida agregar al producto */
-  public notes: string[] = []
+  public notes: string[]
   /** Rutas de imágenes del producto */
-  public gallery: string[] = []
+  public gallery: string[]
+  /** Datos de referencia de la empresa que provee el producto */
+  public provider?: Product.ProviderReference
+  /** Última modificación del producto en la base de datos de la empresa */
+  public last_update: ProductEventModel
+  /** Referencia de firestore del producto si le pertenece a un tercero */
+  public third_reference?: FireRef<ProductModel>
   
   constructor (
-    /** Código del producto. Se espera que pueda ser el UPC (Código Universal del Producto).*/
-    UPC: string,
-    /** Nombre o referencia del producto */
-    public reference: string,
-    /** (Opcional) descripcion del producto */
-    public description: string, 
-    /** Marca del producto */
-    public brand: string,
-    /** Unidad de medida */
-    public measure_unit: string,
-    /** Datos de referencia de la empresa que provee el producto */
-    public provider?: Product.ProviderReference,
+    product?: ProductModel | FireDoc<ProductModel>,
     /** Reference del manager creador del producto */
-    manager?: firebase.firestore.DocumentReference,
+    manager?: FireRef<ManagerModel>,
     /** Si el proveedor existe en la DB se asignará la referencia de firestore. Si no se tiene proveedor en base de datos, se le solictará a la empresa, que lo cree en su panel en su propia lista de proveedores. NOTA: Si no se tiene el registro del proveedor, el CRF de la empresa registradora del producto, será asignada como el creador del producto */
-    // public provider?: string | firebase.firestore.DocumentReference,
-    /** Referencia de firestore del producto si le pertenece a un tercero */
-    public third_reference?: firebase.firestore.DocumentReference,
+    provider?: FireDoc<Product.ProviderReference>
   ) {
-    this.UPC = UPC;
+    
+    let productData = !(product instanceof ProductModel) ? product?.data() : product
+    
+    this.reference = productData?.reference || ''
+    this.description = productData?.description || ''
+    this.brand = productData?.brand || ''
+    this.measure_unit = productData?.measure_unit || ''
+    this.slug = this.createSlug( this.reference )
+    /* Genera un array de códigos de referencia para que el producto pueda ser buscado */
+    this.reference_codes = this.getReferenceCodes()
+    this.categories = productData?.categories || []
+    this.notes = productData?.notes || []
+    this.gallery = productData?.gallery || []
+    
+    /* Se genera un primer evento de creación */
+    const event = new ProductEventModel( product ? 'edit' : 'create' , manager )
+    this.last_update = {...event}
     /* Genera un slug basado en la referencia (nombre del producto)
     TODO: Realizar un método que pueda actualizar el slug, 
     este no debe ser editable tan fácil
     */
-    this.slug = this.createSlug(reference)
-    this.description = description || ''
-    /* Genera un array de códigos de referencia para que el producto pueda ser buscado */
-    this.reference_codes = this.getReferenceCodes()
-    /* Se genera un primer evento de creación */
-    const event = new ProductEventModel( 'create', manager )
-    this.last_update = {...event}
   }
 
   /** Crea un texto con guiones a partir del texto proveído */
@@ -126,7 +136,7 @@ export declare namespace Product {
     UPC: string,
     reference: string,
     description: string,
-    brand: string,
+    brand?: string,
     measure_unit: string,
     document_ref?: firebase.firestore.DocumentReference
   }
@@ -237,7 +247,7 @@ export class  ProductInvoiceModel implements Product.MainData {
   UPC: string
   reference: string
   description: string
-  brand: string
+  brand?: string
   measure_unit: string
   document_ref?: firebase.firestore.DocumentReference
 

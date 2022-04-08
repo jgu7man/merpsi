@@ -5,29 +5,21 @@ import { ClientModel } from './clients.model';
 import { iInvoiceFooter, InvoiceModel, InvoiceStore } from './invoice.model';
 import { iSede } from './sede.model';
 
-export class SalesInvoiceModel implements InvoiceModel {
+export class SalesInvoiceModel extends InvoiceModel {
   public client: FireDoc<ClientModel> | ''
   public seller: string | ''
   public date_expiration : firebase.firestore.Timestamp | ''
   public currency: string | ''
   constructor (
     salesI?:SalesInvoiceModel
-    ) {
-      this.registered_date = new Date()
-      this.client = salesI?.client || ''
-      this.seller = salesI?.seller || ''
-      this.date_expiration = salesI?.date_expiration || ''
-      this.currency = salesI?.currency || ''
-    }
+  ) {
+    super(salesI)
+    this.client = salesI?.client || ''
+    this.seller = salesI?.seller || ''
+    this.date_expiration = salesI?.date_expiration || ''
+    this.currency = salesI?.currency || ''
+  }
     
-    public invoice_ID?: string;
-    public document_date?: Date;
-    //public store?: InvoiceStore;
-    public details?: ProductInvoiceSalesModel[];
-    public payment_method?: string;
-    public footer?: iInvoiceFooter;
-    public manager?: string;
-    public registered_date: Date | firebase.firestore.Timestamp;
 }
 export interface iInvoice extends SalesInvoiceModel { }
 
@@ -53,7 +45,7 @@ export class ProductInvoiceSalesModel implements ProductInvoiceModel{
   UPC: string;
   reference: string;
   description: string;
-  brand: string;
+  brand?: string;
   measure_unit: string;
   document_ref?: firebase.firestore.DocumentReference<firebase.firestore.DocumentData> | undefined;
   

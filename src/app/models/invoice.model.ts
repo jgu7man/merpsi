@@ -62,7 +62,7 @@ export class ProductInvoiceModel implements Product.MainData {
   UPC: string
   reference: string
   description: string
-  brand: string
+  brand?: string
   measure_unit: string
   document_ref?: firebase.firestore.DocumentReference
   
