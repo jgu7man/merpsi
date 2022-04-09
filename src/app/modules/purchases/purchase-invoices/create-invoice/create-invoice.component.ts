@@ -3,7 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
 import { Observable } from 'rxjs';
-import { Product, ProductInvoiceModel, ProductModel } from 'src/app/models/products.model';
+import { Product, ProductModel } from 'src/app/models/products.model';
 import { iSede } from 'src/app/models/sede.model';
 import { SedesService } from 'src/app/modules/admin/sedes/sedes.service';
 import { InventoryProductsService } from 'src/app/modules/inventory/services/products.service';
@@ -16,10 +16,11 @@ import { FireDoc } from 'src/app/models/firestore.model';
 import { AuthService } from 'src/app/services/auth.service';
 import { iManager } from 'src/app/modules/admin/personal/manager.model';
 import { MatSelectChange } from '@angular/material/select';
-import { InvoiceStore } from 'src/app/models/invoice.model';
+import { InvoiceStore, ProductInvoiceModel } from 'src/app/models/invoice.model';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import { iProvider, ProviderModel } from 'src/app/models/provider.model';
 import { debounce, debounceTime, distinctUntilChanged, first } from 'rxjs/operators';
+import { PurchaseInvoiceModel } from 'src/app/models/pucharce-invoice.model';
 
 
 @Component({
@@ -232,5 +233,10 @@ export class CreateInvoiceComponent implements OnInit {
     })
 
     this.invoiceForm.controls.businessName.disable()
+  }
+
+  addConcept(){
+    
+    this.purchase.addConcept()
   }
 }

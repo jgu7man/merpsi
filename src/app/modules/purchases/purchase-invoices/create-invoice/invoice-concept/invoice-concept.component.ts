@@ -1,7 +1,10 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import { FireDoc } from 'src/app/models/firestore.model';
-import { ProductInvoiceModel } from 'src/app/models/products.model';
+import { ProductInvoiceModel } from 'src/app/models/invoice.model';
+import { ProductModel } from 'src/app/models/products.model';
+import { PurchaseInvoiceService } from 'src/app/services/puchase-invoice.service';
 
 @Component({
   selector: 'app-invoice-concept',
@@ -11,6 +14,9 @@ import { ProductInvoiceModel } from 'src/app/models/products.model';
 export class InvoiceConceptComponent implements OnInit {
 
   @Input() concept: FireDoc<ProductInvoiceModel> | null = null
+  businessRef = this._cache.getDataKey('eid')
+  productSelect: ProductModel | string  = ''
+  productListEmpty = false
 
   formAddProduct: FormGroup = new FormGroup({
     product: new FormControl('', [Validators.required]),
@@ -18,7 +24,12 @@ export class InvoiceConceptComponent implements OnInit {
     unit_cost: new FormControl('', [Validators.required]),
   })
 
-  constructor() { }
+  
+  constructor(
+    private _cache: MxCache,
+    public purchase: PurchaseInvoiceService,
+
+  ) { }
 
   ngOnInit(): void {
     if (this.concept) {
@@ -28,6 +39,18 @@ export class InvoiceConceptComponent implements OnInit {
 
   }
 
+  getValue(product: ProductModel){
+    this.productSelect = product  
+    console.log(this.productSelect)
 
+  }
+
+  getList(product: ProductModel[]){
+    this.productListEmpty = product.length ==0 ? true : false
+  }
+
+  createProduct(){
+    alert("abrir form de crear producto")
+  }
 
 }

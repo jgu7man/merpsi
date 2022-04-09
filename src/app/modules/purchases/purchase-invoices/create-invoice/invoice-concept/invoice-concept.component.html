@@ -1,27 +1,56 @@
 <div class="container">
   <div class="row">
-    <div class="col s12 m8">
+    <div class="col s12 ">
       <form [formGroup]="formAddProduct">
-        <mat-form-field appearance="outline" class="col s12">
-          <!-- producto -->
-          <mat-label>producto</mat-label>
-          <input matInput type="text" name="provider" formControlName="product">
-          <mat-error *ngIf="formAddProduct.hasError('required', 'CRF')">
-            Este dato es necesario
-          </mat-error>
-        </mat-form-field>
-        <!-- cantidad -->
-          <mat-label>Cantidad</mat-label>
-          <input matInput type="text" name="cantidad" formControlName="cant">
-          <mat-error *ngIf="formAddProduct.hasError('required', 'CRF')">
-            Este dato es necesario
-          </mat-error>
-        <!-- precio -->
-        <mat-label>Precio</mat-label>
-        <input matInput type="text" name="amount" formControlName="amount">
-        <mat-error *ngIf="formAddProduct.hasError('required', 'CRF')">
-          Este dato es necesario
-        </mat-error>
+
+        <!-- producto -->
+        <div class="col s3">
+          <mx-searcher-list [label]="'Concepto'" [collection]="'businesses/' + businessRef + '/products/'"
+            [param]="'UPC'" (results)="getValue($event)" (lists)="getList($event)"></mx-searcher-list>
+          <ng-container *ngIf="productListEmpty==true">
+            <small>no se encuentra el producto..para agregarlo haz click</small>
+            <button mat-icon-button color="accent" (click)="createProduct()">
+              aqui
+            </button>
+          </ng-container>
+        </div>
+        <div class="col s3">
+          <!-- cantidad -->
+          <mat-form-field appearance="outline">
+            <mat-label>Cantidad</mat-label>
+            <input matInput type="text" name="cantidad" formControlName="cant">
+            <mat-error *ngIf="formAddProduct.hasError('required', 'cant')">
+              Este dato es necesario
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div class="col s3">
+          <mat-form-field appearance="outline">
+
+            <!-- precio -->
+            <mat-label>Precio</mat-label>
+            <input matInput type="text" (mask) = "'00000.00'" name="amount" formControlName="unit_cost">
+            <mat-error *ngIf="formAddProduct.hasError('required', 'unit_cost')">
+              Este dato es necesario
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div class="col s1">
+          <button 
+          mat-raised-button
+          color="primary" 
+          (click)="createProduct()">
+          add
+          </button>
+        </div>
+        <div class="col s1">
+          <button 
+          mat-raised-button
+          color="warn" 
+          (click)="createProduct()">
+          delete
+          </button>
+        </div>
       </form>
     </div>
   </div>

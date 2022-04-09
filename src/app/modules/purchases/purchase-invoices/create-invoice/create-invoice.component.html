@@ -83,7 +83,17 @@
           </mat-form-field>
         </form>
       </div>
-      
+    <ng-container *ngIf="purchase.store && purchase.provider">
+    <button 
+    mat-raised-button 
+    color="accent" 
+    (click)="addConcept()">
+    Agregar Concepto
+    </button>
+    <ng-container *ngFor="let concepto of purchase.details">
+      <app-invoice-concept></app-invoice-concept>
+    </ng-container>
+    </ng-container >
       <!-- <ng-container *ngIf="provider.businessName">
         <mat-form-field appearance="outline" class="col s6 l3">
           <mat-label>Método de pago</mat-label>

@@ -1,5 +1,5 @@
 import firebase from "firebase"
-import { FireTime, createDate } from "./firestore.model"
+import { FireTime, createDate, FireRef, FireDoc } from "./firestore.model"
 import { Product, ProductModel } from "./products.model"
 import { iTax } from "./taxes.model"
 
@@ -52,6 +52,7 @@ export interface InvoiceStore {
   name: string,
 }
 
+
 export class ProductInvoiceModel implements Product.MainData {
   /** Costo unitario del producto comprado*/
   public unit_cost: number = 0
@@ -64,23 +65,35 @@ export class ProductInvoiceModel implements Product.MainData {
   description: string
   brand?: string
   measure_unit: string
-  document_ref?: firebase.firestore.DocumentReference
+  document_ref?: FireRef<ProductModel>
   
 
   constructor (
     /** Referencia del producto comprado (Debe seleccionarse de la lista de productos registrados de la empresa) */
-    concept: firebase.firestore.DocumentSnapshot<ProductModel>
+    concept?: FireDoc<ProductModel>
   ) {
 
-    let data = concept.data()!
+    let data = concept?.data()!
 
 		this.amount = this.unit_cost * this.cant;
-    this.UPC = data.UPC
-    this.reference = data.reference
-    this.description = data.description
-    this.brand = data.brand
-    this.measure_unit = data.measure_unit
-    this.document_ref = concept.ref
+    this.UPC = data?.UPC || ''
+    this.reference = data?.reference || ''
+    this.description = data?.description || ''
+    this.brand = data?.brand || ''
+    this.measure_unit = data?.measure_unit || ''
+    this.document_ref = concept?.ref || undefined
 	}
 }
+
+// export const productEmpty: ProductInvoiceModel = {
+//   unit_cost : 0,
+//   cant : 0, 
+//   amount : 0, 
+//   UPC : '',
+//   reference : '' ,
+//   description : '' ,
+//   brand : '' ,
+//   measure_unit : '' ,
+//   //document_ref : '' 
+// }
 
