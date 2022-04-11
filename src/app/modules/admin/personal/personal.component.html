@@ -10,7 +10,7 @@
       itemSelector="name"
       #crudPanel
       (onDelete)="onDeleteItem($event)"
-      [columns]="[{id:'name', displayName:'Nombre'}, {id:'email', displayName:'Email'}]"
+      [columns]="columns"
        >
 
         <ng-template #add>

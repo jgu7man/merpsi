@@ -6,6 +6,7 @@ import { PersonalService } from 'src/app/modules/admin/personal/personal.service
 import { DeleteUsuarioDialog } from './delete-usuario/delete-usuario.dialog';
 import { MxIndex } from 'libs/@marxa/index/src/public-api';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
+import { MxCrudPanelColumns } from 'libs/@marxa/crud-panel/src/lib/mx-crud-panel.model';
 
 @Component({
   templateUrl: './personal.component.html',
@@ -14,7 +15,11 @@ import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 export class PersonalComponent implements OnInit, OnDestroy {
 
   personal: ManagerModel[] = []
-  businessCRF: string = this._cache.getDataKey('eid')!
+  businessCRF: string = this._cache.getDataKey( 'eid' )!
+  columns: MxCrudPanelColumns[] = [
+    { id: 'name', displayName: 'Nombre' },
+    { id: 'email', displayName: 'Email' }
+  ]
 
   constructor(
     private _personal: PersonalService,
