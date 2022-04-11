@@ -1,7 +1,7 @@
 <form class="row" [formGroup]="productForm">
 
   <!-- CÓDIGO -->
-  <mat-form-field class="col s12 l5 codigo-input"
+  <mat-form-field class="col s12 codigo-input"
     appearance="outline"
     *ngIf="!product"
   >
@@ -22,7 +22,7 @@
   </mat-form-field>
 
   <!-- REFERENCIA -->
-  <mat-form-field appearance="outline" class="col s12 l7">
+  <mat-form-field appearance="outline" class="col s12">
     <mat-label>Referencia</mat-label>
     <input
       matInput
@@ -34,17 +34,6 @@
     <mat-error *ngIf="productForm.hasError('required', 'reference')">
       Referencia es necesario
     </mat-error>
-  </mat-form-field>
-
-  <!-- MARCA -->
-  <mat-form-field appearance="outline" class="col s12 l5">
-    <mat-label>Marca</mat-label>
-    <input
-    matInput
-    type="text"
-    name="brand"
-    formControlName="brand"
-    >
   </mat-form-field>
 
   <!-- DESCRIPTION -->
@@ -62,8 +51,19 @@
       ></textarea>
   </mat-form-field>
 
+  <!-- MARCA -->
+  <mat-form-field appearance="outline" class="col s12">
+    <mat-label>Marca</mat-label>
+    <input
+    matInput
+    type="text"
+    name="brand"
+    formControlName="brand"
+    >
+  </mat-form-field>
+
   <!-- UNIDAD DE MEDIDA -->
-  <mat-form-field appearance="outline" class="col s12 l6">
+  <mat-form-field appearance="outline" class="col s12">
     <mat-label>Unidad de medida</mat-label>
     <mat-select formControlName="measure_unit" name="measure_unit">
       <mat-option value="Unidad">Unidad</mat-option>
@@ -73,38 +73,7 @@
     </mat-error>
   </mat-form-field>
 
-  <!-- COSTO UNITARIO -->
-  <!-- <mat-form-field appearance="outline" class="col s6 l4">
-    <mat-label>Costo Unitario</mat-label>
-    <input
-      matInput
-      type="number"
-      name="costoUnitario"
-      formControlName="costoUnitario"
-      required
-    />
-    <span matPrefix>$&nbsp;</span>
-    <mat-error *ngIf="productForm.hasError('required', 'costoUnitario')">
-      Costo Unitario es necesario
-    </mat-error>
-  </mat-form-field> -->
-
-  <!-- IVA -->
-  <!-- <mat-form-field appearance="outline" class="col s6 l3">
-    <mat-label>IVA</mat-label>
-    <input matInput type="number" name="iva" formControlName="iva" required />
-    <mat-error *ngIf="productForm.hasError('required', 'iva')">
-      IVA es necesario
-    </mat-error>
-  </mat-form-field> -->
-
-  <!-- ALMACENES -->
-  <div class="col s12">
-
-    <app-product-storage></app-product-storage>
-
-  </div>
-
+  
   <!-- PROVEEDOR -->
   <!-- <mat-form-field appearance="outline" class="col s12 l6">
     <mat-label>Proveedor</mat-label>
@@ -116,6 +85,7 @@
       </mat-option>
     </mat-select>
   </mat-form-field> -->
+
 
   <!-- CATEGORIAS -->
   <div class="col s12">
@@ -159,3 +129,14 @@
     </button>
   </div>
 </form>
+
+<!-- 
+
+  SEGURO
+  BOLSA DE CAPACITACIÓN
+  CONTRATACIÓN
+  
+  SANTANDER SANTA FE
+  BURÓ DE CRÉDITO
+
+ -->
