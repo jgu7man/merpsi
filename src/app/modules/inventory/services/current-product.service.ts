@@ -84,10 +84,18 @@ export class CurrentProductService {
       if ( this.product$.value == null )
         throw { message: 'Se ha perdido el state del producto actual' }
       
+      const product = await this.product$.value
+      
       await this._dashboard.businessRef
         .collection( 'products' )
-        .doc( this.product$.value.UPC ).ref
-        .set( { ...this.product$.value }, { merge: true } )
+        .doc( product.UPC ).ref
+        .set( { ...product }, { merge: true } )
+      
+      
+      await this._dashboard.businessRef
+        .collection( `products/${ product.UPC }/history` )
+        .doc( `${ new Date().getTime() }` )
+        .set( {...product.last_update} )
       
       this._alert.notify( 'Producto guardado' )
       return

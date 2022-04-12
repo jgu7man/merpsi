@@ -5,11 +5,12 @@
       listName="Personal"
       [selectTemplate]="select"
       [addTemplate]="add"
-      [list]="personal"
+      [list]="(index.page$ | async)"
       [height_vh]="100"
       itemSelector="name"
       #crudPanel
       (onDelete)="onDeleteItem($event)"
+      [columns]="columns"
        >
 
         <ng-template #add>
@@ -23,4 +24,3 @@
     </div>
   </div>
 </div>
-    

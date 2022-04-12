@@ -2,7 +2,7 @@ import { AbstractControl, FormGroup } from '@angular/forms'
 import firebase from 'firebase/app'
 import { uniq } from 'lodash'
 import { ManagerModel } from '../modules/admin/personal/manager.model'
-import { FireDoc, FireRef } from './firestore.model'
+import { createDate, FireDoc, FireRef, FireTime } from './firestore.model'
 
 /**
  * Clase para crear productos desde 0. 
@@ -102,7 +102,7 @@ export class ProductEventModel {
   /**
    * Fecha momento en que se realizó el evento
    */
-  public date: firebase.firestore.Timestamp
+  public date: FireTime
 
   constructor (
     /** El tipo de evento que se está registrando */
@@ -110,7 +110,7 @@ export class ProductEventModel {
     /** Referencia de manager que realiza el evento */
     public manager?: firebase.firestore.DocumentReference,
   ) {
-    this.date = firebase.firestore.Timestamp.fromDate( new Date() )
+    this.date = createDate(new Date())
     
   }
 

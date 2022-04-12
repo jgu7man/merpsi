@@ -7,7 +7,8 @@ import { MxLoading } from 'libs/@marxa/devkit/loading/loading.service';
 import { MxText } from 'libs/@marxa/devkit/text/mx-text.service';
 import { of, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, first, map, skip, tap } from 'rxjs/operators';
-import { Product } from 'src/app/models/products.model';
+import { FireDoc } from 'src/app/models/firestore.model';
+import { Product, ProductModel } from 'src/app/models/products.model';
 import { CurrentProductService } from '../../services/current-product.service';
 import { InventoryProductsService } from '../../services/products.service';
 
@@ -19,7 +20,8 @@ import { InventoryProductsService } from '../../services/products.service';
 export class ProductFormComponent implements OnInit, OnDestroy {
   
   
-  @Input() product?: Product.DataReference;
+  // @Input() product?: Product.DataReference;
+  @Input() provider?: FireDoc<Product.ProviderReference>
   
   
   public productForm: Product.Form 
@@ -33,6 +35,7 @@ export class ProductFormComponent implements OnInit, OnDestroy {
   
   @Output() update: EventEmitter<Product.UpdateReference> = new EventEmitter();
   @Output() patch: EventEmitter<Product.StockReference> = new EventEmitter();
+  @Output() changes: EventEmitter<Product.DataReference> = new EventEmitter();
   
   
   private _storesSubscription!: Subscription;
@@ -53,7 +56,6 @@ export class ProductFormComponent implements OnInit, OnDestroy {
       description: new FormControl(''),
       brand: new FormControl(''),
       measure_unit: new FormControl('Unidad', [Validators.required]),
-      owner: new FormControl( '' , [Validators.required]),
       provider: new FormControl( '' ),
       third_reference: new FormControl( '' ),
       categories: new FormControl( [] ),
@@ -66,20 +68,20 @@ export class ProductFormComponent implements OnInit, OnDestroy {
         skip( 1 ),
         distinctUntilChanged( ( x, y ) => JSON.stringify( x ) == JSON.stringify( y ) ),
         debounceTime( 1000 ),
-        tap(this.current.product$.next),
+        tap( changes => {
+          console.log( changes )
+          this.current.product$.next( { ...changes } )
+          // this.changes.emit( changes )
+        } ),
         tap( () => this.validForm = this.productFormValid),
       ).subscribe();
     
   }
 
   ngOnInit(): void {
-    if (this.product) {
-      this.productForm.patchValue(this.product);
-
-      if (this.product.reference_codes)
-        this.reference_codes = this.product.reference_codes;
-      if (this.product.categories) this.categories = this.product.categories;
-    }
+    const product = this.current.product$.value
+    if ( product ) this.productForm.patchValue( { ...product } )
+    else this.current.product$.next( new ProductModel())
   }
 
 
@@ -130,7 +132,7 @@ export class ProductFormComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this._storesSubscription.unsubscribe();
+    this._storesSubscription?.unsubscribe();
     this._productFormSubscription.unsubscribe();
   }
 }

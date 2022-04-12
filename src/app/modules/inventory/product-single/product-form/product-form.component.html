@@ -1,161 +1,144 @@
-<form class="row" [formGroup]="productForm">
+<ng-container *ngIf="(current.product$ | async) as product">
+  <form class="row" [formGroup]="productForm">
 
-  <!-- CÓDIGO -->
-  <mat-form-field class="col s12 l5 codigo-input"
-    appearance="outline"
-    *ngIf="!product"
-  >
-    <mat-label>Código de prodcuto (UPC)</mat-label>
-    <mat-hint class="red-text">
-      Una vez asignado el código principal del producto, no podrá ser cambiado
-    </mat-hint>
-    <input
-      matInput
-      type="text"
-      name="product_code"
-      formControlName="product_code"
-      required
-    />
-    <mat-error *ngIf="productForm.hasError('required', 'product_code')">
-      Código es necesario
-    </mat-error>
-  </mat-form-field>
-
-  <!-- REFERENCIA -->
-  <mat-form-field appearance="outline" class="col s12 l7">
-    <mat-label>Referencia</mat-label>
-    <input
-      matInput
-      type="text"
-      name="reference"
-      formControlName="reference"
-      required
-    />
-    <mat-error *ngIf="productForm.hasError('required', 'reference')">
-      Referencia es necesario
-    </mat-error>
-  </mat-form-field>
-
-  <!-- MARCA -->
-  <mat-form-field appearance="outline" class="col s12 l5">
-    <mat-label>Marca</mat-label>
-    <input
-    matInput
-    type="text"
-    name="brand"
-    formControlName="brand"
+    <!-- CÓDIGO -->
+    <mat-form-field class="col s12 codigo-input"
+      appearance="outline"
+      *ngIf="!product"
     >
-  </mat-form-field>
-
-  <!-- DESCRIPTION -->
-  <mat-form-field
-    appearance="outline"
-    class="col s12">
-      <mat-label>Descripción</mat-label>
-      <textarea 
+      <mat-label>Código de prodcuto (UPC)</mat-label>
+      <mat-hint class="red-text">
+        Una vez asignado el código principal del producto, no podrá ser cambiado
+      </mat-hint>
+      <input
         matInput
-        name="description" 
-        formControlName="description" 
-        cols="30" 
-        rows="3"
-        [mat-autosize]="true"
-      ></textarea>
-  </mat-form-field>
-
-  <!-- UNIDAD DE MEDIDA -->
-  <mat-form-field appearance="outline" class="col s12 l6">
-    <mat-label>Unidad de medida</mat-label>
-    <mat-select formControlName="measure_unit" name="measure_unit">
-      <mat-option value="Unidad">Unidad</mat-option>
-    </mat-select>
-    <mat-error *ngIf="productForm.hasError('required', 'measure_unit')">
-      Unidad de medida es necesario
-    </mat-error>
-  </mat-form-field>
-
-  <!-- COSTO UNITARIO -->
-  <!-- <mat-form-field appearance="outline" class="col s6 l4">
-    <mat-label>Costo Unitario</mat-label>
-    <input
+        type="text"
+        name="product_code"
+        formControlName="product_code"
+        required
+      />
+      <mat-error *ngIf="productForm.hasError('required', 'product_code')">
+        Código es necesario
+      </mat-error>
+    </mat-form-field>
+  
+    <!-- REFERENCIA -->
+    <mat-form-field appearance="outline" class="col s12">
+      <mat-label>Referencia</mat-label>
+      <input
+        matInput
+        type="text"
+        name="reference"
+        formControlName="reference"
+        required
+      />
+      <mat-error *ngIf="productForm.hasError('required', 'reference')">
+        Referencia es necesario
+      </mat-error>
+    </mat-form-field>
+  
+    <!-- DESCRIPTION -->
+    <mat-form-field
+      appearance="outline"
+      class="col s12">
+        <mat-label>Descripción</mat-label>
+        <textarea 
+          matInput
+          name="description" 
+          formControlName="description" 
+          cols="30" 
+          rows="3"
+          [mat-autosize]="true"
+        ></textarea>
+    </mat-form-field>
+  
+    <!-- MARCA -->
+    <mat-form-field appearance="outline" class="col s12">
+      <mat-label>Marca</mat-label>
+      <input
       matInput
-      type="number"
-      name="costoUnitario"
-      formControlName="costoUnitario"
-      required
-    />
-    <span matPrefix>$&nbsp;</span>
-    <mat-error *ngIf="productForm.hasError('required', 'costoUnitario')">
-      Costo Unitario es necesario
-    </mat-error>
-  </mat-form-field> -->
-
-  <!-- IVA -->
-  <!-- <mat-form-field appearance="outline" class="col s6 l3">
-    <mat-label>IVA</mat-label>
-    <input matInput type="number" name="iva" formControlName="iva" required />
-    <mat-error *ngIf="productForm.hasError('required', 'iva')">
-      IVA es necesario
-    </mat-error>
-  </mat-form-field> -->
-
-  <!-- ALMACENES -->
-  <div class="col s12">
-
-    <app-product-storage></app-product-storage>
-
-  </div>
-
-  <!-- PROVEEDOR -->
-  <!-- <mat-form-field appearance="outline" class="col s12 l6">
-    <mat-label>Proveedor</mat-label>
-    <mat-select placeholder="Especifica el proveedor de este producto"
-    formControlName="provider"
-    name="provider">
-      <mat-option *ngFor="let proveedor of proveedores_ref" [value]="proveedor.value">
-        {{proveedor.viewValue}}
-      </mat-option>
-    </mat-select>
-  </mat-form-field> -->
-
-  <!-- CATEGORIAS -->
-  <div class="col s12">
-    <app-chips-crud
-    [listValue]="product?.categories || []"
-    (change)="onCategoriesChanged($event)"
-    label="Categorías"
-    hint="Escribe categorías y después presiona COMA para que se agreguen a la
-    lista."
-    placeholder="Agrega una categoría"
-    ></app-chips-crud>
-  </div>
-
-  <!-- NOTES -->
-  <div class="col s12">
-    <app-chips-crud
-    [listValue]="product?.notes || []"
-    label="Etiquetas"
-    placeholder="Agrega alguna etiqueta especial"
-    hint="Escribe alguna etiqueta como una forma diferente de categorizar los productos"
-    ></app-chips-crud>
-  </div>
-
-
-  <!-- CODIGO QR -->
-  <div class="col s12">
-    <!-- <app-qrcodes-crud
-      [codes]="codigos_adicionales"
-      (codesChanged)="qrlistChanged($event)"
-    ></app-qrcodes-crud> -->
-  </div>
-
-  <div class="col s12 center">
-    <button
-      mat-raised-button
-      color="primary"
-      [disabled]="current.formValid | async"
-      (click)="onSubmit()"
-    >
-      Guardar
-    </button>
-  </div>
-</form>
+      type="text"
+      name="brand"
+      formControlName="brand"
+      >
+    </mat-form-field>
+  
+    <!-- UNIDAD DE MEDIDA -->
+    <mat-form-field appearance="outline" class="col s12">
+      <mat-label>Unidad de medida</mat-label>
+      <mat-select formControlName="measure_unit" name="measure_unit">
+        <mat-option value="Unidad">Unidad</mat-option>
+      </mat-select>
+      <mat-error *ngIf="productForm.hasError('required', 'measure_unit')">
+        Unidad de medida es necesario
+      </mat-error>
+    </mat-form-field>
+  
+    
+    <!-- PROVEEDOR -->
+    <!-- <mat-form-field appearance="outline" class="col s12 l6">
+      <mat-label>Proveedor</mat-label>
+      <mat-select placeholder="Especifica el proveedor de este producto"
+      formControlName="provider"
+      name="provider">
+        <mat-option *ngFor="let proveedor of proveedores_ref" [value]="proveedor.value">
+          {{proveedor.viewValue}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field> -->
+  
+  
+    <!-- CATEGORIAS -->
+    <div class="col s12">
+      <app-chips-crud
+      [listValue]="product?.categories || []"
+      (change)="onCategoriesChanged($event)"
+      label="Categorías"
+      hint="Escribe categorías y después presiona COMA para que se agreguen a la
+      lista."
+      placeholder="Agrega una categoría"
+      ></app-chips-crud>
+    </div>
+  
+    <!-- NOTES -->
+    <div class="col s12">
+      <app-chips-crud
+      [listValue]="product?.notes || []"
+      label="Etiquetas"
+      placeholder="Agrega alguna etiqueta especial"
+      hint="Escribe alguna etiqueta como una forma diferente de categorizar los productos"
+      ></app-chips-crud>
+    </div>
+  
+  
+    <!-- CODIGO QR -->
+    <div class="col s12">
+      <!-- <app-qrcodes-crud
+        [codes]="codigos_adicionales"
+        (codesChanged)="qrlistChanged($event)"
+      ></app-qrcodes-crud> -->
+    </div>
+  
+    <div class="col s12 center">
+      <button
+        mat-raised-button
+        color="primary"
+        [disabled]="current.formValid | async"
+        (click)="onSubmit()"
+      >
+        Guardar
+      </button>
+    </div>
+  </form>
+  
+  <!-- 
+  
+    SEGURO
+    BOLSA DE CAPACITACIÓN
+    CONTRATACIÓN
+    
+    SANTANDER SANTA FE
+    BURÓ DE CRÉDITO
+  
+   -->
+</ng-container>
