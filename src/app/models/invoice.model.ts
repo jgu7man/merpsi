@@ -65,15 +65,14 @@ export class ProductInvoiceModel implements Product.MainData {
   description: string
   brand?: string
   measure_unit: string
-  document_ref?: FireRef<ProductModel>
   
 
   constructor (
     /** Referencia del producto comprado (Debe seleccionarse de la lista de productos registrados de la empresa) */
-    concept?: FireDoc<ProductModel>
+    concept?: ProductModel
   ) {
 
-    let data = concept?.data()!
+    let data = concept
 
 		this.amount = this.unit_cost * this.cant;
     this.UPC = data?.UPC || ''
@@ -81,7 +80,6 @@ export class ProductInvoiceModel implements Product.MainData {
     this.description = data?.description || ''
     this.brand = data?.brand || ''
     this.measure_unit = data?.measure_unit || ''
-    this.document_ref = concept?.ref || undefined
 	}
 }
 

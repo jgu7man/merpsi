@@ -8,6 +8,7 @@ import { PurchaseInvoicesComponent } from './purchase-invoices/purchase-invoices
 import { CreateInvoiceComponent } from './purchase-invoices/create-invoice/create-invoice.component';
 import { ProviderNewDialog } from './purchase-invoices/provider-new.dialog/provider-new.dialog';
 import { InvoiceConceptComponent } from './purchase-invoices/create-invoice/invoice-concept/invoice-concept.component';
+import { SelectConceptDialogComponent } from './purchase-invoices/create-invoice/select-concept.dialog/select-concept.dialog.component';
 
 
 @NgModule({
@@ -18,6 +19,7 @@ import { InvoiceConceptComponent } from './purchase-invoices/create-invoice/invo
     CreateInvoiceComponent,
     ProviderNewDialog,
     InvoiceConceptComponent,
+    SelectConceptDialogComponent,
   ],
   imports: [
     CommonModule,

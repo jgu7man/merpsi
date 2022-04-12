@@ -19,8 +19,9 @@ import { MatSelectChange } from '@angular/material/select';
 import { InvoiceStore, ProductInvoiceModel } from 'src/app/models/invoice.model';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import { iProvider, ProviderModel } from 'src/app/models/provider.model';
-import { debounce, debounceTime, distinctUntilChanged, first } from 'rxjs/operators';
+import { debounce, debounceTime, distinctUntilChanged, first, skip } from 'rxjs/operators';
 import { PurchaseInvoiceModel } from 'src/app/models/pucharce-invoice.model';
+import { SelectConceptDialogComponent } from './select-concept.dialog/select-concept.dialog.component';
 
 
 @Component({
@@ -74,8 +75,9 @@ export class CreateInvoiceComponent implements OnInit {
   
   async ngOnInit(): Promise<void> {
     this.invoiceForm.valueChanges.pipe(
-      debounceTime( 500 ),
       distinctUntilChanged( ( x, y ) => JSON.stringify( x ) == JSON.stringify(y)),
+      debounceTime( 5000 ),
+      skip(1)
     ).subscribe( changes => {
       this.purchase.current$.next( {
         ...this.purchase.current$.value,
@@ -194,22 +196,6 @@ export class CreateInvoiceComponent implements OnInit {
 
   }
 
-  add(
-    product: FireDoc<ProductModel>,
-    cant: number,
-    amount: number
-  ) {
-    this.productList.push(this.purchase.addProduct(product, cant, amount))
-  }
-  
-  delete(index: number) {
-    this.productList.splice(index, 1)
-  }
-
-
-  save(){
-
-  }
 
   async findInvoice( invoice_id: string ){
     if (invoice_id.length>5){
@@ -237,6 +223,9 @@ export class CreateInvoiceComponent implements OnInit {
 
   addConcept(){
     
-    this.purchase.addConcept()
+    this._dialog.open(SelectConceptDialogComponent, {
+      width: '600px ',
+    } )
+    //this.purchase.addConcept()
   }
 }

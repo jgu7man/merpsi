@@ -29,28 +29,28 @@ export class PurchaseInvoiceService {
     // this.current$.next(new PurchaseInvoiceModel())
   }
 
-  addProduct(productRef: FireDoc<ProductModel>, cant: number, cost: number) {
+  // addProduct(productRef: FireDoc<ProductModel>, cant: number, cost: number) {
 
-    if (this.current$.value !== null) {
+  //   if (this.current$.value !== null) {
 
-      // this.current$.next({
-      //   ...this.current$.value,
-      //   details: [
-      //     ...this.current$.value.details,
-      //     new ProductPurchasedModel(productRef)
-      //   ]
-      // })
+  //     // this.current$.next({
+  //     //   ...this.current$.value,
+  //     //   details: [
+  //     //     ...this.current$.value.details,
+  //     //     new ProductPurchasedModel(productRef)
+  //     //   ]
+  //     // })
       
-      const details = this.current$.value.details!
-      details.push( new ProductInvoiceModel( productRef) )
-      this.current$.next({
-        ...this.current$.value,
-        details
-      }) 
-    }
-    return new ProductInvoiceModel(productRef)
+  //     const details = this.current$.value.details!
+  //     details.push( new ProductInvoiceModel( productRef) )
+  //     this.current$.next({
+  //       ...this.current$.value,
+  //       details
+  //     }) 
+  //   }
+  //   return new ProductInvoiceModel(productRef)
 
-  }
+  // }
 
   deleteConcept(UPC: string){
 
@@ -100,12 +100,11 @@ export class PurchaseInvoiceService {
    }
  }
 
-  addConcept() {
+  addConcept(concept: ProductModel) {
     if (this.current$.value !== null) {
       let details: ProductInvoiceModel[] = this.current$.value.details
-      details.push(new ProductInvoiceModel())
+      details.push(new ProductInvoiceModel(concept))
       this.updateCurrent('details', details)
-      console.log(this.current$.value)
     }
   }
 }
