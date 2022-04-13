@@ -108,11 +108,6 @@ export class PurchaseInvoiceService {
     }
   }
 
-  // updateFooter(subtotal: number) {
-  //   if (this.current$.value !== null) {
-  //     let footer: iInvoiceFooter 
-  //   }
-  // }
 }
 
 // type PropType<TObj, TProp extends keyof TObj> = TObj[TProp];

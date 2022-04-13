@@ -1,6 +1,7 @@
 import firebase from "firebase"
 import { FireTime, createDate, FireRef, FireDoc } from "./firestore.model"
 import { Product, ProductModel } from "./products.model"
+import { iSede } from "./sede.model"
 import { iTax } from "./taxes.model"
 
 export class InvoiceModel {
@@ -63,8 +64,9 @@ export class ProductInvoiceModel implements Product.MainData {
   UPC: string
   reference: string
   description: string
-  brand?: string
   measure_unit: string
+  brand?: string
+  public store?: FireRef<iSede> | ''
   
 
   constructor (

@@ -5,14 +5,14 @@
         <ng-container >
         <!-- UPC -->
         <div class="col s2">
-          <mat-form-field appearance="outline" class="col s12">
+          <mat-form-field  class="col s12">
             <mat-label>UPC</mat-label>
             <input matInput type="text" name="UPC" formControlName="UPC">
           </mat-form-field>
         </div>
         <!-- DESCRIPTION -->
         <div class="col s2">
-          <mat-form-field appearance="outline" class="col s12">
+          <mat-form-field  class="col s12">
             <mat-label>descripcion</mat-label>
             <input matInput type="text" name="description" formControlName="description">
           </mat-form-field>
@@ -39,7 +39,7 @@
         </div>
         <!-- total -->
         <div class="col s2">
-          <mat-form-field appearance="outline" class="col s12">
+          <mat-form-field  class="col s12">
             <mat-label>Valor Total</mat-label>
             <input matInput type="number" name="amount" formControlName="amount">
             <mat-error *ngIf="formAddProduct.hasError('required', 'unit_cost')">

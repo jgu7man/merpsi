@@ -24,22 +24,47 @@ export class FooterInvoiceComponent implements OnInit, OnDestroy{
   constructor(
     public purchase: PurchaseInvoiceService,
   ) {
+    this.disableForm()
     this.currentSubscription = this.purchase.current$.pipe().subscribe(invoice => {
       let subtotal = 0
       if (invoice){
         invoice.details.forEach( d => subtotal += d.amount)
-         //this.purchase.updateCurrent('footer',{...invoice.footer, subtotal: subtotal})
          invoice.footer.subtotal = subtotal
-         this.formFooter.patchValue({subtotal : subtotal})
-          console.log('nuevo valor del current')
-          console.log(invoice)
+         invoice.footer.total = (invoice.footer.shipping + invoice.footer.subtotal) - invoice.footer.discount
+         this.formFooter.patchValue({
+           subtotal : subtotal,
+           total:  invoice.footer.total
+        })
+        console.log(invoice)
       }
     })
    }
  
   ngOnInit(): void {
     
+    this.formFooter.valueChanges.pipe(
+      distinctUntilChanged((x, y) =>
+          typeof x != 'object' ? x === y : JSON.stringify(x) === JSON.stringify(y)
+        ),
+        skip( 1),
+        debounceTime(3000),
+    ).subscribe(changes => {
+      if ( this.purchase.current$.value){
+        let footer = this.purchase.current$.value.footer
+        let discount = changes.discount
+        let shipping = changes.shipping
+        console.log(footer)
+        this.purchase.updateCurrent('footer', {...footer, discount: discount, shipping: shipping}
+        )
+      }
+      
+    })
 
+  }
+
+  disableForm(){
+    this.formFooter.controls.subtotal.disable()
+    this.formFooter.controls.total.disable()
   }
 
   ngOnDestroy(): void {
