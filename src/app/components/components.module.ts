@@ -7,13 +7,15 @@ import { FirebaseModule } from '../shared/firebase.module';
 import { MaterialModule } from '../shared/material.module';
 import { MarxaModule } from '../shared/marxa.module';
 import { NgxMaskModule } from 'ngx-mask';
+import { QrcodesCrudComponent } from './qrcodes-crud/qrcodes-crud.component';
 
 
 
 @NgModule({
   declarations: [
     GenericRegistFormComponent,
-    ChipsCrudComponent
+    ChipsCrudComponent,
+    QrcodesCrudComponent
   ],
   imports: [
     CommonModule,
@@ -26,7 +28,8 @@ import { NgxMaskModule } from 'ngx-mask';
   ],
   exports: [
     GenericRegistFormComponent,
-    ChipsCrudComponent
+    ChipsCrudComponent,
+    QrcodesCrudComponent
   ]
 })
 export class ComponentsModule { }

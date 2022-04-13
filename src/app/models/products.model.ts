@@ -3,6 +3,7 @@ import firebase from 'firebase/app'
 import { uniq } from 'lodash'
 import { ManagerModel } from '../modules/admin/personal/manager.model'
 import { createDate, FireDoc, FireRef, FireTime } from './firestore.model'
+import { ProviderModel } from './provider.model'
 
 /**
  * Clase para crear productos desde 0. 
@@ -11,7 +12,7 @@ import { createDate, FireDoc, FireRef, FireTime } from './firestore.model'
  */
 export class ProductModel {
   /** Código del producto. Se espera que pueda ser el UPC (Código Universal del Producto).*/
-  public UPC: string = '|'
+  public UPC: string = ''
   /** Nombre o referencia del producto */
   public reference: string
   /** (Opcional) descripcion del producto */
@@ -23,13 +24,15 @@ export class ProductModel {
   /** Referencia sin caracteres especiales */
   public slug: string
   /** Códigos adicionales o necesarios para el manejo de inventarios y consultas */
-  public reference_codes: string[]
+  public reference_codes: string[] = []
   /** Lista de ID de categorias */
-  public categories: string[]
+  public categories: string[] = []
   /** Notas adicionales que la empresa decida agregar al producto */
-  public notes: string[]
+  public notes: string[] = []
   /** Rutas de imágenes del producto */
-  public gallery: string[]
+  public gallery: string[] = []
+  /** Lista de claves de búsqueda */
+  private search_keys: string[] = []
   /** Datos de referencia de la empresa que provee el producto */
   public provider?: Product.ProviderReference
   /** Última modificación del producto en la base de datos de la empresa */
@@ -42,7 +45,7 @@ export class ProductModel {
     /** Reference del manager creador del producto */
     manager?: FireRef<ManagerModel>,
     /** Si el proveedor existe en la DB se asignará la referencia de firestore. Si no se tiene proveedor en base de datos, se le solictará a la empresa, que lo cree en su panel en su propia lista de proveedores. NOTA: Si no se tiene el registro del proveedor, el CRF de la empresa registradora del producto, será asignada como el creador del producto */
-    provider?: FireDoc<Product.ProviderReference>
+    provider?: Product.ProviderReference
   ) {
     
     let productData = !(product instanceof ProductModel) ? product?.data() : product
@@ -53,7 +56,7 @@ export class ProductModel {
     this.measure_unit = productData?.measure_unit || ''
     this.slug = this.createSlug( this.reference )
     /* Genera un array de códigos de referencia para que el producto pueda ser buscado */
-    this.reference_codes = this.getReferenceCodes()
+    this.search_keys = this.getSearchKeys()
     this.categories = productData?.categories || []
     this.notes = productData?.notes || []
     this.gallery = productData?.gallery || []
@@ -78,7 +81,7 @@ export class ProductModel {
   }
 
   /** Toma los códigos de esta clase y los convierte en strings consultables desde firestore */
-  private getReferenceCodes(): string[] {
+  private getSearchKeys(): string[] {
     let reference_codes = [
       this.UPC,
       this.slug,
@@ -117,6 +120,9 @@ export class ProductEventModel {
 }
 
 
+
+
+
 /** Segmento de interfaces del producto */
 export declare namespace Product {
   
@@ -131,7 +137,11 @@ export declare namespace Product {
     | 'createSlug'
     >{ }
   
-  /** Modelo de datos principales del concepto */
+  /**
+   * Modelo de datos principales del concepto
+   *
+   * @interface MainData
+   */
   interface MainData {  
     UPC: string,
     reference: string,
@@ -141,8 +151,13 @@ export declare namespace Product {
     document_ref?: FireRef<ProductModel>
   }
   
+  /**
+   * Interfaz de proveedor de un producto
+   *
+   * @interface ProviderReference
+   */
   interface ProviderReference {
-    reference?: firebase.firestore.DocumentReference
+    reference?: FireRef<ProviderModel>
     CRF: string,
     name: string,
   }
@@ -170,8 +185,6 @@ export declare namespace Product {
     /** (Opcional) Referencia al documento del proveedor de este producto en esta store de la lista de proveedores de la misma empresa. */
     provider?: ProviderReference,
   }
-
-  
 
   /**
    * Modelo de la consulta de un producto y sus múltiples existencias en los stores
@@ -205,8 +218,10 @@ export declare namespace Product {
       notes: AbstractControl
       reference_codes: AbstractControl
     }
+  }
 
-}
+
+  
 
 
   namespace StoreReference {
@@ -235,6 +250,8 @@ export declare namespace Product {
     
   }
 }
+
+
 
 /** Modelo de agregado de productos a la factura de compra/venta */
 // export class  ProductInvoiceModel implements Product.MainData {

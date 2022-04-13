@@ -21,7 +21,7 @@ export class ProductFormComponent implements OnInit, OnDestroy {
   
   
   // @Input() product?: Product.DataReference;
-  @Input() provider?: FireDoc<Product.ProviderReference>
+  @Input() provider?: Product.ProviderReference
   
   
   public productForm: Product.Form 
@@ -81,20 +81,18 @@ export class ProductFormComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     const product = this.current.product$.value
     if ( product ) this.productForm.patchValue( { ...product } )
-    else this.current.product$.next( new ProductModel())
+    else this.current.product$.next( new ProductModel() )
+    console.log( this.current.product$.value )
   }
 
-
-  qrlistChanged( reference_codes: any[] ): void {
-    this.productForm.patchValue({reference_codes})
-  }
-
-  onCategoriesChanged(categories: any[]): void {
-    this.productForm.patchValue( { categories } )
-  }
-
-  onNotesChanged( notes: any[] ): void {
-    this.productForm.patchValue({notes})
+  listHasChanged( list:
+    |'reference_codes'
+    | 'categories'
+    | 'notes'
+    | 'gallery',
+    value: string[]
+  ): void {
+    this.productForm.patchValue( { [list]: value})
   }
 
   get productFormValid() {

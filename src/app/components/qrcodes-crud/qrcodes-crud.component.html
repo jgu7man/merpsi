@@ -1,0 +1,19 @@
+  <mat-form-field appearance="outline">
+    <mat-label>{{label}}</mat-label>
+    <mat-hint>{{instruction}}</mat-hint>
+    <mat-chip-list #QRcodes aria-label="code-chips">
+      <mat-chip *ngFor="let code of codes" [selectable]="true"
+      [removable]="true" (removed)="removeQRCode(code)">
+        {{code}}
+        <mat-icon matChipRemove>cancel</mat-icon>
+      </mat-chip>
+      <input [placeholder]="placeholder"
+      [matChipInputFor]="QRcodes"
+      [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+      [matChipInputAddOnBlur]="true"
+      (matChipInputTokenEnd)="addQRCode($event)">
+    </mat-chip-list>
+    <button matSuffix  mat-icon-button color="primary" (click)="openScanner()" >
+      <mat-icon>qr_code</mat-icon>
+    </button>
+  </mat-form-field>

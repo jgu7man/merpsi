@@ -2,10 +2,11 @@
   <div class="row">
     <div class="col s12">
       <mx-crud-panel
+      *ngIf="(index.page$ | async) as list"
       listName="Personal"
       [selectTemplate]="select"
       [addTemplate]="add"
-      [list]="(index.page$ | async)"
+      [list]="list"
       [height_vh]="100"
       itemSelector="name"
       #crudPanel
