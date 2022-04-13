@@ -7,7 +7,7 @@ import { BehaviorSubject } from 'rxjs';
 import { DashboardService } from '../modules/dashboard/dashboard.service';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import Swal from 'sweetalert2';
-import { ProductInvoiceModel } from '../models/invoice.model';
+import { iInvoiceFooter, ProductInvoiceModel } from '../models/invoice.model';
 
 
 @Injectable({
@@ -107,6 +107,12 @@ export class PurchaseInvoiceService {
       this.updateCurrent('details', details)
     }
   }
+
+  // updateFooter(subtotal: number) {
+  //   if (this.current$.value !== null) {
+  //     let footer: iInvoiceFooter 
+  //   }
+  // }
 }
 
 // type PropType<TObj, TProp extends keyof TObj> = TObj[TProp];

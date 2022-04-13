@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import { ProductModel } from 'src/app/models/products.model';
 import { PurchaseInvoiceService } from 'src/app/services/puchase-invoice.service';
+import { ProductNewDialogComponent } from '../../product-new-dialog/product-new.dialog.component';
 
 @Component({
   selector: 'app-select-concept.dialog',
@@ -18,7 +19,10 @@ export class SelectConceptDialogComponent implements OnInit {
   constructor(
     private _cache: MxCache,
     private _dialog: MatDialogRef<SelectConceptDialogComponent>,
-    public purchase: PurchaseInvoiceService
+    public purchase: PurchaseInvoiceService,
+    private _dialogProduct: MatDialog,
+
+    
   ) { }
 
   ngOnInit(): void {
@@ -39,6 +43,8 @@ export class SelectConceptDialogComponent implements OnInit {
   }
 
   createProduct(){
-
+    this._dialogProduct.open(ProductNewDialogComponent, {
+      width: '100% ',
+    } )
   }
 }

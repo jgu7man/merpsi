@@ -31,6 +31,8 @@ export class InvoiceConceptComponent implements OnInit {
   })
 
   
+
+  
   constructor(
     private _cache: MxCache,
     public purchase: PurchaseInvoiceService,
@@ -99,7 +101,8 @@ export class InvoiceConceptComponent implements OnInit {
   }
 
   deleteConcept(concept: ProductInvoiceModel | null ){
-  console.log(this.formAddProduct.controls.value)
+    if (concept)
+  this.purchase.deleteConcept(concept.UPC)
   }
 
 }

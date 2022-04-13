@@ -30,7 +30,7 @@
         <!-- precio -->
         <div class="col s2">
           <mat-form-field appearance="outline" class="col s12">
-            <mat-label>Precio</mat-label>
+            <mat-label>Precio Unitario</mat-label>
             <input matInput type="number" name="amount" formControlName="unit_cost">
             <mat-error *ngIf="formAddProduct.hasError('required', 'unit_cost')">
               Este dato es necesario
@@ -40,7 +40,7 @@
         <!-- total -->
         <div class="col s2">
           <mat-form-field appearance="outline" class="col s12">
-            <mat-label>total</mat-label>
+            <mat-label>Valor Total</mat-label>
             <input matInput type="number" name="amount" formControlName="amount">
             <mat-error *ngIf="formAddProduct.hasError('required', 'unit_cost')">
               Este dato es necesario
@@ -52,7 +52,7 @@
           mat-raised-button
           color="warn" 
           (click)="deleteConcept(concept)">
-          delete
+          X
           </button>
         </div>
       </ng-container>

@@ -91,10 +91,14 @@
           (click)="addConcept()">
           Agregar Concepto
           </button>
+
           <ng-container *ngFor="let concept of purchase.details ">
             <app-invoice-concept
             [concept]="concept"
             ></app-invoice-concept>
+          </ng-container>
+          <ng-container *ngIf="purchase.details.length > 0">
+          <app-footer-invoice></app-footer-invoice>
           </ng-container>
           </ng-container>
       </div>
