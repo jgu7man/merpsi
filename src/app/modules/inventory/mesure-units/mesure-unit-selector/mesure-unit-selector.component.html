@@ -1,0 +1,16 @@
+<!-- Unidad de medida -->
+<mat-form-field
+  appearance="outline"
+  class="col s12">
+    <mat-label>Unidad de medida</mat-label>
+    <mat-select
+      placeholder="Elige una unidad de medida"
+      [formControl]="selectorCtrl"
+      name="mesureUnit">
+        <mat-option
+          *ngFor="let unit of (mesureUnits.list$ | async)"
+          [value]="unit">
+            {{unit.name}} ({{unit.symbol}})
+        </mat-option>
+      </mat-select>
+</mat-form-field>

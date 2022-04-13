@@ -9,6 +9,9 @@ import { ProductFormComponent } from './product-single/product-form/product-form
 import { ProductStorageComponent } from './product-single/product-storage/product-storage.component';
 import { ProductSingleComponent } from './product-single/product-single.component';
 import { ProductStoredFormComponent } from './product-single/product-stored-form/product-stored-form.component';
+import { MesureUnitsComponent } from './mesure-units/mesure-units.component';
+import { MesureUnitFormComponent } from './mesure-units/mesure-unit-form/mesure-unit-form.component';
+import { MesureUnitSelectorComponent } from './mesure-units/mesure-unit-selector/mesure-unit-selector.component';
 
 
 @NgModule({
@@ -18,7 +21,10 @@ import { ProductStoredFormComponent } from './product-single/product-stored-form
     ProductFormComponent,
     ProductStorageComponent,
     ProductSingleComponent,
-    ProductStoredFormComponent
+    ProductStoredFormComponent,
+    MesureUnitsComponent,
+    MesureUnitFormComponent,
+    MesureUnitSelectorComponent
   ],
   imports: [
     CommonModule,

@@ -1,13 +1,11 @@
 
 import { OnDestroy } from '@angular/core';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { MatChipInputEvent } from '@angular/material/chips';
+import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { MxLoading } from 'libs/@marxa/devkit/loading/loading.service';
 import { MxText } from 'libs/@marxa/devkit/text/mx-text.service';
-import { of, Subscription } from 'rxjs';
-import { debounceTime, distinctUntilChanged, first, map, skip, tap } from 'rxjs/operators';
-import { FireDoc } from 'src/app/models/firestore.model';
+import { Subscription } from 'rxjs';
+import { debounceTime, distinctUntilChanged, skip, tap } from 'rxjs/operators';
 import { Product, ProductModel } from 'src/app/models/products.model';
 import { CurrentProductService } from '../../services/current-product.service';
 import { InventoryProductsService } from '../../services/products.service';
@@ -86,7 +84,7 @@ export class ProductFormComponent implements OnInit, OnDestroy {
   }
 
   listHasChanged( list:
-    |'reference_codes'
+    | 'reference_codes'
     | 'categories'
     | 'notes'
     | 'gallery',
@@ -130,7 +128,7 @@ export class ProductFormComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this._storesSubscription.unsubscribe();
-    this._productFormSubscription.unsubscribe();
+    this._storesSubscription?.unsubscribe();
+    this._productFormSubscription?.unsubscribe();
   }
 }
