@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
 import { MxText } from 'libs/@marxa/devkit/text/mx-text.service';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable, of, Subject, Subscription } from 'rxjs';
 import { catchError, map, mapTo, mergeMap, switchMap } from 'rxjs/operators';
 import { Product } from 'src/app/models/products.model';
 import { DashboardService } from 'src/app/modules/dashboard/dashboard.service';
@@ -21,6 +21,8 @@ export class CurrentProductService {
         .every( valid => valid === true )
     ))
   }
+
+
 
   constructor (
     private _dashboard: DashboardService,

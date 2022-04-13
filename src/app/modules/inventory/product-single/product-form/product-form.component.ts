@@ -2,6 +2,7 @@
 import { OnDestroy } from '@angular/core';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormControl, Validators } from '@angular/forms';
+import { MatDialogRef } from '@angular/material/dialog';
 import { MxLoading } from 'libs/@marxa/devkit/loading/loading.service';
 import { MxText } from 'libs/@marxa/devkit/text/mx-text.service';
 import { Subscription } from 'rxjs';
@@ -131,4 +132,27 @@ export class ProductFormComponent implements OnInit, OnDestroy {
     this._storesSubscription?.unsubscribe();
     this._productFormSubscription?.unsubscribe();
   }
+}
+
+@Component({
+  template: `
+    <p mat-dialog-title class="center">Agregar producto</p>
+    <mat-dialog-content>
+      <app-product-form></app-product-form>
+    </mat-dialog-content>
+    <mat-dialog-actions>
+      <button mat-raised-button>Cancelar</button>
+      <button mat-raised-button color="primary">Aceptar</button>
+    </mat-dialog-actions>
+  `,
+  styleUrls: ['./product-form.component.scss']
+})
+  
+export class ProductFormDialog implements OnInit {
+  constructor (
+    // @Inject( MAT_DIALOG_DATA ) data: any,
+    public dialog: MatDialogRef<ProductFormDialog>
+  ) { }
+  
+  ngOnInit() { }
 }
