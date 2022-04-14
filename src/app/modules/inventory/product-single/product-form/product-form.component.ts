@@ -7,9 +7,9 @@ import { MxLoading } from 'libs/@marxa/devkit/loading/loading.service';
 import { MxText } from 'libs/@marxa/devkit/text/mx-text.service';
 import { Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, skip, tap } from 'rxjs/operators';
-import { Product, ProductModel } from 'src/app/models/products.model';
-import { CurrentProductService } from '../../services/current-product.service';
-import { InventoryProductsService } from '../../services/products.service';
+import { Product, ProductModel } from 'src/app/modules/inventory/products/products.model';
+import { InventoryProductsService } from '../../products/products.service';
+import { CurrentProductService } from '../current-product.service';
 
 @Component({
   selector: 'app-product-form',

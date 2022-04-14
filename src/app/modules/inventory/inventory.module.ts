@@ -12,6 +12,8 @@ import { ProductStoredFormComponent } from './product-single/product-stored-form
 import { MesureUnitsComponent } from './mesure-units/mesure-units.component';
 import { MesureUnitFormComponent } from './mesure-units/mesure-unit-form/mesure-unit-form.component';
 import { MesureUnitSelectorComponent } from './mesure-units/mesure-unit-selector/mesure-unit-selector.component';
+import { ProviderComponent } from './providers/provider.component';
+import { SetProviderComponent } from './providers/set-provider/set-provider.component';
 
 
 @NgModule({
@@ -25,15 +27,20 @@ import { MesureUnitSelectorComponent } from './mesure-units/mesure-unit-selector
     ProductStoredFormComponent,
     MesureUnitsComponent,
     MesureUnitFormComponent,
-    MesureUnitSelectorComponent
+    MesureUnitSelectorComponent,
+    ProviderComponent,
+    SetProviderComponent
   ],
   imports: [
     CommonModule,
     InventoryRoutingModule,
     SharedModule,
   ],
+  exports: [
+    SetProviderComponent
+  ],
   schemas: [
-    // CUSTOM_ELEMENTS_SCHEMA
+    CUSTOM_ELEMENTS_SCHEMA
   ]
 })
 export class InventoryModule { }

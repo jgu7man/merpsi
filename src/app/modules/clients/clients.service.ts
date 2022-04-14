@@ -4,7 +4,7 @@ import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { ClientModel } from 'src/app/models/clients.model';
+import { ClientModel } from 'src/app/modules/clients/clients.model';
 import { FireDoc } from 'src/app/models/firestore.model';
 import Swal from 'sweetalert2';
 

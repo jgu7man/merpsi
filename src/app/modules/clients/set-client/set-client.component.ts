@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, Validators } from '@angular/forms';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
-import { ClientModel } from 'src/app/models/clients.model';
+import { ClientModel } from 'src/app/modules/clients/clients.model';
 import { ClientsService } from '../clients.service';
 
 @Component({

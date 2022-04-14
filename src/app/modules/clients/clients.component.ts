@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Observable } from 'rxjs';
-import { ClientModel } from 'src/app/models/clients.model';
+import { ClientModel } from 'src/app/modules/clients/clients.model';
 import { ClientsService } from './clients.service';
 import { DeleteClientComponent } from './delete-client/delete-client.component';
 

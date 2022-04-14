@@ -1,9 +1,9 @@
-import { MesureUnitModel } from 'src/app/models/mesure-unit.model';
+import { MesureUnitModel } from 'src/app/modules/inventory/mesure-units/mesure-unit.model';
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { listenChanges } from 'src/app/models/operators-chains.model';
-import { MesureUnitsService } from '../../services/mesure-units.service';
+import { MesureUnitsService } from '../mesure-units.service';
 
 @Component({
   selector: 'app-mesure-unit-selector',

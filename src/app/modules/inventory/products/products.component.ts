@@ -7,9 +7,9 @@ import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import { MxIndex } from 'libs/@marxa/index/src/public-api';
 import { MxScannerDialog } from 'libs/@marxa/scanner/mx-scanner-dialog/mx-scanner.dialog';
 import { Subscription } from 'rxjs';
-import { Product,  } from 'src/app/models/products.model';
-import { CurrentProductService } from '../services/current-product.service';
-import { InventoryProductsService } from '../services/products.service';
+import { Product,  } from 'src/app/modules/inventory/products/products.model';
+import { CurrentProductService } from '../product-single/current-product.service';
+import { InventoryProductsService } from './products.service';
 
 
 @Component({

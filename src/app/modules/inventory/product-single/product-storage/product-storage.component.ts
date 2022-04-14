@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormArray } from '@angular/forms';
-import { CurrentProductService } from '../../services/current-product.service';
+import { CurrentProductService } from '../current-product.service';
 
 @Component({
   selector: 'app-product-storage',

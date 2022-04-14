@@ -1,8 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { debounceTime, distinctUntilChanged, filter, map, tap } from 'rxjs/operators';
-import { Product } from 'src/app/models/products.model';
-import { CurrentProductService } from '../../services/current-product.service';
+import { Product } from 'src/app/modules/inventory/products/products.model';
+import { CurrentProductService } from '../current-product.service';
 
 @Component({
   selector: 'app-product-stored-form',

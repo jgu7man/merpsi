@@ -1,0 +1,29 @@
+import { Injectable } from '@angular/core';
+import { AngularFirestore } from '@angular/fire/firestore';
+import { MxTest } from 'libs/@marxa/devkit/test/mx-test.service';
+import { iCountry } from 'src/app/models/country.model';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class AdminService {
+
+  constructor(
+    private _afs: AngularFirestore,
+    private _test: MxTest
+  ) { 
+    // this._test.testOn(this.getCountry)
+  }
+
+  async getCountry(): Promise<iCountry[]> {
+    try {
+      let countriesList = await this._afs.doc<{list:iCountry[]}>("_admin/countries").ref.get()
+      let result = countriesList.data()
+      return result?.list || []
+
+    } catch (error) {
+      console.error(error)
+      return []
+    }
+  }
+}

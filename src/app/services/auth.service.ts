@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { catchError, distinctUntilChanged, first, map, mergeMap, switchMap } from 'rxjs/operators';
 import Swal from 'sweetalert2';
 import { BusinessModel } from '../models/empresa.model';
-import { iManager, iManagerLogin, iManagerRegist, ManagerModel } from '../modules/admin/personal/manager.model';
+import { iManager, iManagerLogin, iManagerRegist, ManagerModel } from '../modules/admin/managers/manager.model';
 import { BusinessService } from './business.service';
 import firebase from 'firebase/app'
 import { BehaviorSubject, Observable, of } from 'rxjs';

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { iRegistFormChanges } from 'src/app/components/generic-regist-form/generic-regist-form.model';
-import { iManagerRegist } from 'src/app/modules/admin/personal/manager.model';
+import { iManagerRegist } from 'src/app/modules/admin/managers/manager.model';
 import { AuthService } from 'src/app/services/auth.service';
 
 @Component({

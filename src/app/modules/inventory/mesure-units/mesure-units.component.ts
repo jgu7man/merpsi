@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MxCrudPanelColumns } from 'libs/@marxa/crud-panel/src/lib/mx-crud-panel.model';
-import { MesureUnitsService } from 'src/app/services/mesure-units.service';
+import { MesureUnitsService } from './mesure-units.service';
 
 @Component({
   selector: 'app-mesure-units',

@@ -3,10 +3,10 @@ import { CommonModule } from '@angular/common';
 
 import { SalesRoutingModule } from './sales-routing.module';
 import { SalesComponent } from './sales.component';
-import { SalesInvoicesComponent } from './sales-invoices/sales-invoices.component';
-import { CreateInvoiceSalesComponent } from './sales-invoices/create-invoice-sales/create-invoice-sales.component';
 import { SharedModule } from 'src/app/shared/shared.module';
-import { AddConceptComponent } from './sales-invoices/create-invoice-sales/add-concept/add-concept.component';
+import { SalesInvoicesComponent } from '../finances/sales-invoices/sales-invoices.component';
+import { CreateInvoiceSalesComponent } from '../finances/sales-invoices/create-invoice-sales/create-invoice-sales.component';
+import { AddConceptComponent } from '../finances/sales-invoices/create-invoice-sales/add-concept/add-concept.component';
 
 
 @NgModule({

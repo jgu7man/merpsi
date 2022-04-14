@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { MesureUnitModel, MesureUnit } from 'src/app/models/mesure-unit.model';
-import { MesureUnitsService } from 'src/app/services/mesure-units.service';
+import { MesureUnitModel, MesureUnit } from 'src/app/modules/inventory/mesure-units/mesure-unit.model';
+import { MesureUnitsService } from '../mesure-units.service';
 
 
 @Component({

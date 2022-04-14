@@ -1,7 +1,7 @@
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
-import {ProviderComponent} from '../purchases/provider/provider.component';
-import { PurchaseInvoicesComponent } from './purchase-invoices/purchase-invoices.component';
+import { PurchaseInvoicesComponent } from '../finances/purchase-invoices/purchase-invoices.component';
+import {ProviderComponent} from '../inventory/providers/provider.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'proveedores' },

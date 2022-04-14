@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { SalesInvoicesComponent } from './sales-invoices/sales-invoices.component';
+import { SalesInvoicesComponent } from '../finances/sales-invoices/sales-invoices.component';
 import { SalesComponent } from './sales.component';
 
 const routes: Routes = [{ path: '', component: SalesComponent },

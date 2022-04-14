@@ -3,7 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 
 const routes: Routes = [
   { path: '', loadChildren: () => import('./modules/public/public.module').then(m => m.PublicModule) },
-  { path: 'business/:eid', loadChildren: () => import('./modules/dashboard/dashboard.module').then(m => m.DashboardModule) },
+  { path: 'business/:eid', loadChildren: () => import('./dashboard/dashboard.module').then(m => m.DashboardModule) },
   
   
 ];

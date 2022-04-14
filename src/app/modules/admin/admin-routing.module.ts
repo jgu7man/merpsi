@@ -1,8 +1,8 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { ProviderComponent } from '../purchases/provider/provider.component';
-import { PersonalComponent } from './personal/personal.component';
-import { SedesComponent } from './sedes/sedes.component';
+import { ProviderComponent } from '../inventory/providers/provider.component';
+import { PersonalComponent } from './managers/personal.component';
+import { SedesComponent } from './stores/sedes.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'personal' },

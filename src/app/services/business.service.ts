@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
 import Swal from 'sweetalert2';
 import { iBusiness } from '../models/empresa.model';
-import { ProviderModel } from '../models/provider.model';
+import { ProviderModel } from '../modules/inventory/providers/provider.model';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +15,7 @@ export class BusinessService {
 
 
   /**
-   *metodo para validar si una empresa existe
+   * metodo para validar si una empresa existe
    *
    * @param {string} CRF
    * @return {*}  {(Promise<iBusiness | null>)}
