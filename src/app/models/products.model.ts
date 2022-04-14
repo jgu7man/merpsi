@@ -3,6 +3,7 @@ import firebase from 'firebase/app'
 import { uniq } from 'lodash'
 import { ManagerModel } from '../modules/admin/personal/manager.model'
 import { createDate, FireDoc, FireRef, FireTime } from './firestore.model'
+import { MesureUnitModel } from './mesure-unit.model'
 import { ProviderModel } from './provider.model'
 
 /**
@@ -20,7 +21,7 @@ export class ProductModel {
   /** Marca del producto */
   public brand?: string
   /** Unidad de medida */
-  public measure_unit: string
+  public measure_unit?: number
   /** Referencia sin caracteres especiales */
   public slug: string
   /** Códigos adicionales o necesarios para el manejo de inventarios y consultas */
@@ -53,7 +54,6 @@ export class ProductModel {
     this.reference = productData?.reference || ''
     this.description = productData?.description || ''
     this.brand = productData?.brand || ''
-    this.measure_unit = productData?.measure_unit || ''
     this.slug = this.createSlug( this.reference )
     /* Genera un array de códigos de referencia para que el producto pueda ser buscado */
     this.search_keys = this.getSearchKeys()
@@ -91,6 +91,8 @@ export class ProductModel {
     ].filter( i => i || i !== undefined )
     return uniq(reference_codes)
   }
+
+  public measure_unit_ref?: FireDoc<MesureUnitModel> 
 
   /* TODO Crear en el formulario un "switch" o "checkbox" que valide al usuario si la empresa es la creadora del producto */
 }

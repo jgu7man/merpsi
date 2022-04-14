@@ -5,7 +5,7 @@ import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import { MxLoading } from 'libs/@marxa/devkit/loading/loading.service';
 import { BehaviorSubject } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
-import { MesureUnit, MesureUnitModel } from '../models/mesure-unit.model';
+import { MesureUnit, MesureUnitModel } from 'src/app/models/mesure-unit.model';
 
 @Injectable({
   providedIn: 'root'
