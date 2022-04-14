@@ -3,10 +3,10 @@ import { AngularFirestore } from '@angular/fire/firestore';
 import { MxAlert } from 'libs/@marxa/devkit/alert/alert.service';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import { MxLoading } from 'libs/@marxa/devkit/loading/loading.service';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subscription } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { BusinessModel } from 'src/app/models/empresa.model';
-import { GlobalTax, Tax, TaxModel } from './taxes.model';
+import { AppliedTaxModel, GlobalTax, Tax, TaxModel } from './taxes.model';
 
 @Injectable({
   providedIn: 'root'
@@ -15,6 +15,9 @@ export class TaxesService {
 
   list$ = new BehaviorSubject<TaxModel[]>( [] )
   businessCRF: string = this._cache.getDataKey( 'eid' )!
+  applidedTaxes: AppliedTaxModel[] = []
+
+  private _listSubscription: Subscription
 
   constructor (
     private _afs: AngularFirestore,
@@ -22,7 +25,7 @@ export class TaxesService {
     private _loading: MxLoading,
     private _alert: MxAlert
   ) { 
-    this.listenList().subscribe()
+    this._listSubscription = this.listenList().subscribe()
   }
 
   get ref() {
@@ -111,7 +114,7 @@ export class TaxesService {
     }
   }
 
-  private async  _setGlobalTax({name, rate, description}: TaxModel) {
+  private async  _setGlobalTax({name, rate, description, slug}: TaxModel) {
     try {
 
       /* Obtenemos la lista actual de impuestos */
@@ -129,7 +132,8 @@ export class TaxesService {
       
       if ( !( nameMatch && countryMatch && rateMatch ) ) { 
         const newTax: GlobalTax = {
-          name, rate, country, description
+          name, rate, country, description,
+          slug: `${country}-${slug}`
         }
 
         list.push( newTax )
@@ -140,5 +144,15 @@ export class TaxesService {
     } catch (error: any) {
       throw console.error(error)
     }
+  }
+
+  get appliedTaxesTotal() {
+    let total = 0;
+    this.applidedTaxes.forEach( t => total += t.amount )
+    return total
+  }
+
+  leave() {
+    this.applidedTaxes = []
   }
 }

@@ -2,15 +2,25 @@ import { AbstractControl, FormGroup } from "@angular/forms"
 
 /** Item de impuesto */
 export class TaxModel { 
+  /** Identificador del impuesto */
+  slug: string
+
   constructor (
     readonly index: number,
     /** Nombre del impuesto */
     public name: string,
-    /** Tasa de impuesto en `float` */
+    /** Tasa de impuesto en number */
     public rate: number,
     /** Descripción */
     public description: string = '',
-  ){}
+  ) {
+    this.slug = name.toLowerCase()
+    .replace( /\s/g, '-' )
+    .replace(/\//g, '-')
+    .replace(/\./g, '')
+    .replace(/,/g, '')
+    .replace(/@/g, '-')
+  }
 }
 
 export interface GlobalTax extends Omit<TaxModel, 'index'> {
@@ -34,43 +44,26 @@ export namespace Tax {
   export interface list {
     list: TaxModel[]
   }
+
+  export interface applied {
+    
+  }
 }
 
-export class TaxAmountModel {
-  /** Nombre del impuesto */
-  readonly name: string
-  /** Tasa de impuesto en `float` */
-  readonly rate: number = 0
-  /** Monto al cuál se le aplicará el impuesto */
-  public applied_amount: number = 0
+export class AppliedTaxModel extends TaxModel {
   /** Resultado de multiplicar el monto aplicado por la tasa del impuesto */
-  get amount() { return (this.rate * this.applied_amount) || 0}
-
+  get amount() { return ((this.rate / 100) * this.amount_base) || 0}
+  
   constructor (
     /** Impuesto seleccionado */
     tax: TaxModel,
+    /** Monto al cuál se le aplicará el impuesto */
+    public amount_base: number = 0
   ) {
-    // this.amount = tax.rate * applied_amount
-    this.name = tax.name
-    this.rate = tax.rate
+    super(tax.index, tax.name, tax.rate)
   }
 }
 
-export namespace TaxAmount {
 
-  export type data = Omit<TaxAmountModel, 'name' | 'rate'>
-
-
-  export interface iTaxAmount {
-    /** Nombre del impuesto */
-    name: string,
-    /** Tasa de impuesto en `float` */
-    rate: number,
-    /** Valor resultado del impuesto */
-    amount: number
-  }
-
-
-}
 
 
