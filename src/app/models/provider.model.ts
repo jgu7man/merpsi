@@ -36,7 +36,7 @@ export class QueryProvider {
 
   private async getBusiness( ref: firebase.firestore.DocumentReference<iBusiness> ) {
     let doc = await ref.get();
-    console.log( doc.data() )
+    // console.log( doc.data() )
     return doc.data()
   }
 

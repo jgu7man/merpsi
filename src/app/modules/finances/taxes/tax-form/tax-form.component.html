@@ -1,0 +1,66 @@
+<form [formGroup]="taxForm">
+
+  <div class="row">
+  
+    <!-- Nombre -->
+    <mat-form-field
+      appearance="outline"
+      class="col s6">
+        <mat-label>Nombre</mat-label>
+        <input
+        matInput
+        type="text"
+        name="name"
+        formControlName="name"
+        required
+        >
+        <mat-error *ngIf="taxForm.hasError('required', 'name')">
+            Nombre es necesario
+        </mat-error>
+    </mat-form-field>
+
+    <!-- Tasa -->
+    <mat-form-field
+      appearance="outline"
+      class="col s6">
+        <mat-label>Tasa</mat-label>
+        <input
+        matInput
+        type="number"
+        name="rate"
+        formControlName="rate"
+        required
+        >
+        <mat-error *ngIf="taxForm.hasError('required', 'rate')">
+            Tasa es necesario
+        </mat-error>
+    </mat-form-field>
+
+    <!-- Descripción -->
+    <mat-form-field
+      appearance="outline"
+      class="col s12">
+        <mat-label>Descripción</mat-label>
+        <textarea 
+          matInput
+          name="description" 
+          formControlName="description" 
+          cols="30" 
+          rows="5"
+          [mat-autosize]="true"
+        ></textarea>
+    </mat-form-field>
+
+  </div>
+
+  <div class="row">
+    <div class="col s12 center">
+      <button mat-raised-button color="primary" 
+      [disabled]="taxForm.invalid || taxForm.pristine"
+      (click)="onSubmit()"
+      >Guardar</button>
+    </div>
+  </div>
+
+
+</form>

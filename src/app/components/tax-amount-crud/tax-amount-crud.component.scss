@@ -1,0 +1,26 @@
+.tax-amount-container {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  position: relative;
+  .tax-amount-description {
+    width: 50%;
+  }
+  .tax-amount-result {
+    width: 50%;
+    text-align: right;
+  }
+  .tax-amount-deleter {
+    position: absolute;
+    opacity: 0;
+    transition: all 0.3s;
+    right: 0;
+    left: 50%;
+  }
+  &:hover {
+    .tax-amount-deleter {
+      opacity: 1;
+    }
+  }
+  
+}

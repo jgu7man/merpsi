@@ -1,8 +1,8 @@
 import firebase from "firebase"
 import { FireTime, createDate, FireRef, FireDoc } from "./firestore.model"
 import { Product, ProductModel } from "./products.model"
+import { TaxModel } from "../modules/finances/taxes/taxes.model"
 import { iSede } from "./sede.model"
-import { iTax } from "./taxes.model"
 
 export class InvoiceModel {
   /**folio de la factura */
@@ -42,7 +42,7 @@ export interface iInvoiceFooter {
   /** Descuento aplicado a la compra en moneda */
   discount: number;
   /** Lista de impuestos aplicados a la compra */
-  taxes: iTax[];
+  taxes: TaxModel[];
   /** Costo generado por envío */
   shipping: number;
   /** Total de restar descuentos e impuestos y agregado de costo de envío */
@@ -64,7 +64,7 @@ export class ProductInvoiceModel implements Product.MainData {
   UPC: string
   reference: string
   description: string
-  measure_unit: string
+  measure_unit: number
   brand?: string
   public store?: FireRef<iSede> | ''
   
@@ -81,7 +81,7 @@ export class ProductInvoiceModel implements Product.MainData {
     this.reference = data?.reference || ''
     this.description = data?.description || ''
     this.brand = data?.brand || ''
-    this.measure_unit = data?.measure_unit || ''
+    this.measure_unit = data?.measure_unit || 0
 	}
 }
 

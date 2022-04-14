@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
 import { MxText } from 'libs/@marxa/devkit/text/mx-text.service';
-import { BehaviorSubject, Observable, of, Subject, Subscription } from 'rxjs';
-import { catchError, map, mapTo, mergeMap, switchMap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, of,  } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { Product } from 'src/app/models/products.model';
 import { DashboardService } from 'src/app/modules/dashboard/dashboard.service';
 
@@ -105,6 +105,18 @@ export class CurrentProductService {
       this._alert.error('No se logró guardar el producto', error)
       console.error( error );
       return
+    }
+  }
+
+  updateState(
+    param: keyof Product.DataReference,
+    value: Product.DataReference[ typeof param ]
+  ) {
+    if ( this.product$.value !== null ) {
+      this.product$.next( {
+        ...this.product$.value,
+        [param]: value
+      })
     }
   }
 }
