@@ -2,7 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import { ProductModel } from 'src/app/models/products.model';
+import { InvoiceService } from 'src/app/services/invoice-service.service';
 import { PurchaseInvoiceService } from 'src/app/services/puchase-invoice.service';
+import { SalesService } from 'src/app/services/sales.service';
 import { ProductNewDialogComponent } from '../../product-new-dialog/product-new.dialog.component';
 
 @Component({
@@ -20,7 +22,9 @@ export class SelectConceptDialogComponent implements OnInit {
     private _cache: MxCache,
     private _dialog: MatDialogRef<SelectConceptDialogComponent>,
     public purchase: PurchaseInvoiceService,
+    public sales: SalesService,
     private _dialogProduct: MatDialog,
+    public invoice: InvoiceService
 
     
   ) { }
@@ -32,10 +36,8 @@ export class SelectConceptDialogComponent implements OnInit {
   getValue(product: ProductModel){
     this.productSelect = product  
     console.log(this.productSelect)
-    this.purchase.addConcept(product)
+    this.invoice.addConcept(product)
     this._dialog.close()
-    
-
   }
 
   getList(product: ProductModel[]){

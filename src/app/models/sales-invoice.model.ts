@@ -6,7 +6,11 @@ import { InvoiceModel, ProductInvoiceModel } from './invoice.model';
 import { iSede } from './sede.model';
 
 export class SalesInvoiceModel extends InvoiceModel {
-  public client: FireDoc<ClientModel> | ''
+  public client : ClientInvoice= { 
+    cip: '',
+    name: '',
+    email: ''
+  }
   public seller: string | ''
   public date_expiration : firebase.firestore.Timestamp | ''
   public currency: string | ''
@@ -14,10 +18,16 @@ export class SalesInvoiceModel extends InvoiceModel {
     salesI?:SalesInvoiceModel
   ) {
     super(salesI)
-    this.client = salesI?.client || ''
     this.seller = salesI?.seller || ''
     this.date_expiration = salesI?.date_expiration || ''
     this.currency = salesI?.currency || ''
+    this.footer = {
+      subtotal: 0,
+      discount: 0,
+      taxes: [],
+      shipping: 0,
+      total: 0,
+    }
   }
     
 }
@@ -40,3 +50,9 @@ export interface iFacturaDatos {
 }
 
 export interface iProductSales extends ProductInvoiceModel {}
+
+export interface ClientInvoice{
+  cip: '',
+  name: '',
+  email: '',
+}

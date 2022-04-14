@@ -1,10 +1,7 @@
-<div class="container">
-  <div class="row">
-    <div class="col s6 m8">
-      <form [formGroup]="salesForm">
+      <form class="row" [formGroup]="salesForm">
         
         <!-- fecha de emision -->
-        <mat-form-field appearance="outline" class="col s12">
+        <mat-form-field appearance="outline" class="col s12 l4">
           <mat-label>Fecha de Emision</mat-label>
           <input
           matInput
@@ -15,7 +12,7 @@
           ></mat-datepicker>
         </mat-form-field>
         <!-- fecha de Vencimiento -->
-        <mat-form-field appearance="outline" class="col s12">
+        <mat-form-field appearance="outline" class="col s12 l4 offset-l4">
           <mat-label>Fecha de Vencimiento</mat-label>
           <input
           matInput
@@ -25,6 +22,7 @@
           <mat-datepicker #expire startView="year"
           ></mat-datepicker>
         </mat-form-field>
+        
         <!-- clientes -->
         <mx-searcher-list
         [collection]="'businesses/' + businessRef + '/clients'"
@@ -33,19 +31,22 @@
         (results)="getValue($event)"
         ></mx-searcher-list>
         <ng-container *ngIf="client!= null">
-          <mat-form-field appearance="outline" class="col s12">
-            <mat-label>Clave de Identificacion Personal</mat-label>
-            <input matInput type="text" name="cip" formControlName="cip"
-            >
-          </mat-form-field>
-          <mat-form-field appearance="outline" class="col s12">
-            <mat-label>email</mat-label>
-            <input matInput type="text" name="email" formControlName="email"
-            >
-          </mat-form-field>
-        </ng-container>
+          <form class="row" [formGroup]="clientform">
+            <mat-form-field appearance="outline" class="col s12 l4">
+              <mat-label>Clave de Identificacion Personal</mat-label>
+              <input matInput type="text" name="cip" formControlName="cip"
+              >
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="col s12 l4 offset-l4">
+              <mat-label>email</mat-label>
+              <input matInput type="text" name="email" formControlName="email"
+              >
+            </mat-form-field>
+          </form>
+        
+        <ng-container *ngIf="sales.current$ | async as sales">
         <!-- Vendedor -->
-        <mat-form-field appearance="outline" class="col s12">
+        <mat-form-field appearance="outline" class="col s12 l4">
           <mat-label>Vendedor</mat-label>
           <input matInput type="text" name="seller" formControlName="seller"
           >
@@ -54,7 +55,7 @@
           </mat-error>
         </mat-form-field>
         <!-- Moneda -->
-        <mat-form-field appearance="outline" class="col s12">
+        <mat-form-field appearance="outline" class="col s12 l4 offset-l4">
           <mat-label >Moneda</mat-label>
           <mat-select formControlName="currency">
             <mat-option value="USD">USD</mat-option>
@@ -77,22 +78,24 @@
             Este dato es necesario
           </mat-error>
         </mat-form-field>
-            <button mat-raised-button color="accent"
-            click=""
-            >
-              Agregar Concepto
-            </button>
-            <app-add-concept></app-add-concept>
+        <div class="row">
+          <ng-container>
+            <button 
+            mat-raised-button 
+            color="accent" 
+            (click)="addConcept()">
+            Agregar Concepto
+          </button>
+            <ng-container *ngFor="let concept of sales.details ">
+              <app-invoice-concept
+              [concept]="concept"
+              ></app-invoice-concept>
+            </ng-container>
+            <ng-container *ngIf="sales.details.length > 0">
+            <app-footer-invoice></app-footer-invoice>
+            </ng-container>
+            </ng-container>
+        </div>
+        </ng-container>
+       </ng-container>
       </form>
-    </div>
-    <div class="row">
-      <div class="col s12">
-        <button mat-raised-button color="primary" 
-        [disabled]="salesForm.invalid"
-        (click)="onSubmit()">
-          guardar
-        </button>
-      </div>
-    </div>
-  </div>
-</div>

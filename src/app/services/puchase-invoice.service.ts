@@ -100,13 +100,7 @@ export class PurchaseInvoiceService {
    }
  }
 
-  addConcept(concept: ProductModel) {
-    if (this.current$.value !== null) {
-      let details: ProductInvoiceModel[] = this.current$.value.details
-      details.push(new ProductInvoiceModel(concept))
-      this.updateCurrent('details', details)
-    }
-  }
+  
 
 }
 

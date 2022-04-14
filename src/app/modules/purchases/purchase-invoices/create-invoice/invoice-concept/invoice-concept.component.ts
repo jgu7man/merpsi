@@ -5,6 +5,7 @@ import { debounceTime, distinctUntilChanged, skip } from 'rxjs/operators';
 import { ProductInvoiceModel } from 'src/app/models/invoice.model';
 import { ProductModel } from 'src/app/models/products.model';
 import { PurchaseInvoiceService } from 'src/app/services/puchase-invoice.service';
+import { SalesService } from 'src/app/services/sales.service';
 
 @Component({
   selector: 'app-invoice-concept',
@@ -36,13 +37,16 @@ export class InvoiceConceptComponent implements OnInit {
   constructor(
     private _cache: MxCache,
     public purchase: PurchaseInvoiceService,
+    public sales: SalesService
 
   ) { }
 
   ngOnInit(): void {
-
-    if (this.purchase.current$.value  && this.concept) {
+    
+    console.log('estoy en el componente')
+    if ((this.purchase.current$.value || this.sales.current$.value)  && this.concept) {
       this.disableForm()
+      console.log('pase por aqui')
       this.formAddProduct.valueChanges.pipe(
         distinctUntilChanged((x, y) =>
           typeof x != 'object' ? x === y : JSON.stringify(x) === JSON.stringify(y)
@@ -50,7 +54,9 @@ export class InvoiceConceptComponent implements OnInit {
         skip( 1),
         debounceTime(3000),
       ).subscribe(changes => {
-        let details = this.purchase.current$.value!.details
+        let details = this.purchase.current$.value ? 
+        this.purchase.current$.value!.details : 
+        this.sales.current$.value!.details
         details = details.map(d => {
           let details
           if (d.UPC ===this.concept!.UPC){
@@ -66,7 +72,7 @@ export class InvoiceConceptComponent implements OnInit {
         }
         )
         console.log(details)
-        this.purchase.updateCurrent('details', details)
+        this.purchase.current$.value ? this.purchase.updateCurrent('details', details) : this.sales.updateCurrent('details',details)
       })
 
       this.formAddProduct.patchValue(this.concept)

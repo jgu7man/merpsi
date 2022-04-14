@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { SalesInvoiceModel } from 'src/app/models/sales-invoice.model';
+import { SalesService } from 'src/app/services/sales.service';
 
 @Component({
   selector: 'app-sales-invoices',
@@ -7,9 +9,14 @@ import { Component, OnInit } from '@angular/core';
 })
 export class SalesInvoicesComponent implements OnInit {
 
-  constructor() { } 
+  constructor(
+    public sales: SalesService
+  ) { } 
 
   ngOnInit(): void {
   }
 
+  onCreate(){
+    this.sales.current$.next(new SalesInvoiceModel());
+  }
 }

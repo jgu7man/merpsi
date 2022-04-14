@@ -3,7 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
 import { Observable } from 'rxjs';
-import { Product, ProductModel } from 'src/app/models/products.model';
+import { Product } from 'src/app/models/products.model';
 import { iSede } from 'src/app/models/sede.model';
 import { SedesService } from 'src/app/modules/admin/sedes/sedes.service';
 import { InventoryProductsService } from 'src/app/modules/inventory/services/products.service';
@@ -19,8 +19,7 @@ import { MatSelectChange } from '@angular/material/select';
 import { InvoiceStore, ProductInvoiceModel } from 'src/app/models/invoice.model';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import { iProvider, ProviderModel } from 'src/app/models/provider.model';
-import { debounce, debounceTime, distinctUntilChanged, first, skip } from 'rxjs/operators';
-import { PurchaseInvoiceModel } from 'src/app/models/pucharce-invoice.model';
+import { debounceTime, distinctUntilChanged, first, skip } from 'rxjs/operators';
 import { SelectConceptDialogComponent } from './select-concept.dialog/select-concept.dialog.component';
 
 
@@ -32,7 +31,6 @@ import { SelectConceptDialogComponent } from './select-concept.dialog/select-con
 export class CreateInvoiceComponent implements OnInit {
 
   stores$: Observable<iSede[]>
-  storeSelected?: InvoiceStore
   businessRef = this._cache.getDataKey( 'eid' )
   
   storeForm: FormGroup = new FormGroup( {
@@ -83,6 +81,7 @@ export class CreateInvoiceComponent implements OnInit {
         ...this.purchase.current$.value,
         ...changes
       } )
+      console.log( this.purchase.current$.value)
     })
   }
 
@@ -203,6 +202,7 @@ export class CreateInvoiceComponent implements OnInit {
       if (validation) {
         this.invoiceForm.controls.invoice_ID.setErrors( { exist: true } )
       } else {
+        console.log(this.purchase.current$.value)
         this.purchase.updateCurrent('invoice_ID',invoice_id)
       }
     }
