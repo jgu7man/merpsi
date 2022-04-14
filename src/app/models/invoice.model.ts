@@ -1,6 +1,7 @@
 import firebase from "firebase"
 import { FireTime, createDate, FireRef, FireDoc } from "./firestore.model"
 import { Product, ProductModel } from "./products.model"
+import { iSede } from "./sede.model"
 import { iTax } from "./taxes.model"
 
 export class InvoiceModel {
@@ -63,17 +64,17 @@ export class ProductInvoiceModel implements Product.MainData {
   UPC: string
   reference: string
   description: string
-  brand?: string
   measure_unit: string
-  document_ref?: FireRef<ProductModel>
+  brand?: string
+  public store?: FireRef<iSede> | ''
   
 
   constructor (
     /** Referencia del producto comprado (Debe seleccionarse de la lista de productos registrados de la empresa) */
-    concept?: FireDoc<ProductModel>
+    concept?: ProductModel
   ) {
 
-    let data = concept?.data()!
+    let data = concept
 
 		this.amount = this.unit_cost * this.cant;
     this.UPC = data?.UPC || ''
@@ -81,7 +82,6 @@ export class ProductInvoiceModel implements Product.MainData {
     this.description = data?.description || ''
     this.brand = data?.brand || ''
     this.measure_unit = data?.measure_unit || ''
-    this.document_ref = concept?.ref || undefined
 	}
 }
 

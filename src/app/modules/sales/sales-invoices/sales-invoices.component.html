@@ -7,6 +7,7 @@
       [height_vh]="100"
       itemSelector="name"
       #crudPanel
+      (onAdd)="onCreate()"
       >
       <ng-template #add ><app-create-invoice-sales></app-create-invoice-sales></ng-template>
       </mx-crud-panel>

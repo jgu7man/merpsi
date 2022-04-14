@@ -5,7 +5,7 @@ import { BehaviorSubject } from 'rxjs';
 import { ClientModel } from '../models/clients.model';
 import { FireDoc, FireRef } from '../models/firestore.model';
 import { ProductModel } from '../models/products.model';
-import { ProductInvoiceSalesModel, SalesInvoiceModel } from '../models/sales-invoice.model';
+import { SalesInvoiceModel } from '../models/sales-invoice.model';
 import { iSede } from '../models/sede.model';
 
 @Injectable({
@@ -13,7 +13,7 @@ import { iSede } from '../models/sede.model';
 })
 export class SalesService {
 
-  current$= new BehaviorSubject<SalesInvoiceModel | null>( null )
+  current$= new BehaviorSubject<SalesInvoiceModel | null> ( null )
 
   businessCRF: string = this._cache.getDataKey('eid')!
 
@@ -22,22 +22,29 @@ export class SalesService {
     private _cache: MxCache,
   ) { }
 
-  async findClient(name: string){
-    /**autocomplete */
-  }
-
-  addProduct(productRef: FireDoc<ProductModel>, cant: number, cost: number, store: FireRef<iSede>) {
-  
-    if (this.current$.value !== null) {
-      const details = this.current$.value.details!
-
-      details.push(new ProductInvoiceSalesModel(productRef, store))
-      this.current$.next({
+  updateCurrent(
+    param: keyof SalesInvoiceModel,
+    value: SalesInvoiceModel[ typeof param ]
+  ) {
+    if ( this.current$.value !== null ) {
+      this.current$.next( {
         ...this.current$.value,
-        details
+        [param]: value
       })
     }
-  
+    console.log(this.current$.value)
   }
+
+  deleteConcept(UPC: string){
+
+    if (this.current$.value !== null) {
+      this.current$.next({
+        ...this.current$.value,
+        details: this.current$.value.details!.filter( c => c.UPC !== UPC)
+      })
+    }
+  }
+  
+  
 
 }

@@ -1,0 +1,15 @@
+<div class="col s3">
+  <mx-searcher-list 
+  [label]="'Concepto'" 
+  [collection]="'businesses/' + businessRef + '/products/'"
+    [param]="'UPC'" 
+    (results)="getValue($event)" 
+    (lists)="getList($event)">
+  </mx-searcher-list>
+  <ng-container *ngIf="productListEmpty==true">
+    <small>no se encuentra el producto..para agregarlo haz click</small>
+    <button mat-icon-button color="accent" (click)="createProduct()">
+      aqui
+    </button>
+  </ng-container>
+</div>

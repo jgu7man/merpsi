@@ -1,17 +1,12 @@
 import firebase from "firebase/app";
 import { FireTime, createDate } from "./firestore.model";
-import { iInvoiceFooter, InvoiceModel, InvoiceStore, ProductInvoiceModel } from "./invoice.model";
+import { InvoiceModel, InvoiceStore, ProductInvoiceModel } from "./invoice.model";
 
 
 /** Modelo para crear una factura de compra */
 export class PurchaseInvoiceModel extends InvoiceModel{
   /** Fecha de la compra */
   public purshase_date: FireTime =  createDate(new Date());
-  // public invoice_ID: string = '';
-  // public document_date: FireTime =  createDate(new Date());
-  // public payment_method: string = '';
-  // public manager: string = '';
-  // public registered_date: Date | firebase.firestore.Timestamp;
   
   
   /** Proveedor de la factura: CRF o referencia de firestore */

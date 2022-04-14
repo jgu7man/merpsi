@@ -7,7 +7,7 @@ import { BehaviorSubject } from 'rxjs';
 import { DashboardService } from '../modules/dashboard/dashboard.service';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import Swal from 'sweetalert2';
-import { ProductInvoiceModel } from '../models/invoice.model';
+import { iInvoiceFooter, ProductInvoiceModel } from '../models/invoice.model';
 
 
 @Injectable({
@@ -29,28 +29,28 @@ export class PurchaseInvoiceService {
     // this.current$.next(new PurchaseInvoiceModel())
   }
 
-  addProduct(productRef: FireDoc<ProductModel>, cant: number, cost: number) {
+  // addProduct(productRef: FireDoc<ProductModel>, cant: number, cost: number) {
 
-    if (this.current$.value !== null) {
+  //   if (this.current$.value !== null) {
 
-      // this.current$.next({
-      //   ...this.current$.value,
-      //   details: [
-      //     ...this.current$.value.details,
-      //     new ProductPurchasedModel(productRef)
-      //   ]
-      // })
+  //     // this.current$.next({
+  //     //   ...this.current$.value,
+  //     //   details: [
+  //     //     ...this.current$.value.details,
+  //     //     new ProductPurchasedModel(productRef)
+  //     //   ]
+  //     // })
       
-      const details = this.current$.value.details!
-      details.push( new ProductInvoiceModel( productRef) )
-      this.current$.next({
-        ...this.current$.value,
-        details
-      }) 
-    }
-    return new ProductInvoiceModel(productRef)
+  //     const details = this.current$.value.details!
+  //     details.push( new ProductInvoiceModel( productRef) )
+  //     this.current$.next({
+  //       ...this.current$.value,
+  //       details
+  //     }) 
+  //   }
+  //   return new ProductInvoiceModel(productRef)
 
-  }
+  // }
 
   deleteConcept(UPC: string){
 
@@ -100,14 +100,8 @@ export class PurchaseInvoiceService {
    }
  }
 
-  addConcept() {
-    if (this.current$.value !== null) {
-      let details: ProductInvoiceModel[] = this.current$.value.details
-      details.push(new ProductInvoiceModel())
-      this.updateCurrent('details', details)
-      console.log(this.current$.value)
-    }
-  }
+  
+
 }
 
 // type PropType<TObj, TProp extends keyof TObj> = TObj[TProp];

@@ -8,6 +8,10 @@ import { PurchaseInvoicesComponent } from './purchase-invoices/purchase-invoices
 import { CreateInvoiceComponent } from './purchase-invoices/create-invoice/create-invoice.component';
 import { ProviderNewDialog } from './purchase-invoices/provider-new.dialog/provider-new.dialog';
 import { InvoiceConceptComponent } from './purchase-invoices/create-invoice/invoice-concept/invoice-concept.component';
+import { SelectConceptDialogComponent } from './purchase-invoices/create-invoice/select-concept.dialog/select-concept.dialog.component';
+import { ProductNewDialogComponent } from './purchase-invoices/product-new-dialog/product-new.dialog.component';
+import { InventoryModule } from '../inventory/inventory.module';
+import { FooterInvoiceComponent } from './purchase-invoices/create-invoice/footer-invoice/footer-invoice.component';
 
 
 @NgModule({
@@ -18,6 +22,11 @@ import { InvoiceConceptComponent } from './purchase-invoices/create-invoice/invo
     CreateInvoiceComponent,
     ProviderNewDialog,
     InvoiceConceptComponent,
+    SelectConceptDialogComponent,
+    ProductNewDialogComponent,
+    FooterInvoiceComponent,
+    // ProductFormComponent,
+    
   ],
   imports: [
     CommonModule,
@@ -25,7 +34,7 @@ import { InvoiceConceptComponent } from './purchase-invoices/create-invoice/invo
     SharedModule
   ],
   schemas: [
-    // CUSTOM_ELEMENTS_SCHEMA
+     CUSTOM_ELEMENTS_SCHEMA
   ]
 })
 export class PurchasesModule { }

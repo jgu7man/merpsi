@@ -2,53 +2,56 @@
   <div class="row">
     <div class="col s12 ">
       <form [formGroup]="formAddProduct">
-
-        <!-- producto -->
-        <div class="col s3">
-          <mx-searcher-list [label]="'Concepto'" [collection]="'businesses/' + businessRef + '/products/'"
-            [param]="'UPC'" (results)="getValue($event)" (lists)="getList($event)"></mx-searcher-list>
-          <ng-container *ngIf="productListEmpty==true">
-            <small>no se encuentra el producto..para agregarlo haz click</small>
-            <button mat-icon-button color="accent" (click)="createProduct()">
-              aqui
-            </button>
-          </ng-container>
+        <!-- UPC -->
+        <div class="col s2">
+          <mat-form-field  class="col s12">
+            <mat-label>UPC</mat-label>
+            <input matInput type="text" name="UPC" formControlName="UPC">
+          </mat-form-field>
         </div>
-        <div class="col s3">
-          <!-- cantidad -->
-          <mat-form-field appearance="outline">
+        <!-- DESCRIPTION -->
+        <div class="col s2">
+          <mat-form-field  class="col s12">
+            <mat-label>descripcion</mat-label>
+            <input matInput type="text" name="description" formControlName="description">
+          </mat-form-field>
+        </div>
+        <!-- cantidad -->
+        <div class="col s2">
+          <mat-form-field appearance="outline" class="col s12">
             <mat-label>Cantidad</mat-label>
-            <input matInput type="text" name="cantidad" formControlName="cant">
+            <input matInput type="number" name="cantidad" formControlName="cant">
             <mat-error *ngIf="formAddProduct.hasError('required', 'cant')">
               Este dato es necesario
             </mat-error>
           </mat-form-field>
         </div>
-        <div class="col s3">
-          <mat-form-field appearance="outline">
-
-            <!-- precio -->
-            <mat-label>Precio</mat-label>
-            <input matInput type="text" (mask) = "'00000.00'" name="amount" formControlName="unit_cost">
+        <!-- precio -->
+        <div class="col s2">
+          <mat-form-field appearance="outline" class="col s12">
+            <mat-label>Precio Unitario</mat-label>
+            <input matInput type="number" name="amount" formControlName="unit_cost">
             <mat-error *ngIf="formAddProduct.hasError('required', 'unit_cost')">
               Este dato es necesario
             </mat-error>
           </mat-form-field>
         </div>
-        <div class="col s1">
-          <button 
-          mat-raised-button
-          color="primary" 
-          (click)="createProduct()">
-          add
-          </button>
+        <!-- total -->
+        <div class="col s2">
+          <mat-form-field  class="col s12">
+            <mat-label>Valor Total</mat-label>
+            <input matInput type="number" name="amount" formControlName="amount">
+            <mat-error *ngIf="formAddProduct.hasError('required', 'unit_cost')">
+              Este dato es necesario
+            </mat-error>
+          </mat-form-field>
         </div>
-        <div class="col s1">
+        <div class="col s2">
           <button 
           mat-raised-button
           color="warn" 
-          (click)="createProduct()">
-          delete
+          (click)="deleteConcept(concept)">
+          X
           </button>
         </div>
       </form>
