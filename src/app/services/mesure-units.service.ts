@@ -14,7 +14,6 @@ export class MesureUnitsService {
 
   list$ = new BehaviorSubject<MesureUnitModel[]>( [] )
   businessCRF: string = this._cache.getDataKey( 'eid' )!
-  
 
   constructor (
     private _afs: AngularFirestore,

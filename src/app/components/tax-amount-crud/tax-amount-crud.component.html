@@ -1,0 +1,33 @@
+
+<ng-container *ngFor="let appliedTax of taxes.applidedTaxes, index as i">
+  <div class="tax-amount-container">
+    <div class="tax-amount-description">
+      {{appliedTax.name}} ({{appliedTax.rate}}%)
+    </div>
+    <div class="tax-amount-result">
+      ${{appliedTax.amount}}
+    </div>
+    <div class="tax-amount-deleter">
+      <button mat-icon-button (click)="remove(i)" >
+          <mat-icon>delete</mat-icon>
+      </button>
+    </div>
+  </div>
+</ng-container>
+
+
+<div class="tax-selecter">
+  <!-- Impuesto -->
+  <mat-form-field appearance="outline" >
+    <mat-label>Agregar impuesto</mat-label>
+    <mat-select
+      placeholder="Placeholder"
+      name="tax">
+        <mat-option
+          *ngFor="let item of (taxes.list$ | async)"
+          [value]="item">
+            {{item}}
+        </mat-option>
+      </mat-select>
+  </mat-form-field>
+</div>

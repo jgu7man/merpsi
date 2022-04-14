@@ -8,6 +8,7 @@ import { MaterialModule } from '../shared/material.module';
 import { MarxaModule } from '../shared/marxa.module';
 import { NgxMaskModule } from 'ngx-mask';
 import { QrcodesCrudComponent } from './qrcodes-crud/qrcodes-crud.component';
+import { TaxAmountCrudComponent } from './tax-amount-crud/tax-amount-crud.component';
 
 
 
@@ -15,7 +16,8 @@ import { QrcodesCrudComponent } from './qrcodes-crud/qrcodes-crud.component';
   declarations: [
     GenericRegistFormComponent,
     ChipsCrudComponent,
-    QrcodesCrudComponent
+    QrcodesCrudComponent,
+    TaxAmountCrudComponent,
   ],
   imports: [
     CommonModule,
@@ -29,7 +31,8 @@ import { QrcodesCrudComponent } from './qrcodes-crud/qrcodes-crud.component';
   exports: [
     GenericRegistFormComponent,
     ChipsCrudComponent,
-    QrcodesCrudComponent
+    QrcodesCrudComponent,
+    TaxAmountCrudComponent
   ]
 })
 export class ComponentsModule { }

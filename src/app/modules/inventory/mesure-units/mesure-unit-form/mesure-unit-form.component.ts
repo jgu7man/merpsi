@@ -12,7 +12,6 @@ import { MesureUnitsService } from 'src/app/services/mesure-units.service';
 export class MesureUnitFormComponent implements OnInit {
 
   @Input() value?: MesureUnitModel
-  @Output() onChanges: EventEmitter<MesureUnit.changes> = new EventEmitter();
   public mesureUnitForm: MesureUnit.form
 
   constructor (
