@@ -1,7 +1,7 @@
 import firebase from "firebase"
 import { FireTime, createDate, FireRef, FireDoc } from "./firestore.model"
 import { Product, ProductModel } from "./products.model"
-import { iTax } from "./taxes.model"
+import { TaxModel } from "../modules/finances/taxes/taxes.model"
 
 export class InvoiceModel {
   /**folio de la factura */
@@ -41,7 +41,7 @@ export interface iInvoiceFooter {
   /** Descuento aplicado a la compra en moneda */
   discount: number;
   /** Lista de impuestos aplicados a la compra */
-  taxes: iTax[];
+  taxes: TaxModel[];
   /** Costo generado por envío */
   shipping: number;
   /** Total de restar descuentos e impuestos y agregado de costo de envío */
