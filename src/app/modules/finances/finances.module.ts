@@ -15,6 +15,9 @@ import { ProductNewDialogComponent } from './purchase-invoices/product-new-dialo
 import { FooterInvoiceComponent } from './invoices/footer-invoice/footer-invoice.component';
 import { TaxAmountCrudComponent } from './taxes/tax-amount-crud/tax-amount-crud.component';
 import { InventoryModule } from '../inventory/inventory.module';
+import { SalesInvoicesComponent } from './sales-invoices/sales-invoices.component';
+import { CreateInvoiceSalesComponent } from './sales-invoices/create-invoice-sales/create-invoice-sales.component';
+import { AddConceptComponent } from './sales-invoices/create-invoice-sales/add-concept/add-concept.component';
 
 
 @NgModule({
@@ -29,7 +32,10 @@ import { InventoryModule } from '../inventory/inventory.module';
     SelectConceptDialogComponent,
     ProductNewDialogComponent,
     FooterInvoiceComponent,
-    TaxAmountCrudComponent
+    TaxAmountCrudComponent,
+    SalesInvoicesComponent,
+    CreateInvoiceSalesComponent,
+    AddConceptComponent
   ],
   imports: [
     CommonModule,
