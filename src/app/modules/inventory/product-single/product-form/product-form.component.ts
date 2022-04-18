@@ -66,6 +66,11 @@ export class ProductFormComponent implements OnInit, OnDestroy {
         // this.changes.emit( changes )
       });
     
+    this._submitedSubscription = this.current.submited$
+      .subscribe( () => {
+        this.productForm.markAsPristine();
+        this.validForm = false;
+    })
   }
 
   ngOnInit(): void {  
@@ -122,6 +127,8 @@ export class ProductFormComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this._productFormSubscription?.unsubscribe();
+    this._submitedSubscription?.unsubscribe();
+    this.current.leave()
   }
 }
 
@@ -130,6 +137,18 @@ export class ProductFormComponent implements OnInit, OnDestroy {
     <p mat-dialog-title class="center">Agregar producto</p>
     <mat-dialog-content>
       <app-product-form></app-product-form>
+      <div class="row">
+      <div class="col s12 center">
+        <button
+          mat-raised-button
+          color="primary"
+          [disabled]="!(current.formValid | async)"
+          (click)="onSubmit()"
+        >
+          Guardar
+        </button>
+      </div>
+    </div>
     </mat-dialog-content>
     <mat-dialog-actions>
       <div class="row">
@@ -152,8 +171,15 @@ export class ProductFormComponent implements OnInit, OnDestroy {
 export class ProductFormDialog implements OnInit {
   constructor (
     // @Inject( MAT_DIALOG_DATA ) data: any,
-    public dialog: MatDialogRef<ProductFormDialog>
+    public dialog: MatDialogRef<ProductFormDialog>,
+    public current: CurrentProductService
   ) { }
   
   ngOnInit() { }
+
+  onSubmit() {
+    this.current.save()
+      .then((productDoc) => this.dialog.close(productDoc))
+      .catch(() => this.dialog.close(false))
+  }
 }
