@@ -15,11 +15,14 @@ export class CurrentProductService {
   storage$ = new BehaviorSubject<Product.StoreReference[]>( [] )
   formValid$ = new BehaviorSubject<{[store:string]: boolean}>( {} )
   get formValid(): Observable<boolean> {
-    return this.formValid$.pipe( map( formList =>
-      Object.keys( formList )
-        .map( id => formList[ id ] )
-        .every( valid => valid === true )
-    ))
+    return this.formValid$.pipe( map( formList => {
+      const stores = Object.keys( formList )
+      return stores.length > 0
+        ? stores
+          .map( id => formList[ id ] )
+          .every( valid => valid === true )
+        : true
+    }))
   }
 
 
