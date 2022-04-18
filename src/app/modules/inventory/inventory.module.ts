@@ -37,7 +37,8 @@ import { SetProviderComponent } from './providers/set-provider/set-provider.comp
     SharedModule,
   ],
   exports: [
-    SetProviderComponent
+    SetProviderComponent,
+    ProductFormComponent
   ],
   schemas: [
     CUSTOM_ELEMENTS_SCHEMA

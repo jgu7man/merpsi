@@ -12,15 +12,15 @@ import { MatSelectChange } from '@angular/material/select';
 import { InvoiceStore, ProductInvoiceModel } from 'src/app/modules/finances/invoices/invoice.model';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import { debounceTime, distinctUntilChanged, first, skip } from 'rxjs/operators';
-import { SelectConceptDialogComponent } from './select-concept.dialog/select-concept.dialog.component';
+import { SelectConceptDialogComponent } from '../../invoices/select-concept.dialog/select-concept.dialog.component';
 import { iManager } from 'src/app/modules/admin/managers/manager.model';
 import { InventoryProductsService } from 'src/app/modules/inventory/products/products.service';
-import { iSede } from '../../admin/stores/sede.model';
-import { SedesService } from '../../admin/stores/sedes.service';
-import { PurchaseInvoiceService } from '../purchase-invoices/puchase-invoice.service';
-import { iProvider, ProviderModel } from '../../inventory/providers/provider.model';
-import { ProviderNewDialog } from '../purchase-invoices/provider-new.dialog/provider-new.dialog';
-import { ProviderService } from '../../inventory/providers/provider.service';
+import { iSede } from '../../../admin/stores/sede.model';
+import { SedesService } from '../../../admin/stores/sedes.service';
+import { PurchaseInvoiceService } from '../puchase-invoice.service';
+import { iProvider, ProviderModel } from '../../../inventory/providers/provider.model';
+import { ProviderNewDialog } from '../provider-new.dialog/provider-new.dialog';
+import { ProviderService } from '../../../inventory/providers/provider.service';
 
 
 @Component({

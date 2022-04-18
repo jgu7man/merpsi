@@ -2,7 +2,10 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, skip } from 'rxjs/operators';
+import { PurchaseInvoiceModel } from '../../purchase-invoices/pucharce-invoice.model';
 import { PurchaseInvoiceService } from '../../purchase-invoices/puchase-invoice.service';
+import { SalesInvoiceModel } from '../../sales-invoices/sales-invoice.model';
+import { SalesService } from '../../sales-invoices/sales.service';
 
 @Component({
   selector: 'app-footer-invoice',
@@ -23,21 +26,19 @@ export class FooterInvoiceComponent implements OnInit, OnDestroy{
 
   constructor(
     public purchase: PurchaseInvoiceService,
+    public sales: SalesService,
   ) {
     this.disableForm()
-    this.currentSubscription = this.purchase.current$.pipe().subscribe(invoice => {
-      let subtotal = 0
-      if (invoice){
-        invoice.details.forEach( d => subtotal += d.amount)
-         invoice.footer.subtotal = subtotal
-         invoice.footer.total = (invoice.footer.shipping + invoice.footer.subtotal) - invoice.footer.discount
-         this.formFooter.patchValue({
-           subtotal : subtotal,
-           total:  invoice.footer.total
-        })
-        console.log(invoice)
-      }
-    })
+
+    if (this.purchase.current$.value != null){
+        this.currentSubscription = this.purchase.current$.pipe().subscribe(invoice => {
+        this.getFooter(invoice!)
+      })
+    }else{
+      this.currentSubscription = this.sales.current$.pipe().subscribe(invoice => {
+        this.getFooter(invoice!)
+      })
+    }
    }
  
   ngOnInit(): void {
@@ -49,12 +50,18 @@ export class FooterInvoiceComponent implements OnInit, OnDestroy{
         skip( 1),
         debounceTime(3000),
     ).subscribe(changes => {
-      if ( this.purchase.current$.value){
+      if ( this.purchase.current$.value ){
         let footer = this.purchase.current$.value.footer
         let discount = changes.discount
         let shipping = changes.shipping
-        console.log(footer)
         this.purchase.updateCurrent('footer', {...footer, discount: discount, shipping: shipping}
+        )
+      }else 
+      if(this.sales.current$.value){
+        let footer = this.sales.current$.value.footer
+        let discount = changes.discount
+        let shipping = changes.shipping
+        this.sales.updateCurrent('footer', {...footer, discount: discount, shipping: shipping}
         )
       }
       
@@ -65,6 +72,19 @@ export class FooterInvoiceComponent implements OnInit, OnDestroy{
   disableForm(){
     this.formFooter.controls.subtotal.disable()
     this.formFooter.controls.total.disable()
+  }
+
+  getFooter(invoice: PurchaseInvoiceModel | SalesInvoiceModel){
+    let subtotal = 0
+        if (invoice){
+          invoice.details.forEach( d => subtotal += d.amount)
+          invoice.footer.subtotal = subtotal
+          invoice.footer.total = (invoice.footer.shipping + invoice.footer.subtotal) - invoice.footer.discount
+          this.formFooter.patchValue({
+            subtotal : subtotal,
+            total:  invoice.footer.total
+          })
+        }
   }
 
   ngOnDestroy(): void {
