@@ -82,7 +82,7 @@ export class ProductFormComponent implements OnInit, OnDestroy {
     })
   }
 
-  ngOnInit(): void {
+  ngOnInit(): void {  
     const product = this.current.product$.value
     if ( product ) this.productForm.patchValue( { ...product } )
     else this.current.product$.next( new ProductModel() )

@@ -7,7 +7,7 @@ import { TaxesComponent } from './taxes/taxes.component';
 import { TaxFormComponent } from './taxes/tax-form/tax-form.component';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { PurchaseInvoicesComponent } from './purchase-invoices/purchase-invoices.component';
-import { CreateInvoiceComponent } from './invoices/create-invoice.component';
+import { CreateInvoiceComponent } from './purchase-invoices/create-invoice-purchase/create-invoice.component';
 import { ProviderNewDialog } from './purchase-invoices/provider-new.dialog/provider-new.dialog';
 import { InvoiceConceptComponent } from './invoices/invoice-concept/invoice-concept.component';
 import { SelectConceptDialogComponent } from './invoices/select-concept.dialog/select-concept.dialog.component';
@@ -45,6 +45,7 @@ import { AddConceptComponent } from './sales-invoices/create-invoice-sales/add-c
   ],
   exports: [
     // TaxesCrudComponent
+    
   ],
   schemas: [
     CUSTOM_ELEMENTS_SCHEMA

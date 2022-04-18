@@ -55,7 +55,7 @@ export class TaxesService {
 
       const list = this.list$.value
       const unit = new TaxModel( list.length, name, rate, description )
-      list.push( unit )
+      list.push({...unit} )
       await this.ref.set( { list } )
 
       this._loading.spinner( 'close' )

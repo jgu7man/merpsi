@@ -50,8 +50,6 @@ export class CreateInvoiceSalesComponent implements OnInit {
         ...this.sales.current$.value,
         ...changes
       } )
-      console.log('este es el current')
-      console.log(this.sales.current$.value)
     })
 
   }

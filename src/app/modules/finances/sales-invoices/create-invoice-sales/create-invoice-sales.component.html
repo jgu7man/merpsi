@@ -66,18 +66,18 @@
           </mat-error>
         </mat-form-field>
         <!-- metodos de pago -->
-        <mat-form-field appearance="outline" class="col s12">
-          <mat-label>Formas de Pago</mat-label>
-          <mat-select formControlName="payment_method">
-            <mat-option value="01">Efectivo</mat-option>
-            <mat-option value="02">Tarjeta de Crédito</mat-option>
-            <mat-option value="03">Tarjeta de Débito</mat-option>
-            <mat-option value="04">Crédito</mat-option>
-          </mat-select>
-          <mat-error *ngIf="salesForm.hasError('required', 'payment_method')">
-            Este dato es necesario
-          </mat-error>
-        </mat-form-field>
+          <mat-form-field appearance="outline" class="col s12">
+            <mat-label>Formas de Pago</mat-label>
+            <mat-select formControlName="payment_method">
+              <mat-option value="01">Efectivo</mat-option>
+              <mat-option value="02">Tarjeta de Crédito</mat-option>
+              <mat-option value="03">Tarjeta de Débito</mat-option>
+              <mat-option value="04">Crédito</mat-option>
+            </mat-select>
+            <mat-error *ngIf="salesForm.hasError('required', 'payment_method')">
+              Este dato es necesario
+            </mat-error>
+          </mat-form-field>
         <div class="row">
           <ng-container>
             <button 

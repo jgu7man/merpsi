@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
+import { ProductFormDialog } from 'src/app/modules/inventory/product-single/product-form/product-form.component';
 import { ProductModel } from 'src/app/modules/inventory/products/products.model';
 import { ProductNewDialogComponent } from '../../purchase-invoices/product-new-dialog/product-new.dialog.component';
 import { PurchaseInvoiceService } from '../../purchase-invoices/puchase-invoice.service';
@@ -45,7 +46,7 @@ export class SelectConceptDialogComponent implements OnInit {
   }
 
   createProduct(){
-    this._dialogProduct.open(ProductNewDialogComponent, {
+    this._dialogProduct.open(ProductFormDialog, {
       width: '100% ',
     } )
   }

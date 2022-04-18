@@ -43,10 +43,8 @@ export class InvoiceConceptComponent implements OnInit {
 
   ngOnInit(): void {
     
-    console.log('estoy en el componente')
     if ((this.purchase.current$.value || this.sales.current$.value)  && this.concept) {
       this.disableForm()
-      console.log('pase por aqui')
       this.formAddProduct.valueChanges.pipe(
         distinctUntilChanged((x, y) =>
           typeof x != 'object' ? x === y : JSON.stringify(x) === JSON.stringify(y)
@@ -57,6 +55,7 @@ export class InvoiceConceptComponent implements OnInit {
         let details = this.purchase.current$.value ? 
         this.purchase.current$.value!.details : 
         this.sales.current$.value!.details
+        console.log(details)
         details = details.map(d => {
           let details
           if (d.UPC ===this.concept!.UPC){
@@ -107,8 +106,13 @@ export class InvoiceConceptComponent implements OnInit {
   }
 
   deleteConcept(concept: ProductInvoiceModel | null ){
-    if (concept)
-  this.purchase.deleteConcept(concept.UPC)
+    if (concept){
+     if ( this.purchase.current$.value != null) {
+        this.purchase.deleteConcept(concept.UPC)
+      }else if (this.sales.current$.value != null){
+        this.sales.deleteConcept(concept.UPC)
+      }
+    }
   }
 
 }
