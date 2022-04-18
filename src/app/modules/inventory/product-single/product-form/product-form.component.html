@@ -1,142 +1,149 @@
 <ng-container *ngIf="(current.product$ | async) as product">
-  <form id="product-form" class="row" [formGroup]="productForm">
+  <form id="product-form"[formGroup]="productForm">
 
-    <!-- CÓDIGO -->
-    <mat-form-field class="col s12 codigo-input"
-      appearance="outline"
-      *ngIf="!product.UPC"
-    >
-      <mat-label>Código de prodcuto (UPC)</mat-label>
-      <mat-hint>
-        Código con el cuál será registrado este producto.
-        <span class="red-text">
-          Una vez asignado el código principal del producto, no podrá ser cambiado
-        </span>
-      </mat-hint>
-      <input
-        matInput
-        type="text"
-        name="product_code"
-        formControlName="product_code"
-        required
-      />
-      <mat-error *ngIf="productForm.hasError('required', 'product_code')">
-        Es necesario agrear un código de producto.
-      </mat-error>
-    </mat-form-field>
-  
-    <!-- REFERENCIA -->
-    <mat-form-field appearance="outline" class="col s12">
-      <mat-label>Referencia</mat-label>
-      <mat-hint>
-        Nombre o descripción breve del producto 
-      </mat-hint>
-      <input
-        matInput
-        type="text"
-        name="reference"
-        formControlName="reference"
-        required
-      />
-      <mat-error *ngIf="productForm.hasError('required', 'reference')">
-        Es necesario agregar una referencia o descripción corta del producto.
-      </mat-error>
-    </mat-form-field>
-  
-    <!-- DESCRIPTION -->
-    <mat-form-field
-      appearance="outline"
-      class="col s12">
-        <mat-label>Descripción</mat-label>
+    <div class="row">
+      <!-- CÓDIGO -->
+      <mat-form-field class="col s12 codigo-input"
+        appearance="outline"
+        *ngIf="!product.UPC"
+      >
+        <mat-label>Código de prodcuto (UPC)</mat-label>
         <mat-hint>
-          <span class="blue-text">Opcional</span>
-          Una descrpción más extensa de este producto.
+          Código con el cuál será registrado este producto.
+          <span class="red-text">
+            Una vez asignado el código principal del producto, no podrá ser cambiado
+          </span>
         </mat-hint>
-        <textarea 
+        <input
           matInput
-          name="description" 
-          formControlName="description" 
-          cols="30" 
-          rows="3"
-          [mat-autosize]="true"
-        ></textarea>
-    </mat-form-field>
-  
-    <!-- UNIDAD DE MEDIDA -->
-    <div class="col s12">
-      <app-mesure-unit-selector
-      [index]="product.measure_unit || undefined"
-      (changes)="current.updateState('measure_unit', $event)"
-      ></app-mesure-unit-selector>
-    </div>
-  
-    <!-- MARCA -->
-    <mat-form-field appearance="outline" class="col s12">
-      <mat-label>Marca</mat-label>
-      <input
-      matInput
-      type="text"
-      name="brand"
-      formControlName="brand"
-      >
-    </mat-form-field>
+          type="text"
+          name="product_code"
+          formControlName="product_code"
+          required
+        />
+        <mat-error *ngIf="productForm.hasError('required', 'product_code')">
+          Es necesario agrear un código de producto.
+        </mat-error>
+      </mat-form-field>
     
-    <!-- PROVEEDOR -->
-    <!-- <mat-form-field appearance="outline" class="col s12 l6">
-      <mat-label>Proveedor</mat-label>
-      <mat-select placeholder="Especifica el proveedor de este producto"
-      formControlName="provider"
-      name="provider">
-        <mat-option *ngFor="let proveedor of proveedores_ref" [value]="proveedor.value">
-          {{proveedor.viewValue}}
-        </mat-option>
-      </mat-select>
-    </mat-form-field> -->
-  
-  
-    <!-- CATEGORIAS -->
-    <div class="col s12">
-      <app-chips-crud
-      [listValue]="product?.categories || []"
-      (change)="listHasChanged('categories', $event)"
-      label="Categorías"
-      hint="Escribe categorías y después presiona COMA para que se agreguen a la
-      lista."
-      placeholder="Agrega una categoría"
-      ></app-chips-crud>
+      <!-- REFERENCIA -->
+      <mat-form-field appearance="outline" class="col s12">
+        <mat-label>Referencia</mat-label>
+        <mat-hint>
+          Nombre o descripción breve del producto 
+        </mat-hint>
+        <input
+          matInput
+          type="text"
+          name="reference"
+          formControlName="reference"
+          required
+        />
+        <mat-error *ngIf="productForm.hasError('required', 'reference')">
+          Es necesario agregar una referencia o descripción corta del producto.
+        </mat-error>
+      </mat-form-field>
+    
+      <!-- DESCRIPTION -->
+      <mat-form-field
+        appearance="outline"
+        class="col s12">
+          <mat-label>Descripción</mat-label>
+          <mat-hint>
+            <span class="blue-text">Opcional</span>
+            Una descrpción más extensa de este producto.
+          </mat-hint>
+          <textarea 
+            matInput
+            name="description" 
+            formControlName="description" 
+            cols="30" 
+            rows="3"
+            [mat-autosize]="true"
+          ></textarea>
+      </mat-form-field>
+    
+      <!-- UNIDAD DE MEDIDA -->
+      <div class="col s12">
+        <app-mesure-unit-selector
+        [index]="product.measure_unit || undefined"
+        (changes)="current.updateState('measure_unit', $event)"
+        ></app-mesure-unit-selector>
+      </div>
+    
+      <!-- MARCA -->
+      <mat-form-field appearance="outline" class="col s12">
+        <mat-label>Marca</mat-label>
+        <input
+        matInput
+        type="text"
+        name="brand"
+        formControlName="brand"
+        >
+      </mat-form-field>
+      
+      <!-- PROVEEDOR -->
+      <!-- <mat-form-field appearance="outline" class="col s12 l6">
+        <mat-label>Proveedor</mat-label>
+        <mat-select placeholder="Especifica el proveedor de este producto"
+        formControlName="provider"
+        name="provider">
+          <mat-option *ngFor="let proveedor of proveedores_ref" [value]="proveedor.value">
+            {{proveedor.viewValue}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field> -->
+    
+    
+      <!-- CATEGORIAS -->
+      <div class="col s12">
+        <app-chips-crud
+        [listValue]="product?.categories || []"
+        (change)="listHasChanged('categories', $event)"
+        label="Categorías"
+        hint="Escribe categorías y después presiona COMA para que se agreguen a la
+        lista."
+        placeholder="Agrega una categoría"
+        ></app-chips-crud>
+      </div>
+    
+      <!-- NOTES -->
+      <div class="col s12">
+        <app-chips-crud
+        [listValue]="product?.notes || []"
+        (change)="listHasChanged('notes', $event)"
+        label="Etiquetas"
+        placeholder="Agrega alguna etiqueta especial"
+        hint="Escribe alguna etiqueta como una forma diferente de categorizar los productos"
+        ></app-chips-crud>
+      </div>
+    
+    
+      <!-- CODIGO QR -->
+      <div class="col s12">
+        <app-qrcodes-crud
+          [codes]="product?.reference_codes || []"
+          (codesChanged)="listHasChanged('reference_codes',$event)"
+          label="Códigos adicionales"
+        ></app-qrcodes-crud>
+      </div>
+
+    </div>
+
+
+    <div class="row">
+      <div class="col s12 center">
+        <button
+          mat-raised-button
+          color="primary"
+          [disabled]="!(current.formValid | async)"
+          (click)="onSubmit()"
+        >
+          Guardar
+        </button>
+      </div>
     </div>
   
-    <!-- NOTES -->
-    <div class="col s12">
-      <app-chips-crud
-      [listValue]="product?.notes || []"
-      (change)="listHasChanged('notes', $event)"
-      label="Etiquetas"
-      placeholder="Agrega alguna etiqueta especial"
-      hint="Escribe alguna etiqueta como una forma diferente de categorizar los productos"
-      ></app-chips-crud>
-    </div>
-  
-  
-    <!-- CODIGO QR -->
-    <div class="col s12">
-      <app-qrcodes-crud
-        [codes]="product?.reference_codes || []"
-        (codesChanged)="listHasChanged('reference_codes',$event)"
-        label="Códigos adicionales"
-      ></app-qrcodes-crud>
-    </div>
-  
-    <div class="col s12 center">
-      <button
-        mat-raised-button
-        color="primary"
-        [disabled]="current.formValid | async"
-        (click)="onSubmit()"
-      >
-        Guardar
-      </button>
-    </div>
   </form>
   
 </ng-container>

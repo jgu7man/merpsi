@@ -35,6 +35,7 @@ export class ProductStoredFormComponent implements OnInit {
       debounceTime( 1000 ),
       map( this.current.updateStore ),
       tap( () => this.current.formValid$.next( {
+        ...this.current.formValid$.value,
         [ this.store_id! ]: this.productStoredForm.valid || !this.productStoredForm.pristine
       } ) )
     ).subscribe()
