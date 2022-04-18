@@ -1,3 +1,4 @@
+import { listenChanges } from 'src/app/models/operators-chains.model';
 
 import { OnDestroy } from '@angular/core';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
@@ -32,13 +33,14 @@ export class ProductFormComponent implements OnInit, OnDestroy {
   
   public validForm: boolean = false;
   
-  @Output() update: EventEmitter<Product.UpdateReference> = new EventEmitter();
-  @Output() patch: EventEmitter<Product.StockReference> = new EventEmitter();
-  @Output() changes: EventEmitter<Product.DataReference> = new EventEmitter();
+  // @Output() update: EventEmitter<Product.UpdateReference> = new EventEmitter();
+  // @Output() patch: EventEmitter<Product.StockReference> = new EventEmitter();
+  // @Output() changes: EventEmitter<Product.DataReference> = new EventEmitter();
   
   
   private _storesSubscription!: Subscription;
   private _productFormSubscription: Subscription;
+  private _submitedSubscription: Subscription;
   // private _storesFromSubscription: Subscription;
 
   constructor(
@@ -65,16 +67,19 @@ export class ProductFormComponent implements OnInit, OnDestroy {
     this._productFormSubscription = this.productForm
       .valueChanges.pipe(
         skip( 1 ),
-        distinctUntilChanged( ( x, y ) => JSON.stringify( x ) == JSON.stringify( y ) ),
-        debounceTime( 1000 ),
-        tap( changes => {
-          console.log( changes )
-          this.current.product$.next( { ...changes } )
-          // this.changes.emit( changes )
-        } ),
-        tap( () => this.validForm = this.productFormValid),
-      ).subscribe();
+        listenChanges(1000),
+      ).subscribe( changes => {
+        console.log( changes )
+        this.current.product$.next( { ...changes } )
+        this.validForm = this.productFormValid
+        // this.changes.emit( changes )
+      });
     
+    this._submitedSubscription = this.current.submited$
+      .subscribe( () => {
+        this.productForm.markAsPristine();
+        this.validForm = false;
+    })
   }
 
   ngOnInit(): void {
@@ -98,39 +103,11 @@ export class ProductFormComponent implements OnInit, OnDestroy {
     return this.productForm.valid || !this.productForm.pristine;
   }
 
-  onSubmit() {
-
-    /* Si existe store_id es por que el formulario se encuentra en modo arqueo */
-    // if (this.store_id) {
-      // const store = stores.find((a) => a.store_id === this.store_id)!;
-
-      // let product: ProductModel = new ProductModel(
-      //   this.productForm.value['UPC'],
-      //   this.productForm.value['reference'],
-      //   this.productForm.value['description'],
-      //   this.productForm.value['brand'],
-      //   this.productForm.value[ 'measure_unit' ],
-      // );
-      // this.update.emit({ product, lastStoreState: this.currentStore });
-    // } else {
-      // let product: Partial<ProductModel.DataReference> = {
-      //   ...this.productForm.getRawValue(),
-      //   categories: this.categories,
-      //   reference_codes: [
-      //     ...(this.product?.reference_codes || []),
-      //     ...this.reference_codes,
-      //   ],
-      // };
-      // this.patch.emit({ product, stores });
-    // }
-
-    this.productForm.markAsPristine();
-    this.validForm = false;
-  }
-
   ngOnDestroy() {
     this._storesSubscription?.unsubscribe();
     this._productFormSubscription?.unsubscribe();
+    this._submitedSubscription?.unsubscribe();
+    this.current.leave()
   }
 }
 
@@ -139,6 +116,18 @@ export class ProductFormComponent implements OnInit, OnDestroy {
     <p mat-dialog-title class="center">Agregar producto</p>
     <mat-dialog-content>
       <app-product-form></app-product-form>
+      <div class="row">
+      <div class="col s12 center">
+        <button
+          mat-raised-button
+          color="primary"
+          [disabled]="!(current.formValid | async)"
+          (click)="onSubmit()"
+        >
+          Guardar
+        </button>
+      </div>
+    </div>
     </mat-dialog-content>
     <mat-dialog-actions>
       <button mat-raised-button>Cancelar</button>
@@ -151,8 +140,15 @@ export class ProductFormComponent implements OnInit, OnDestroy {
 export class ProductFormDialog implements OnInit {
   constructor (
     // @Inject( MAT_DIALOG_DATA ) data: any,
-    public dialog: MatDialogRef<ProductFormDialog>
+    public dialog: MatDialogRef<ProductFormDialog>,
+    public current: CurrentProductService
   ) { }
   
   ngOnInit() { }
+
+  onSubmit() {
+    this.current.save()
+      .then((productDoc) => this.dialog.close(productDoc))
+      .catch(() => this.dialog.close(false))
+  }
 }

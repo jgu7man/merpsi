@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
 import { MxText } from 'libs/@marxa/devkit/text/mx-text.service';
-import { BehaviorSubject, Observable, of,  } from 'rxjs';
+import { BehaviorSubject, Observable, of, Subject,  } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { DashboardService } from 'src/app/dashboard/dashboard.service';
-import { Product } from 'src/app/modules/inventory/products/products.model';
+import { FireDoc, txn } from 'src/app/models/firestore.model';
+import { Product, ProductModel } from 'src/app/modules/inventory/products/products.model';
 
 @Injectable({
   providedIn: 'root'
@@ -14,6 +15,7 @@ export class CurrentProductService {
   product$ = new BehaviorSubject<Product.DataReference | null>( null )
   storage$ = new BehaviorSubject<Product.StoreReference[]>( [] )
   formValid$ = new BehaviorSubject<{[store:string]: boolean}>( {} )
+  submited$ = new Subject<void>()
   get formValid(): Observable<boolean> {
     return this.formValid$.pipe( map( formList => {
       const stores = Object.keys( formList )
@@ -86,28 +88,43 @@ export class CurrentProductService {
   async save() {
     try {
       
+      
       if ( this.product$.value == null )
         throw { message: 'Se ha perdido el state del producto actual' }
       
-      const product = await this.product$.value
+      const productDoc = await txn<FireDoc<ProductModel>>( async t => {
+          
+          const product = await this.product$.value
+          const productRef = this._dashboard.businessRef
+            .collection( 'products' )
+            .doc<ProductModel>( product!.UPC).ref
+          
+          await t.set(productRef, { ...product }, { merge: true } )
+          // await productRef.set( )
+          
+          
+          await t.set(productRef
+            .collection( `history` )
+            .doc( `${ new Date().getTime() }` ),
+            { ...product!.last_update } )
+          // await productRef
+          //   .collection( `history` )
+          //   .doc( `${ new Date().getTime() }` )
+          //   .set( { ...product!.last_update } )
+          
+          const productSetted = await t.get(productRef)
+          
+          return productSetted
+        
+        })
       
-      await this._dashboard.businessRef
-        .collection( 'products' )
-        .doc( product.UPC ).ref
-        .set( { ...product }, { merge: true } )
-      
-      
-      await this._dashboard.businessRef
-        .collection( `products/${ product.UPC }/history` )
-        .doc( `${ new Date().getTime() }` )
-        .set( {...product.last_update} )
       
       this._alert.notify( 'Producto guardado' )
-      return
+      return productDoc
     } catch ( error: any ) {
       this._alert.error('No se logró guardar el producto', error)
       console.error( error );
-      return
+      throw error
     }
   }
 
@@ -121,5 +138,11 @@ export class CurrentProductService {
         [param]: value
       })
     }
+  }
+
+  leave() {
+    this.product$.next( null )
+    this.storage$.next( [] )
+    this.formValid$.next( {} )
   }
 }
