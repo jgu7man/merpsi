@@ -1,13 +1,11 @@
-import { listenChanges } from 'src/app/models/operators-chains.model';
-
-import { OnDestroy } from '@angular/core';
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { MxLoading } from 'libs/@marxa/devkit/loading/loading.service';
 import { MxText } from 'libs/@marxa/devkit/text/mx-text.service';
 import { Subscription } from 'rxjs';
-import { debounceTime, distinctUntilChanged, skip, tap } from 'rxjs/operators';
+import { skip } from 'rxjs/operators';
+import { listenChanges } from 'src/app/models/operators-chains.model';
 import { Product, ProductModel } from 'src/app/modules/inventory/products/products.model';
 import { InventoryProductsService } from '../../products/products.service';
 import { CurrentProductService } from '../current-product.service';
@@ -33,15 +31,8 @@ export class ProductFormComponent implements OnInit, OnDestroy {
   
   public validForm: boolean = false;
   
-  // @Output() update: EventEmitter<Product.UpdateReference> = new EventEmitter();
-  // @Output() patch: EventEmitter<Product.StockReference> = new EventEmitter();
-  // @Output() changes: EventEmitter<Product.DataReference> = new EventEmitter();
-  
-  
-  private _storesSubscription!: Subscription;
   private _productFormSubscription: Subscription;
   private _submitedSubscription: Subscription;
-  // private _storesFromSubscription: Subscription;
 
   constructor(
     private _products: InventoryProductsService,
@@ -69,9 +60,9 @@ export class ProductFormComponent implements OnInit, OnDestroy {
         skip( 1 ),
         listenChanges(1000),
       ).subscribe( changes => {
-        console.log( changes )
         this.current.product$.next( { ...changes } )
         this.validForm = this.productFormValid
+        console.log( this.current.product$ )
         // this.changes.emit( changes )
       });
     
@@ -104,7 +95,6 @@ export class ProductFormComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this._storesSubscription?.unsubscribe();
     this._productFormSubscription?.unsubscribe();
     this._submitedSubscription?.unsubscribe();
     this.current.leave()
@@ -116,22 +106,20 @@ export class ProductFormComponent implements OnInit, OnDestroy {
     <p mat-dialog-title class="center">Agregar producto</p>
     <mat-dialog-content>
       <app-product-form></app-product-form>
-      <div class="row">
-      <div class="col s12 center">
-        <button
-          mat-raised-button
-          color="primary"
-          [disabled]="!(current.formValid | async)"
-          (click)="onSubmit()"
-        >
-          Guardar
-        </button>
-      </div>
-    </div>
     </mat-dialog-content>
     <mat-dialog-actions>
-      <button mat-raised-button>Cancelar</button>
-      <button mat-raised-button color="primary">Aceptar</button>
+      <div class="row">
+        <div class="col s12 center">
+          <button
+            mat-raised-button
+            color="primary"
+            [disabled]="!(current.formValid | async)"
+            (click)="onSubmit()"
+            >
+              Guardar
+          </button>
+        </div>
+      </div>
     </mat-dialog-actions>
   `,
   styleUrls: ['./product-form.component.scss']
