@@ -41,7 +41,7 @@ export class ProductsComponent implements OnInit, OnDestroy {
     /* Obtiene el Business ID */
     const CRF = this._cache.getDataKey('eid')
     /* Se inicializa el indexado de productos */
-    this._index.initIndex( `businesess/${ CRF }/products`, 'UPC', 20 )
+    this._index.initIndex( `businesses/${ CRF }/products`, 'UPC', 20 )
     /* Se suscribe a la respuesta del índice */
     this._listSubscription =
     this._index.page$.subscribe( data => {
