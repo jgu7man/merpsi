@@ -33,7 +33,7 @@ export class InventoryProductsService {
 
   /** Crea la referencia a firestore para la empresa en la cuál se está presente */
   get businessRef() {
-    return this._afs.doc(`businesess/${this.CRF}`)
+    return this._afs.doc(`businesses/${this.CRF}`)
   }
 
   /**
