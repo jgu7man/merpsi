@@ -1,10 +1,13 @@
+import firebase from 'firebase/app';
 import { Injectable } from '@angular/core';
 import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
 import { MxText } from 'libs/@marxa/devkit/text/mx-text.service';
 import { BehaviorSubject, Observable, of,  } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { DashboardService } from 'src/app/dashboard/dashboard.service';
-import { Product } from 'src/app/modules/inventory/products/products.model';
+import { FireDoc, txn } from 'src/app/models/firestore.model';
+import { Product, ProductModel } from 'src/app/modules/inventory/products/products.model';
+import { MxLoading } from 'libs/@marxa/devkit/loading/loading.service';
 
 @Injectable({
   providedIn: 'root'
@@ -31,6 +34,7 @@ export class CurrentProductService {
     private _dashboard: DashboardService,
     private _text: MxText,
     private _alert: MxAlert,
+    private _loading: MxLoading
   ) { }
 
   listenStorage(): BehaviorSubject<Product.StoreReference[]> {
@@ -84,27 +88,35 @@ export class CurrentProductService {
   }
 
   async save() {
+    this._loading.spinner('open')
     try {
       
       if ( this.product$.value == null )
         throw { message: 'Se ha perdido el state del producto actual' }
       
       const product = await this.product$.value
-      
-      await this._dashboard.businessRef
+      const productRef = this._dashboard.businessRef
         .collection( 'products' )
-        .doc( product.UPC ).ref
-        .set( { ...product }, { merge: true } )
+        .doc<ProductModel>( product!.UPC).ref
       
+      /* Guarda el producto */
+      await productRef.set( { ...product }, { merge: true } )
       
-      await this._dashboard.businessRef
-        .collection( `products/${ product.UPC }/history` )
+      /* Asigna un evento */
+      await productRef
+        .collection( `history` )
         .doc( `${ new Date().getTime() }` )
-        .set( {...product.last_update} )
+        .set( { ...product!.last_update } )
       
+      /* Obtiene el producto agregado */
+      const productSetted = await productRef.get()
+      
+      this._loading.spinner('close')
       this._alert.notify( 'Producto guardado' )
-      return
+      return productSetted
+      
     } catch ( error: any ) {
+      this._loading.spinner('close')
       this._alert.error('No se logró guardar el producto', error)
       console.error( error );
       return
