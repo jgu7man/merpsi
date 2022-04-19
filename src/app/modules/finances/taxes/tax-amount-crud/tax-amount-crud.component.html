@@ -22,11 +22,13 @@
     <mat-label>Agregar impuesto</mat-label>
     <mat-select
       placeholder="Placeholder"
-      name="tax">
+      name="tax"
+      (selectionChange)="selectionChanged($event)"
+      >
         <mat-option
           *ngFor="let item of (taxes.list$ | async)"
           [value]="item">
-            {{item}}
+            {{item.name}}
         </mat-option>
       </mat-select>
   </mat-form-field>
