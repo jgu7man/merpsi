@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, ElementRef, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { MxLoading } from 'libs/@marxa/devkit/loading/loading.service';
@@ -43,7 +43,7 @@ export class ProductFormComponent implements OnInit, OnDestroy {
   ) {
 
     this.productForm = this._formBuilder.group( {
-      product_code: new FormControl('', [Validators.required]),
+      UPC: new FormControl('', [Validators.required]),
       reference: new FormControl('', [Validators.required]),
       description: new FormControl(''),
       brand: new FormControl(''),
@@ -60,9 +60,11 @@ export class ProductFormComponent implements OnInit, OnDestroy {
         skip( 1 ),
         listenChanges(1000),
       ).subscribe( changes => {
-        this.current.product$.next( { ...changes } )
+        this.current.product$.next( {
+          ...this.current.product$.value,
+          ...changes
+        } )
         this.validForm = this.productFormValid
-        console.log( this.current.product$ )
         // this.changes.emit( changes )
       });
     
@@ -99,6 +101,8 @@ export class ProductFormComponent implements OnInit, OnDestroy {
     this._submitedSubscription?.unsubscribe();
     this.current.leave()
   }
+
+  
 }
 
 @Component({
@@ -126,6 +130,7 @@ export class ProductFormComponent implements OnInit, OnDestroy {
 })
   
 export class ProductFormDialog implements OnInit {
+  
   constructor (
     // @Inject( MAT_DIALOG_DATA ) data: any,
     public dialog: MatDialogRef<ProductFormDialog>,
@@ -140,3 +145,5 @@ export class ProductFormDialog implements OnInit {
       .catch(() => this.dialog.close(false))
   }
 }
+
+

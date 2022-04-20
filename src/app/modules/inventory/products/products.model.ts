@@ -33,36 +33,38 @@ export class ProductModel {
   /** Rutas de imágenes del producto */
   public gallery: string[] = []
   /** Lista de claves de búsqueda */
-  private search_keys: string[] = []
+  readonly keywords: string[] = this.getKeywords()
   /** Datos de referencia de la empresa que provee el producto */
   public provider?: Product.ProviderReference
   /** Última modificación del producto en la base de datos de la empresa */
   public last_update: ProductEventModel
   /** Referencia de firestore del producto si le pertenece a un tercero */
   public third_reference?: FireRef<ProductModel>
-  
+  public stored: boolean
   constructor (
-    product?: ProductModel | FireDoc<ProductModel>,
+    product?: Product.DataReference | FireDoc<Product.DataReference>,
     /** Reference del manager creador del producto */
     manager?: FireRef<ManagerModel>,
     /** Si el proveedor existe en la DB se asignará la referencia de firestore. Si no se tiene proveedor en base de datos, se le solictará a la empresa, que lo cree en su panel en su propia lista de proveedores. NOTA: Si no se tiene el registro del proveedor, el CRF de la empresa registradora del producto, será asignada como el creador del producto */
     provider?: Product.ProviderReference
   ) {
+    let productData = product && 'data' in product ? product?.data() : product
     
-    let productData = !(product instanceof ProductModel) ? product?.data() : product
-    
+    console.log( productData )
+    this.stored = productData?.stored === false ? false : !!product
+    this.UPC = productData?.UPC || ''
     this.reference = productData?.reference || ''
     this.description = productData?.description || ''
     this.brand = productData?.brand || ''
     this.slug = this.createSlug( this.reference )
     /* Genera un array de códigos de referencia para que el producto pueda ser buscado */
-    this.search_keys = this.getSearchKeys()
+    this.keywords = this.getKeywords()
     this.categories = productData?.categories || []
     this.notes = productData?.notes || []
     this.gallery = productData?.gallery || []
     
     /* Se genera un primer evento de creación */
-    const event = new ProductEventModel( product ? 'edit' : 'create' , manager )
+    const event = new ProductEventModel( this.stored ? 'edit' : 'create' , manager )
     this.last_update = {...event}
     /* Genera un slug basado en la referencia (nombre del producto)
     TODO: Realizar un método que pueda actualizar el slug, 
@@ -81,20 +83,24 @@ export class ProductModel {
   }
 
   /** Toma los códigos de esta clase y los convierte en strings consultables desde firestore */
-  private getSearchKeys(): string[] {
-    let reference_codes = [
+  private getKeywords(): string[] {
+    let keywords = [
       this.UPC,
       this.slug,
       ...this.reference_codes,
-      ...this.reference.toLowerCase().split( ' ' ),
-      this.reference.toLowerCase()
-    ].filter( i => i || i !== undefined )
-    return uniq(reference_codes)
+      ...(this.reference || '').toLowerCase().split( ' ' ),
+      ...(this.keywords || [])
+    ].filter( i => !!i )
+    return uniq(keywords)
   }
 
-  public measure_unit_ref?: FireDoc<MesureUnitModel> 
-
   /* TODO Crear en el formulario un "switch" o "checkbox" que valide al usuario si la empresa es la creadora del producto */
+  
+
+  getData(): Product.DataReference {
+    const { getKeywords: getSearchKeys, createSlug, ...data } = this
+    return data
+  }
 }
 
 
@@ -137,6 +143,7 @@ export declare namespace Product {
     extends Omit<ProductModel,
     | 'getReferenceCodes'
     | 'createSlug'
+    | 'getData'
     >{ }
   
   /**

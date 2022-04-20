@@ -8,6 +8,9 @@ import { DashboardService } from 'src/app/dashboard/dashboard.service';
 import { FireDoc, txn } from 'src/app/models/firestore.model';
 import { Product, ProductModel } from 'src/app/modules/inventory/products/products.model';
 import { MxLoading } from 'libs/@marxa/devkit/loading/loading.service';
+import { AuthService } from 'src/app/services/auth.service';
+import { AngularFirestore } from '@angular/fire/firestore';
+import { ManagerModel } from '../../admin/managers/manager.model';
 
 @Injectable({
   providedIn: 'root'
@@ -35,8 +38,20 @@ export class CurrentProductService {
     private _dashboard: DashboardService,
     private _text: MxText,
     private _alert: MxAlert,
-    private _loading: MxLoading
+    private _loading: MxLoading,
+    private _auth: AuthService,
+    private _afs: AngularFirestore
   ) { }
+
+  get managerRef() {
+    let user = this._auth.userState$.value
+    if (!user) throw {message: 'No se ha iniciado sesión'}
+    let userRef = this._dashboard.businessRef
+      .collection( 'managers' )
+      .doc<ManagerModel>( user.uid )
+      .ref
+    return userRef
+  }
 
   listenStorage(): BehaviorSubject<Product.StoreReference[]> {
     this.product$.pipe( map( product => {
@@ -88,20 +103,25 @@ export class CurrentProductService {
     this.storage$.next(this.storage$.value)
   }
 
-  async save() {
+  async save(): Promise<FireDoc<Product.DataReference>> {
     this._loading.spinner('open')
     try {
       
       if ( this.product$.value == null )
         throw { message: 'Se ha perdido el state del producto actual' }
       
-      const product = await this.product$.value
+      const productState = await this.product$.value
+      const product = new ProductModel( productState, this.managerRef )
+      console.log( product.getData() )
       const productRef = this._dashboard.businessRef
         .collection( 'products' )
         .doc<ProductModel>( product!.UPC).ref
       
       /* Guarda el producto */
-      await productRef.set( { ...product }, { merge: true } )
+      await productRef.set( {
+        ...product.getData(),
+        // last_update: {...product.last_update}
+      }, { merge: true } )
       
       /* Asigna un evento */
       await productRef

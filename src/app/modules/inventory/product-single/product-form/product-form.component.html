@@ -5,7 +5,7 @@
       <!-- CÓDIGO -->
       <mat-form-field class="col s12 codigo-input"
         appearance="outline"
-        *ngIf="!product.UPC"
+        *ngIf="!product.stored"
       >
         <mat-label>Código de prodcuto (UPC)</mat-label>
         <mat-hint>
@@ -17,11 +17,11 @@
         <input
           matInput
           type="text"
-          name="product_code"
-          formControlName="product_code"
+          name="UPC"
+          formControlName="UPC"
           required
         />
-        <mat-error *ngIf="productForm.hasError('required', 'product_code')">
+        <mat-error *ngIf="productForm.hasError('required', 'UPC')">
           Es necesario agrear un código de producto.
         </mat-error>
       </mat-form-field>
@@ -131,18 +131,18 @@
     </div>
 
 
-    <!-- <div class="row">
+    <div class="row">
       <div class="col s12 center">
         <button
           mat-raised-button
           color="primary"
           [disabled]="!(current.formValid | async)"
-          (click)="onSubmit()"
+          (click)="current.save()"
         >
-          Guardar
+          Guardar (test)
         </button>
       </div>
-    </div> -->
+    </div>
   
   </form>
   
