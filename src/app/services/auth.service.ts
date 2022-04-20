@@ -192,8 +192,8 @@ export class AuthService {
    * @param {string} uid
    * @returns {*}
    */
-  retriveManager( uid: string ) {
-    return this._afs.collectionGroup<ManagerModel>('managers',
+  retriveManager( uid: string, ref: boolean = false ) {
+    return this._afs.collectionGroup<iManager>('managers',
       ref => ref.where('uid', '==', uid)).get()
       .pipe(
         map(list => {
@@ -204,7 +204,7 @@ export class AuthService {
             registered: documento.registered as firebase.firestore.Timestamp,
             businesses: list.docs.map(doc => doc.data().CRF || '') 
           }
-          return manager
+          return ref ? documento : manager
         } else  return null
       } ),
         catchError( ( error, user ) => {

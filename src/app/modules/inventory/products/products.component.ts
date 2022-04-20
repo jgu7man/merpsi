@@ -44,8 +44,9 @@ export class ProductsComponent implements OnInit, OnDestroy {
     this._index.initIndex( `businesses/${ CRF }/products`, 'UPC', 20 )
     /* Se suscribe a la respuesta del índice */
     this._listSubscription =
-    this._index.page$.subscribe( data => {
-      this.products = data
+      this._index.page$.subscribe( data => {
+        console.log( data )
+        this.products = data
     })
    }
 
