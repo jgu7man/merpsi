@@ -6,6 +6,7 @@ import { MarxaModule } from './marxa.module';
 import { NgxMaskModule } from 'ngx-mask';
 import { PipesModule } from '../pipes/pipes.module';
 import { ComponentsModule } from '../components/components.module';
+import { PrimeModule } from './prime.module';
 
 
 
@@ -18,7 +19,8 @@ import { ComponentsModule } from '../components/components.module';
     MarxaModule,
     NgxMaskModule,
     PipesModule,
-    ComponentsModule
+    ComponentsModule,
+    PrimeModule
   ],
   imports: [
     PipesModule,

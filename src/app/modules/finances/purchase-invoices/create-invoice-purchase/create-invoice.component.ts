@@ -74,7 +74,7 @@ export class CreateInvoiceComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     this.invoiceForm.valueChanges.pipe(
       distinctUntilChanged( ( x, y ) => JSON.stringify( x ) == JSON.stringify(y)),
-      debounceTime( 5000 ),
+      debounceTime( 500 ),
       skip(1)
     ).subscribe( changes => {
       this.purchase.current$.next( {
@@ -87,96 +87,18 @@ export class CreateInvoiceComponent implements OnInit {
 
   onStoreSelected( event: MatSelectChange ) {
     const store: iSede = event.value
+    console.log( store )
     this.storeForm.patchValue( {
       id: store.id!,
       name: store.name  
     })
-    // this.purchase.updateCurrent( 'store', {
-    //   id: store.id!,
-    //   name: store.name
-    // } )
   }
 
-  get provider() {
-    return this.providerForm.value
-  }
-
-  async findProvider() {
-    // let provider = this.invoiceForm.controls.provider as FormGroup
-    let crf = this.provider.CRF
-
-    if (crf.length >= 8) {
-      
-      let provider = await this._provider.findProviderByCRF( crf )
-      console.log( provider )
-      
-      if (provider) {
-        let message = `Proveedor ${provider.businessName.toUpperCase()} encontrado , Deseas agregarlo a la Factura?`
-        const result = await this.alertProviderFinded( message )
-        
-        if (result.isConfirmed) {
-          // this.purchase.updateCurrent( 'provider', {
-          //   CRF: provider.CRF,
-          //   businessName: provider.businessName
-          // } )
-          this.providerForm.patchValue( {
-            businessName: provider.businessName,
-            CRF: provider.CRF,
-          })
-        } 
-
-      } else {
-        let business = await this._provider.findBusinessByCRF(crf)
-        if (business != null) {
-
-          const message = `Encontramos a este Proveedor: ${business.businessName.toUpperCase()}  Deseas agregarlo?`;
-          const result = await this.alertProviderFinded( message)
-            
-          if ( result.isConfirmed ) {
-            // this.purchase.updateCurrent( 'provider', {
-            //   CRF: business.CRF,
-            //   businessName: business.businessName
-            // })
-            this.providerForm.patchValue( {
-              businessName: business.businessName,
-              CRF: business.CRF,
-            })
-          } else {
-            this.openProviderNew()
-          }
-        } else {
-          this.openProviderNew()
-        }
-      }
-    }
-  }
-
-  private async alertProviderFinded(message: string){
-    return Swal.fire({
-      text: message,
-      icon: 'info',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'agregar'
-    })
-  }
-
-  openProviderNew() {
-    this._dialog.open(ProviderNewDialog, {
-      maxWidth: '100%',
-      data: {
-        crf: this.providerForm.value
-      }
-    } ).afterClosed().pipe( first() ).subscribe( (provider: ProviderModel) => {
-      // this.purchase.updateCurrent( 'provider', {
-      //   CRF: provider.CRF,
-      //   businessName: provider.businessName
-      // })
-      this.providerForm.patchValue( {
-        businessName: provider.businessName,
-        CRF: provider.CRF,
-      })
+  setProvider( provider: any ) {
+    console.log( provider )
+    this.providerForm.patchValue( {
+      businessName: provider.businessName,
+      CRF: provider.CRF,
     })
   }
 
@@ -202,7 +124,7 @@ export class CreateInvoiceComponent implements OnInit {
       if (validation) {
         this.invoiceForm.controls.invoice_ID.setErrors( { exist: true } )
       } else {
-        console.log(this.purchase.current$.value)
+        // console.log(this.purchase.current$.value)
         this.purchase.updateCurrent('invoice_ID',invoice_id)
       }
     }

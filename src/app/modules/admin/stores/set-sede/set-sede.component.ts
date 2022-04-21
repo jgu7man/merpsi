@@ -19,15 +19,14 @@ export class SetSedeComponent implements OnInit, OnDestroy{
   @Input() set sede(suc: iSede) { this._sede.next(suc); }
   get sede() { return this._sede.getValue() }
 
-  sedeForm: FormGroup = new FormGroup({
-    referencia: new FormControl( '', [Validators.required]),
-    tipo: new FormControl( '', [Validators.required]),
+  sedeForm: FormGroup = new FormGroup( {
+    name: new FormControl( '', [ Validators.required ]),
+    referencia: new FormControl( '' ),
+    tipo: new FormControl( '' ),
     direccion: new FormControl( ''),
     ciudad: new FormControl( ''),
     depto: new FormControl( ''),
     linkmap: new FormControl( ''),
-    panoramica: new FormControl( '',),
-    video: new FormControl( '')
   })
 
   private dataSubscription!: Subscription
@@ -62,8 +61,6 @@ export class SetSedeComponent implements OnInit, OnDestroy{
       ciudad: '',
       depto: '',
       linkmap: '',
-      panoramica: '',
-      video: '',
     })
     this.saved.emit()
   }

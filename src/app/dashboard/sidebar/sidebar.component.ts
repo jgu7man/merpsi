@@ -48,7 +48,6 @@ export class SidebarComponent implements OnInit, OnDestroy {
     this.userSubscription = this.auth.authUser$.pipe(
       mergeMap(() => this.auth.userState$)
     ).subscribe(user => {
-      console.log( this.route.snapshot.params )
       let eid = this.route.snapshot.params.eid
       if (!eid) {
         if (user?.businesses.length==1){

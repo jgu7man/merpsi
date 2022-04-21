@@ -14,6 +14,7 @@ import { MesureUnitFormComponent } from './mesure-units/mesure-unit-form/mesure-
 import { MesureUnitSelectorComponent } from './mesure-units/mesure-unit-selector/mesure-unit-selector.component';
 import { ProviderComponent } from './providers/provider.component';
 import { SetProviderComponent } from './providers/set-provider/set-provider.component';
+import { ProviderSelectorComponent } from './providers/provider-selector/provider-selector.component';
 
 
 @NgModule({
@@ -29,7 +30,8 @@ import { SetProviderComponent } from './providers/set-provider/set-provider.comp
     MesureUnitFormComponent,
     MesureUnitSelectorComponent,
     ProviderComponent,
-    SetProviderComponent
+    SetProviderComponent,
+    ProviderSelectorComponent
   ],
   imports: [
     CommonModule,
@@ -38,7 +40,8 @@ import { SetProviderComponent } from './providers/set-provider/set-provider.comp
   ],
   exports: [
     SetProviderComponent,
-    ProductFormComponent
+    ProductFormComponent,
+    ProviderSelectorComponent,
   ],
   schemas: [
     CUSTOM_ELEMENTS_SCHEMA

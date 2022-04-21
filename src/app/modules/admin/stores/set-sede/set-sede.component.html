@@ -1,109 +1,103 @@
 <div class="container">
-  <div class="row">
-    <div class="col s12">
-      <!-- NOMBRE -->
-      <form action="" class="row" [formGroup]="sedeForm">
-        <mat-form-field appearance="outline" class="col s12">
-          <mat-label>Referencia</mat-label>
-          <input
-            matInput
-            type="text"
-            name="referencia"
-            formControlName="referencia"
-          />
-          <mat-error *ngIf="sedeForm.hasError('required', 'sede')">
-            Este dato es necesario
-          </mat-error>
-        </mat-form-field>
+  <form action="" class="row" [formGroup]="sedeForm">
+    
+    <!-- NOMBRE -->
+    <mat-form-field
+      appearance="outline"
+      class="col s12 m6">
+        <mat-label>Nombre</mat-label>
+        <input
+        matInput
+        type="text"
+        name="name"
+        formControlName="name"
+        required
+        >
+        <mat-error *ngIf="sedeForm.hasError('required', 'name')">
+          El nombre de la sede es necesario
+        </mat-error>
+    </mat-form-field>
+    
+    <!-- REFERENCIA -->
+    <mat-form-field appearance="outline" class="col s12 m6">
+      <mat-label>Referencia</mat-label>
+      <input
+        matInput
+        type="text"
+        name="referencia"
+        formControlName="referencia"
+      />
+      <mat-hint>
+        Nombre con el que se le puede reconocer o nombre informal
+      </mat-hint>
+    </mat-form-field>
 
-        <!-- TIPO -->
-        <mat-form-field appearance="outline" class="col s12">
-          <mat-select placeholder="Tipo de la sede" formControlName="tipo" name="tipo">
-            <mat-option [value]="'taller'"> Taller </mat-option>
-            <mat-option [value]="'tienda'"> Tienda </mat-option>
-          </mat-select>
-          <mat-error *ngIf="sedeForm.hasError('required', 'tipo')">
-            Tipo de la sede es necesario
-          </mat-error>
-        </mat-form-field>
+    <!-- TIPO -->
+    <mat-form-field appearance="outline" class="col s12">
+      <mat-select placeholder="Tipo de la sede" formControlName="tipo" name="tipo">
+        <mat-option [value]="'taller'"> Taller </mat-option>
+        <mat-option [value]="'tienda'"> Tienda </mat-option>
+      </mat-select>
+      <mat-error *ngIf="sedeForm.hasError('required', 'tipo')">
+        Tipo de la sede es necesario
+      </mat-error>
+    </mat-form-field>
 
-        <!-- DIRECCIÓN -->
-        <mat-form-field appearance="outline" class="col s12">
-          <mat-label>Dirección</mat-label>
-          <input
-            matInput
-            type="text"
-            name="direccion"
-            formControlName="direccion"
-          />
+    <!-- DIRECCIÓN -->
+    <mat-form-field appearance="outline" class="col s12">
+      <mat-label>Dirección</mat-label>
+      <input
+        matInput
+        type="text"
+        name="direccion"
+        formControlName="direccion"
+      />
 
-        </mat-form-field>
+    </mat-form-field>
 
-        <!-- CIUDAD -->
-        <mat-form-field appearance="outline" class="col s12">
-          <mat-label>Ciudad</mat-label>
-          <input
-            matInput
-            type="text"
-            name="ciudad"
-            formControlName="ciudad"
-          />
-        </mat-form-field>
+    <!-- CIUDAD -->
+    <mat-form-field appearance="outline" class="col s12">
+      <mat-label>Ciudad</mat-label>
+      <input
+        matInput
+        type="text"
+        name="ciudad"
+        formControlName="ciudad"
+      />
+    </mat-form-field>
 
-        <!-- DEPARTAMENTO -->
-        <mat-form-field appearance="outline" class="col s12">
-          <mat-label>Departamento</mat-label>
-          <input
-            matInput
-            type="text"
-            name="depto"
-            formControlName="depto"
-          />
-        </mat-form-field>
+    <!-- DEPARTAMENTO -->
+    <mat-form-field appearance="outline" class="col s12">
+      <mat-label>Departamento</mat-label>
+      <input
+        matInput
+        type="text"
+        name="depto"
+        formControlName="depto"
+      />
+    </mat-form-field>
 
-        <!-- PANORÁMICA -->
-        <!-- <div class="col s12">
-          <p>Imagen panorámica</p>
-          <mx-files-picker
-            [multiple]="false"
-            toggleButtonLabel="Agregar una foto panorámica"
-            (uploadComplete)="onPanoramicaLoaded($event)"
-          ></mx-files-picker>
-          <div class="panoramicaContainer">
-            <img [src]="sedeForm.value['panoramica']" [alt]="" />
-          </div>
-        </div> -->
+    <!-- LINK DE MAPS -->
+    <mat-form-field appearance="outline" class="col s12">
+      <mat-label>Link de maps</mat-label>
+      <input
+        matInput
+        type="text"
+        name="linkmap"
+        formControlName="linkmap"
+      />
+      <mat-hint>
+        Puedes agregar un enlace de Google Maps para utilizarlo de referencia
+      </mat-hint>
+    </mat-form-field>
 
-        <!-- LINK DE MAPS -->
-        <mat-form-field appearance="outline" class="col s12">
-          <mat-label>Link de maps</mat-label>
-          <input
-            matInput
-            type="text"
-            name="linkmap"
-            formControlName="linkmap"
-          />
-        </mat-form-field>
 
-        <!-- VIDEO -->
-        <!-- <mat-form-field appearance="outline" class="col s12">
-          <mat-label>Link de video</mat-label>
-          <input
-            matInput
-            type="text"
-            name="video"
-            formControlName="video"
-          />
-        </mat-form-field> -->
-
-        <div class="col s12 center">
-          <button mat-raised-button
-          color="primary"
-          [disabled]="sedeForm.invalid || sedeForm.pristine"
-          (click)="onSubmit()"
-          >Guardar</button>
-        </div>
-      </form>
+    <div class="col s12 center">
+      <button mat-raised-button
+      color="primary"
+      [disabled]="sedeForm.invalid || sedeForm.pristine"
+      (click)="onSubmit()"
+      >Guardar</button>
     </div>
-  </div>
+  </form>
 </div>
