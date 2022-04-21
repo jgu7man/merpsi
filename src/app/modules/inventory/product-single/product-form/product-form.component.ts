@@ -109,18 +109,6 @@ export class ProductFormComponent implements OnInit, OnDestroy {
     <p mat-dialog-title class="center">Agregar producto</p>
     <mat-dialog-content>
       <app-product-form></app-product-form>
-      <div class="row">
-      <div class="col s12 center">
-        <button
-          mat-raised-button
-          color="primary"
-          [disabled]="!(current.formValid | async)"
-          (click)="onSubmit()"
-        >
-          Guardar
-        </button>
-      </div>
-    </div>
     </mat-dialog-content>
     <mat-dialog-actions>
       <div class="row">
