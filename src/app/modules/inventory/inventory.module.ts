@@ -40,8 +40,7 @@ import { ProviderSelectorComponent } from './providers/provider-selector/provide
   ],
   exports: [
     SetProviderComponent,
-    ProductFormComponent,
-    ProviderSelectorComponent,
+    ProductFormComponent
   ],
   schemas: [
     CUSTOM_ELEMENTS_SCHEMA

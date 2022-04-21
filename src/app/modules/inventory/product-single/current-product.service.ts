@@ -107,6 +107,7 @@ export class CurrentProductService {
     this._loading.spinner('open')
     try {
       
+      
       if ( this.product$.value == null )
         throw { message: 'Se ha perdido el state del producto actual' }
       

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { PurchaseInvoiceModel } from 'src/app/modules/finances/purchase-invoices/pucharce-invoice.model';
+import { AuthService } from 'src/app/services/auth.service';
 import { iSede } from '../../admin/stores/sede.model';
 import { SedesService } from '../../admin/stores/sedes.service';
 import { ProviderModel } from '../../inventory/providers/provider.model';
@@ -20,7 +21,9 @@ export class PurchaseInvoicesComponent implements OnInit {
   constructor(
     private _provider: ProviderService,
     private _stores : SedesService,
-    public purchases: PurchaseInvoiceService
+    public purchases: PurchaseInvoiceService,
+    private _auth: AuthService,
+
   ) { }
 
   async ngOnInit(): Promise<void> {
@@ -28,6 +31,8 @@ export class PurchaseInvoicesComponent implements OnInit {
 
   onCreate() {
     this.purchases.current$.next(new PurchaseInvoiceModel())
+    let manager= this._auth.userState$.value!.name
+    this.purchases.updateCurrent('manager', manager)
   }
 
   async listStores() {
