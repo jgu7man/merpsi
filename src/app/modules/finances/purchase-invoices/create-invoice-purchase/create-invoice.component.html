@@ -1,108 +1,100 @@
-<form class="row" [formGroup]="invoiceForm">
+<form [formGroup]="invoiceForm">
   
-  <!-- numero de factura -->
-  <mat-form-field appearance="outline" class="col s12 l4 ">
-    <mat-label>Nro de Factura</mat-label>
-    <input
-      matInput
-      type="text"
-      name="invoice_ID"
-      formControlName="invoice_ID"
-      (blur)="findInvoice(invoiceForm.controls.invoice_ID.value)"
-    />
-    <mat-error *ngIf="invoiceForm.hasError('required', 'invoice_ID')">
-      Este dato es necesario
-    </mat-error>
-    <mat-error *ngIf="invoiceForm.hasError('exist', 'true')">
-      Este factura ya esta registrada
-    </mat-error>
-  </mat-form-field>
-
-  <!-- fecha de la factura -->
-  <mat-form-field appearance="outline" class="col s12 l4 offset-l4">
-    <mat-label>Fecha de Compra</mat-label>
-    <input
-      matInput
-      formControlName="document_date"
-      [matDatepicker]="picker"
-    />
-    <mat-datepicker-toggle
-      matSuffix
-      [for]="picker"
-    ></mat-datepicker-toggle>
-    <mat-datepicker #picker startView="year"></mat-datepicker>
-  </mat-form-field>
-
+  <div class="row">
+    <!-- numero de factura -->
+    <mat-form-field appearance="outline" class="col s12 l4 ">
+      <mat-label>Nro de Factura</mat-label>
+      <input
+        matInput
+        type="text"
+        name="invoice_ID"
+        formControlName="invoice_ID"
+        (blur)="findInvoice(invoiceForm.controls.invoice_ID.value)"
+      />
+      <mat-error *ngIf="invoiceForm.hasError('required', 'invoice_ID')">
+        Este dato es necesario
+      </mat-error>
+      <mat-error *ngIf="invoiceForm.hasError('exist', 'true')">
+        Este factura ya esta registrada
+      </mat-error>
+    </mat-form-field>
+  
+    <!-- fecha de la factura -->
+    <mat-form-field appearance="outline" class="col s12 l4">
+      <mat-label>Fecha de Compra</mat-label>
+      <input
+        matInput
+        formControlName="document_date"
+        [matDatepicker]="picker"
+      />
+      <mat-datepicker-toggle
+        matSuffix
+        [for]="picker"
+      ></mat-datepicker-toggle>
+      <mat-datepicker #picker startView="year"></mat-datepicker>
+    </mat-form-field>
+  </div>
+  
   <ng-container *ngIf="purchase.current$ | async as purchase">
-    <ng-container *ngIf="purchase.invoice_ID">
-      
-      <!-- SEDE -->
-      <mat-form-field appearance="outline" class="col s12 l3">
-        <mat-label>Sede</mat-label>
-        <mat-select
-          required
-          placeholder="Sede"
-          name="store"
-          (selectionChange)="onStoreSelected($event)"
-        >
-          <mat-option *ngFor="let sede of stores$ | async" [value]="sede">
-            {{ sede.referencia || "" }}
-            <span class="small-text">({{ sede.tipo || "" }})</span>
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
+    <div class="row">
+      <ng-container *ngIf="purchase.invoice_ID">
+        
+        <!-- PROVIDER -->
+        <div class="col s12 l4">
+          <app-provider-selector
+          (result)="setProvider($event)"
+          ></app-provider-selector>
+        </div>
 
-      <!-- PROVIDER -->
-      <div class="col s12 l9">
-        <form class="row" formGroupName="provider">
-          <!-- Seleccionar proveedor -->
-          <mat-form-field appearance="outline" class="col s6">
-            <!-- crf del provedor -->
-            <mat-label>CRF</mat-label>
-            <input
-              matInput
-              type="text"
-              name="CRF"
-              formControlName="CRF"
-              (blur)="findProvider()"
-            />
-            <mat-error *ngIf="invoiceForm.hasError('required', 'CRF')">
-              Este dato es necesario
-            </mat-error>
-          </mat-form-field>
-          <!-- Nombre del proovedor -->
-          <mat-form-field appearance="outline" class="col s6"
-          *ngIf="provider.businessName">
-            <mat-label>Proveedor</mat-label>
-            <input
-              matInput
-              type="text"
-              name="businessName"
-              formControlName="businessName"
-            />
-          </mat-form-field>
-        </form>
-      </div>
-      <div class="row">
-        <ng-container *ngIf="purchase.store && purchase.provider">
-          <button 
-          mat-raised-button 
-          color="accent" 
+        <!-- SEDE -->
+        <mat-form-field appearance="outline" class="col s12 l4">
+          <mat-label>Sede</mat-label>
+          <mat-select
+            required
+            placeholder="Sede"
+            name="store"
+            (selectionChange)="onStoreSelected($event)"
+          >
+            <mat-option *ngFor="let sede of stores$ | async" [value]="sede">
+              {{ sede.referencia || "" }}
+              <span class="small-text">({{ sede.tipo || "" }})</span>
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        
+      </ng-container>
+    </div>
+    
+    <div class="row">
+      <div class="col s12">
+
+        store: {{ storeForm.invalid}}
+        provider: {{ providerForm.invalid }}
+        <button
+          mat-raised-button
+          color="accent"
+          [disabled]="storeForm.invalid || providerForm.invalid"
           (click)="addConcept()">
           Agregar Concepto
-          </button>
+        </button>
 
+        <ng-container *ngIf="purchase.store && purchase.provider">
           <ng-container *ngFor="let concept of purchase.details ">
             <app-invoice-concept
             [concept]="concept"
             ></app-invoice-concept>
           </ng-container>
-          <ng-container *ngIf="purchase.details.length > 0">
-          <app-footer-invoice></app-footer-invoice>
-          </ng-container>
-          </ng-container>
+        </ng-container>
       </div>
-    </ng-container>
+    </div>
+    
+    <div class="row">
+      <div class="col s12">
+        <ng-container *ngIf="purchase.details.length > 0">
+          <app-footer-invoice></app-footer-invoice>
+        </ng-container>
+      </div>
+    </div>
   </ng-container>
 </form>
 
