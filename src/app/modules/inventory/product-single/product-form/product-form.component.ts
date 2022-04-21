@@ -79,7 +79,6 @@ export class ProductFormComponent implements OnInit, OnDestroy {
     const product = this.current.product$.value
     if ( product ) this.productForm.patchValue( { ...product } )
     else this.current.product$.next( new ProductModel() )
-    console.log( this.current.product$.value )
   }
 
   listHasChanged( list:

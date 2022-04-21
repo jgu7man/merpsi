@@ -19,7 +19,7 @@ export class InventoryProductsService {
     private _afs: AngularFirestore,
     private _cache: MxCache,
     private _alert: MxAlert,
-    private _text: MxText
+    private _text: MxText,
   ) {
     // this.updateAlmacenes()
   }

@@ -100,5 +100,9 @@ export class ProductsComponent implements OnInit, OnDestroy {
     this._listSubscription.unsubscribe()
   }
 
+  onClosePanel(): void {
+    this.productDrawer.close()
+    this.current.leave()
+  }
 
 }
