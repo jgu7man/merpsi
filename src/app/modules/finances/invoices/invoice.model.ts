@@ -15,7 +15,7 @@ export class InvoiceModel {
 /** calculos de totales de la factura */
   public footer: iInvoiceFooter
   /** personal que registro la factura */
-  public readonly manager: string = ''
+  public  manager: string = ''
   /**fecha de registro */
   public readonly registered_date: FireTime = createDate( new Date() )
   

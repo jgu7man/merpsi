@@ -1,10 +1,11 @@
-import { Component, Input, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, Output, EventEmitter } from '@angular/core';
 import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { MxLoading } from 'libs/@marxa/devkit/loading/loading.service';
 import { MxText } from 'libs/@marxa/devkit/text/mx-text.service';
 import { Subscription } from 'rxjs';
 import { skip } from 'rxjs/operators';
+import { FireDoc } from 'src/app/models/firestore.model';
 import { listenChanges } from 'src/app/models/operators-chains.model';
 import { Product, ProductModel } from 'src/app/modules/inventory/products/products.model';
 import { InventoryProductsService } from '../../products/products.service';
@@ -43,7 +44,7 @@ export class ProductFormComponent implements OnInit, OnDestroy {
   ) {
 
     this.productForm = this._formBuilder.group( {
-      product_code: new FormControl('', [Validators.required]),
+      UPC: new FormControl('', [Validators.required]),
       reference: new FormControl('', [Validators.required]),
       description: new FormControl(''),
       brand: new FormControl(''),
@@ -62,7 +63,7 @@ export class ProductFormComponent implements OnInit, OnDestroy {
       ).subscribe( changes => {
         this.current.product$.next( { ...changes } )
         this.validForm = this.productFormValid
-        console.log( this.current.product$ )
+        console.log( this.current.product$.value )
         // this.changes.emit( changes )
       });
     

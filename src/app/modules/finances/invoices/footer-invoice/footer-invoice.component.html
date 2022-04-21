@@ -33,7 +33,8 @@
     <div class="col s12 l8 offset-l8">
       <div class="col s4">
         <app-tax-amount-crud
-        [amount_base]="formFooter.controls.subtotal.value">
+        [amount_base]="formFooter.controls.subtotal.value"
+        (totalTax)="getTotalTaxes($event)">
         </app-tax-amount-crud>
       </div>
     </div>

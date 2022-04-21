@@ -7,7 +7,7 @@
         appearance="outline"
         *ngIf="!product.UPC"
       >
-        <mat-label>Código de prodcuto (UPC)</mat-label>
+        <mat-label>Código de producto (UPC)</mat-label>
         <mat-hint>
           Código con el cuál será registrado este producto.
           <span class="red-text">
@@ -17,8 +17,8 @@
         <input
           matInput
           type="text"
-          name="product_code"
-          formControlName="product_code"
+          name="UPC"
+          formControlName="UPC"
           required
         />
         <mat-error *ngIf="productForm.hasError('required', 'product_code')">

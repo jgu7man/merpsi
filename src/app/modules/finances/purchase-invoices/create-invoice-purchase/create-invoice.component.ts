@@ -33,6 +33,7 @@ export class CreateInvoiceComponent implements OnInit {
   stores$: Observable<iSede[]>
   businessRef = this._cache.getDataKey( 'eid' )
   
+  
   storeForm: FormGroup = new FormGroup( {
     id: new FormControl( '', [ Validators.required ] ),
     name: new FormControl( '', [ Validators.required])
@@ -69,6 +70,7 @@ export class CreateInvoiceComponent implements OnInit {
   ) {
     this.stores$ = this._stores.listenAll()
     this.manager = this._auth.userState$.value
+    
   }
   
   async ngOnInit(): Promise<void> {
