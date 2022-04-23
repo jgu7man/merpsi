@@ -1,0 +1,39 @@
+<form [formGroup]="subcategoryForm">
+
+  <div class="row">
+
+    <!-- Nombre -->
+    <mat-form-field
+      appearance="outline"
+      class="col s12 m6">
+        <mat-label>Nombre</mat-label>
+        <input
+        matInput
+        type="text"
+        name="name"
+        formControlName="name"
+        required
+        >
+        <mat-error *ngIf="subcategoryForm.hasError('required', 'name')">
+            Nombre es necesario
+        </mat-error>
+    </mat-form-field>
+
+    <!-- Description -->
+    <mat-form-field
+      appearance="outline"
+      class="col s12 m6">
+        <mat-label>Description</mat-label>
+        <textarea 
+          matInput
+          name="description" 
+          formControlName="description" 
+          cols="30" 
+          rows="1"
+          [mat-autosize]="true"
+        ></textarea>
+    </mat-form-field>
+
+  </div>
+
+</form>

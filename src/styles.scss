@@ -6,17 +6,23 @@
 @import 'libs/@marxa/devkit/styles/text.scss';
 @import 'primeng/resources/primeng.min.css';
 @import 'primeng/resources/themes/md-light-indigo/theme.css';
+@import url('https://fonts.googleapis.com/css2?family=Maven+Pro:wght@400;600;700&family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,900;1,300;1,400&display=swap');
+
 
 $merpsi-primary: mat.define-palette(mat.$indigo-palette);
 $merpsi-accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);
 $merpsi-warn: mat.define-palette(mat.$red-palette);
+$merpsi-typography: mat.define-typography-config(
+  $font-family: "Maven Pro"
+);
 
 $merpsi-theme: mat.define-light-theme((
   color: (
     primary: $merpsi-primary,
     accent: $merpsi-accent,
     warn: $merpsi-warn,
-  )
+  ),
+  typography:$merpsi-typography
 ));
 
 
@@ -25,4 +31,5 @@ $merpsi-theme: mat.define-light-theme((
 
 
 html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+body { margin: 0; font-family: "Maven Pro",  sans-serif !important; }
+.p-component { font-family: "Maven Pro" !important}

@@ -1,0 +1,9 @@
+<p-treeSelect 
+  [(ngModel)]="tree" 
+  [options]="categories" 
+  display="chip" 
+  [metaKeySelection]="false" 
+  selectionMode="checkbox" 
+  (onNodeSelect)="onChanges()"
+  (onNodeUnselect)="onChanges()"
+></p-treeSelect>
