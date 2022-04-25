@@ -89,11 +89,15 @@
             <ng-container *ngFor="let concept of sales.details ">
               <app-invoice-concept
               [concept]="concept"
+              (changes)="getChanges($event)"
               ></app-invoice-concept>
             </ng-container>
-            <ng-container *ngIf="sales.details.length > 0">
-            <app-footer-invoice></app-footer-invoice>
-            </ng-container>
+            <!-- <ng-container *ngIf="sales.details.length > 0"> -->
+            <app-footer-invoice
+            (getFooter)="getFooter($event)"
+            [footerCalc]="footerCalc"
+            ></app-footer-invoice>
+            <!-- </ng-container> -->
             </ng-container>
         </div>
         </ng-container>

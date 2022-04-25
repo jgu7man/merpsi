@@ -17,7 +17,6 @@ import { TaxAmountCrudComponent } from './taxes/tax-amount-crud/tax-amount-crud.
 import { InventoryModule } from '../inventory/inventory.module';
 import { SalesInvoicesComponent } from './sales-invoices/sales-invoices.component';
 import { CreateInvoiceSalesComponent } from './sales-invoices/create-invoice-sales/create-invoice-sales.component';
-import { AddConceptComponent } from './sales-invoices/create-invoice-sales/add-concept/add-concept.component';
 
 
 @NgModule({
@@ -35,7 +34,7 @@ import { AddConceptComponent } from './sales-invoices/create-invoice-sales/add-c
     TaxAmountCrudComponent,
     SalesInvoicesComponent,
     CreateInvoiceSalesComponent,
-    AddConceptComponent
+    
   ],
   imports: [
     CommonModule,

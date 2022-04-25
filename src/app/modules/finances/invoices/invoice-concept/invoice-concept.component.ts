@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import { debounceTime, distinctUntilChanged, skip } from 'rxjs/operators';
@@ -28,12 +28,12 @@ export class InvoiceConceptComponent implements OnInit {
     description: new FormControl('', ),
     brand: new FormControl('', ),
     measure_unit: new FormControl('', ),
-    amount  : new FormControl(null, ),
+    amount  : new FormControl(0, ),
   })
 
   
 
-  
+  @Output() changes = new EventEmitter();
   constructor(
     private _cache: MxCache,
     public purchase: PurchaseInvoiceService,
@@ -43,7 +43,7 @@ export class InvoiceConceptComponent implements OnInit {
 
   ngOnInit(): void {
     
-    if ((this.purchase.current$.value || this.sales.current$.value)  && this.concept) {
+    if (this.concept) {
       this.disableForm()
       this.formAddProduct.valueChanges.pipe(
         distinctUntilChanged((x, y) =>
@@ -52,26 +52,7 @@ export class InvoiceConceptComponent implements OnInit {
         skip( 1),
         debounceTime(3000),
       ).subscribe(changes => {
-        let details = this.purchase.current$.value ? 
-        this.purchase.current$.value!.details : 
-        this.sales.current$.value!.details
-        console.log(details)
-        details = details.map(d => {
-          let details
-          if (d.UPC ===this.concept!.UPC){
-            changes.amount = changes.cant * changes.unit_cost
-              details = {
-                ...this.concept,
-            ...changes
-              }
-          } else {
-            details = d
-          }
-          return details
-        }
-        )
-        console.log(details)
-        this.purchase.current$.value ? this.purchase.updateCurrent('details', details) : this.sales.updateCurrent('details',details)
+        this.changes.emit( changes )
       })
 
       this.formAddProduct.patchValue(this.concept)
@@ -82,7 +63,7 @@ export class InvoiceConceptComponent implements OnInit {
   }
 
 
-
+ 
   getValue(product: ProductModel){
     this.productSelect = product  
     console.log(this.productSelect)

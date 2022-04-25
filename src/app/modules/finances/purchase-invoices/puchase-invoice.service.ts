@@ -1,10 +1,12 @@
-import { Injectable } from '@angular/core';
+import { EventEmitter, Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { iInvoice, PurchaseInvoiceModel } from 'src/app/modules/finances/purchase-invoices/pucharce-invoice.model';
 import { BehaviorSubject } from 'rxjs';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import Swal from 'sweetalert2';
 import { DashboardService } from 'src/app/dashboard/dashboard.service';
+import { ProductModel } from '../../inventory/products/products.model';
+import { invoiceFooter, ProductInvoiceModel } from '../invoices/invoice.model';
 
 
 @Injectable({
@@ -14,6 +16,8 @@ export class PurchaseInvoiceService {
 
   current$ = new BehaviorSubject<PurchaseInvoiceModel | null>(null)
   businessCRF: string = this._cache.getDataKey('eid')!
+  public totales: EventEmitter<invoiceFooter> = new EventEmitter();
+
   constructor(
     private _afs: AngularFirestore,
     private _cache: MxCache,
@@ -97,8 +101,57 @@ export class PurchaseInvoiceService {
    }
  }
 
-  
+  addConcept(concept: ProductModel) {
+    if (this.current$.value != null) {
+      let details: ProductInvoiceModel[] = this.current$.value.details
+      details.push(new ProductInvoiceModel(concept))
+      this.updateCurrent('details', details)
+    }
 
+  }
+
+  async getChanges(changes: any, concept : any) {
+    let details = this.current$.value!.details
+    let subtotal = 0
+    details = details.map(d => {
+
+          let details
+          if (d.UPC ===concept!.UPC){
+            changes.amount = changes.cant * changes.unit_cost
+              details = {
+                ...d,
+            ...changes
+              }
+              subtotal += changes.amount
+            } else {
+              details = d
+              subtotal += d.amount
+            }
+          return details
+        }
+        )
+       await this.updateCurrent('details', details)
+        let foot = this.current$.value!.footer
+        foot.subtotal = subtotal
+        foot.total = ( subtotal + foot.shipping ) - (foot.discount)
+        this.updateCurrent('footer', foot)
+        
+        this.totales.emit(foot)
+        return foot
+  }
+
+  getFooter(changes: invoiceFooter) {
+    if (this.current$.value != null){
+      let footer = this.current$.value.footer
+          let discount = changes.discount
+          let shipping = changes.shipping
+          footer.total = (footer.subtotal + shipping) - discount
+          this.updateCurrent('footer', { ...footer, discount: discount, shipping: shipping }
+          )
+          this.totales.emit(footer)
+    }
+    console.log(this.current$.value)
+  }
 }
 
-// type PropType<TObj, TProp extends keyof TObj> = TObj[TProp];
+// type PropType<TObj, TProp extends keyof TObj> = TObj[TProp]

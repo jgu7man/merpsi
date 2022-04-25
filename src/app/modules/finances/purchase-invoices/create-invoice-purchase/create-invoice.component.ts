@@ -1,15 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { Product } from 'src/app/modules/inventory/products/products.model';
 import  Swal from 'sweetalert2';
 import firebase from "firebase/app";
 import { FireDoc } from 'src/app/models/firestore.model';
 import { AuthService } from 'src/app/services/auth.service';
 import { MatSelectChange } from '@angular/material/select';
-import { InvoiceStore, ProductInvoiceModel } from 'src/app/modules/finances/invoices/invoice.model';
+import { invoiceFooter, InvoiceStore, ProductInvoiceModel } from 'src/app/modules/finances/invoices/invoice.model';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import { debounceTime, distinctUntilChanged, first, skip } from 'rxjs/operators';
 import { SelectConceptDialogComponent } from '../../invoices/select-concept.dialog/select-concept.dialog.component';
@@ -21,6 +21,7 @@ import { PurchaseInvoiceService } from '../puchase-invoice.service';
 import { iProvider, ProviderModel } from '../../../inventory/providers/provider.model';
 import { ProviderNewDialog } from '../provider-new.dialog/provider-new.dialog';
 import { ProviderService } from '../../../inventory/providers/provider.service';
+import { PurchaseInvoiceModel } from '../pucharce-invoice.model';
 
 
 @Component({
@@ -56,6 +57,9 @@ export class CreateInvoiceComponent implements OnInit {
   manager: iManager | null = null
   providerRef: firebase.firestore.DocumentReference | null = null
   productSelect : FireDoc<Product.DataReference> | null = null
+  concept: ProductInvoiceModel | null = null 
+  footerCalc: invoiceFooter | null = null
+
   
   constructor(
     private _provider: ProviderService,
@@ -85,6 +89,10 @@ export class CreateInvoiceComponent implements OnInit {
       } )
       console.log( this.purchase.current$.value)
     })
+  }
+
+  getfooterCalculos(invoice: PurchaseInvoiceModel){
+
   }
 
   onStoreSelected( event: MatSelectChange ) {
@@ -149,7 +157,18 @@ export class CreateInvoiceComponent implements OnInit {
     
     this._dialog.open(SelectConceptDialogComponent, {
       width: '600px ',
-    } )
-    //this.purchase.addConcept()
+    } ).afterClosed().subscribe( concept => {
+      this.purchase.addConcept(concept)
+      this.concept = concept
+    })
   }
+  getChanges(changes: any){
+    this.purchase.getChanges(changes,this.concept)
+  }
+
+  getFooter(footer: any){
+    this.purchase.getFooter(footer)
+  }
+
+  
 }
