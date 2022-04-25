@@ -5,6 +5,7 @@ import { ManagerModel } from '../../admin/managers/manager.model'
 import { createDate, FireDoc, FireRef, FireTime } from '../../../models/firestore.model'
 import { MesureUnitModel } from '../mesure-units/mesure-unit.model'
 import { ProviderModel } from '../providers/provider.model'
+import { ProductCategory } from '../product-categories/product-category.model'
 
 /**
  * Clase para crear productos desde 0. 
@@ -27,7 +28,7 @@ export class ProductModel {
   /** Códigos adicionales o necesarios para el manejo de inventarios y consultas */
   public reference_codes: string[] = []
   /** Lista de ID de categorias */
-  public categories: string[] = []
+  public categories: ProductCategory.selected[] = []
   /** Notas adicionales que la empresa decida agregar al producto */
   public notes: string[] = []
   /** Rutas de imágenes del producto */

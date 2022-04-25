@@ -20,6 +20,7 @@ import { ProductCategoriesComponent } from './product-categories/product-categor
 import { ProductCategoryFormComponent } from './product-categories/product-category-form/product-category-form.component';
 import { ProductSubcategoryFormComponent } from './product-categories/product-subcategory-form/product-subcategory-form.component';
 import { ProductCategorySelectorComponent } from './product-categories/product-category-selector/product-category-selector.component';
+import { SubcategoryValuePipe } from './product-categories/subcategory-value.pipe';
 
 
 @NgModule({
@@ -42,6 +43,7 @@ import { ProductCategorySelectorComponent } from './product-categories/product-c
     ProductCategoryFormComponent,
     ProductSubcategoryFormComponent,
     ProductCategorySelectorComponent,
+    SubcategoryValuePipe,
   ],
   imports: [
     CommonModule,
@@ -54,6 +56,6 @@ import { ProductCategorySelectorComponent } from './product-categories/product-c
   ],
   schemas: [
     CUSTOM_ELEMENTS_SCHEMA
-  ]
+  ],
 })
 export class InventoryModule { }

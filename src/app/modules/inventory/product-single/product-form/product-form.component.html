@@ -97,15 +97,13 @@
     
       <!-- CATEGORIAS -->
       <div class="col s12">
-        <app-chips-crud
-        [listValue]="product?.categories || []"
-        (change)="listHasChanged('categories', $event)"
-        label="Categorías"
-        hint="Escribe categorías y después presiona COMA para que se agreguen a la
-        lista."
-        placeholder="Agrega una categoría"
-        ></app-chips-crud>
+        <app-product-category-selector
+        [value]="product?.categories || []"
+        (valueChanged)="listHasChanged('categories', $event)"
+        ></app-product-category-selector>
       </div>
+
+
     
       <!-- NOTES -->
       <div class="col s12">

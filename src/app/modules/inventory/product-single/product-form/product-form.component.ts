@@ -7,6 +7,8 @@ import { Subscription } from 'rxjs';
 import { skip } from 'rxjs/operators';
 import { listenChanges } from 'src/app/models/operators-chains.model';
 import { Product, ProductModel } from 'src/app/modules/inventory/products/products.model';
+import { ProductCategoriesService } from '../../product-categories/product-categories.service';
+import { ProductCategory } from '../../product-categories/product-category.model';
 import { InventoryProductsService } from '../../products/products.service';
 import { CurrentProductService } from '../current-product.service';
 
@@ -24,7 +26,7 @@ export class ProductFormComponent implements OnInit, OnDestroy {
   
   public productForm: Product.Form 
   public reference_codes: string[] = [];
-  public categories: string[] = [];
+  public categories: ProductCategory.selected[] = [];
   public aplicacion_modelos: string[] = [];
   public proveedores_ref: any[] = [];
   public currentStore?: Product.StoreReference;
@@ -35,11 +37,10 @@ export class ProductFormComponent implements OnInit, OnDestroy {
   private _submitedSubscription: Subscription;
 
   constructor(
-    private _products: InventoryProductsService,
-    private _loading: MxLoading,
     public text: MxText,
     private _formBuilder: FormBuilder,
-    public current: CurrentProductService
+    public current: CurrentProductService,
+    public $categories: ProductCategoriesService
   ) {
 
     this.productForm = this._formBuilder.group( {
@@ -86,7 +87,7 @@ export class ProductFormComponent implements OnInit, OnDestroy {
     | 'categories'
     | 'notes'
     | 'gallery',
-    value: string[]
+    value: (string | ProductCategory.selected)[]
   ): void {
     this.productForm.patchValue( { [list]: value})
   }

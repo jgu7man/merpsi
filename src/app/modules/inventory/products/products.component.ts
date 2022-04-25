@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { MxLoading } from 'libs/@marxa/devkit/loading/loading.service';
+import { first } from 'rxjs/operators';
 
 @Component({
   templateUrl: './products.component.html',
@@ -10,9 +12,14 @@ export class ProductsComponent implements OnInit {
 
   constructor (
     
+    private _loading: MxLoading
   ) {
-    
-   }
+    this._loading.getCurrentActivatedRoute()
+      .pipe( first() )
+      .subscribe( routeTail => {
+        this.activeLink = routeTail.snapshot.routeConfig?.path || 'list'
+    })
+  }
 
   ngOnInit(): void {
   }

@@ -17,8 +17,10 @@ export class ProductCategory {
 
 export namespace ProductCategory {
 
-  /* LIST */
+  export type asParent = Omit<ProductCategory, 'subcategories'>
   export type data = Omit<ProductCategory, 'index'>
+
+  /* LIST */
 
   export interface list {
     list: ProductCategory[]
@@ -33,15 +35,15 @@ export namespace ProductCategory {
   }
 
   /* SELECTOR */
-  export interface item {
+  export interface treeItem {
     label: string;
     data: any;
     expandedIcon?: string;
     collapsedIcon?: string;
-    children?: ProductCategory.item[];
+    children?: ProductCategory.treeItem[];
   }
 
-  export interface selected {
+  export interface tree {
     label: string;
     data: any;
     parent?: {
@@ -50,19 +52,20 @@ export namespace ProductCategory {
   }
 
   /* ON PRODUCT */
-  export interface ref {
-    category: number,
-    subcategories?: number[]
-  }
+  export type selected = asParent | ProductSubcategory.treeValue
 
 }
 
 export namespace ProductSubcategory {
   
-  export type data = Omit<ProductCategory, 'subcategories'>
+  export interface data extends Omit<ProductCategory, 'subcategories'> {}
   
   export interface changes {
     value: ProductSubcategory.data,
     valid: boolean
+  }
+
+  export interface treeValue extends ProductSubcategory.data {
+    parent: ProductCategory.asParent,
   }
 }

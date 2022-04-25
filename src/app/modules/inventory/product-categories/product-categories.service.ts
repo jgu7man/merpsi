@@ -36,7 +36,18 @@ export class ProductCategoriesService {
 
   private listenList() {
     return this.ref.valueChanges().pipe(
-      map(doc => doc?.list || [] ),
+      map( doc => {
+        let list = doc?.list || []
+        return list.sort( ( a, b ) => {
+          if (a.name > b.name) {
+            return 1;
+          }
+          if (a.name < b.name) {
+            return -1;
+          }
+          return 0;
+        })
+      } ),
       tap((list) => this.list$.next(list))
     )
   }
