@@ -1,8 +1,7 @@
-import firebase from "firebase"
-import { FireTime, createDate, FireRef, FireDoc } from "../../../models/firestore.model"
+import { FireTime, createDate, FireRef } from "../../../models/firestore.model"
 import { Product, ProductModel } from "../../inventory/products/products.model"
-import { TaxModel } from "../taxes/taxes.model"
 import { iSede } from "../../admin/stores/sede.model"
+import { AppliedTaxModel } from "../taxes/taxes.model"
 
 export class InvoiceModel {
   /**folio de la factura */
@@ -13,7 +12,7 @@ export class InvoiceModel {
   public payment_method: string = ''
 
 /** calculos de totales de la factura */
-  public footer: iInvoiceFooter
+  public footer: invoiceFooter
   /** personal que registro la factura */
   public  manager: string = ''
   /**fecha de registro */
@@ -36,17 +35,32 @@ export class InvoiceModel {
   
 }
 /** Modelo de consulta de balances de factura */
-export interface iInvoiceFooter {
+export class invoiceFooter {
   /** Suma de los montos de los productos */
   subtotal: number;
   /** Descuento aplicado a la compra en moneda */
   discount: number;
   /** Lista de impuestos aplicados a la compra */
-  taxes: TaxModel[];
+  taxes: AppliedTaxModel[];
   /** Costo generado por envío */
   shipping: number;
   /** Total de restar descuentos e impuestos y agregado de costo de envío */
 	total: number;
+
+  constructor(
+    subtotal?:number,
+    discount?:number,
+    taxes?:[],
+    shipping?: number
+  )
+  {
+    this.subtotal = subtotal || 0
+    this.discount = discount || 0
+    this.taxes = taxes || []
+    this.shipping = shipping || 0
+    this.total = (this.subtotal + this.shipping) - this.discount;
+
+  }
 }
 export interface InvoiceStore {
   id: string,

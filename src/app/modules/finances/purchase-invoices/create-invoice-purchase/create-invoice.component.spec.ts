@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ProviderService } from 'src/app/services/provider.service';
+import { ProviderService } from 'src/app/modules/inventory/providers/provider.service';
 
 import { CreateInvoiceComponent } from './create-invoice.component';
 

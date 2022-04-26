@@ -82,6 +82,8 @@
           <ng-container *ngFor="let concept of purchase.details ">
             <app-invoice-concept
             [concept]="concept"
+            (changes)="getChanges($event)"
+            (delete)="deleteConcept($event)"
             ></app-invoice-concept>
           </ng-container>
         </ng-container>
@@ -91,7 +93,10 @@
     <div class="row">
       <div class="col s12">
         <ng-container *ngIf="purchase.details.length > 0">
-          <app-footer-invoice></app-footer-invoice>
+          <app-footer-invoice
+          [footerCalc]="footerCalc"
+          (getFooter)="getFooter($event)"
+          ></app-footer-invoice>
         </ng-container>
       </div>
     </div>

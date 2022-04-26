@@ -36,9 +36,8 @@ export class SelectConceptDialogComponent implements OnInit {
   
   getValue(product: ProductModel){
     this.productSelect = product  
-    console.log(this.productSelect)
-    this.invoice.addConcept(product)
-    this._dialog.close()
+    //this.invoice.addConcept(product)
+    this._dialog.close(product)
   }
 
   getList(product: ProductModel[]){
