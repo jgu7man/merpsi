@@ -4,7 +4,10 @@ import { MatDialog } from '@angular/material/dialog';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import { Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, skip } from 'rxjs/operators';
+import { DashboardService } from 'src/app/dashboard/dashboard.service';
+import { ManagerModel } from 'src/app/modules/admin/managers/manager.model';
 import { ClientModel } from 'src/app/modules/clients/clients.model';
+import { AuthService } from 'src/app/services/auth.service';
 import { invoiceFooter, ProductInvoiceModel } from '../../invoices/invoice.model';
 import { SelectConceptDialogComponent } from '../../invoices/select-concept.dialog/select-concept.dialog.component';
 import { SalesInvoiceModel } from '../sales-invoice.model';
@@ -50,7 +53,8 @@ export class CreateInvoiceSalesComponent implements OnInit {
   constructor(
     private _cache: MxCache,
     private _dialog: MatDialog,
-    public sales: SalesService
+    public sales: SalesService,
+    
   ) { 
   }
 
@@ -93,30 +97,23 @@ export class CreateInvoiceSalesComponent implements OnInit {
       email: this.client.email
     })
     this.clientform.controls.cip.disable()
-    //console.log(list)
   }
 
-  addConcept(){
-    
+  addConcept() {
     this._dialog.open(SelectConceptDialogComponent, {
       width: '600px ',
-    } ).  afterClosed().subscribe( concept => {
-      //console.log(result)
+    }).afterClosed().subscribe(concept => {
       this.concept = concept
       this.sales.addConcept(concept)
     })
-    //this.purchase.addConcept()
   }
 
-  async getChanges(changes: any){
+   getChanges(changes: any){
      this.sales.getChanges(changes,this.concept)
-
   }
 
   getFooter(footer: invoiceFooter){
-    console.log('soy el output')
     this.sales.getFooter(footer)
-   // this.setTotales(footer)
   }
 
 }

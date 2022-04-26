@@ -31,7 +31,6 @@ export class SalesService {
         [param]: value
       })
     }
-    //console.log(this.current$.value)
   }
 
   deleteConcept(UPC: string){
@@ -54,47 +53,46 @@ export class SalesService {
 
   }
 
- async getChanges(changes: any, concept : any) {
+  getChanges(changes: any, concept: any) {
     let details = this.current$.value!.details
     let subtotal = 0
     details = details.map(d => {
 
-          let details
-          if (d.UPC ===concept!.UPC){
-            changes.amount = changes.cant * changes.unit_cost
-              details = {
-                ...d,
-            ...changes
-              }
-              subtotal += changes.amount
-            } else {
-              details = d
-              subtotal += d.amount
-            }
-          return details
+      let details
+      if (d.UPC === concept!.UPC) {
+        changes.amount = changes.cant * changes.unit_cost
+        details = {
+          ...d,
+          ...changes
         }
-        )
-       await this.updateCurrent('details', details)
-        let foot = this.current$.value!.footer
-        foot.subtotal = subtotal
-        foot.total = ( subtotal + foot.shipping ) - (foot.discount)
-        this.updateCurrent('footer', foot)
-        
-        this.totales.emit(foot)
-        return foot
+        subtotal += changes.amount
+      } else {
+        details = d
+        subtotal += d.amount
+      }
+      return details
+    }
+    )
+    this.updateCurrent('details', details)
+    let foot = this.current$.value!.footer
+    foot.subtotal = subtotal
+    foot.total = (subtotal + foot.shipping) - (foot.discount)
+    this.updateCurrent('footer', foot)
+
+    this.totales.emit(foot)
+    return foot
   }
 
   getFooter(changes: invoiceFooter) {
-    if (this.current$.value != null){
+    if (this.current$.value != null) {
       let footer = this.current$.value.footer
-          let discount = changes.discount
-          let shipping = changes.shipping
-          footer.total = (footer.subtotal + shipping) - discount
-          this.updateCurrent('footer', { ...footer, discount: discount, shipping: shipping }
-          )
-          this.totales.emit(footer)
+      let discount = changes.discount
+      let shipping = changes.shipping
+      footer.total = (footer.subtotal + shipping) - discount
+      this.updateCurrent('footer', { ...footer, discount: discount, shipping: shipping }
+      )
+      this.totales.emit(footer)
     }
-    console.log(this.current$.value)
   }
 
 }

@@ -32,21 +32,13 @@ export class PurchaseInvoicesComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
   }
-  get managerRef() {
-    let user = this._auth.userState$.value
-    if (!user) throw {message: 'No se ha iniciado sesión'}
-    let userRef = this._dashboard.businessRef
-      .collection( 'managers' )
-      .doc<ManagerModel>( user.uid )
-      .ref
-    return userRef
-  }
+
   async onCreate() {
     this.purchases.current$.next(new PurchaseInvoiceModel())
-    let manager= (await this.managerRef.get()).data()
-    if (manager){
-      this.purchases.updateCurrent('manager', manager!.name)
-    }
+    let user = this._auth.userState$.value
+    if (!user) throw {message: 'No se ha iniciado sesión'}
+      this.purchases.updateCurrent('manager', user.name)
+    
   }
 
   async listStores() {

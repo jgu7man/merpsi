@@ -1,10 +1,9 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
-import { Observable, Subscription } from 'rxjs';
+import { Observable } from 'rxjs';
 import { Product } from 'src/app/modules/inventory/products/products.model';
-import  Swal from 'sweetalert2';
 import firebase from "firebase/app";
 import { FireDoc } from 'src/app/models/firestore.model';
 import { AuthService } from 'src/app/services/auth.service';
@@ -18,8 +17,7 @@ import { InventoryProductsService } from 'src/app/modules/inventory/products/pro
 import { iSede } from '../../../admin/stores/sede.model';
 import { SedesService } from '../../../admin/stores/sedes.service';
 import { PurchaseInvoiceService } from '../puchase-invoice.service';
-import { iProvider, ProviderModel } from '../../../inventory/providers/provider.model';
-import { ProviderNewDialog } from '../provider-new.dialog/provider-new.dialog';
+import { iProvider } from '../../../inventory/providers/provider.model';
 import { ProviderService } from '../../../inventory/providers/provider.service';
 import { PurchaseInvoiceModel } from '../pucharce-invoice.model';
 
@@ -79,20 +77,15 @@ export class CreateInvoiceComponent implements OnInit {
   
   async ngOnInit(): Promise<void> {
     this.invoiceForm.valueChanges.pipe(
-      distinctUntilChanged( ( x, y ) => JSON.stringify( x ) == JSON.stringify(y)),
-      debounceTime( 500 ),
+      distinctUntilChanged((x, y) => JSON.stringify(x) == JSON.stringify(y)),
+      debounceTime(500),
       skip(1)
-    ).subscribe( changes => {
-      this.purchase.current$.next( {
+    ).subscribe(changes => {
+      this.purchase.current$.next({
         ...this.purchase.current$.value,
         ...changes
-      } )
-      console.log( this.purchase.current$.value)
+      })
     })
-  }
-
-  getfooterCalculos(invoice: PurchaseInvoiceModel){
-
   }
 
   onStoreSelected( event: MatSelectChange ) {
@@ -140,32 +133,20 @@ export class CreateInvoiceComponent implements OnInit {
     }
   }
 
-  getValue(provider_seleted: iProvider){
-    this.invoiceForm.patchValue({
-      businessName: provider_seleted.businessName,
-      provider: provider_seleted.CRF
-    })
-    this.purchase.updateCurrent( 'provider', {
-      CRF: provider_seleted.CRF,
-      businessName: provider_seleted.businessName
-    })
-
-    this.invoiceForm.controls.businessName.disable()
-  }
-
-  addConcept(){
-    
+  addConcept() {
     this._dialog.open(SelectConceptDialogComponent, {
       width: '600px ',
-    } ).afterClosed().subscribe( concept => {
+    }).afterClosed().subscribe(concept => {
       this.purchase.addConcept(concept)
       this.concept = concept
     })
   }
+  /**funcion que se encarga de capturar los cambios del formulario de conceptos */
   getChanges(changes: any){
     this.purchase.getChanges(changes,this.concept)
   }
 
+    /**funcion que se encarga de capturar los cambios del formulario de footer */
   getFooter(footer: any){
     this.purchase.getFooter(footer)
   }
