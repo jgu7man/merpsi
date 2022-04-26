@@ -1,7 +1,6 @@
-import { ThrowStmt } from '@angular/compiler';
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { from, Observable, of, Subscription } from 'rxjs';
+import { Observable } from 'rxjs';
 import { debounceTime, distinctUntilChanged, skip } from 'rxjs/operators';
 import { PurchaseInvoiceModel } from '../../purchase-invoices/pucharce-invoice.model';
 import { PurchaseInvoiceService } from '../../purchase-invoices/puchase-invoice.service';
@@ -19,8 +18,6 @@ export class FooterInvoiceComponent implements OnInit {
 
 
   @Input() footerCalc: invoiceFooter | null= null
-
-  totalesObs: Observable<invoiceFooter> = of(this.footerCalc!)
 
   formFooter: FormGroup = new FormGroup({
     subtotal: new FormControl(this.footerCalc != null ? this.footerCalc.subtotal : 0),
@@ -79,7 +76,7 @@ export class FooterInvoiceComponent implements OnInit {
     })
   }
 
-  getTotalTaxes(){
+  getTotalTaxes(total: number){
     let footer: invoiceFooter = this.purchase.current$.value != null ? 
     this.purchase.current$.value.footer : this.sales.current$.value!.footer 
     footer.total = (footer.subtotal + this._taxes.appliedTaxesTotal + footer.shipping) - footer.discount
@@ -87,6 +84,9 @@ export class FooterInvoiceComponent implements OnInit {
     this.formFooter.patchValue({
       total: footer.total
     })
+    console.log(footer)
+
+
   }
 
 }

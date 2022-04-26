@@ -146,20 +146,13 @@ export class PurchaseInvoiceService {
       return details
     }
     )
-    this.updateCurrent('details', details)
+    await this.updateCurrent('details', details)
     let foot = this.current$.value!.footer
     foot.subtotal = subtotal
-    let taxes = foot.taxes
-    if (taxes.length > 0) {
-      taxes.map(tax => {
-        this._taxes.calcTax(tax, foot.subtotal)
-      })
-    }
-    foot.total = (subtotal + foot.shipping + this._taxes.appliedTaxesTotal) - (foot.discount)
+    foot.total = (subtotal + foot.shipping) - (foot.discount)
     this.updateCurrent('footer', foot)
 
     this.totales.emit(foot)
-    return foot
   }
 
   getFooter(changes: invoiceFooter) {
@@ -167,7 +160,7 @@ export class PurchaseInvoiceService {
       let footer = this.current$.value.footer
       let discount = changes.discount
       let shipping = changes.shipping
-      footer.total = (footer.subtotal + shipping + this._taxes.appliedTaxesTotal) - discount
+      footer.total = (footer.subtotal + shipping) - discount
       this.updateCurrent('footer', { ...footer, discount: discount, shipping: shipping }
       )
       this.totales.emit(footer)

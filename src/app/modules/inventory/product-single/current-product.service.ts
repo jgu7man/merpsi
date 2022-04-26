@@ -6,7 +6,7 @@ import { BehaviorSubject, Observable, of, Subject,  } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { DashboardService } from 'src/app/dashboard/dashboard.service';
 import { FireDoc, txn } from 'src/app/models/firestore.model';
-import { Product, ProductModel } from 'src/app/modules/inventory/products/products.model';
+import { Product, ProductModel, StoreReferenceModel } from 'src/app/modules/inventory/products/products.model';
 import { MxLoading } from 'libs/@marxa/devkit/loading/loading.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { AngularFirestore } from '@angular/fire/firestore';
@@ -18,7 +18,7 @@ import { ManagerModel } from '../../admin/managers/manager.model';
 export class CurrentProductService {
 
   product$ = new BehaviorSubject<Product.DataReference | null>( null )
-  storage$ = new BehaviorSubject<Product.StoreReference[]>( [] )
+  storage$ = new BehaviorSubject<StoreReferenceModel[]>( [] )
   formValid$ = new BehaviorSubject<{[store:string]: boolean}>( {} )
   submited$ = new Subject<void>()
   get formValid(): Observable<boolean> {
@@ -53,7 +53,7 @@ export class CurrentProductService {
     return userRef
   }
 
-  listenStorage(): BehaviorSubject<Product.StoreReference[]> {
+  listenStorage(): BehaviorSubject<StoreReferenceModel[]> {
     this.product$.pipe( map( product => {
       if ( product != null ) {
         this.retriveStoresRef( product.UPC ).pipe(
@@ -70,11 +70,11 @@ export class CurrentProductService {
    * @param {string} UPC
    * @returns {*} 
    */
-   retriveStoresRef( UPC: string ): Observable<Product.StoreReference[]> {
+   retriveStoresRef( UPC: string ): Observable<StoreReferenceModel[]> {
     const productId =  this._text.slugify(UPC);
     
     return this._dashboard.businessRef.collection
-      <Product.StoreReference>( `products/${ productId }/stores` )
+      <StoreReferenceModel>( `products/${ productId }/stores` )
       .valueChanges().pipe(
         catchError( ( error ) => {
           this._alert.error(
@@ -89,7 +89,7 @@ export class CurrentProductService {
    }
   
   
-  updateStore( store: Product.StoreReference ) {
+  updateStore( store: StoreReferenceModel ) {
     const currentIndex = this.storage$
     .value.findIndex( s => s.store_id ===  store.store_id )
   

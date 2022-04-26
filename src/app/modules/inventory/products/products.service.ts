@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { Product, ProductModel } from 'src/app/modules/inventory/products/products.model';
+import { Product, ProductModel, StoreReferenceModel } from 'src/app/modules/inventory/products/products.model';
 import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import { MxText } from 'libs/@marxa/devkit/text/mx-text.service';
@@ -116,11 +116,11 @@ export class InventoryProductsService {
    * Actualiza campos editables desde la vista de productos.
    * @note Actualizar las existencias, sólo es posible por ventas, compras o arqueos
    *
-   * @param {Product.StoreReference} { pid, sid, bookshelves, min_required }
+   * @param {Product.StoreReferenceModel} { pid, sid, bookshelves, min_required }
    * @returns {*}  {Promise<void>}
    */
   async patchStoreRef(
-    { UPC: product_code, store_id, bookshelves, min_required }: Product.StoreReference
+    { UPC: product_code, store_id, bookshelves, min_required }: StoreReferenceModel
   ): Promise<void>{
     try {
       const productId =  this._text.slugify(product_code)
