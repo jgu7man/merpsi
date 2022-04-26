@@ -51,7 +51,7 @@ export class InvoiceConceptComponent implements OnInit {
           typeof x != 'object' ? x === y : JSON.stringify(x) === JSON.stringify(y)
         ),
         skip( 1),
-        debounceTime(3000),
+        debounceTime(1000),
       ).subscribe(changes => {
         this.changes.emit( changes )
       })

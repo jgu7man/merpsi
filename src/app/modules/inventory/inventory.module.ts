@@ -51,6 +51,7 @@ import { SubcategoryValuePipe } from './product-categories/subcategory-value.pip
     SharedModule,
   ],
   exports: [
+    ProviderSelectorComponent,
     SetProviderComponent,
     ProductFormComponent
   ],

@@ -79,17 +79,14 @@ export class FooterInvoiceComponent implements OnInit {
     })
   }
 
-  getTotalTaxes(total: number){
+  getTotalTaxes(){
     let footer: invoiceFooter = this.purchase.current$.value != null ? 
     this.purchase.current$.value.footer : this.sales.current$.value!.footer 
-    footer.total = footer.total + total
+    footer.total = (footer.subtotal + this._taxes.appliedTaxesTotal + footer.shipping) - footer.discount
     footer.taxes = this._taxes.applidedTaxes
     this.formFooter.patchValue({
       total: footer.total
     })
-    console.log(footer)
-
-
   }
 
 }

@@ -63,7 +63,7 @@ export class CreateInvoiceSalesComponent implements OnInit {
 
     this.salesForm.valueChanges.pipe(
       distinctUntilChanged( ( x, y ) => JSON.stringify( x ) == JSON.stringify(y)),
-      debounceTime( 3000 ),
+      debounceTime( 500 ),
       skip(1)
     ).subscribe( changes => {
       this.sales.current$.next( {

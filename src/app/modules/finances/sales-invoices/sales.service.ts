@@ -60,6 +60,10 @@ export class SalesService {
     })
     let foot = this.current$.value!.footer
     foot.subtotal = subtotal
+    let taxes = this.current$.value!.footer.taxes.length>0 ? this.current$.value!.footer.taxes : []
+    taxes.map(tax => {
+      this._taxes.calcTax(tax,foot.subtotal)
+    })
     foot.total = (subtotal + foot.shipping + this._taxes.appliedTaxesTotal ) - (foot.discount) 
     this.updateCurrent('footer', foot)
     return foot
@@ -78,7 +82,6 @@ export class SalesService {
     let details = this.current$.value!.details
     let subtotal = 0
     details = details.map(d => {
-
       let details
       if (d.UPC === concept!.UPC) {
         changes.amount = changes.cant * changes.unit_cost
@@ -97,7 +100,13 @@ export class SalesService {
     this.updateCurrent('details', details)
     let foot = this.current$.value!.footer
     foot.subtotal = subtotal
-    foot.total = (subtotal + foot.shipping) - (foot.discount)
+    let taxes = foot.taxes
+    if (taxes.length > 0) {
+      taxes.map(tax => {
+        this._taxes.calcTax(tax, foot.subtotal)
+      })
+    }
+    foot.total = (subtotal + foot.shipping + this._taxes.appliedTaxesTotal) - (foot.discount)
     this.updateCurrent('footer', foot)
 
     this.totales.emit(foot)
@@ -109,7 +118,7 @@ export class SalesService {
       let footer = this.current$.value.footer
       let discount = changes.discount
       let shipping = changes.shipping
-      footer.total = (footer.subtotal + shipping) - discount
+      footer.total = (footer.subtotal + shipping + this._taxes.appliedTaxesTotal) - discount
       this.updateCurrent('footer', { ...footer, discount: discount, shipping: shipping }
       )
       this.totales.emit(footer)

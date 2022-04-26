@@ -155,4 +155,11 @@ export class TaxesService {
   leave() {
     this.applidedTaxes = []
   }
+
+  public calcTax(tax: TaxModel, amount: number) {
+    let appliedTax = new AppliedTaxModel(tax, amount)
+    this.applidedTaxes = this.applidedTaxes.filter(t => t.name != tax.name)
+    this.applidedTaxes.push(appliedTax)
+    return this.appliedTaxesTotal 
+ }
 }
