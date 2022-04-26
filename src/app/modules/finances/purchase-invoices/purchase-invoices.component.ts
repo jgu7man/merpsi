@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { DashboardService } from 'src/app/dashboard/dashboard.service';
 import { PurchaseInvoiceModel } from 'src/app/modules/finances/purchase-invoices/pucharce-invoice.model';
 import { AuthService } from 'src/app/services/auth.service';
+import { ManagerModel } from '../../admin/managers/manager.model';
 import { iSede } from '../../admin/stores/sede.model';
 import { SedesService } from '../../admin/stores/sedes.service';
 import { ProviderModel } from '../../inventory/providers/provider.model';
@@ -23,16 +25,20 @@ export class PurchaseInvoicesComponent implements OnInit {
     private _stores : SedesService,
     public purchases: PurchaseInvoiceService,
     private _auth: AuthService,
+    private _dashboard: DashboardService
+
 
   ) { }
 
   async ngOnInit(): Promise<void> {
   }
 
-  onCreate() {
+  async onCreate() {
     this.purchases.current$.next(new PurchaseInvoiceModel())
-    let manager= this._auth.userState$.value!.name
-    this.purchases.updateCurrent('manager', manager)
+    let user = this._auth.userState$.value
+    if (!user) throw {message: 'No se ha iniciado sesión'}
+      this.purchases.updateCurrent('manager', user.name)
+    
   }
 
   async listStores() {
