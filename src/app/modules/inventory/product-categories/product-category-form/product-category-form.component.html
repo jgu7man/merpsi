@@ -1,0 +1,85 @@
+<mat-card mat-elevation-z0>
+  <mat-card-header>
+    <mat-card-title>Categoría</mat-card-title>
+    <mat-card-subtitle>Agrega una categoría o edítala, puedes agregar sub-categorías también.</mat-card-subtitle>
+  </mat-card-header>
+  <form [formGroup]="categoryForm">
+    <mat-card-content>
+    
+      <div class="row">
+    
+        <!-- Nombre -->
+        <mat-form-field
+          appearance="outline"
+          class="col s12 m6">
+            <mat-label>Nombre</mat-label>
+            <input
+            matInput
+            type="text"
+            name="name"
+            formControlName="name"
+            required
+            >
+            <mat-error *ngIf="categoryForm.hasError('required', 'name')">
+                Nombre es necesario
+            </mat-error>
+        </mat-form-field>
+    
+        <!-- Description -->
+        <mat-form-field
+          appearance="outline"
+          class="col s12 m6">
+            <mat-label>Description</mat-label>
+            <textarea 
+              matInput
+              name="description" 
+              formControlName="description" 
+              cols="30" 
+              rows="1"
+              [mat-autosize]="true"
+            ></textarea>
+        </mat-form-field>
+    
+      </div>
+    
+      <div class="row">
+        <div class="col s12">
+          <button 
+            mat-raised-button 
+            color="accent" 
+            (click)="onAddSubcategory()"
+          >Agregar Subcategoría</button>
+        </div>
+      </div>
+    
+      <div class="row" id="subcategory-list">
+        <div class="col s12" 
+        *ngFor="let subcategory of subcategories; index as i">
+          <div class="row" [style.margin-bottom]="0">
+            <div class="col s10 m11">
+              <app-product-subcategory-form
+              [value]="subcategory"
+              (changed)="onSubcategoryChanged($event, i)"
+              ></app-product-subcategory-form>
+            </div>
+            <div class="col s2 m1">
+              <button mat-icon-button 
+              (click)="onRemoveSubcategory(i)">
+                  <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+    </mat-card-content>
+
+    <mat-card-actions class="center">
+      <button mat-raised-button color="primary" 
+      (click)="onSave()"
+      [disabled]="categoryForm.invalid"
+      >Guardar</button>
+    </mat-card-actions>
+  </form>
+
+</mat-card>

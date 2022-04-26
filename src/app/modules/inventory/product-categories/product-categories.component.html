@@ -1,0 +1,70 @@
+<mat-drawer-container mxStretchHeigth>
+
+  <mat-drawer #formContainer="matDrawer"
+  [disableClose]="true">
+    <div class="row">
+      <div class="col s1"></div>
+      <div class="col s10">
+        <app-product-category-form
+        (submited)="onCloseFormContainer()"
+        [value]="selected"
+        ></app-product-category-form>
+      </div>
+      <div class="col s1">
+        <button mat-icon-button (click)="onCloseFormContainer()">
+            <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    </div>
+  </mat-drawer>
+
+  <mat-drawer-content>
+    <div class="container" #list>
+  
+      <div class="row">
+        <div class="col s12">
+          <button mat-raised-button color="primary"
+          (click)="formContainer.open()" >
+            Agregar
+          </button>
+        </div>
+      </div>
+
+      <!-- Category list -->
+      <div class="row">
+        <div class="col s12">
+          <p-treeTable [value]="categories">
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th></th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-rowNode let-category="rowData">
+              <tr class="table-item"
+              (click)="onSelect(rowNode)">
+                <td>
+                  <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler>
+                  {{category.name}}
+                </td>
+                <td>{{category.description}}</td>
+                <td class="del-cell">
+                  <button mat-icon-button 
+                  color="warn"
+                  (click)="onDelete($event, rowNode)">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </td>
+              </tr>
+            </ng-template>
+          </p-treeTable>
+        </div>
+      </div>
+
+      <!-- <app-product-category-selector></app-product-category-selector> -->
+    </div>
+  </mat-drawer-content>
+
+</mat-drawer-container>
+

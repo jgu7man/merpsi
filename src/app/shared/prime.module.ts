@@ -1,7 +1,17 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {ConfirmPopupModule} from 'primeng/confirmpopup';
-import { ConfirmationService } from 'primeng/api';
+
+// MODULES
+import { ConfirmPopupModule } from 'primeng/confirmpopup';
+import { SidebarModule } from 'primeng/sidebar';
+import {TreeTableModule} from 'primeng/treetable';
+import {TreeSelectModule} from 'primeng/treeselect';
+
+// SERVICES
+import {
+  ConfirmationService,
+  PrimeIcons
+} from 'primeng/api';
 
 
 
@@ -12,10 +22,13 @@ import { ConfirmationService } from 'primeng/api';
   ],
   exports: [
     ConfirmPopupModule,
-
+    SidebarModule,
+    TreeTableModule,
+    TreeSelectModule
   ],
   providers: [
-    ConfirmationService
+    ConfirmationService,
+    PrimeIcons
   ]
 })
 export class PrimeModule { }

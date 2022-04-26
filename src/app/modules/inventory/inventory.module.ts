@@ -15,23 +15,35 @@ import { MesureUnitSelectorComponent } from './mesure-units/mesure-unit-selector
 import { ProviderComponent } from './providers/provider.component';
 import { SetProviderComponent } from './providers/set-provider/set-provider.component';
 import { ProviderSelectorComponent } from './providers/provider-selector/provider-selector.component';
+import { ProductListComponent } from './products/product-list/product-list.component';
+import { ProductCategoriesComponent } from './product-categories/product-categories.component';
+import { ProductCategoryFormComponent } from './product-categories/product-category-form/product-category-form.component';
+import { ProductSubcategoryFormComponent } from './product-categories/product-subcategory-form/product-subcategory-form.component';
+import { ProductCategorySelectorComponent } from './product-categories/product-category-selector/product-category-selector.component';
+import { SubcategoryValuePipe } from './product-categories/subcategory-value.pipe';
 
 
 @NgModule({
   declarations: [
     InventoryComponent,
-    ProductsComponent,
-    ProductFormComponent,
-    ProductFormDialog,
-    ProductStorageComponent,
-    ProductSingleComponent,
-    ProductStoredFormComponent,
-    MesureUnitsComponent,
     MesureUnitFormComponent,
     MesureUnitSelectorComponent,
+    MesureUnitsComponent,
+    ProductFormComponent,
+    ProductFormDialog,
+    ProductListComponent,
+    ProductSingleComponent,
+    ProductStorageComponent,
+    ProductStoredFormComponent,
+    ProductsComponent,
     ProviderComponent,
+    ProviderSelectorComponent,
     SetProviderComponent,
-    ProviderSelectorComponent
+    ProductCategoriesComponent,
+    ProductCategoryFormComponent,
+    ProductSubcategoryFormComponent,
+    ProductCategorySelectorComponent,
+    SubcategoryValuePipe,
   ],
   imports: [
     CommonModule,
@@ -44,6 +56,6 @@ import { ProviderSelectorComponent } from './providers/provider-selector/provide
   ],
   schemas: [
     CUSTOM_ELEMENTS_SCHEMA
-  ]
+  ],
 })
 export class InventoryModule { }

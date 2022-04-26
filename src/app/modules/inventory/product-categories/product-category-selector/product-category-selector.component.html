@@ -1,0 +1,26 @@
+<mat-form-field appearance="outline" >
+  <mat-label>Categorías</mat-label>
+  <mat-select
+    [multiple]="true"
+    placeholder="Elige las categorías del producto"
+    name="categories"
+    [formControl]="selectedCtrl">
+      <ng-container *ngFor="let category of (categories.list$ | async)">
+
+        <ng-container *ngIf="category.subcategories.length > 0; else alone">
+          <mat-optgroup [label]="category.name">
+            <mat-option
+              *ngFor="let subcategory of category.subcategories"
+              [value]="category | subcategoryValue:subcategory.index">
+                <b>{{category.name}}</b>/{{subcategory.name}}
+            </mat-option>
+          </mat-optgroup>
+        </ng-container>
+        <ng-template #alone >
+          <mat-option [value]="category">
+            <b>{{category.name}}</b>
+          </mat-option>
+        </ng-template>
+      </ng-container>
+  </mat-select>
+</mat-form-field>

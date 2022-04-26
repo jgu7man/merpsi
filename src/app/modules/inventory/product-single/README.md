@@ -20,6 +20,20 @@ onSubmit() {
 }
 ```
 
+*Ejemplo de como obtener el producto guardado*
+```ts
+createProduct(){
+  this._dialogProduct.open(ProductFormDialog, {
+    width: '100% ',
+  } ).afterClosed()
+    .pipe( first() )
+    .subscribe( product => {
+      // Si existe product, el guardado fue efectivo
+      // Si no existe, no se guardó
+    }) 
+}
+```
+
 ## Guardado
 Para guardar el **STATE** del producto, se debe agregar un botón que llame el método `save()`. El cuál retorna la referencia en firestore del producto guardado
 
