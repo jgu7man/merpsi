@@ -121,6 +121,8 @@ export class ProductEventModel {
     public type: Product.history.UpdateType,
     /** Referencia de manager que realiza el evento */
     public manager?: firebase.firestore.DocumentReference,
+    /* Referencia a la factura o arqueo que tuvo efecto en la modificación del producto */
+    public eventRef?: firebase.firestore.DocumentReference
   ) {
     this.date = createDate(new Date())
     
@@ -145,14 +147,14 @@ export declare namespace Product {
     | 'getReferenceCodes'
     | 'createSlug'
     | 'getData'
-    >{ }
+    > { }
   
   /**
    * Modelo de datos principales del concepto
    *
    * @interface MainData
    */
-  interface MainData {  
+  interface MainData {
     UPC: string,
     reference: string,
     description: string,
@@ -172,45 +174,6 @@ export declare namespace Product {
     name: string,
   }
 
-  /**
-   * Modelo de objeto para la referencia de un producto en una store
-   * 
-   * @path businesses/{CRF}/products/{product_code}/store/{store.id}
-   */
-  interface StoreReference  {
-    /** ID del almacen como llave foranea */
-    store_id: string
-    /** ID del producto como llave foranea */
-    UPC: string,
-    /** Existencias del producto en el almacen */
-    stock: number,
-    /** Precio unitario designado para su venta */
-    unit_price: number,
-    /** Costo unitario establecido por la factura de comprado */
-    readonly unit_cost: number,
-    /** Mínimo requerido */
-    min_required: number,
-    /** (Opcional) Estanterías o notas de referencia donde se encuentra la existencia del producto */
-    bookshelves: string[],
-    /** (Opcional) Referencia al documento del proveedor de este producto en esta store de la lista de proveedores de la misma empresa. */
-    provider?: ProviderReference,
-  }
-
-  /**
-   * Modelo de la consulta de un producto y sus múltiples existencias en los stores
-   */
-  interface StockReference {
-    product: Partial<DataReference>,
-    stores: StoreReference[]
-  }
-
-  /**
-   * Modelo de la consulta de un producto y su último cambio en una store
-   */
-  interface UpdateReference {
-    product: ProductModel,
-    lastStoreState?: StoreReference
-  }
 
   /**
    * Modelo del formulario de un producto
@@ -230,27 +193,6 @@ export declare namespace Product {
     }
   }
 
-
-  
-
-
-  namespace StoreReference {
-    interface StoreForm extends FormGroup {
-      value: StoreReference
-      controls: {
-        store_id: AbstractControl,
-        product_code: AbstractControl,
-        stock: AbstractControl,
-        unit_price: AbstractControl,
-        unit_cost: AbstractControl,
-        min_required: AbstractControl,
-        bookshelves: AbstractControl,
-        provider: AbstractControl,
-      }
-    }
-  }
-
-  
   /** Segemento de modelos para eventos del producto*/
   namespace history {
 
@@ -260,6 +202,82 @@ export declare namespace Product {
     
   }
 }
+
+/**
+ * Modelo de objeto para la referencia de un producto en una store
+ * 
+ * @path businesses/{CRF}/products/{product_code}/store/{store.id}
+ */
+export class StoreReferenceModel  {
+  /** Existencias del producto en el almacen */
+  stock: number
+  /** Precio unitario designado para su venta */
+  unit_price: number
+  /** Mínimo requerido */
+  min_required: number
+  /** (Opcional) Estanterías o notas de referencia donde se encuentra la existencia del producto */
+  bookshelves: string[]
+  /** (Opcional) Referencia al documento del proveedor de este producto en esta store de la lista de proveedores de la misma empresa. */
+  // provider?: Product.ProviderReference
+
+  constructor (
+    /** ID del almacen como llave foranea */
+    public readonly store_id: string,
+    /** ID del producto como llave foranea */
+    public readonly UPC: string,
+    /** Costo unitario establecido por la factura de comprado */
+    public unit_cost: number,
+    stock?: number,
+    unit_price?: number,
+    min_required?: number,
+    bookshelves?: string[]
+  ) {
+    this.stock = stock || 0;
+    this.unit_price = unit_price || 0
+    this.min_required = min_required || 0;
+    this.bookshelves = bookshelves || []
+  }
+}
+  
+
+
+export declare namespace StoreReference {
+
+    /**
+   * Modelo de la consulta de un producto y sus múltiples existencias en los stores
+   */
+  interface StockReference {
+    product: Partial<Product.DataReference>,
+    stores: StoreReferenceModel[]
+  }
+
+  /**
+   * Modelo de la consulta de un producto y su último cambio en una store
+   */
+  interface UpdateReference {
+    product: ProductModel,
+    lastStoreState?: StoreReferenceModel
+  }
+    
+
+  interface StoreForm extends FormGroup {
+    value: StoreReferenceModel
+    controls: {
+      store_id: AbstractControl,
+      product_code: AbstractControl,
+      stock: AbstractControl,
+      unit_price: AbstractControl,
+      unit_cost: AbstractControl,
+      min_required: AbstractControl,
+      bookshelves: AbstractControl,
+      provider: AbstractControl,
+    }
+  }
+}
+
+  
+
+
 
 
 

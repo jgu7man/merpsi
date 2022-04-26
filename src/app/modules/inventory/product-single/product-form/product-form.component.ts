@@ -6,7 +6,7 @@ import { MxText } from 'libs/@marxa/devkit/text/mx-text.service';
 import { Subscription } from 'rxjs';
 import { skip } from 'rxjs/operators';
 import { listenChanges } from 'src/app/models/operators-chains.model';
-import { Product, ProductModel } from 'src/app/modules/inventory/products/products.model';
+import { Product, ProductModel, StoreReferenceModel } from 'src/app/modules/inventory/products/products.model';
 import { ProductCategoriesService } from '../../product-categories/product-categories.service';
 import { ProductCategory } from '../../product-categories/product-category.model';
 import { InventoryProductsService } from '../../products/products.service';
@@ -29,7 +29,7 @@ export class ProductFormComponent implements OnInit, OnDestroy {
   public categories: ProductCategory.selected[] = [];
   public aplicacion_modelos: string[] = [];
   public proveedores_ref: any[] = [];
-  public currentStore?: Product.StoreReference;
+  public currentStore?: StoreReferenceModel;
   
   public validForm: boolean = false;
   
