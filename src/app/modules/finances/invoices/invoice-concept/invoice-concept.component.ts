@@ -34,6 +34,7 @@ export class InvoiceConceptComponent implements OnInit {
   
 
   @Output() changes = new EventEmitter();
+  @Output() delete = new EventEmitter();
   constructor(
     private _cache: MxCache,
     public purchase: PurchaseInvoiceService,
@@ -88,11 +89,7 @@ export class InvoiceConceptComponent implements OnInit {
 
   deleteConcept(concept: ProductInvoiceModel | null ){
     if (concept){
-     if ( this.purchase.current$.value != null) {
-        this.purchase.deleteConcept(concept.UPC)
-      }else if (this.sales.current$.value != null){
-        this.sales.deleteConcept(concept.UPC)
-      }
+     this.delete.emit(concept)
     }
   }
 

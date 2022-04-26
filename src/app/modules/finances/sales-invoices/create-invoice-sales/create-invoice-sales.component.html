@@ -90,6 +90,7 @@
               <app-invoice-concept
               [concept]="concept"
               (changes)="getChanges($event)"
+              (delete)="deleteConcept($event)"
               ></app-invoice-concept>
             </ng-container>
             <!-- <ng-container *ngIf="sales.details.length > 0"> -->

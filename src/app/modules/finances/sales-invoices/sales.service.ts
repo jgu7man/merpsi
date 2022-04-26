@@ -5,6 +5,7 @@ import { BehaviorSubject } from 'rxjs';
 import { SalesInvoiceModel } from 'src/app/modules/finances/sales-invoices/sales-invoice.model';
 import { ProductModel } from '../../inventory/products/products.model';
 import { invoiceFooter, ProductInvoiceModel } from '../invoices/invoice.model';
+import { TaxesService } from '../taxes/taxes.service';
 
 @Injectable({
   providedIn: 'root'
@@ -19,6 +20,7 @@ export class SalesService {
   constructor(
     private _afs: AngularFirestore,
     private _cache: MxCache,
+    public _taxes: TaxesService
   ) { }
 
   updateCurrent(
@@ -40,9 +42,28 @@ export class SalesService {
         ...this.current$.value,
         details: this.current$.value.details!.filter( c => c.UPC !== UPC)
       })
+
+      this.current$.next({
+        ...this.current$.value,
+        details: this.current$.value.details!.filter( c => c.UPC !== UPC)
+      })
+      let foot = this.calcFooter()
+      this.totales.emit(foot)
     }
   }
   
+  calcFooter(){
+    let details = this.current$.value!.details
+    let subtotal = 0
+    details.map(d => {
+        subtotal += d.amount
+    })
+    let foot = this.current$.value!.footer
+    foot.subtotal = subtotal
+    foot.total = (subtotal + foot.shipping + this._taxes.appliedTaxesTotal ) - (foot.discount) 
+    this.updateCurrent('footer', foot)
+    return foot
+  }
   addConcept(concept:ProductModel){
     console.log(concept)
     if (this.current$.value != null){

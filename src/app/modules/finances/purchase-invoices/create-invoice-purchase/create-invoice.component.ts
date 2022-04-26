@@ -151,5 +151,9 @@ export class CreateInvoiceComponent implements OnInit {
     this.purchase.getFooter(footer)
   }
 
+  deleteConcept(concept: ProductInvoiceModel){
+    this.purchase.deleteConcept(concept.UPC)
+  }
+
   
 }

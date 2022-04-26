@@ -1,6 +1,7 @@
 import { FireTime, createDate, FireRef } from "../../../models/firestore.model"
 import { Product, ProductModel } from "../../inventory/products/products.model"
 import { iSede } from "../../admin/stores/sede.model"
+import { AppliedTaxModel } from "../taxes/taxes.model"
 
 export class InvoiceModel {
   /**folio de la factura */
@@ -40,7 +41,7 @@ export class invoiceFooter {
   /** Descuento aplicado a la compra en moneda */
   discount: number;
   /** Lista de impuestos aplicados a la compra */
-  taxes: [];
+  taxes: AppliedTaxModel[];
   /** Costo generado por envío */
   shipping: number;
   /** Total de restar descuentos e impuestos y agregado de costo de envío */

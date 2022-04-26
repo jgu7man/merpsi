@@ -7,6 +7,7 @@ import Swal from 'sweetalert2';
 import { DashboardService } from 'src/app/dashboard/dashboard.service';
 import { ProductModel } from '../../inventory/products/products.model';
 import { invoiceFooter, ProductInvoiceModel } from '../invoices/invoice.model';
+import { TaxesService } from '../taxes/taxes.service';
 
 
 @Injectable({
@@ -21,7 +22,8 @@ export class PurchaseInvoiceService {
   constructor(
     private _afs: AngularFirestore,
     private _cache: MxCache,
-    private _dashboard: DashboardService
+    public _taxes: TaxesService
+
   ) { 
   }
 
@@ -70,7 +72,22 @@ export class PurchaseInvoiceService {
         ...this.current$.value,
         details: this.current$.value.details!.filter( c => c.UPC !== UPC)
       })
+      let foot = this.calcFooter()
+      this.totales.emit(foot)
     }
+  }
+  
+  calcFooter(){
+    let details = this.current$.value!.details
+    let subtotal = 0
+    details.map(d => {
+        subtotal += d.amount
+    })
+    let foot = this.current$.value!.footer
+    foot.subtotal = subtotal
+    foot.total = (subtotal + foot.shipping + this._taxes.appliedTaxesTotal) - (foot.discount)
+    this.updateCurrent('footer', foot)
+    return foot
   }
 
 

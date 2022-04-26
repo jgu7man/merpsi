@@ -43,13 +43,9 @@ export class FooterInvoiceComponent implements OnInit {
 
   ngOnInit(): void {
     this.sales.totales.subscribe(data => {
-      console.log('soy el evento de totales')
-      console.log(data);
       this.setTotales(data);
     })
     this.purchase.totales.subscribe(data => {
-      console.log('soy el evento de totales')
-      console.log(data);
       this.setTotales(data);
     })
     this.formFooter.valueChanges.pipe(
@@ -84,12 +80,10 @@ export class FooterInvoiceComponent implements OnInit {
   }
 
   getTotalTaxes(total: number){
-    console.log(total)
-    console.log('el total de las taxes')
     let footer: invoiceFooter = this.purchase.current$.value != null ? 
     this.purchase.current$.value.footer : this.sales.current$.value!.footer 
     footer.total = footer.total + total
-    footer.taxes = []
+    footer.taxes = this._taxes.applidedTaxes
     this.formFooter.patchValue({
       total: footer.total
     })
