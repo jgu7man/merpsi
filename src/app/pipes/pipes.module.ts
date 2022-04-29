@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { AsFormGroupPipe } from './as-form-group.pipe';
 import { FormRawValuePipe } from './form-raw-value.pipe';
 import { DataPipe } from './data.pipe';
+import { StorePipe } from './store.pipe';
 
 
 
@@ -11,6 +12,7 @@ import { DataPipe } from './data.pipe';
     AsFormGroupPipe,
     FormRawValuePipe,
     DataPipe,
+    StorePipe
   ],
   imports: [
     CommonModule
@@ -18,7 +20,8 @@ import { DataPipe } from './data.pipe';
   exports: [
     AsFormGroupPipe,
     FormRawValuePipe,
-    DataPipe
+    DataPipe,
+    StorePipe
   ]
 })
 export class PipesModule { }

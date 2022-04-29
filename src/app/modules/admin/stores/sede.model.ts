@@ -1,5 +1,5 @@
 export class SedeModel {
-  constructor(
+    constructor(
     public name: string,
     public referencia: string,
     public tipo: string,

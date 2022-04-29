@@ -1,17 +1,17 @@
 import { Component, EventEmitter, OnInit } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
-import { Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, skip } from 'rxjs/operators';
 import { DashboardService } from 'src/app/dashboard/dashboard.service';
 import { ManagerModel } from 'src/app/modules/admin/managers/manager.model';
 import { ClientModel } from 'src/app/modules/clients/clients.model';
 import { AuthService } from 'src/app/services/auth.service';
-import { invoiceFooter, ProductInvoiceModel } from '../../invoices/invoice.model';
+import { iInvoiceFooter, invoiceFooter, ProductInvoiceModel } from '../../invoices/invoice.model';
 import { SelectConceptDialogComponent } from '../../invoices/select-concept.dialog/select-concept.dialog.component';
 import { SalesInvoiceModel } from '../sales-invoice.model';
 import { SalesService } from '../sales.service';
+import { SelectConceptSalesDialogComponent } from '../select-concept-sales-dialog/select-concept-sales-dialog.component';
 
 @Component({
   selector: 'app-create-invoice-sales',
@@ -27,21 +27,22 @@ export class CreateInvoiceSalesComponent implements OnInit {
 
 
   clientform: FormGroup = new FormGroup({
-    client: new FormControl( '' ),
-    cip: new FormControl( ''),
-    email: new FormControl(''),
+    client: new FormControl( '',[Validators.required] ),
+    cip: new FormControl( '',[Validators.required]),
+    email: new FormControl('',[Validators.required]),
   })
 
   salesForm: FormGroup = new FormGroup({
     client: this.clientform,
-    seller: new FormControl( '' ),
-    date_expiration: new FormControl( '' ),
-    currency: new FormControl( '' ),
-    date_emition: new FormControl( '' ),
+    invoiceId: new FormControl( '',[Validators.required] ),
+    seller: new FormControl( '',[Validators.required] ),
+    date_expiration: new FormControl( '',[Validators.required] ),
+    currency: new FormControl( '',[Validators.required] ),
+    date_emition: new FormControl( '',[Validators.required] ),
     payment_method: new FormControl( '' ),
 
   })
-  footerCalc: invoiceFooter  = {
+  footerCalc: iInvoiceFooter  = {
     shipping: 0,
     subtotal: 0,
     discount: 0,
@@ -54,6 +55,7 @@ export class CreateInvoiceSalesComponent implements OnInit {
     private _cache: MxCache,
     private _dialog: MatDialog,
     public sales: SalesService,
+    private _dashboard: DashboardService
     
   ) { 
   }
@@ -100,7 +102,7 @@ export class CreateInvoiceSalesComponent implements OnInit {
   }
 
   addConcept() {
-    this._dialog.open(SelectConceptDialogComponent, {
+    this._dialog.open(SelectConceptSalesDialogComponent, {
       width: '600px ',
     }).afterClosed().subscribe(concept => {
       this.concept = concept
@@ -116,8 +118,14 @@ export class CreateInvoiceSalesComponent implements OnInit {
     this.sales.getFooter(footer)
   }
 
+
+
   deleteConcept(concept: ProductInvoiceModel){
     this.sales.deleteConcept(concept.UPC)
   }
 
+  saveInvoice(){
+    console.log(this.sales.current$.value)
+    //this.sales.saveInvoice()
+  }
 }

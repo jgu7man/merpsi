@@ -1,30 +1,35 @@
 import { EventEmitter, Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { DashboardService } from 'src/app/dashboard/dashboard.service';
+import { txn } from 'src/app/models/firestore.model';
 import { SalesInvoiceModel } from 'src/app/modules/finances/sales-invoices/sales-invoice.model';
-import { ProductModel } from '../../inventory/products/products.model';
-import { invoiceFooter, ProductInvoiceModel } from '../invoices/invoice.model';
+import { ProductModel, StoreReferenceModel } from '../../inventory/products/products.model';
+import { iInvoiceFooter, invoiceFooter, iProductInvoice, ProductInvoiceModel } from '../invoices/invoice.model';
 import { TaxesService } from '../taxes/taxes.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SalesService {
-
+  businessRef = this._dashboard.businessRef
   current$= new BehaviorSubject<SalesInvoiceModel | null> ( null )
-
+  
   businessCRF: string = this._cache.getDataKey('eid')!
-  public totales: EventEmitter<invoiceFooter> = new EventEmitter();
+  public totales: EventEmitter<iInvoiceFooter> = new EventEmitter();
 
   constructor(
     private _afs: AngularFirestore,
     private _cache: MxCache,
-    public _taxes: TaxesService
-  ) { }
+    public _taxes: TaxesService,
+    private _dashboard: DashboardService
 
-  updateCurrent(
-    param: keyof SalesInvoiceModel,
+    ) { }
+    
+    updateCurrent(
+      param: keyof SalesInvoiceModel,
     value: SalesInvoiceModel[ typeof param ]
   ) {
     if ( this.current$.value !== null ) {
@@ -42,7 +47,7 @@ export class SalesService {
         ...this.current$.value,
         details: this.current$.value.details!.filter( c => c.UPC !== UPC)
       })
-
+      
       this.current$.next({
         ...this.current$.value,
         details: this.current$.value.details!.filter( c => c.UPC !== UPC)
@@ -56,7 +61,7 @@ export class SalesService {
     let details = this.current$.value!.details
     let subtotal = 0
     details.map(d => {
-        subtotal += d.amount
+      subtotal += d.amount
     })
     let foot = this.current$.value!.footer
     foot.subtotal = subtotal
@@ -67,13 +72,13 @@ export class SalesService {
   addConcept(concept:ProductModel){
     console.log(concept)
     if (this.current$.value != null){
-      let details: ProductInvoiceModel[] = this.current$.value.details
+      let details: iProductInvoice[] = this.current$.value.details
       details.push(new ProductInvoiceModel(concept))
       this.updateCurrent('details', details)
     }
-
+    
   }
-
+  
   getChanges(changes: any, concept: any) {
     let details = this.current$.value!.details
     let subtotal = 0
@@ -98,12 +103,12 @@ export class SalesService {
     foot.subtotal = subtotal
     foot.total = (subtotal + foot.shipping) - (foot.discount)
     this.updateCurrent('footer', foot)
-
+    
     this.totales.emit(foot)
     return foot
   }
-
-  getFooter(changes: invoiceFooter) {
+  
+  getFooter(changes: iInvoiceFooter) {
     if (this.current$.value != null) {
       let footer = this.current$.value.footer
       let discount = changes.discount
@@ -115,4 +120,18 @@ export class SalesService {
     }
   }
 
+  saveInvoice() {
+  
+  }
+
+   async getStokProductByStore(upc: string) {
+    let storeP = await this.getStoreStock(upc)
+    let ps = storeP.docs[0].data()
+    return ps
+  }
+  getStoreStock(UPC: string) {
+    return this._afs.collection<StoreReferenceModel>(`businesses/${this.businessCRF}/products/${UPC}/stores`).ref.get()
+
+  }
+  
 }

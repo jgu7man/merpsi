@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
@@ -58,6 +58,8 @@ export class CreateInvoiceComponent implements OnInit {
   concept: ProductInvoiceModel | null = null 
   footerCalc: invoiceFooter | null = null
 
+  @Output() submited: EventEmitter<any> = new EventEmitter()
+
   
   constructor(
     private _provider: ProviderService,
@@ -71,6 +73,9 @@ export class CreateInvoiceComponent implements OnInit {
     
   ) {
     this.stores$ = this._stores.listenAll()
+    this.stores$.pipe().subscribe(store => {
+      console.log(store)
+    })
     this.manager = this._auth.userState$.value
     
   }
@@ -154,6 +159,33 @@ export class CreateInvoiceComponent implements OnInit {
   deleteConcept(concept: ProductInvoiceModel){
     this.purchase.deleteConcept(concept.UPC)
   }
+  cleanForm(){
+    this.storeForm.patchValue({
+      id:'',
+      name:''
+    })
+    this.providerForm.patchValue({
+      CRF:'',
+      businessName:''
+    })
+    this.invoiceForm.patchValue({
+      document_date: '',
+      invoice_ID : '',
+      payment_method: ''
+    })
+  }
 
-  
+  async saveInvoice(){
+    let invoice = this.purchase.current$.value!
+    let taxs: any = []
+    invoice.footer.taxes.map(tax => {
+      taxs.push({...tax})
+    })
+    invoice.footer.taxes = taxs
+    await this.purchase.saveInvoice(invoice)
+    this._alert.notify('la factura ha sido guardado con exito!')
+    //this.purchase.current$.next(null)
+    this.cleanForm()
+    this.submited.emit()
+  }
 }

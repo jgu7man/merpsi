@@ -1,7 +1,7 @@
 import { FireTime, createDate, FireRef } from "../../../models/firestore.model"
 import { Product, ProductModel } from "../../inventory/products/products.model"
 import { iSede } from "../../admin/stores/sede.model"
-import { AppliedTaxModel } from "../taxes/taxes.model"
+import { AppliedTaxModel, iAppliedTax } from "../taxes/taxes.model"
 
 export class InvoiceModel {
   /**folio de la factura */
@@ -12,13 +12,13 @@ export class InvoiceModel {
   public payment_method: string = ''
 
 /** calculos de totales de la factura */
-  public footer: invoiceFooter
+  public footer: iInvoiceFooter
   /** personal que registro la factura */
   public  manager: string = ''
   /**fecha de registro */
   public readonly registered_date: FireTime = createDate( new Date() )
   
-  public details: ProductInvoiceModel[] = [] ;
+  public details: iProductInvoice[] = [] ;
   // public footer: iInvoiceFooter;
   constructor (
     invoice?: InvoiceModel
@@ -41,7 +41,7 @@ export class invoiceFooter {
   /** Descuento aplicado a la compra en moneda */
   discount: number;
   /** Lista de impuestos aplicados a la compra */
-  taxes: AppliedTaxModel[];
+  taxes: iAppliedTax[];
   /** Costo generado por envío */
   shipping: number;
   /** Total de restar descuentos e impuestos y agregado de costo de envío */
@@ -61,7 +61,13 @@ export class invoiceFooter {
     this.total = (this.subtotal + this.shipping) - this.discount;
 
   }
+  get data(){
+    let { data, ...object} = this
+    return {...object}
+  }
 }
+export interface iInvoiceFooter extends Omit<invoiceFooter,'data'>{}
+
 export interface InvoiceStore {
   id: string,
   name: string,
@@ -97,17 +103,11 @@ export class ProductInvoiceModel implements Product.MainData {
     this.brand = data?.brand || ''
     this.measure_unit = data?.measure_unit || 0
 	}
+  get data(){
+    let { data, ...object} = this
+    return {...object}
+  }
 }
 
-// export const productEmpty: ProductInvoiceModel = {
-//   unit_cost : 0,
-//   cant : 0, 
-//   amount : 0, 
-//   UPC : '',
-//   reference : '' ,
-//   description : '' ,
-//   brand : '' ,
-//   measure_unit : '' ,
-//   //document_ref : '' 
-// }
+export interface iProductInvoice extends Omit<ProductInvoiceModel,'data'>{}
 

@@ -21,6 +21,7 @@ export class TaxModel {
     .replace(/,/g, '')
     .replace(/@/g, '-')
   }
+  
 }
 
 export interface GlobalTax extends Omit<TaxModel, 'index'> {
@@ -52,17 +53,24 @@ export namespace Tax {
 
 export class AppliedTaxModel extends TaxModel {
   /** Resultado de multiplicar el monto aplicado por la tasa del impuesto */
-  get amount() { return ((this.rate / 100) * this.amount_base) || 0}
   
   constructor (
     /** Impuesto seleccionado */
     tax: TaxModel,
     /** Monto al cuál se le aplicará el impuesto */
     public amount_base: number = 0
-  ) {
-    super(tax.index, tax.name, tax.rate)
-  }
+    ) {
+      super(tax.index, tax.name, tax.rate)
+    }
+    get data(){
+      let { data, ...object} = this
+      return {...object}
+    }
+    get amount() { return ((this.rate / 100) * this.amount_base) || 0}
 }
+
+export interface iAppliedTax extends Omit<AppliedTaxModel,'data'>{}
+
 
 
 

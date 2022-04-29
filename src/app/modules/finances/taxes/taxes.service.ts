@@ -6,7 +6,7 @@ import { MxLoading } from 'libs/@marxa/devkit/loading/loading.service';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { BusinessModel } from 'src/app/models/empresa.model';
-import { AppliedTaxModel, GlobalTax, Tax, TaxModel } from './taxes.model';
+import { AppliedTaxModel, GlobalTax, iAppliedTax, Tax, TaxModel } from './taxes.model';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +15,7 @@ export class TaxesService {
 
   list$ = new BehaviorSubject<TaxModel[]>( [] )
   businessCRF: string = this._cache.getDataKey( 'eid' )!
-  applidedTaxes: AppliedTaxModel[] = []
+  applidedTaxes: iAppliedTax[] = []
 
   private _listSubscription: Subscription
 
