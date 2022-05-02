@@ -15,7 +15,7 @@ export class TaxesService {
 
   list$ = new BehaviorSubject<TaxModel[]>( [] )
   businessCRF: string = this._cache.getDataKey( 'eid' )!
-  applidedTaxes: iAppliedTax[] = []
+  applidedTaxes: AppliedTaxModel[] = []
 
   private _listSubscription: Subscription
 

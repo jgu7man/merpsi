@@ -142,8 +142,10 @@ export class CreateInvoiceComponent implements OnInit {
     this._dialog.open(SelectConceptDialogComponent, {
       width: '600px ',
     }).afterClosed().subscribe(concept => {
-      this.purchase.addConcept(concept)
-      this.concept = concept
+      if (concept){
+        this.purchase.addConcept(concept)
+        this.concept = concept
+      }
     })
   }
   /**funcion que se encarga de capturar los cambios del formulario de conceptos */

@@ -1,6 +1,7 @@
-import { Component, EventEmitter, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
+import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import { debounceTime, distinctUntilChanged, skip } from 'rxjs/operators';
 import { DashboardService } from 'src/app/dashboard/dashboard.service';
@@ -34,7 +35,7 @@ export class CreateInvoiceSalesComponent implements OnInit {
 
   salesForm: FormGroup = new FormGroup({
     client: this.clientform,
-    invoiceId: new FormControl( '',[Validators.required] ),
+    invoice_ID: new FormControl( '',[Validators.required] ),
     seller: new FormControl( '',[Validators.required] ),
     date_expiration: new FormControl( '',[Validators.required] ),
     currency: new FormControl( '',[Validators.required] ),
@@ -49,13 +50,15 @@ export class CreateInvoiceSalesComponent implements OnInit {
     total: 0,
     taxes: []
   }
+  @Output() submited: EventEmitter<any> = new EventEmitter()
 
-  
   constructor(
     private _cache: MxCache,
     private _dialog: MatDialog,
     public sales: SalesService,
-    private _dashboard: DashboardService
+    private _dashboard: DashboardService,
+    private _alert: MxAlert,
+
     
   ) { 
   }
@@ -106,7 +109,7 @@ export class CreateInvoiceSalesComponent implements OnInit {
       width: '600px ',
     }).afterClosed().subscribe(concept => {
       this.concept = concept
-      this.sales.addConcept(concept)
+     // this.sales.addConcept(concept)
     })
   }
 
@@ -124,8 +127,35 @@ export class CreateInvoiceSalesComponent implements OnInit {
     this.sales.deleteConcept(concept.UPC)
   }
 
-  saveInvoice(){
+  async saveInvoice(){
     console.log(this.sales.current$.value)
-    //this.sales.saveInvoice()
+    let invoice = this.sales.current$.value!
+    let taxs: any = []
+    invoice.footer.taxes.map(tax => {
+      taxs.push({...tax})
+    })
+    invoice.footer.taxes = taxs
+    await this.sales.saveInvoice(invoice)
+    this._alert.notify('la factura ha sido guardado con exito!')
+    this.cleanForm()
+    this.submited.emit()
+  }
+
+  cleanForm(){
+    this.clientform.patchValue({
+      client: '',
+      cip: '',
+      email: ''
+    })
+
+    this.salesForm.patchValue({
+    invoice_ID: '',
+    seller: '',
+    date_expiration:'',
+    currency: '',
+    date_emition: '',
+    payment_method: '',
+
+    })
   }
 }

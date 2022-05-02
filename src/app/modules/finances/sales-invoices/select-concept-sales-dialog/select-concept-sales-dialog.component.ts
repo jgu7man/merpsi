@@ -20,6 +20,7 @@ export class SelectConceptSalesDialogComponent implements OnInit {
     private _dialog: MatDialogRef<SelectConceptDialogComponent>,
     public sales: SalesService,
     private _dialogProduct: MatDialog,
+    
     // public invoice: InvoiceService
   ) { }
 
@@ -28,19 +29,13 @@ export class SelectConceptSalesDialogComponent implements OnInit {
 
   getValue(store: StoreReferenceModel){
    let p = this.products.find(p => p.UPC==store.UPC)!
-   this.sales.addConcept(p)
+   this.sales.addConcept(p, store.store_id,store.stock)
     this._dialog.close(p)
   }
 
-  getList(product: ProductModel[]){
+  async getList(product: ProductModel[]){
     this.products = product
-    product.forEach(async p => {
-      let productStore = await this.sales.getStokProductByStore(p.UPC)
-      if (productStore) {
-        this.productStoresStoks = []
-        this.productStoresStoks.push(productStore)
-      }
-    })    
+    this.productStoresStoks = await this.sales.getStokProductByStore(product)    
    // this.productListEmpty = product.length ==0 ? true : false
   }
 

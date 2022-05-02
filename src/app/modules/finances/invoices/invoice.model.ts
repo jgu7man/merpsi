@@ -81,17 +81,20 @@ export class ProductInvoiceModel implements Product.MainData {
   public cant: number = 0
   /** Resultado de multiplicar cantidad por costo unitario del producto */
   public amount: number;
+  public store: string
   UPC: string
   reference: string
   description: string
   measure_unit: number
   brand?: string
-  public store?: FireRef<iSede> | ''
+  stock: number
   
 
   constructor (
     /** Referencia del producto comprado (Debe seleccionarse de la lista de productos registrados de la empresa) */
-    concept?: ProductModel
+    concept?: ProductModel,
+    storeRef?: string,
+    stock?:number,
   ) {
 
     let data = concept
@@ -102,6 +105,8 @@ export class ProductInvoiceModel implements Product.MainData {
     this.description = data?.description || ''
     this.brand = data?.brand || ''
     this.measure_unit = data?.measure_unit || 0
+    this.store = storeRef || ''
+    this.stock = stock || 0
 	}
   get data(){
     let { data, ...object} = this

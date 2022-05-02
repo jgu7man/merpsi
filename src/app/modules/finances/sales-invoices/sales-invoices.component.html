@@ -9,7 +9,8 @@
       #crudPanel
       (onAdd)="onCreate()"
       >
-      <ng-template #add ><app-create-invoice-sales></app-create-invoice-sales></ng-template>
+      <ng-template #add ><app-create-invoice-sales
+        (submited)="crudPanel.closeAll()"></app-create-invoice-sales></ng-template>
       </mx-crud-panel>
     </div>
   </div>
