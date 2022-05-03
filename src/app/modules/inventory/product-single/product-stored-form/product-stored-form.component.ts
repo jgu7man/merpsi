@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { debounceTime, distinctUntilChanged, filter, map, tap } from 'rxjs/operators';
-import { Product } from 'src/app/modules/inventory/products/products.model';
+import { Product, StoreReference } from 'src/app/modules/inventory/products/products.model';
 import { CurrentProductService } from '../current-product.service';
 
 @Component({
@@ -12,7 +12,7 @@ import { CurrentProductService } from '../current-product.service';
 export class ProductStoredFormComponent implements OnInit {
 
   @Input() store_id?: string
-  public productStoredForm: Product.StoreReference.StoreForm
+  public productStoredForm: StoreReference.StoreForm
   
 
   constructor (
@@ -27,7 +27,7 @@ export class ProductStoredFormComponent implements OnInit {
       min_required: new FormControl(0, [Validators.required]),
       bookshelves: new FormControl([], [Validators.required]),
       provider: new FormControl(''),
-    } ) as Product.StoreReference.StoreForm
+    } ) as StoreReference.StoreForm
     
     /* Actualiza automáticamente los cambios en el array de stores */
     this.productStoredForm.valueChanges.pipe(
