@@ -42,7 +42,8 @@ export class ClientsService {
 
   async save(client: ClientModel): Promise<void> {
     try{
-      const clientRef = client.id ? this._afs.doc(`businesses/${this.businessCRF}/clients/${client.id}`).ref : this._afs.collection(`businesses/${this.businessCRF}/clients/`).doc().ref
+      const clientRef = client.id ? this._afs.doc(`businesses/${this.businessCRF}/clients/${client.id}`).ref 
+      : this._afs.collection(`businesses/${this.businessCRF}/clients/`).doc().ref
       const id = clientRef.id
       await clientRef.set({...client, id})
       await Swal.fire('Guardado')

@@ -1,0 +1,91 @@
+<form [formGroup]="stubForm">
+
+  <div class="row">
+  
+    <!-- Nombre -->
+    <mat-form-field
+      appearance="outline"
+      class="col s6">
+        <mat-label>Nombre</mat-label>
+        <input
+        matInput
+        type="text"
+        name="name"
+        formControlName="name"
+        required
+        >
+        <mat-error *ngIf="stubForm.hasError('required', 'name')">
+            Nombre es necesario
+        </mat-error>
+    </mat-form-field>
+
+    <!-- prefijo -->
+    <mat-form-field
+      appearance="outline"
+      class="col s6">
+        <mat-label>Prefijo</mat-label>
+        <input
+        matInput
+        type="text"
+        name="prefix"
+        formControlName="prefix"
+        required
+        >
+        <mat-error *ngIf="stubForm.hasError('required', 'rate')">
+            Tasa es necesario
+        </mat-error>
+    </mat-form-field>
+
+    <!-- Numero inicial -->
+    <mat-form-field
+      appearance="outline"
+      class="col s12">
+        <mat-label>Numero inicial</mat-label>
+        <input 
+          matInput
+          type="number"
+          name="starIndex" 
+          formControlName="starIndex" 
+        >
+    </mat-form-field>
+
+      <!-- Numero final -->
+      <mat-form-field
+      appearance="outline"
+      class="col s12">
+        <mat-label>Numero final</mat-label>
+        <input 
+          matInput
+          type="number"
+          name="endIndex" 
+          formControlName="endIndex" 
+        >
+    </mat-form-field>
+ <!-- Current index -->
+    <mat-form-field
+      appearance="outline"
+      class="col s12">
+        <mat-label>Numero Actual</mat-label>
+        <input 
+          matInput
+          type="number"
+          name="currentIndex" 
+          formControlName="currentIndex" 
+        >
+    </mat-form-field>
+
+    <mat-slide-toggle name ="active" formControlName ="active">Activo</mat-slide-toggle>
+
+  </div>
+
+  <div class="row">
+    <div class="col s12 center">
+      <button mat-raised-button color="primary" 
+      [disabled]="stubForm.invalid || stubForm.pristine"
+      (click)="onSubmit()"
+      >Guardar</button>
+    </div>
+  </div>
+
+
+</form>
