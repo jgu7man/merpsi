@@ -1,7 +1,6 @@
-import { Component, Input, OnInit, OnDestroy, ElementRef, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
-import { MxLoading } from 'libs/@marxa/devkit/loading/loading.service';
 import { MxText } from 'libs/@marxa/devkit/text/mx-text.service';
 import { Subscription } from 'rxjs';
 import { skip } from 'rxjs/operators';
@@ -9,7 +8,6 @@ import { listenChanges } from 'src/app/models/operators-chains.model';
 import { Product, ProductModel, StoreReferenceModel } from 'src/app/modules/inventory/products/products.model';
 import { ProductCategoriesService } from '../../product-categories/product-categories.service';
 import { ProductCategory } from '../../product-categories/product-category.model';
-import { InventoryProductsService } from '../../products/products.service';
 import { CurrentProductService } from '../current-product.service';
 
 @Component({

@@ -1,30 +1,40 @@
 import { EventEmitter, Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
+import firebase from 'firebase/app'
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { DashboardService } from 'src/app/dashboard/dashboard.service';
+import { txn } from 'src/app/models/firestore.model';
 import { SalesInvoiceModel } from 'src/app/modules/finances/sales-invoices/sales-invoice.model';
-import { ProductModel } from '../../inventory/products/products.model';
-import { invoiceFooter, ProductInvoiceModel } from '../invoices/invoice.model';
+import { CurrentProductService } from '../../inventory/product-single/current-product.service';
+import { ProductEventModel, ProductModel, StoreReferenceModel } from '../../inventory/products/products.model';
+import { iInvoiceFooter, invoiceFooter, iProductInvoice, ProductInvoiceModel } from '../invoices/invoice.model';
+import { PurchaseInvoiceModel } from '../purchase-invoices/pucharce-invoice.model';
 import { TaxesService } from '../taxes/taxes.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SalesService {
-
+  businessRef = this._dashboard.businessRef
   current$= new BehaviorSubject<SalesInvoiceModel | null> ( null )
-
+  
   businessCRF: string = this._cache.getDataKey('eid')!
-  public totales: EventEmitter<invoiceFooter> = new EventEmitter();
+  public totales: EventEmitter<iInvoiceFooter> = new EventEmitter();
 
   constructor(
     private _afs: AngularFirestore,
     private _cache: MxCache,
-    public _taxes: TaxesService
-  ) { }
+    public _taxes: TaxesService,
+    private _dashboard: DashboardService,
+    private manager: CurrentProductService
 
-  updateCurrent(
-    param: keyof SalesInvoiceModel,
+
+    ) { }
+    
+    updateCurrent(
+      param: keyof SalesInvoiceModel,
     value: SalesInvoiceModel[ typeof param ]
   ) {
     if ( this.current$.value !== null ) {
@@ -42,7 +52,7 @@ export class SalesService {
         ...this.current$.value,
         details: this.current$.value.details!.filter( c => c.UPC !== UPC)
       })
-
+      
       this.current$.next({
         ...this.current$.value,
         details: this.current$.value.details!.filter( c => c.UPC !== UPC)
@@ -56,7 +66,7 @@ export class SalesService {
     let details = this.current$.value!.details
     let subtotal = 0
     details.map(d => {
-        subtotal += d.amount
+      subtotal += d.amount
     })
     let foot = this.current$.value!.footer
     foot.subtotal = subtotal
@@ -64,21 +74,20 @@ export class SalesService {
     this.updateCurrent('footer', foot)
     return foot
   }
-  addConcept(concept:ProductModel){
+  addConcept(concept:ProductModel,store: string,stock: number){
     console.log(concept)
     if (this.current$.value != null){
-      let details: ProductInvoiceModel[] = this.current$.value.details
-      details.push(new ProductInvoiceModel(concept))
+      let details: iProductInvoice[] = this.current$.value.details
+      details.push(new ProductInvoiceModel(concept,store,stock))
       this.updateCurrent('details', details)
     }
-
+    
   }
-
+  
   getChanges(changes: any, concept: any) {
     let details = this.current$.value!.details
     let subtotal = 0
     details = details.map(d => {
-
       let details
       if (d.UPC === concept!.UPC) {
         changes.amount = changes.cant * changes.unit_cost
@@ -97,14 +106,14 @@ export class SalesService {
     this.updateCurrent('details', details)
     let foot = this.current$.value!.footer
     foot.subtotal = subtotal
-    foot.total = (subtotal + foot.shipping) - (foot.discount)
+    foot.total = (subtotal + foot.shipping + this._taxes.appliedTaxesTotal) - (foot.discount)
     this.updateCurrent('footer', foot)
-
+    
     this.totales.emit(foot)
     return foot
   }
-
-  getFooter(changes: invoiceFooter) {
+  
+  getFooter(changes: iInvoiceFooter) {
     if (this.current$.value != null) {
       let footer = this.current$.value.footer
       let discount = changes.discount
@@ -116,4 +125,58 @@ export class SalesService {
     }
   }
 
+  saveInvoice(invoice: SalesInvoiceModel) {
+    let businessRef = `businesses/${this._dashboard.CRF}`
+    if (this.current$.value){
+      const invoiceRef = this._afs.doc<SalesInvoiceModel>(`${businessRef}/sale/${this.current$.value.invoice_ID}`).ref
+      invoiceRef.set({...invoice}) 
+
+      let details: iProductInvoice[] = this.current$.value.details
+      details.forEach(async det =>{
+        let productRef= this._afs.doc(`${businessRef}/products/${det.UPC}`).ref
+        await firebase.firestore().runTransaction(async transaction => {
+          let store_Id = det.store
+          const storeRef = productRef.collection('stores').doc(store_Id)
+          let productStore = (await transaction.get(storeRef)).data()
+
+          if (!productStore) {
+          productStore  = new StoreReferenceModel(store_Id,det.UPC,det.unit_cost)
+          }
+          productStore.stock = productStore.stock - det.cant
+
+          await transaction.set(storeRef,{...productStore},{merge: true})
+          const evento = new  ProductEventModel(
+            'sale',
+            this.manager.managerRef,
+            invoiceRef
+            )
+            this._afs.collection(`${businessRef}/products/${det.UPC}/history`)
+            .doc(`${ new Date().getTime()}`)
+            .set({...evento})
+        })
+      })
+    }
+  }
+  
+
+   async getStokProductByStore(product: ProductModel[]) {
+     let stores:StoreReferenceModel[] = []
+     product.forEach( async p =>{
+       let storesResult = await this.getStoreStock(p.UPC)
+       if (storesResult.docs.length > 0){
+         storesResult.docs.forEach(docs =>
+           stores.push(docs.data())
+         )
+       }
+     })
+    
+    return stores
+  }
+  getStoreStock(UPC: string) {
+    let storeP = this._afs.collection<StoreReferenceModel>(`businesses/${this.businessCRF}/products/${UPC}/stores`).ref.get()
+   // console.log(storeP)
+    return storeP
+
+  }
+  
 }

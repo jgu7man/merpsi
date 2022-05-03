@@ -1,14 +1,13 @@
-import { ThrowStmt } from '@angular/compiler';
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { from, Observable, of, Subscription } from 'rxjs';
+import { Observable } from 'rxjs';
 import { debounceTime, distinctUntilChanged, skip } from 'rxjs/operators';
 import { PurchaseInvoiceModel } from '../../purchase-invoices/pucharce-invoice.model';
 import { PurchaseInvoiceService } from '../../purchase-invoices/puchase-invoice.service';
 import { SalesInvoiceModel } from '../../sales-invoices/sales-invoice.model';
 import { SalesService } from '../../sales-invoices/sales.service';
 import { TaxesService } from '../../taxes/taxes.service';
-import { invoiceFooter } from '../invoice.model';
+import { iInvoiceFooter, invoiceFooter } from '../invoice.model';
 
 @Component({
   selector: 'app-footer-invoice',
@@ -18,9 +17,7 @@ import { invoiceFooter } from '../invoice.model';
 export class FooterInvoiceComponent implements OnInit {
 
 
-  @Input() footerCalc: invoiceFooter | null= null
-
-  totalesObs: Observable<invoiceFooter> = of(this.footerCalc!)
+  @Input() footerCalc: iInvoiceFooter | null= null
 
   formFooter: FormGroup = new FormGroup({
     subtotal: new FormControl(this.footerCalc != null ? this.footerCalc.subtotal : 0),
@@ -58,7 +55,7 @@ export class FooterInvoiceComponent implements OnInit {
       this.getFooter.emit(changes)
     })
   }
-  setTotales(data: invoiceFooter) {
+  setTotales(data: iInvoiceFooter) {
     this.formFooter.patchValue({
       subtotal: data.subtotal,
       total: data.total
@@ -79,10 +76,10 @@ export class FooterInvoiceComponent implements OnInit {
     })
   }
 
-  getTotalTaxes(total: number){
-    let footer: invoiceFooter = this.purchase.current$.value != null ? 
+  getTotalTaxes(){
+    let footer: iInvoiceFooter = this.purchase.current$.value != null ? 
     this.purchase.current$.value.footer : this.sales.current$.value!.footer 
-    footer.total = footer.total + total
+    footer.total = (footer.subtotal + this._taxes.appliedTaxesTotal + footer.shipping) - footer.discount
     footer.taxes = this._taxes.applidedTaxes
     this.formFooter.patchValue({
       total: footer.total

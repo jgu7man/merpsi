@@ -5,24 +5,34 @@ import { BehaviorSubject } from 'rxjs';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import Swal from 'sweetalert2';
 import { DashboardService } from 'src/app/dashboard/dashboard.service';
-import { ProductModel } from '../../inventory/products/products.model';
-import { invoiceFooter, ProductInvoiceModel } from '../invoices/invoice.model';
+import { ProductEventModel, ProductModel, StoreReferenceModel } from '../../inventory/products/products.model';
+import { iInvoiceFooter, invoiceFooter, iProductInvoice, ProductInvoiceModel } from '../invoices/invoice.model';
 import { TaxesService } from '../taxes/taxes.service';
+import { txn } from 'src/app/models/firestore.model';
+import { StoreReference } from 'src/app/modules/inventory/products/products.model';
+import { AuthService } from 'src/app/services/auth.service';
+import { CurrentProductService } from '../../inventory/product-single/current-product.service';
+import firebase from 'firebase/app'
+
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class PurchaseInvoiceService {
+  
 
   current$ = new BehaviorSubject<PurchaseInvoiceModel | null>(null)
   businessCRF: string = this._cache.getDataKey('eid')!
-  public totales: EventEmitter<invoiceFooter> = new EventEmitter();
+  public totales: EventEmitter<iInvoiceFooter> = new EventEmitter();
+  
 
   constructor(
     private _afs: AngularFirestore,
     private _cache: MxCache,
-    public _taxes: TaxesService
+    public _taxes: TaxesService,
+    private _dashboard: DashboardService,
+    private manager: CurrentProductService
 
   ) { 
   }
@@ -120,7 +130,7 @@ export class PurchaseInvoiceService {
 
   addConcept(concept: ProductModel) {
     if (this.current$.value != null) {
-      let details: ProductInvoiceModel[] = this.current$.value.details
+      let details: iProductInvoice[] = this.current$.value.details
       details.push(new ProductInvoiceModel(concept))
       this.updateCurrent('details', details)
     }
@@ -164,6 +174,39 @@ export class PurchaseInvoiceService {
       this.updateCurrent('footer', { ...footer, discount: discount, shipping: shipping }
       )
       this.totales.emit(footer)
+    }
+  }
+
+  async saveInvoice(invoice:PurchaseInvoiceModel) {
+    let businessRef = `businesses/${this._dashboard.CRF}`
+    if (this.current$.value){
+      const invoiceRef = this._afs.doc<PurchaseInvoiceModel>(`${businessRef}/purchase/${this.current$.value.invoice_ID}`).ref
+      invoiceRef.set({...invoice}) 
+
+      let details: iProductInvoice[] = this.current$.value.details
+      details.forEach(async det =>{
+        let productRef= this._afs.doc(`${businessRef}/products/${det.UPC}`).ref
+        await firebase.firestore().runTransaction(async transaction => {
+          let store_Id = this.current$.value!.store.id
+          const storeRef = productRef.collection('stores').doc(store_Id)
+          let productStore = (await transaction.get(storeRef)).data()
+
+          if (!productStore) {
+          productStore  = new StoreReferenceModel(store_Id,det.UPC,det.unit_cost)
+          }
+          productStore.stock = productStore.stock + det.cant
+
+          await transaction.set(storeRef,{...productStore},{merge: true})
+          const evento = new  ProductEventModel(
+            'purchase',
+            this.manager.managerRef,
+            invoiceRef
+            )
+            this._afs.collection(`${businessRef}/products/${det.UPC}/history`)
+            .doc(`${ new Date().getTime()}`)
+            .set({...evento})
+        })
+      })
     }
   }
 }

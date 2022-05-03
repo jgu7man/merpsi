@@ -4,7 +4,7 @@
   [collection]="'businesses/' + businessRef + '/products/'"
     [param]="'UPC'" 
     (results)="getValue($event)" 
-    (lists)="getList($event)">
+    (listLoaded)="getList($event)">
   </mx-searcher-list>
   <ng-container *ngIf="productListEmpty==true">
     <small>no se encuentra el producto..para agregarlo haz click</small>

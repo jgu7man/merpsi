@@ -1,16 +1,11 @@
 <form [formGroup]="invoiceForm">
-  
+
   <div class="row">
     <!-- numero de factura -->
     <mat-form-field appearance="outline" class="col s12 l4 ">
       <mat-label>Nro de Factura</mat-label>
-      <input
-        matInput
-        type="text"
-        name="invoice_ID"
-        formControlName="invoice_ID"
-        (blur)="findInvoice(invoiceForm.controls.invoice_ID.value)"
-      />
+      <input matInput type="text" name="invoice_ID" formControlName="invoice_ID"
+        (blur)="findInvoice(invoiceForm.controls.invoice_ID.value)" />
       <mat-error *ngIf="invoiceForm.hasError('required', 'invoice_ID')">
         Este dato es necesario
       </mat-error>
@@ -18,89 +13,69 @@
         Este factura ya esta registrada
       </mat-error>
     </mat-form-field>
-  
+
     <!-- fecha de la factura -->
     <mat-form-field appearance="outline" class="col s12 l4">
       <mat-label>Fecha de Compra</mat-label>
-      <input
-        matInput
-        formControlName="document_date"
-        [matDatepicker]="picker"
-      />
-      <mat-datepicker-toggle
-        matSuffix
-        [for]="picker"
-      ></mat-datepicker-toggle>
+      <input matInput formControlName="document_date" [matDatepicker]="picker" />
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
       <mat-datepicker #picker startView="year"></mat-datepicker>
     </mat-form-field>
   </div>
-  
+
   <ng-container *ngIf="purchase.current$ | async as purchase">
     <div class="row">
       <ng-container *ngIf="purchase.invoice_ID">
-        
+
         <!-- PROVIDER -->
         <div class="col s12 l4">
-          <app-provider-selector
-          (result)="setProvider($event)"
-          ></app-provider-selector>
+          <app-provider-selector (result)="setProvider($event)"></app-provider-selector>
         </div>
 
         <!-- SEDE -->
         <mat-form-field appearance="outline" class="col s12 l4">
           <mat-label>Sede</mat-label>
-          <mat-select
-            required
-            placeholder="Sede"
-            name="store"
-            (selectionChange)="onStoreSelected($event)"
-          >
+          <mat-select required placeholder="Sede" name="store" (selectionChange)="onStoreSelected($event)">
             <mat-option *ngFor="let sede of stores$ | async" [value]="sede">
               {{ sede.referencia || "" }}
               <span class="small-text">({{ sede.tipo || "" }})</span>
             </mat-option>
           </mat-select>
         </mat-form-field>
-        
+
       </ng-container>
     </div>
-    
+
     <div class="row">
       <div class="col s12">
 
         store: {{ storeForm.invalid}}
         provider: {{ providerForm.invalid }}
-        <button
-          mat-raised-button
-          color="accent"
-          [disabled]="storeForm.invalid || providerForm.invalid"
+        <button mat-raised-button color="accent" [disabled]="storeForm.invalid || providerForm.invalid"
           (click)="addConcept()">
           Agregar Concepto
         </button>
 
         <ng-container *ngIf="purchase.store && purchase.provider">
           <ng-container *ngFor="let concept of purchase.details ">
-            <app-invoice-concept
-            [concept]="concept"
-            (changes)="getChanges($event)"
-            (delete)="deleteConcept($event)"
-            ></app-invoice-concept>
+            <app-invoice-concept [concept]="concept" (changes)="getChanges($event)" (delete)="deleteConcept($event)">
+            </app-invoice-concept>
           </ng-container>
         </ng-container>
       </div>
     </div>
-    
+
     <div class="row">
       <div class="col s12">
         <ng-container *ngIf="purchase.details.length > 0">
-          <app-footer-invoice
-          [footerCalc]="footerCalc"
-          (getFooter)="getFooter($event)"
-          ></app-footer-invoice>
+          <app-footer-invoice [footerCalc]="footerCalc" (getFooter)="getFooter($event)"></app-footer-invoice>
         </ng-container>
       </div>
     </div>
+    <button 
+        mat-raised-button 
+        color="primary"
+        [disabled]="(invoiceForm.invalid || storeForm.invalid || providerForm.invalid ) && purchase.details.length <= 0"
+        (click)="saveInvoice()">Guardar</button>
   </ng-container>
 </form>
-
-

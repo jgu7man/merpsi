@@ -1,25 +1,27 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import { Observable } from 'rxjs';
 import { debounceTime, distinctUntilChanged, skip } from 'rxjs/operators';
 import { iSede } from 'src/app/modules/admin/stores/sede.model';
 import { SedesService } from 'src/app/modules/admin/stores/sedes.service';
-import { iProductInvoice, ProductInvoiceModel } from 'src/app/modules/finances/invoices/invoice.model';
+import { iProductInvoice } from 'src/app/modules/finances/invoices/invoice.model';
 import { ProductModel } from 'src/app/modules/inventory/products/products.model';
 import { PurchaseInvoiceService } from '../../purchase-invoices/puchase-invoice.service';
-import { SalesService } from '../../sales-invoices/sales.service';
+import { SalesService } from '../sales.service';
 
 @Component({
-  selector: 'app-invoice-concept',
+  selector: 'app-invoice-concept-sales',
   templateUrl: './invoice-concept.component.html',
   styleUrls: ['./invoice-concept.component.scss']
 })
-export class InvoiceConceptComponent implements OnInit {
+export class InvoiceConceptSalesComponent implements OnInit {
 
   @Input() concept: iProductInvoice | null = null
+  @Input() stock: number = 0
   businessRef = this._cache.getDataKey('eid')
-  productSelect: ProductModel | string  = ''
+  productSelect: ProductModel | null  = null
   productListEmpty = false
   stores$: Observable<iSede[]>
 
@@ -46,6 +48,8 @@ export class InvoiceConceptComponent implements OnInit {
     public purchase: PurchaseInvoiceService,
     public sales: SalesService,
     private _stores: SedesService,
+    private _alert: MxAlert,
+
 
 
   ) { 
@@ -56,6 +60,7 @@ export class InvoiceConceptComponent implements OnInit {
   ngOnInit(): void {
 
     if (this.concept) {
+      this.formAddProduct.controls.cant.setValidators(Validators.max(this.concept!.stock))
       this.disableForm()
       this.formAddProduct.valueChanges.pipe(
         distinctUntilChanged((x, y) =>
@@ -64,6 +69,15 @@ export class InvoiceConceptComponent implements OnInit {
         skip( 1),
         debounceTime(1000),
       ).subscribe(changes => {
+     /* if (this.sales.current$.value){
+        this.sales.current$.value.details.forEach(concept =>{
+          if (this.concept?.UPC === concept.UPC){
+            if (changes.cant> concept.stock){
+              this._alert.message('ingresa una cantidad menor, el stok es:' + concept.stock,'text')
+            }
+          }
+        })
+      }*/
         this.changes.emit( changes )
       })
 

@@ -19,7 +19,7 @@ export class TaxAmountCrudComponent implements OnInit {
   taxCtrl: FormControl = new FormControl( null );
   appliedTax?: AppliedTaxModel
 
-  @Output() totalTax = new EventEmitter();
+  @Output()  totalTax = new EventEmitter();
   constructor (
     public taxes: TaxesService,
     public purchase: PurchaseInvoiceService,
@@ -34,11 +34,15 @@ export class TaxAmountCrudComponent implements OnInit {
     this.appliedTax = new AppliedTaxModel( tax, this.amount_base );
     this.taxes.applidedTaxes.push( this.appliedTax )
     this.taxCtrl.setValue(null)
-    this.totalTax.emit(this.taxes.appliedTaxesTotal)
+    this.totalTax.emit()
   }
 
   remove(index: number) {
     this.taxes.applidedTaxes.splice(index, 1)
+    this.totalTax.emit()
+
   }
+
+  
 
 }

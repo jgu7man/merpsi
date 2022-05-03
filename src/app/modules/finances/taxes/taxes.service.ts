@@ -6,7 +6,7 @@ import { MxLoading } from 'libs/@marxa/devkit/loading/loading.service';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { BusinessModel } from 'src/app/models/empresa.model';
-import { AppliedTaxModel, GlobalTax, Tax, TaxModel } from './taxes.model';
+import { AppliedTaxModel, GlobalTax, iAppliedTax, Tax, TaxModel } from './taxes.model';
 
 @Injectable({
   providedIn: 'root'
@@ -155,4 +155,11 @@ export class TaxesService {
   leave() {
     this.applidedTaxes = []
   }
+
+  public calcTax(tax: TaxModel, amount: number) {
+    let appliedTax = new AppliedTaxModel(tax, amount)
+    this.applidedTaxes = this.applidedTaxes.filter(t => t.name != tax.name)
+    this.applidedTaxes.push(appliedTax)
+    return this.appliedTaxesTotal 
+ }
 }
