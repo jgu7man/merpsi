@@ -1,6 +1,7 @@
 import { EventEmitter, Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
 import firebase from 'firebase/app'
+import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -18,8 +19,8 @@ import { TaxesService } from '../taxes/taxes.service';
 })
 export class SalesService {
   businessRef = this._dashboard.businessRef
-  current$= new BehaviorSubject<SalesInvoiceModel | null> ( null )
-  
+  current$ = new BehaviorSubject<SalesInvoiceModel | null>(null)
+
   businessCRF: string = this._cache.getDataKey('eid')!
   public totales: EventEmitter<iInvoiceFooter> = new EventEmitter();
 
@@ -28,41 +29,41 @@ export class SalesService {
     private _cache: MxCache,
     public _taxes: TaxesService,
     private _dashboard: DashboardService,
-    private manager: CurrentProductService
+    private manager: CurrentProductService,
+    private _alert: MxAlert,
+  ) { }
 
-
-    ) { }
-    
-    updateCurrent(
-      param: keyof SalesInvoiceModel,
-    value: SalesInvoiceModel[ typeof param ]
+  updateCurrent(
+    param: keyof SalesInvoiceModel,
+    value: SalesInvoiceModel[typeof param]
   ) {
-    if ( this.current$.value !== null ) {
-      this.current$.next( {
+    if (this.current$.value !== null) {
+      this.current$.next({
         ...this.current$.value,
         [param]: value
       })
     }
+    console.log('actualice current')
   }
 
-  deleteConcept(UPC: string){
+  deleteConcept(UPC: string) {
 
     if (this.current$.value !== null) {
       this.current$.next({
         ...this.current$.value,
-        details: this.current$.value.details!.filter( c => c.UPC !== UPC)
+        details: this.current$.value.details!.filter(c => c.UPC !== UPC)
       })
-      
+
       this.current$.next({
         ...this.current$.value,
-        details: this.current$.value.details!.filter( c => c.UPC !== UPC)
+        details: this.current$.value.details!.filter(c => c.UPC !== UPC)
       })
       let foot = this.calcFooter()
       this.totales.emit(foot)
     }
   }
-  
-  calcFooter(){
+
+  calcFooter() {
     let details = this.current$.value!.details
     let subtotal = 0
     details.map(d => {
@@ -70,20 +71,20 @@ export class SalesService {
     })
     let foot = this.current$.value!.footer
     foot.subtotal = subtotal
-    foot.total = (subtotal + foot.shipping + this._taxes.appliedTaxesTotal ) - (foot.discount) 
+    foot.total = (subtotal + foot.shipping + this._taxes.appliedTaxesTotal) - (foot.discount)
     this.updateCurrent('footer', foot)
     return foot
   }
-  addConcept(concept:ProductModel,store: string,stock: number){
+  addConcept(concept: ProductModel, store: string, stock: number) {
     console.log(concept)
-    if (this.current$.value != null){
+    if (this.current$.value != null) {
       let details: iProductInvoice[] = this.current$.value.details
-      details.push(new ProductInvoiceModel(concept,store,stock))
+      details.push(new ProductInvoiceModel(concept, store, stock))
       this.updateCurrent('details', details)
     }
-    
+
   }
-  
+
   getChanges(changes: any, concept: any) {
     let details = this.current$.value!.details
     let subtotal = 0
@@ -108,11 +109,11 @@ export class SalesService {
     foot.subtotal = subtotal
     foot.total = (subtotal + foot.shipping + this._taxes.appliedTaxesTotal) - (foot.discount)
     this.updateCurrent('footer', foot)
-    
+
     this.totales.emit(foot)
     return foot
   }
-  
+
   getFooter(changes: iInvoiceFooter) {
     if (this.current$.value != null) {
       let footer = this.current$.value.footer
@@ -126,57 +127,62 @@ export class SalesService {
   }
 
   saveInvoice(invoice: SalesInvoiceModel) {
-    let businessRef = `businesses/${this._dashboard.CRF}`
-    if (this.current$.value){
-      const invoiceRef = this._afs.doc<SalesInvoiceModel>(`${businessRef}/sale/${this.current$.value.invoice_ID}`).ref
-      invoiceRef.set({...invoice}) 
+    try {
+      let businessRef = `businesses/${this._dashboard.CRF}`
+      if (this.current$.value) {
+        const invoiceRef = this._afs.doc<SalesInvoiceModel>(`${businessRef}/sale/${this.current$.value.invoice_ID}`).ref
+        invoiceRef.set({ ...invoice })
 
-      let details: iProductInvoice[] = this.current$.value.details
-      details.forEach(async det =>{
-        let productRef= this._afs.doc(`${businessRef}/products/${det.UPC}`).ref
-        await firebase.firestore().runTransaction(async transaction => {
-          let store_Id = det.store
-          const storeRef = productRef.collection('stores').doc(store_Id)
-          let productStore = (await transaction.get(storeRef)).data()
+        let details: iProductInvoice[] = this.current$.value.details
+        details.forEach(async det => {
+          let productRef = this._afs.doc(`${businessRef}/products/${det.UPC}`).ref
+          await firebase.firestore().runTransaction(async transaction => {
+            let store_Id = det.store
+            const storeRef = productRef.collection('stores').doc(store_Id)
+            let productStore = (await transaction.get(storeRef)).data()
 
-          if (!productStore) {
-          productStore  = new StoreReferenceModel(store_Id,det.UPC,det.unit_cost)
-          }
-          productStore.stock = productStore.stock - det.cant
+            if (!productStore) {
+              productStore = new StoreReferenceModel(store_Id, det.UPC, det.unit_cost)
+            }
+            productStore.stock = productStore.stock - det.cant
 
-          await transaction.set(storeRef,{...productStore},{merge: true})
-          const evento = new  ProductEventModel(
-            'sale',
-            this.manager.managerRef,
-            invoiceRef
+            await transaction.set(storeRef, { ...productStore }, { merge: true })
+            const evento = new ProductEventModel(
+              'sale',
+              this.manager.managerRef,
+              invoiceRef
             )
             this._afs.collection(`${businessRef}/products/${det.UPC}/history`)
-            .doc(`${ new Date().getTime()}`)
-            .set({...evento})
+              .doc(`${new Date().getTime()}`)
+              .set({ ...evento })
+          })
         })
-      })
+      }
+    } catch (error) {
+      this._alert.error('ha ocurrido un error al crear la factura', error)
+      console.error(error);
     }
   }
-  
 
-   async getStokProductByStore(product: ProductModel[]) {
-     let stores:StoreReferenceModel[] = []
-     product.forEach( async p =>{
-       let storesResult = await this.getStoreStock(p.UPC)
-       if (storesResult.docs.length > 0){
-         storesResult.docs.forEach(docs =>
-           stores.push(docs.data())
-         )
-       }
-     })
-    
+
+  async getStokProductByStore(product: ProductModel[]) {
+    let stores: StoreReferenceModel[] = []
+    product.forEach(async p => {
+      let storesResult = await this.getStoreStock(p.UPC)
+      if (storesResult.docs.length > 0) {
+        storesResult.docs.forEach(docs =>
+          stores.push(docs.data())
+        )
+      }
+    })
+
     return stores
   }
   getStoreStock(UPC: string) {
     let storeP = this._afs.collection<StoreReferenceModel>(`businesses/${this.businessCRF}/products/${UPC}/stores`).ref.get()
-   // console.log(storeP)
+    // console.log(storeP)
     return storeP
 
   }
-  
+
 }

@@ -1,9 +1,23 @@
 <form class="row" [formGroup]="salesForm">
   <!-- Nro de Factura -->
   <mat-form-field appearance="outline" class="col s12 l4">
-    <mat-label>Nro d Factura</mat-label>
-    <input matInput type="text" formControlName="invoice_ID">
+    <mat-label>Talonario</mat-label>
+    <mat-select
+      placeholder="Placeholder"
+      name="stub"
+      (selectionChange)="selectStubInvoice($event)"
+      >
+        <mat-option
+          *ngFor="let item of stubList"
+          [value]="item">
+          {{item.name}}
+        </mat-option>
+      </mat-select>
   </mat-form-field>
+  <div appearance="outline" class="col s12 l4">
+    <mat-label>Factura Nro: </mat-label>
+    <ng-container *ngIf="stubSelect && sales.current$.value"><h1>{{sales.current$.value.invoice_ID}}</h1></ng-container>
+  </div>
   <!-- fecha de emision -->
   <mat-form-field appearance="outline" class="col s12 l4">
     <mat-label>Fecha de Emision</mat-label>

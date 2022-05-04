@@ -12,7 +12,7 @@ export class StubModel{
 
   constructor(
     readonly index: number,
-    data?: StubModel
+    data?: StubModel | iStub
   )
   {
     this.starIndex = data?.starIndex || 0;
@@ -34,7 +34,8 @@ export interface iStub{
   name: string
   created: FireTime 
   lastUpdated: FireTime
-  active: Boolean
+  active: boolean
+  index: number
 }
 
 export namespace Stub{
