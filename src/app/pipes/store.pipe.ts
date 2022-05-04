@@ -1,8 +1,7 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { Observable } from 'rxjs';
-import { distinctUntilChanged, filter, find, map } from 'rxjs/operators';
-import { FireDoc } from '../models/firestore.model';
-import { iSede, SedeModel } from '../modules/admin/stores/sede.model';
+import { map } from 'rxjs/operators';
+import { iSede } from '../modules/admin/stores/sede.model';
 import { SedesService } from '../modules/admin/stores/sedes.service';
 
 @Pipe({
@@ -22,17 +21,5 @@ export class StorePipe implements PipeTransform {
        return resp ? resp.name : ''
       }),
     )
-    //return this._store.listenAll()
   }
-
-  // transform( type: SkillID, ...args:  ): Observable<iDetalleSkill[]> {
-  //   return this._skills
-  //   .list$.pipe(
-  //       map( list => list?.filter( ( s: iDetalleSkill ) => s.tipo === type ) || [] ),
-  //     )
-  // }
-}
-
-function s<T>(s: any, arg1: (iSede: any) => any): import("rxjs").OperatorFunction<iSede[], iSede | null> {
-  throw new Error('Function not implemented.');
 }

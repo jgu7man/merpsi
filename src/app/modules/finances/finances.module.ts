@@ -19,6 +19,8 @@ import { SalesInvoicesComponent } from './sales-invoices/sales-invoices.componen
 import { CreateInvoiceSalesComponent } from './sales-invoices/create-invoice-sales/create-invoice-sales.component';
 import { InvoiceConceptSalesComponent } from './sales-invoices/invoice-concept-sales/invoice-concept-sales.component';
 import { SelectConceptSalesDialogComponent } from './sales-invoices/select-concept-sales-dialog/select-concept-sales-dialog.component';
+import { StubsInvoiceComponent } from './stubs-invoice/stubs-invoice.component';
+import { StubFormCreateComponent } from './stubs-invoice/stub-form/stub-form-create/stub-form-create.component';
 
 
 @NgModule({
@@ -37,7 +39,9 @@ import { SelectConceptSalesDialogComponent } from './sales-invoices/select-conce
     SalesInvoicesComponent,
     CreateInvoiceSalesComponent,
     InvoiceConceptSalesComponent,
-    SelectConceptSalesDialogComponent
+    SelectConceptSalesDialogComponent,
+    StubsInvoiceComponent,
+    StubFormCreateComponent
   ],
   imports: [
     CommonModule,

@@ -178,16 +178,21 @@ export class CreateInvoiceComponent implements OnInit {
   }
 
   async saveInvoice(){
-    let invoice = this.purchase.current$.value!
-    let taxs: any = []
-    invoice.footer.taxes.map(tax => {
-      taxs.push({...tax})
-    })
-    invoice.footer.taxes = taxs
-    await this.purchase.saveInvoice(invoice)
-    this._alert.notify('la factura ha sido guardado con exito!')
-    //this.purchase.current$.next(null)
-    this.cleanForm()
-    this.submited.emit()
+    if (this.invoiceForm.valid && this.invoiceForm.pristine){
+      let invoice = this.purchase.current$.value!
+      let taxs: any = []
+      invoice.footer.taxes.map(tax => {
+        taxs.push({...tax})
+      })
+      invoice.footer.taxes = taxs
+      await this.purchase.saveInvoice(invoice)
+      this._alert.notify('la factura ha sido guardado con exito!')
+      //this.purchase.current$.next(null)
+      this.cleanForm()
+      this.submited.emit()
+    }else{
+      this._alert.message('Debe llenar todos los campos requeridos')
+    }
+    
   }
 }
