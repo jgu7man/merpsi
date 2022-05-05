@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
-import { Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { FireDoc } from 'src/app/models/firestore.model';
 import Swal from 'sweetalert2';
@@ -12,12 +12,15 @@ import { iSede } from './sede.model';
 })
 export class SedesService {
 
-  businessCRF: string = this._cache.getDataKey('eid')!
+  businessCRF: string = this._cache.getDataKey( 'eid' )!
+  list$ = new BehaviorSubject<iSede[]>( [] )
 
   constructor(
     private _afs: AngularFirestore,
     private _cache: MxCache,
-  ) { }
+  ) { 
+    this.listenAll().subscribe(list => this.list$.next(list))
+  }
   
   /**
   * metodo que escucha los cambios en la colección de las sedes de una empresa

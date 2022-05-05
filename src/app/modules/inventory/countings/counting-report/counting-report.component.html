@@ -1,0 +1,152 @@
+<mat-drawer-container [hasBackdrop]="true">
+
+  <mat-drawer-content>
+
+    <div class="container">
+      <div class="row">
+        <div class="col s12 m11">
+          <button mat-icon-button
+          (click)="close.emit()">
+              <i class="fas fa-times fa-lg"></i>
+          </button>
+        </div>
+        <div class="col s12 m11">
+          <div class="row">
+            <div class="col s12 l4">
+              <mat-card>
+                <mat-card-header>
+                  <mat-card-title>{{arqueo.id}}</mat-card-title>
+                  <mat-card-subtitle>
+                    {{arqueo.startDate | mxTimestamp | date}}
+                    <span *ngIf="arqueo.endDate">
+                      - {{arqueo.endDate |mxTimestamp | date}}
+                    </span>
+                  </mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content>
+                  <p class="data-item">
+                    <span class="data-label">Registros:</span>
+                    <span class="data-value">{{arqueo.recordCount}}</span>
+                  </p>
+                  <p class="data-item">
+                    <span class="data-label">Se agregaron productos:</span>
+                    <span class="data-value green-text">{{arqueo.newProducts}}</span>
+                  </p>
+                  <p class="data-item">
+                    <span class="data-label">Se borraron productos:</span>
+                    <span class="data-value red-text">{{arqueo.deletedProducts}}</span>
+                  </p>
+                  <p class="data-item multiline">
+                    <span class="data-label green-text"><b>Sobrante:</b></span><br>
+                    <span class="data-value">{{arqueo.leftovers.count}} productos</span> <br>
+                    <span class="data-value">{{arqueo.leftovers.acc}} unidades</span> <br>
+                    <span class="data-value">${{arqueo.leftovers.valueAcc}} pesos</span>
+                  </p>
+                  <p class="data-item multiline">
+                    <span class="data-label red-text"><b>Faltantes:</b></span><br>
+                    <span class="data-value">{{arqueo.missings.count}} productos</span> <br>
+                    <span class="data-value">{{arqueo.missings.acc}} unidades</span> <br>
+                    <span class="data-value">${{arqueo.missings.valueAcc}} pesos</span>
+                  </p>
+                </mat-card-content>
+                <mat-card-actions>
+                  <div class="row">
+                    <div class="col s12">
+                      <button mat-button color="accent"
+                      (click)="arqueos.updateDifferences(arqueo.id)"
+                      >Actualizar balances</button>
+                    </div>
+                    <div class="col s12">
+                      <button mat-button color="accent"
+                      (click)="deletingsPanel.open()"
+                      >Ver registro de borrados</button>
+                    </div>
+                    <div class="col s12">
+                      <button mat-button color="accent"
+                      (click)="arqueos.downloadReport(arqueo.id)"
+                      >Descargar</button>
+                    </div>
+                  </div>
+
+                </mat-card-actions>
+              </mat-card>
+            </div>
+            <div class="col s12 l8">
+              <mx-sort-options [fields]="['productId']" ></mx-sort-options>
+              <table mat-table #table [dataSource]="records">
+                <ng-container matColumnDef="productId">
+                  <th mat-header-cell *matHeaderCellDef> ID de prod. </th>
+                  <td mat-cell *matCellDef="let record"> {{record.productId}} </td>
+                </ng-container>
+                <ng-container matColumnDef="diffs">
+                  <th mat-header-cell *matHeaderCellDef> Diferencias </th>
+                  <td mat-cell *matCellDef="let record"
+                  [ngClass]="{
+                    'green-text': record.diffs > 0,
+                    'red-text': record.diffs < 0}
+                    ">
+                    {{record.diffs}}
+                  </td>
+                </ng-container>
+                <ng-container matColumnDef="moneyDiffs">
+                  <th mat-header-cell *matHeaderCellDef> Diferencia $ </th>
+                  <td mat-cell *matCellDef="let record"
+                  [ngClass]="{
+                    'green-text': record.moneyDiffs > 0,
+                    'red-text': record.moneyDiffs < 0}
+                    ">
+                    ${{record.moneyDiffs}}
+                  </td>
+                </ng-container>
+                <tr mat-header-row *matHeaderRowDef="['productId','diffs', 'moneyDiffs']"></tr>
+                <tr mat-row *matRowDef="let record; columns: ['productId','diffs', 'moneyDiffs'];"></tr>
+              </table>
+              <mx-index-caller></mx-index-caller>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </mat-drawer-content>
+
+  <mat-drawer #deletingsPanel="matDrawer"
+  [position]="'start'"
+  [mode]="'side'">
+
+    <div class="container">
+      <div class="row">
+        <div class="col s1">
+          <button mat-icon-button (click)="deletingsPanel.close()">
+            <i class="fas fa-times fa-lg"></i>
+          </button>
+        </div>
+        <div class="col s11">
+          <mx-sort-options [filterOption]="false" [fields]="['productId']" ></mx-sort-options>
+          <table mat-table #table [dataSource]="deletedProducts">
+            <ng-container matColumnDef="productId">
+              <th mat-header-cell *matHeaderCellDef> ID de prod. </th>
+              <td mat-cell *matCellDef="let delProd"> {{delProd.productId}} </td>
+            </ng-container>
+            <ng-container matColumnDef="diffs">
+              <th mat-header-cell *matHeaderCellDef> Bajas </th>
+              <td mat-cell *matCellDef="let delProd" class="red-text" >
+                {{delProd.diffs}}
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="moneyDiffs">
+              <th mat-header-cell *matHeaderCellDef> Ajuste $ </th>
+              <td mat-cell *matCellDef="let delProd" class="red-text">
+                ${{delProd.moneyDiffs}}
+              </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="['productId','diffs', 'moneyDiffs']"></tr>
+            <tr mat-row *matRowDef="let delProd; columns: ['productId','diffs', 'moneyDiffs'];"></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+
+  </mat-drawer>
+</mat-drawer-container>

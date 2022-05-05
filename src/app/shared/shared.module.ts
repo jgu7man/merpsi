@@ -7,6 +7,7 @@ import { NgxMaskModule } from 'ngx-mask';
 import { PipesModule } from '../pipes/pipes.module';
 import { ComponentsModule } from '../components/components.module';
 import { PrimeModule } from './prime.module';
+import { SharedAdminModule } from '../modules/admin/shared/shared-admin.module';
 
 
 
@@ -20,11 +21,12 @@ import { PrimeModule } from './prime.module';
     NgxMaskModule,
     PipesModule,
     ComponentsModule,
-    PrimeModule
+    PrimeModule,
+    SharedAdminModule
   ],
   imports: [
     PipesModule,
-    MarxaModule
+    MarxaModule,
   ]
 })
 export class SharedModule { }

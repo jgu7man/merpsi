@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { Product, ProductModel, StoreReferenceModel } from 'src/app/modules/inventory/products/products.model';
+import { formatUPC, Product, ProductModel, StoreReferenceModel } from 'src/app/modules/inventory/products/products.model';
 import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import { MxText } from 'libs/@marxa/devkit/text/mx-text.service';
@@ -110,6 +110,19 @@ export class InventoryProductsService {
     }
   }
 
+  retriveStoresRef( UPC: string ) {
+    const productId =  formatUPC(UPC);
+    return this.businessRef.collection
+      <StoreReferenceModel>( `products/${ productId }/stores` )
+      .valueChanges().pipe(
+        catchError( ( error ) => {
+          this._alert.error( 'No se pudo tener contacto con la base de datos', error, 'productos.service#retriveAlamacenesRef' )
+          return of<StoreReferenceModel[]>([])
+        })
+      )
+
+  }
+
   
 
   /**
@@ -182,7 +195,7 @@ export class InventoryProductsService {
 
   /**
    *
-   * funcion que se encarga de buscar un producto registrado en la empresa mediante un codigo (pid, code o reference ) 
+   * Función que se encarga de buscar un producto registrado en la empresa mediante un codigo (pid, code o reference ) 
    *
    * @param {string} code
    * @return {*} 

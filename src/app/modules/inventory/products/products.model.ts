@@ -21,6 +21,8 @@ export class ProductModel {
   public description: string
   /** Marca del producto */
   public brand?: string
+  /** Existencias totales */
+  public stock: number = 0
   /** Unidad de medida */
   public measure_unit?: number
   /** Referencia sin caracteres especiales */
@@ -147,7 +149,9 @@ export declare namespace Product {
     | 'getReferenceCodes'
     | 'createSlug'
     | 'getData'
-    > { }
+    > { 
+    
+    }
   
   /**
    * Modelo de datos principales del concepto
@@ -192,6 +196,9 @@ export declare namespace Product {
       reference_codes: AbstractControl
     }
   }
+
+  
+  
 
   /** Segemento de modelos para eventos del producto*/
   namespace history {
@@ -276,7 +283,16 @@ export declare namespace StoreReference {
 }
 
   
-
+export function formatUPC( code: string ): string {
+  return code
+    .replace(/\,/g, '_')
+    .replace(/\./g, '_')
+    .replace(/\//g, '-')
+    .replace(/\@/g, '-')
+    .replace(/\s/g, '_')
+    .replace(/\"/g, '')
+    .replace(/\'/g, '');
+}
 
 
 
