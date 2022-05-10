@@ -4,11 +4,11 @@
   [mode]="'over'"
   [opened]="arqueoSelected ? true : false">
 
-    <app-product-balancing-report
+    <app-counting-report
       *ngIf="arqueoSelected"
       [arqueo]="arqueoSelected"
       (close)="closeArqueo()"
-    ></app-product-balancing-report>
+    ></app-counting-report>
 
   </mat-drawer>
   <mat-drawer-content>

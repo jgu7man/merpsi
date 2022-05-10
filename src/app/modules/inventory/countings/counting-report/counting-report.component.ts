@@ -2,7 +2,7 @@ import { Component, OnInit, EventEmitter, OnDestroy, Output, Input } from '@angu
 import { MxIndex } from '@marxa/index';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import { Subscription } from 'rxjs';
-import { ArqueoModel, ArqueoRecord, DeleteRecord } from '../arqueo.model';
+import { ArqueoModel, UpdateRecord, DeleteRecord } from '../arqueo.model';
 import { ArqueosService } from '../arqueos.service';
 
 @Component({
@@ -13,7 +13,7 @@ import { ArqueosService } from '../arqueos.service';
 export class CountingReportComponent implements OnInit, OnDestroy {
 
   @Input() arqueo!: ArqueoModel
-  records: ArqueoRecord[] = [];
+  records: UpdateRecord[] = [];
   deletedProducts: DeleteRecord[] = [];
   private indexSubscription!: Subscription;
   @Output() close: EventEmitter<any> = new EventEmitter()

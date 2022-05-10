@@ -1,9 +1,9 @@
 import firebase from 'firebase/app';
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
-import { catchError, first, map, pluck, take } from 'rxjs/operators';
+import { catchError, first, map, mergeMap, pluck, take } from 'rxjs/operators';
 import { MxStorage } from '@marxa/storage';
-import { ArqueoModel, ArqueoRecord, DeleteRecord, iArqueoUpdate } from './arqueo.model';
+import { ArqueoModel, UpdateRecord, DeleteRecord, iArqueoUpdate } from './arqueo.model';
 import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
 import { MxLoading } from 'libs/@marxa/devkit/loading/loading.service';
 import { MxText } from 'libs/@marxa/devkit/text/mx-text.service';
@@ -12,7 +12,7 @@ import { InventoryProductsService } from '../products/products.service';
 import { formatUPC, Product, ProductModel, StoreReference, StoreReferenceModel } from '../products/products.model';
 import { BehaviorSubject, concat, forkJoin, Observable } from 'rxjs';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
-import { FireRef } from 'src/app/models/firestore.model';
+import { fireBatch, FireRef } from 'src/app/models/firestore.model';
 
 @Injectable({
   providedIn: 'root'
@@ -20,10 +20,12 @@ import { FireRef } from 'src/app/models/firestore.model';
 export class ArqueosService {
 
   current!: ArqueoModel | null
+  get mode_on() { return this.current ? true : false; }
   list$ = new BehaviorSubject<ArqueoModel[]>( [] )
   businessCRF: string = this._cache.getDataKey( 'eid' )!
-  path: string = `businesses/${this.businessCRF}/product_countings`
-  
+  path: string = `businesses/${ this.businessCRF }/product_countings`
+  private batch = fireBatch
+
   constructor (
     private _afs: AngularFirestore,
     private _alert: MxAlert,
@@ -46,7 +48,7 @@ export class ArqueosService {
    *
    * @readonly
    */
-  get collectionRef() {
+  get countingsCollectionRef() {
     if (!this.businessCRF) throw {message: 'No se tiene el CRF de la empresa'}
     return this._afs.collection<ArqueoModel>(this.path)
   }
@@ -59,16 +61,24 @@ export class ArqueosService {
   get currentRef() {
     let current = this.current
     if ( !current ) throw { message: 'No existe un arqueo de productos ACTIVO' }
-    return this.collectionRef.doc<ArqueoModel>(current.store_id)
+    return this.countingsCollectionRef.doc<ArqueoModel>(current.store_id)
+  }
+
+  get updatesRef() {
+    return this.currentRef.collection( 'updates' )
+  }
+
+  get deletingsRef() {
+    return this.currentRef.collection( 'deletings' )
   }
 
   /**
-   * Retorna un observable de la lista de arqueos de la empresa 
+   * Retorna un observable de la lista de arqueos de la empresa
    *
    * @returns {*} Observable<ArqueoModel[]>
    */
    list(): Observable<ArqueoModel[]> {
-    return this.collectionRef.valueChanges().pipe(
+    return this.countingsCollectionRef.valueChanges().pipe(
       catchError( ( error: any ) => {
         console.error(error);
         this._alert.error( 'Problemas para cargar los arqueos', error )
@@ -78,7 +88,7 @@ export class ArqueosService {
   }
 
   /**
-   * Obtiene la suscripción al actual arqueo de productos 
+   * Obtiene la suscripción al actual arqueo de productos
    *
    * @param {string} [store_id] OPCIONAL ID del almacen del cuál se quiere saber el estado.
    * @returns {*}  Observable<ArqueoModel | null>
@@ -105,24 +115,24 @@ export class ArqueosService {
   async initialize(store_id: string) {
     try {
       if ( !this.current ) {
-        
+
         /* Se busca que no exista un estado activo de arqueo en este almacen */
 
-        let prentend = await this.collectionRef.ref
+        let prentend = await this.countingsCollectionRef.ref
           .where( 'active', '==', true )
           .where( 'store_id', '==', store_id )
           .get()
         let actived = prentend.size > 0
         if (actived) throw {message: 'Ya existe un arqueo ACTIVO para este almacen. No puede iniciarse otro'}
-        
+
 
 
         /* Se registra el arqueo nuevo */
 
         let counting: ArqueoModel = new ArqueoModel( store_id )
-        this.collectionRef.doc( counting.id ).set( { ...counting } )
+        this.countingsCollectionRef.doc( counting.id ).set( { ...counting } )
         return counting
-        
+
       } else {
         throw {message:'Ya existe un arqueo ACTIVO para este almacen '}
       }
@@ -144,34 +154,35 @@ export class ArqueosService {
   /**
    * Asigna un registro nuevo al arqueo actual activado
    *
-   * @param {ProductModel} product Producto que se está actualizando
-   * @param {StoreReferenceModel} update Actualización del producto en el almacen
-   * @param {StoreReferenceModel} [lastStoreState] OPCIONAL Anterior estado del producto en el almacen
+   * @param {UPC} UPC  Anterior estado del producto en el almacen
+   * @param {StoreReference.stateUpdate} state Actualización del producto en el almacen
+   * @param {boolean} [NEW] OPCIONAL Producto que se está actualizando
    */
-  async setRecord( product: ProductModel, update: StoreReferenceModel, lastStoreState?: StoreReferenceModel ) {
+  async setRecord( UPC: string,  state: StoreReference.stateUpdate,  NEW: boolean = false,) {
     this.current = await this.getCurrent().pipe(take(1)).toPromise()
     if ( this.current ) {
       try {
 
         /* Se crea y se registra el cambio */
-        
-        const record: ArqueoRecord = new ArqueoRecord( product, update, lastStoreState )
+        const productRef = this._afs.doc<Product.DataReference>(`${this.businessCRF}/products/${UPC}`).ref
+
+        const record: UpdateRecord = new UpdateRecord( productRef, state, NEW )
         console.log( record )
         let { leftovers, missings, moneyDiffs } = record
-        let { storeStateUpdate: stateUpdate, ...restRecord } = record
-        let recordId = formatUPC(record.productId)
-        
-        await this.currentRef.collection('records').doc(recordId)
+        let { state: stateUpdate, ...restRecord } = record
+        let recordId = formatUPC(record.UPC)
+
+        await this.updatesRef.doc(recordId)
           .set( { ...restRecord, update: {...stateUpdate}  } )
 
-        
-        
+
+
         /* Se actualiza la información del arqueo */
-        
+
         // let keepValue = firebase.firestore.FieldValue.increment( 0 )
         let countingUpdate: iArqueoUpdate = {
           recordCount: this.current.recordCount + 1,
-          newProducts: this.increces('newProducts', record.newProduct, 1),
+          newProducts: this.increces('newProducts', record.NEW, 1),
           leftovers: {
             count: this.increces('leftovers.count', leftovers > 0, 1 ),
             acc: this.increces('leftovers.acc', leftovers > 0, leftovers ),
@@ -197,31 +208,51 @@ export class ArqueosService {
       this._alert.message('No se ha inicializado ningún arqueo.')
     }
   }
-  
+
+
+
+  async registDeleteAll(UPC: string) {
+    try {
+      if ( !this.current ) throw { message: 'No se ha inicializado ningún arqueo.' }
+
+      let productRef = this._afs.collection<StoreReferenceModel>(`${this.businessCRF}/products/${UPC}/store`)
+      const stores = await productRef.valueChanges().pipe( take( 1 ) ).toPromise()
+
+      this._loading.asyncForEach( stores, store => {
+        this.registDeleting( UPC, store, true)
+      } )
+
+      return this.batch.commit()
+
+    } catch ( error ) {
+      console.error(error)
+      this._alert.error('Error guardando el registro', error)
+    }
+  }
+
 
   /**
    * Registra la eliminación de un producto
    *
-   * @param {Product.DataReference} product
+   * @param {Product.DataReference} UPC
    */
-  async registDeleting( product: Product.DataReference) {
+  async registDeleting( UPC: string, store: StoreReferenceModel,  all: boolean = false) {
     if ( this.current ) {
       try {
 
         /* Registra el producto a eliminar */
-        
-        const stores = await this._productos.retriveStoresRef( product.UPC ).pipe( first() ).toPromise()
-        const storeState = stores.find(a => a.store_id === this.current?.store_id)
-        const record:DeleteRecord = new DeleteRecord( product, storeState )
+        const productRef = this._afs.doc
+          <Product.DataReference>( `${ this.businessCRF }/products/${ UPC }` ).ref
+        const record:DeleteRecord = new DeleteRecord( productRef, store )
         const { missings, moneyDiffs } = record
-        let recordId = formatUPC(record.product.UPC)
 
-        await this.currentRef.collection('deletings').doc(recordId).set( { ...record } )
-
+        let recordId = formatUPC( UPC )
+        this.batch.set( this.deletingsRef.doc(recordId).ref,  { ...record } )
 
 
         /* Actualiza el arqueo actual */
-        
+        if (!this.current) throw { message: 'No existe arqueo actual' }
+
         let storeUpdate = {
           recordCount: this.current.recordCount + 1,
           deletedProducts: this.current.deletedProducts + 1,
@@ -232,11 +263,16 @@ export class ArqueosService {
               ? this.current.missings.acc + missings : this.current.missings.acc,
             valueAcc: missings > 0
               ? this.current.missings.valueAcc + moneyDiffs : this.current.leftovers.valueAcc,
-          },
-      }
+          }
+        }
 
-      await this.currentRef.update( storeUpdate )
-      this._alert.notify('Registro guardado')
+        this.batch.update( this.currentRef.ref, storeUpdate )
+
+        if ( !all ) {
+          this.batch.commit()
+          this._alert.notify('Registro guardado')
+        }
+
       return
       } catch (error) {
         console.error(error)
@@ -254,8 +290,7 @@ export class ArqueosService {
    */
   async updateDifferences(id: string) {
     try {
-      const recordsRef = this.collectionRef.doc(id)
-        .collection<ArqueoRecord>( 'records' ).ref
+      const recordsRef = this.updatesRef.ref
       const recordsCol = await recordsRef.get()
       let update = {
         leftovers: {
@@ -309,15 +344,14 @@ export class ArqueosService {
    * @param {string} UPC Código del producto
    * @returns {*}  {(Promise<ArqueoRecord | null>)}
    */
-  async searchRecord( UPC: string ): Promise<ArqueoRecord | null> {
+  async searchRecord( UPC: string ): Promise<UpdateRecord | null> {
     try {
       let recordId = formatUPC(UPC)
-      const recordDoc = await this.currentRef
-        .collection( 'records' )
-        .doc<ArqueoRecord>( recordId )
+      const recordDoc = await this.updatesRef
+        .doc<UpdateRecord>( recordId )
         .ref.get()
-      
-      return  recordDoc.data() || null 
+
+      return  recordDoc.data() || null
 
     } catch (error) {
       console.error(error)
@@ -335,13 +369,12 @@ export class ArqueosService {
    */
   async searchDeleted( UPC: string ): Promise<DeleteRecord | null>{
     try {
-      const deletedDoc = await this.currentRef
-        .collection( 'deletings' )
+      const deletedDoc = await this.deletingsRef
         .doc<DeleteRecord>( UPC )
         .ref.get()
-      
+
       return deletedDoc.data() || null
-    
+
     } catch ( error ) {
       console.error(error)
       this._alert.error( 'Error al buscar el registro', error, 'searchDeleted', true )
@@ -355,49 +388,51 @@ export class ArqueosService {
    * @param {string} keyword Palabra clave del producto para hacer la búsqueda
    * @returns {*}  Promise<Product.DataReference[]>
    */
-  async searchByKeyword( keyword: string ) {
-    try {
+  // async searchByKeyword( keyword: string ) {
+  //   try {
 
-      /* Search on product */
-      const productsCol = await this._afs.collection
-        <Product.DataReference>( `businesses/${ this.businessCRF }/products`, ref =>
-          ref.where( 'keywords', 'array-contains', keyword ) )
-        .valueChanges().pipe(first()).toPromise()
+  //     /* Search on product */
+  //     const productsCol = await this._afs.collection
+  //       <Product.DataReference>( `businesses/${ this.businessCRF }/products`, ref =>
+  //         ref.where( 'keywords', 'array-contains', keyword ) )
+  //       .valueChanges().pipe(first()).toPromise()
 
-      /* Search on arqueo update record */
-      const recordsCol = await this.currentRef
-        .collection<ArqueoRecord>( 'records', ref =>
-          ref.where( 'product.keywords', 'array-contains', keyword ) )
-        .valueChanges().pipe( first(), map( list => list.map( r => r.product ) ) )
-        .toPromise()
-      
-      
-      /* Search on arqueo delete record */
-      const deletingsCol = await this.currentRef
-        .collection<DeleteRecord>( `deletings`, ref =>
-          ref.where( 'product.keywords', 'array-contains', keyword ) )
-        .valueChanges().pipe( first(), map( list => list.map( r => r.product ) ) )
-        .toPromise()
-      
-      let result = await concat([productsCol, recordsCol, deletingsCol]).toPromise()
+  //     /* Search on arqueo update record */
+  //     // const recordsCol = await this.currentRef
+  //     //   .collection<UpdateRecord>( 'records', ref =>
+  //     //     ref.where( 'keywords', 'array-contains', keyword ) )
+  //     //   .valueChanges().pipe( first(), mergeMap( list => {
+  //     //     const products
+  //     //   }) )
+  //     //   .toPromise()
 
-      return result || []
-    } catch (error) {
-      this._alert.error( 'Error haciendo la consulta', error )
-      console.error( error );
-      return []
-    }
-  }
+
+  //     /* Search on arqueo delete record */
+  //     // const deletingsCol = await this.currentRef
+  //     //   .collection<DeleteRecord>( `deletings`, ref =>
+  //     //     ref.where( 'product.keywords', 'array-contains', keyword ) )
+  //     //   .valueChanges().pipe( first(), map( list => list.map( r => r.product ) ) )
+  //     //   .toPromise()
+
+  //     // let result = await concat([productsCol, recordsCol, deletingsCol]).toPromise()
+
+  //     // return result || []
+  //   } catch (error) {
+  //     this._alert.error( 'Error haciendo la consulta', error )
+  //     console.error( error );
+  //     return []
+  //   }
+  // }
 
   /**
    * Obtiene arqueo seleccionado
    *
    * @param {string} id ID del arqueo
-   * @returns {*} 
+   * @returns {*}
    */
   async getReport(id: string) {
     try {
-      const countingRef = this.collectionRef.doc<ArqueoModel>( id )
+      const countingRef = this.countingsCollectionRef.doc<ArqueoModel>( id )
       const countingDoc = await countingRef.ref.get()
       return countingDoc.data() || null
     } catch (error) {
@@ -411,11 +446,11 @@ export class ArqueosService {
    * Descarga el resultado del arqueo seleccionado
    *
    * @param {string} id ID del arqueo
-   * @returns {*} 
+   * @returns {*}
    */
   async downloadReport(id:string): Promise<void> {
     try {
-      const countingReportDoc = await this.collectionRef.doc(id).ref.get()
+      const countingReportDoc = await this.countingsCollectionRef.doc(id).ref.get()
       if ( !countingReportDoc.exists ) {
         this._alert.message('No se pudo encontrar el reporte')
       } else {
@@ -424,7 +459,7 @@ export class ArqueosService {
         const endDate = counting?.endDate
         const countingStartDate = this._text.stringifyShortDate(new Date(+id))
         const reportRows: Product.DataReference[] = []
-        
+
         const coutingEndDate = endDate && 'seconds' in endDate
           ? this._text.stringifyShortDate(
             new Date( endDate.seconds * 1000 ) )
@@ -432,14 +467,17 @@ export class ArqueosService {
             new Date()
           )
 
-        const recordsCol = await this.collectionRef
-          .doc( id ).collection<ArqueoRecord>( 'records' )
+        const recordsCol = await this.countingsCollectionRef
+          .doc( id ).collection<UpdateRecord>( 'updates' )
           .ref.get()
 
         await this._loading.asyncForEach( recordsCol.docs,
-          async ( record: firebase.firestore.QueryDocumentSnapshot<ArqueoRecord> ) => {
-            let { product, storeStateUpdate: update } = record.data()
+          async ( record: firebase.firestore.QueryDocumentSnapshot<UpdateRecord> ) => {
+            const { productRef, state: update } = record.data()
+            const product = await (await productRef.get()).data()
             let product_row: any = {}
+
+            if ( !product ) throw { message: 'Product not found' }
 
             product_row['UPC'] = product.UPC
             product_row['referencia'] = product.reference
@@ -447,12 +485,12 @@ export class ArqueosService {
             product_row['marca'] = product.brand
             product_row['unidad_medida']  = product.measure_unit
             product_row['proveedor'] = product.provider?.name || ''
-            
+
             product_row[ `existencia` ] = update.stock
             product_row[ `min_requerido`] = update.min_required
             product_row['costoUnitario'] = update.unit_cost
             product_row['precioUnitario'] = update.unit_price
-            
+
             product_row[ 'identificadores' ] = product.reference_codes.length > 0
               ? `${product.reference_codes.join('/')}`
               : product.reference_codes || ''
@@ -496,10 +534,8 @@ export class ArqueosService {
         const productsPath = `businesses/${this.businessCRF}/products`
         const productsRef = this._afs.collection<Product.DataReference>(productsPath).ref
         const countingRef = this.currentRef.ref
-        const updatesCol = await this.currentRef
-          .collection<ArqueoRecord>( `records` ).ref.get()
-        const deletingCol = await this.currentRef
-          .collection<ArqueoRecord>( `deletings` ).ref.get()
+        const updatesCol = await this.updatesRef.ref.get()
+        const deletingCol = await this.deletingsRef.ref.get()
 
         this._batch.init(( updatesCol.size * 2 ) + ( deletingCol.size * 2)  + 1)
 
@@ -509,10 +545,10 @@ export class ArqueosService {
 
         await this._loading.asyncForEach(
           updatesCol.docs, ( async (r) => {
-            const {product, storeStateUpdate: store } = r.data()
+            const {product, state: store } = r.data()
             const recordId = formatUPC( product.UPC );
             const ref = productsRef.doc( recordId )
-            
+
             try {
               await this._batch.set( ref, {
                 ...product,

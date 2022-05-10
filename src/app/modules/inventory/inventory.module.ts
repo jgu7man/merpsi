@@ -24,6 +24,7 @@ import { SubcategoryValuePipe } from './product-categories/subcategory-value.pip
 import { CountingsComponent } from './countings/countings.component';
 import { CountingInitializationDialog } from './countings/counting-initialization/counting-initialization.dialog';
 import { CountingReportComponent } from './countings/counting-report/counting-report.component';
+import { CountingModeComponent } from './countings/counting-mode/counting-mode.component';
 
 
 @NgModule({
@@ -50,6 +51,7 @@ import { CountingReportComponent } from './countings/counting-report/counting-re
     CountingsComponent,
     CountingReportComponent,
     CountingInitializationDialog,
+    CountingModeComponent,
   ],
   imports: [
     CommonModule,

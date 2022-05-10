@@ -23,3 +23,13 @@
     <app-product-storage></app-product-storage>
   </div>
 </div>
+
+<div *ngIf="counting.current">
+  <p-splitButton
+    label="Save"
+    icon="pi pi-check"
+    (onClick)="deleteCurrent()"
+    [model]="items"
+    styleClass="p-button-danger p-mb-2"
+  ></p-splitButton>
+</div>

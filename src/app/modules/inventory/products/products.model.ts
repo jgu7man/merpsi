@@ -8,7 +8,7 @@ import { ProviderModel } from '../providers/provider.model'
 import { ProductCategory } from '../product-categories/product-category.model'
 
 /**
- * Clase para crear productos desde 0. 
+ * Clase para crear productos desde 0.
  * @note Procurar sólo usarlo para creación de productos
  * @path businesses/{CRF}/products/{product_code}
  */
@@ -52,7 +52,7 @@ export class ProductModel {
     provider?: Product.ProviderReference
   ) {
     let productData = product && 'data' in product ? product?.data() : product
-    
+
     console.log( productData )
     this.stored = productData?.stored === false ? false : !!product
     this.UPC = productData?.UPC || ''
@@ -65,12 +65,12 @@ export class ProductModel {
     this.categories = productData?.categories || []
     this.notes = productData?.notes || []
     this.gallery = productData?.gallery || []
-    
+
     /* Se genera un primer evento de creación */
     const event = new ProductEventModel( this.stored ? 'edit' : 'create' , manager )
     this.last_update = {...event}
     /* Genera un slug basado en la referencia (nombre del producto)
-    TODO: Realizar un método que pueda actualizar el slug, 
+    TODO: Realizar un método que pueda actualizar el slug,
     este no debe ser editable tan fácil
     */
   }
@@ -98,7 +98,7 @@ export class ProductModel {
   }
 
   /* TODO Crear en el formulario un "switch" o "checkbox" que valide al usuario si la empresa es la creadora del producto */
-  
+
 
   getData(): Product.DataReference {
     const { getKeywords: getSearchKeys, createSlug, ...data } = this
@@ -127,7 +127,7 @@ export class ProductEventModel {
     public eventRef?: firebase.firestore.DocumentReference
   ) {
     this.date = createDate(new Date())
-    
+
   }
 
 }
@@ -138,7 +138,7 @@ export class ProductEventModel {
 
 /** Segmento de interfaces del producto */
 export declare namespace Product {
-  
+
   /**
    * Clase principal para la consulta y renderizado de productos de la base de datos
    *
@@ -149,10 +149,10 @@ export declare namespace Product {
     | 'getReferenceCodes'
     | 'createSlug'
     | 'getData'
-    > { 
-    
+    > {
+
     }
-  
+
   /**
    * Modelo de datos principales del concepto
    *
@@ -166,7 +166,7 @@ export declare namespace Product {
     measure_unit: number,
     document_ref?: FireRef<ProductModel>
   }
-  
+
   /**
    * Interfaz de proveedor de un producto
    *
@@ -197,22 +197,22 @@ export declare namespace Product {
     }
   }
 
-  
-  
+
+
 
   /** Segemento de modelos para eventos del producto*/
   namespace history {
 
     /** Tipo de evento de un producto */
     type UpdateType = 'sale' | 'purchase' | 'edit' | 'create' | 'balancing'
-    
-    
+
+
   }
 }
 
 /**
  * Modelo de objeto para la referencia de un producto en una store
- * 
+ *
  * @path businesses/{CRF}/products/{product_code}/store/{store.id}
  */
 export class StoreReferenceModel  {
@@ -245,12 +245,18 @@ export class StoreReferenceModel  {
     this.bookshelves = bookshelves || []
   }
 }
-  
+
 
 
 export declare namespace StoreReference {
 
-    /**
+  interface data extends Pick<StoreReferenceModel, 'min_required' | 'bookshelves'> { }
+
+  interface stateUpdate extends StoreReferenceModel {
+    stock_update: number
+  }
+
+  /**
    * Modelo de la consulta de un producto y sus múltiples existencias en los stores
    */
   interface StockReference {
@@ -265,14 +271,14 @@ export declare namespace StoreReference {
     product: ProductModel,
     lastStoreState?: StoreReferenceModel
   }
-    
+
 
   interface StoreForm extends FormGroup {
     value: StoreReferenceModel
     controls: {
       store_id: AbstractControl,
       product_code: AbstractControl,
-      stock: AbstractControl,
+      stock_update: AbstractControl,
       unit_price: AbstractControl,
       unit_cost: AbstractControl,
       min_required: AbstractControl,
@@ -282,7 +288,7 @@ export declare namespace StoreReference {
   }
 }
 
-  
+
 export function formatUPC( code: string ): string {
   return code
     .replace(/\,/g, '_')

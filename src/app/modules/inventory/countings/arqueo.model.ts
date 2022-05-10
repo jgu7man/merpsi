@@ -1,10 +1,11 @@
 import firebase from 'firebase/app'
-import { Product, ProductModel, StoreReferenceModel } from '../products/products.model';
+import { FireRef } from 'src/app/models/firestore.model';
+import { Product, ProductModel, StoreReferenceModel, StoreReference } from '../products/products.model';
 
 export class ArqueoModel {
   startDate: Date | firebase.firestore.Timestamp;
   endDate?: Date | firebase.firestore.Timestamp;
-  
+
   recordCount: number;
   newProducts: number;
   deletedProducts: number;
@@ -42,31 +43,29 @@ export interface iArqueoUpdate extends Pick<ArqueoModel,
   | 'missings'>
 { }
 
-export class ArqueoRecord {
+export class UpdateRecord {
 
   public diffs: number
   public leftovers: number
   public missings: number
   public moneyDiffs: number
-  public newProduct: boolean = false
-  public productId: string
-  // public last?: Product.DataReference
-  // public identificadores: string[]
+  public NEW: boolean
+  public UPC: string
+
   constructor (
-    public product: Product.DataReference,
-    public storeStateUpdate: StoreReferenceModel,
-    public lastStoreState?: StoreReferenceModel,
+    public productRef: FireRef<Product.DataReference>,
+    public state: StoreReference.stateUpdate,
+    NEW?: boolean,
   ) {
-    
-    this.productId = storeStateUpdate.UPC
-    this.diffs = lastStoreState?.stock
-      ? storeStateUpdate.stock - lastStoreState.stock
-      : storeStateUpdate.stock
+
+    this.UPC = state.UPC
+    this.diffs = state?.stock_update !== undefined
+      ? state.stock - state.stock_update
+      : state.stock
     this.leftovers = this.diffs > 0 ? this.diffs : 0
     this.missings = this.diffs < 0 ? this.diffs : 0
-    this.moneyDiffs = this.diffs !== 0 ? this.diffs * storeStateUpdate.unit_cost : 0
-   
-    if ( !this.product.stored ) this.newProduct = true
+    this.moneyDiffs = this.diffs !== 0 ? this.diffs * state.unit_cost : 0
+    this.NEW = NEW || false
   }
 }
 
@@ -74,14 +73,14 @@ export class DeleteRecord {
   public diffs: number
   public missings: number
   public moneyDiffs: number
-  
+
   constructor (
-    public product: Product.DataReference,
-    public lastStoreState?: StoreReferenceModel,
+    public productRef: FireRef<Product.DataReference>,
+    public state?: StoreReferenceModel,
   ) {
-    this.diffs = 0 - (lastStoreState?.stock || 0)
-    this.missings =  (lastStoreState?.stock || 0)
-    this.moneyDiffs = 0 - ((lastStoreState?.stock || 0) * (lastStoreState?.unit_cost || 0))
+    this.diffs = 0 - (state?.stock || 0)
+    this.missings =  (state?.stock || 0)
+    this.moneyDiffs = 0 - ((state?.stock || 0) * (state?.unit_cost || 0))
   }
 }
 
