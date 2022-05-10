@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
 import { MenuItem } from 'primeng/api';
-import { ArqueosService } from '../countings/arqueos.service';
+import { CountingsService } from '../countings/countings.service';
 import { CurrentProductService } from './current-product.service';
 
 @Component({
@@ -15,7 +15,7 @@ export class ProductSingleComponent implements OnInit {
 
   constructor (
     public current: CurrentProductService,
-    public counting: ArqueosService,
+    public counting: CountingsService,
     private _alert: MxAlert
   ) {
     this.items = [

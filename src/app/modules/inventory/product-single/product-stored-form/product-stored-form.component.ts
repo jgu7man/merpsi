@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { debounceTime, distinctUntilChanged, filter, map, tap } from 'rxjs/operators';
 import { Product, StoreReference, StoreReferenceModel } from 'src/app/modules/inventory/products/products.model';
-import { ArqueosService } from '../../countings/arqueos.service';
+import { CountingsService } from '../../countings/countings.service';
 import { CurrentProductService } from '../current-product.service';
 
 @Component({
@@ -20,7 +20,7 @@ export class ProductStoredFormComponent implements OnInit {
 
   constructor (
     public current: CurrentProductService,
-    public balancing: ArqueosService
+    public balancing: CountingsService
   ) {
 
     let disabled = this.balancing.current?.store_id !== this.store_id
@@ -46,7 +46,7 @@ export class ProductStoredFormComponent implements OnInit {
         if ( this.balancing.current ) {
           const stored = this.current.product$.value!.stored
 
-          this.balancing.setRecord( store.UPC, {
+          this.balancing.registUpdateRecord( store.UPC, {
             ...store,
             stock: this.current_state!.stock,
             stock_update: store.stock,

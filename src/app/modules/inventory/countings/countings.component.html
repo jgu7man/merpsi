@@ -2,17 +2,17 @@
   <mat-drawer #drawer="matDrawer"
   [position]="'start'"
   [mode]="'over'"
-  [opened]="arqueoSelected ? true : false">
+  [opened]="countingReportSelected ? true : false">
 
     <app-counting-report
-      *ngIf="arqueoSelected"
-      [arqueo]="arqueoSelected"
+      *ngIf="countingReportSelected"
+      [countingReport]="countingReportSelected"
       (close)="closeArqueo()"
     ></app-counting-report>
 
   </mat-drawer>
   <mat-drawer-content>
-    
+
     <div class="container">
       <div class="row">
         <div class="col s12">
@@ -24,10 +24,10 @@
                 manera masiva</mat-card-subtitle
               >
               <div class="action-button">
-                <ng-container *ngIf="!productBalancings.current; else finalize">
+                <ng-container *ngIf="!countings.current; else finalize">
                   <button
                     mat-raised-button
-                    (click)="initArqueo()"
+                    (click)="initCounting()"
                     color="primary"
                   >
                     Iniciar arqueo
@@ -37,7 +37,7 @@
                   <button
                     mat-raised-button
                     color="accent"
-                    (click)="productBalancings.finalize()"
+                    (click)="countings.finalize()"
                   >
                     Finalizar arqueo
                   </button>
@@ -45,30 +45,30 @@
               </div>
             </mat-card-title-group>
             <mat-card-content>
-              <div id="arqueos-list" *ngIf="(productBalancings.list$ | async) as list">
+              <div id="countings-list" *ngIf="(countings.list$ | async) as list">
                 <table mat-table #table [dataSource]="list">
                   <ng-container matColumnDef="id">
                     <th mat-header-cell *matHeaderCellDef>ID</th>
-                    <td mat-cell *matCellDef="let arqueo">
-                      {{ arqueo.id }}
+                    <td mat-cell *matCellDef="let counting">
+                      {{ counting.id }}
                     </td>
                   </ng-container>
                   <ng-container matColumnDef="startDate">
                     <th mat-header-cell *matHeaderCellDef>Realizada</th>
-                    <td mat-cell *matCellDef="let arqueo">
-                      {{ arqueo.startDate | mxTimestamp | date: 'dd/MM/yy - hh:mm' }}
+                    <td mat-cell *matCellDef="let counting">
+                      {{ counting.startDate | mxTimestamp | date: 'dd/MM/yy - hh:mm' }}
                     </td>
                   </ng-container>
                   <ng-container matColumnDef="recordCount">
                     <th mat-header-cell *matHeaderCellDef>Cotabilizados</th>
-                    <td mat-cell *matCellDef="let arqueo">
-                      {{ arqueo.recordCount }}
+                    <td mat-cell *matCellDef="let counting">
+                      {{ counting.recordCount }}
                     </td>
                   </ng-container>
                   <ng-container matColumnDef="endDate">
                     <th mat-header-cell *matHeaderCellDef>Terminó</th>
-                    <td mat-cell *matCellDef="let arqueo">
-                      {{ arqueo.endDate | mxTimestamp | date: 'dd/MM/yy - hh:mm' }}
+                    <td mat-cell *matCellDef="let counting">
+                      {{ counting.endDate | mxTimestamp | date: 'dd/MM/yy - hh:mm' }}
                     </td>
                   </ng-container>
                   <tr
@@ -84,16 +84,16 @@
                     class="table-row"
                     mat-row
                     *matRowDef="
-                      let arqueo;
+                      let counting;
                       columns: ['id', 'startDate', 'recordCount', 'endDate']
                     "
-                    (click)="selectArqueo(arqueo)"
+                    (click)="selectCounting(counting)"
                   ></tr>
                 </table>
               </div>
             </mat-card-content>
             <mat-card-actions>
-              
+
             </mat-card-actions>
           </mat-card>
         </div>

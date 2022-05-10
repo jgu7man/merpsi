@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { ArqueosService } from './arqueos.service';
+import { CountingsService } from './countings.service';
 
 describe('ArqueosService', () => {
-  let service: ArqueosService;
+  let service: CountingsService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(ArqueosService);
+    service = TestBed.inject(CountingsService);
   });
 
   it('should be created', () => {

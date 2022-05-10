@@ -3,8 +3,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatDrawer } from '@angular/material/sidenav';
 import { MxLoading } from 'libs/@marxa/devkit/loading/loading.service';
 import { first } from 'rxjs/operators';
-import { ArqueoModel } from './arqueo.model';
-import { ArqueosService } from './arqueos.service';
+import { ProductCountingModel } from './product-counting.model';
+import { CountingsService } from './countings.service';
 import { CountingInitializationDialog } from './counting-initialization/counting-initialization.dialog';
 
 @Component({
@@ -14,12 +14,12 @@ import { CountingInitializationDialog } from './counting-initialization/counting
 })
 export class CountingsComponent implements OnInit {
 
-  arqueoSelected?: ArqueoModel
+  countingReportSelected?: ProductCountingModel
   readonly stocksFileCols: string[] = [ 'descripcion', 'unidad_medida', 'existencias', 'costoUnitario' ]
   @ViewChild('balancingPanel') balancingPanel!: MatDrawer
 
   constructor (
-    public productBalancings: ArqueosService,
+    public countings: CountingsService,
     private _loading: MxLoading,
     private _dialog: MatDialog,
   ) { }
@@ -27,22 +27,22 @@ export class CountingsComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  initArqueo() {
+  initCounting() {
     this._dialog.open( CountingInitializationDialog, {
       maxWidth: '420px'
     } ).afterClosed().pipe( first() ).subscribe( almacenId => {
-      if (almacenId) this.productBalancings.initialize(almacenId)
+      if (almacenId) this.countings.initialize(almacenId)
     })
   }
 
-  selectArqueo(arqueo:any) {
-    this.arqueoSelected = arqueo
+  selectCounting(counting:any) {
+    this.countingReportSelected = counting
   }
 
   async closeArqueo() {
     this.balancingPanel.close()
     await this._loading.waitFor(500)
-    delete this.arqueoSelected
+    delete this.countingReportSelected
 
   }
 

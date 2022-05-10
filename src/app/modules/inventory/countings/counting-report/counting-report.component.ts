@@ -2,8 +2,8 @@ import { Component, OnInit, EventEmitter, OnDestroy, Output, Input } from '@angu
 import { MxIndex } from '@marxa/index';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import { Subscription } from 'rxjs';
-import { ArqueoModel, UpdateRecord, DeleteRecord } from '../arqueo.model';
-import { ArqueosService } from '../arqueos.service';
+import { ProductCountingModel, UpdateRecord, DeleteRecord } from '../product-counting.model';
+import { CountingsService } from '../countings.service';
 
 @Component({
   selector: 'app-counting-report',
@@ -12,7 +12,7 @@ import { ArqueosService } from '../arqueos.service';
 })
 export class CountingReportComponent implements OnInit, OnDestroy {
 
-  @Input() arqueo!: ArqueoModel
+  @Input() countingReport!: ProductCountingModel
   records: UpdateRecord[] = [];
   deletedProducts: DeleteRecord[] = [];
   private indexSubscription!: Subscription;
@@ -20,11 +20,11 @@ export class CountingReportComponent implements OnInit, OnDestroy {
 
   constructor (
     private _index: MxIndex,
-    public arqueos: ArqueosService,
+    public countings: CountingsService,
   ) { }
 
   ngOnInit(): void {
-    const recordsPath = `${this.arqueos.path}/${this.arqueo.id}/records`
+    const recordsPath = `${this.countings.path}/${this.countingReport.id}/records`
     this._index.initIndex( recordsPath, 'productId', 20 );
     this.indexSubscription =
     this._index.queryData.subscribe( data => {

@@ -2,17 +2,17 @@ import firebase from 'firebase/app'
 import { FireRef } from 'src/app/models/firestore.model';
 import { Product, ProductModel, StoreReferenceModel, StoreReference } from '../products/products.model';
 
-export class ArqueoModel {
+export class ProductCountingModel {
   startDate: Date | firebase.firestore.Timestamp;
   endDate?: Date | firebase.firestore.Timestamp;
 
   recordCount: number;
-  newProducts: number;
+  news: number;
   deletedProducts: number;
   id: string;
   active: boolean;
-  leftovers: iArqueoDiffs
-  missings: iArqueoDiffs
+  leftovers: iCountingDiffs
+  missings: iCountingDiffs
 
   constructor (
     public store_id: string,
@@ -20,7 +20,7 @@ export class ArqueoModel {
     this.startDate = new Date()
     this.id = `${this.startDate.getTime()}`
     this.recordCount = 0
-    this.newProducts = 0
+    this.news = 0
     this.deletedProducts = 0
     this.active = true
     this.leftovers = {
@@ -36,9 +36,9 @@ export class ArqueoModel {
   }
 }
 
-export interface iArqueoUpdate extends Pick<ArqueoModel,
+export interface iProductCountingUpdate extends Pick<ProductCountingModel,
   | 'recordCount'
-  | 'newProducts'
+  | 'news'
   | 'leftovers'
   | 'missings'>
 { }
@@ -84,7 +84,7 @@ export class DeleteRecord {
   }
 }
 
-export interface iArqueoDiffs {
+export interface iCountingDiffs {
   acc: number;
   count: number;
   valueAcc: number;

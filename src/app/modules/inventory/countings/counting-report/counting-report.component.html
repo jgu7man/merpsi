@@ -15,45 +15,45 @@
             <div class="col s12 l4">
               <mat-card>
                 <mat-card-header>
-                  <mat-card-title>{{arqueo.id}}</mat-card-title>
+                  <mat-card-title>{{countingReport.id}}</mat-card-title>
                   <mat-card-subtitle>
-                    {{arqueo.startDate | mxTimestamp | date}}
-                    <span *ngIf="arqueo.endDate">
-                      - {{arqueo.endDate |mxTimestamp | date}}
+                    {{countingReport.startDate | mxTimestamp | date}}
+                    <span *ngIf="countingReport.endDate">
+                      - {{countingReport.endDate |mxTimestamp | date}}
                     </span>
                   </mat-card-subtitle>
                 </mat-card-header>
                 <mat-card-content>
                   <p class="data-item">
                     <span class="data-label">Registros:</span>
-                    <span class="data-value">{{arqueo.recordCount}}</span>
+                    <span class="data-value">{{countingReport.recordCount}}</span>
                   </p>
                   <p class="data-item">
                     <span class="data-label">Se agregaron productos:</span>
-                    <span class="data-value green-text">{{arqueo.newProducts}}</span>
+                    <span class="data-value green-text">{{countingReport.news}}</span>
                   </p>
                   <p class="data-item">
                     <span class="data-label">Se borraron productos:</span>
-                    <span class="data-value red-text">{{arqueo.deletedProducts}}</span>
+                    <span class="data-value red-text">{{countingReport.deletedProducts}}</span>
                   </p>
                   <p class="data-item multiline">
                     <span class="data-label green-text"><b>Sobrante:</b></span><br>
-                    <span class="data-value">{{arqueo.leftovers.count}} productos</span> <br>
-                    <span class="data-value">{{arqueo.leftovers.acc}} unidades</span> <br>
-                    <span class="data-value">${{arqueo.leftovers.valueAcc}} pesos</span>
+                    <span class="data-value">{{countingReport.leftovers.count}} productos</span> <br>
+                    <span class="data-value">{{countingReport.leftovers.acc}} unidades</span> <br>
+                    <span class="data-value">${{countingReport.leftovers.valueAcc}} pesos</span>
                   </p>
                   <p class="data-item multiline">
                     <span class="data-label red-text"><b>Faltantes:</b></span><br>
-                    <span class="data-value">{{arqueo.missings.count}} productos</span> <br>
-                    <span class="data-value">{{arqueo.missings.acc}} unidades</span> <br>
-                    <span class="data-value">${{arqueo.missings.valueAcc}} pesos</span>
+                    <span class="data-value">{{countingReport.missings.count}} productos</span> <br>
+                    <span class="data-value">{{countingReport.missings.acc}} unidades</span> <br>
+                    <span class="data-value">${{countingReport.missings.valueAcc}} pesos</span>
                   </p>
                 </mat-card-content>
                 <mat-card-actions>
                   <div class="row">
                     <div class="col s12">
                       <button mat-button color="accent"
-                      (click)="arqueos.updateDifferences(arqueo.id)"
+                      (click)="countings.updateDifferences(countingReport.id)"
                       >Actualizar balances</button>
                     </div>
                     <div class="col s12">
@@ -63,7 +63,7 @@
                     </div>
                     <div class="col s12">
                       <button mat-button color="accent"
-                      (click)="arqueos.downloadReport(arqueo.id)"
+                      (click)="countings.downloadReport(countingReport.id)"
                       >Descargar</button>
                     </div>
                   </div>

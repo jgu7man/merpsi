@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { catchError, first, map, mergeMap, pluck, take } from 'rxjs/operators';
 import { MxStorage } from '@marxa/storage';
-import { ArqueoModel, UpdateRecord, DeleteRecord, iArqueoUpdate } from './arqueo.model';
+import { ProductCountingModel, UpdateRecord, DeleteRecord, iProductCountingUpdate } from './product-counting.model';
 import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
 import { MxLoading } from 'libs/@marxa/devkit/loading/loading.service';
 import { MxText } from 'libs/@marxa/devkit/text/mx-text.service';
@@ -14,14 +14,12 @@ import { BehaviorSubject, concat, forkJoin, Observable } from 'rxjs';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import { fireBatch, FireRef } from 'src/app/models/firestore.model';
 
-@Injectable({
-  providedIn: 'root'
-})
-export class ArqueosService {
+@Injectable({ providedIn: 'root' })
+export class CountingsService {
 
-  current!: ArqueoModel | null
+  current!: ProductCountingModel | null
   get mode_on() { return this.current ? true : false; }
-  list$ = new BehaviorSubject<ArqueoModel[]>( [] )
+  list$ = new BehaviorSubject<ProductCountingModel[]>( [] )
   businessCRF: string = this._cache.getDataKey( 'eid' )!
   path: string = `businesses/${ this.businessCRF }/product_countings`
   private batch = fireBatch
@@ -50,7 +48,7 @@ export class ArqueosService {
    */
   get countingsCollectionRef() {
     if (!this.businessCRF) throw {message: 'No se tiene el CRF de la empresa'}
-    return this._afs.collection<ArqueoModel>(this.path)
+    return this._afs.collection<ProductCountingModel>(this.path)
   }
 
   /**
@@ -61,7 +59,7 @@ export class ArqueosService {
   get currentRef() {
     let current = this.current
     if ( !current ) throw { message: 'No existe un arqueo de productos ACTIVO' }
-    return this.countingsCollectionRef.doc<ArqueoModel>(current.store_id)
+    return this.countingsCollectionRef.doc<ProductCountingModel>(current.store_id)
   }
 
   get updatesRef() {
@@ -77,7 +75,7 @@ export class ArqueosService {
    *
    * @returns {*} Observable<ArqueoModel[]>
    */
-   list(): Observable<ArqueoModel[]> {
+   list(): Observable<ProductCountingModel[]> {
     return this.countingsCollectionRef.valueChanges().pipe(
       catchError( ( error: any ) => {
         console.error(error);
@@ -93,8 +91,8 @@ export class ArqueosService {
    * @param {string} [store_id] OPCIONAL ID del almacen del cuál se quiere saber el estado.
    * @returns {*}  Observable<ArqueoModel | null>
    */
-  getCurrent(store_id?: string): Observable<ArqueoModel | null> {
-    return this._afs.collection<ArqueoModel>( this.path,
+  getCurrent(store_id?: string): Observable<ProductCountingModel | null> {
+    return this._afs.collection<ProductCountingModel>( this.path,
       ref => ref.where('active', '==', true)
     ).valueChanges().pipe( map( list => {
       if ( list.length === 0 ) return null
@@ -110,7 +108,7 @@ export class ArqueosService {
    * Inicializa un arqueo en el almacen solicitado
    *
    * @param {string} store_id ID del almacen donde se iniciará el arqueo
-   * @returns {ArqueoModel | null} Arqueo activado
+   * @returns {ProductCountingModel | null} Arqueo activado
    */
   async initialize(store_id: string) {
     try {
@@ -129,7 +127,7 @@ export class ArqueosService {
 
         /* Se registra el arqueo nuevo */
 
-        let counting: ArqueoModel = new ArqueoModel( store_id )
+        let counting: ProductCountingModel = new ProductCountingModel( store_id )
         this.countingsCollectionRef.doc( counting.id ).set( { ...counting } )
         return counting
 
@@ -158,7 +156,7 @@ export class ArqueosService {
    * @param {StoreReference.stateUpdate} state Actualización del producto en el almacen
    * @param {boolean} [NEW] OPCIONAL Producto que se está actualizando
    */
-  async setRecord( UPC: string,  state: StoreReference.stateUpdate,  NEW: boolean = false,) {
+  async registUpdateRecord( UPC: string,  state: StoreReference.stateUpdate,  NEW: boolean = false,) {
     this.current = await this.getCurrent().pipe(take(1)).toPromise()
     if ( this.current ) {
       try {
@@ -180,9 +178,9 @@ export class ArqueosService {
         /* Se actualiza la información del arqueo */
 
         // let keepValue = firebase.firestore.FieldValue.increment( 0 )
-        let countingUpdate: iArqueoUpdate = {
+        let countingUpdate: iProductCountingUpdate = {
           recordCount: this.current.recordCount + 1,
-          newProducts: this.increces('newProducts', record.NEW, 1),
+          news: this.increces('newProducts', record.NEW, 1),
           leftovers: {
             count: this.increces('leftovers.count', leftovers > 0, 1 ),
             acc: this.increces('leftovers.acc', leftovers > 0, leftovers ),
@@ -432,7 +430,7 @@ export class ArqueosService {
    */
   async getReport(id: string) {
     try {
-      const countingRef = this.countingsCollectionRef.doc<ArqueoModel>( id )
+      const countingRef = this.countingsCollectionRef.doc<ProductCountingModel>( id )
       const countingDoc = await countingRef.ref.get()
       return countingDoc.data() || null
     } catch (error) {
