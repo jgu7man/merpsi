@@ -1,5 +1,5 @@
-<mat-drawer-container [hasBackdrop]="true">
-  <mat-drawer #drawer="matDrawer"
+<mat-drawer-container [hasBackdrop]="true" mxStretchHeight>
+  <mat-drawer #reportPanel="matDrawer"
   [position]="'start'"
   [mode]="'over'"
   [opened]="countingReportSelected ? true : false">
@@ -7,7 +7,7 @@
     <app-counting-report
       *ngIf="countingReportSelected"
       [countingReport]="countingReportSelected"
-      (close)="closeArqueo()"
+      (close)="closeReport()"
     ></app-counting-report>
 
   </mat-drawer>

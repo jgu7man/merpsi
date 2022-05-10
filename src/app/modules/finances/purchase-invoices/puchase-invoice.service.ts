@@ -20,25 +20,23 @@ import firebase from 'firebase/app'
   providedIn: 'root'
 })
 export class PurchaseInvoiceService {
-  
+
 
   current$ = new BehaviorSubject<PurchaseInvoiceModel | null>(null)
   businessCRF: string = this._cache.getDataKey('eid')!
   public totales: EventEmitter<iInvoiceFooter> = new EventEmitter();
-  
+
 
   constructor(
     private _afs: AngularFirestore,
     private _cache: MxCache,
     public _taxes: TaxesService,
     private _dashboard: DashboardService,
-    private manager: CurrentProductService
-
-  ) { 
+  ) {
   }
 
   create( ){
-    
+
     // this.current$.next(new PurchaseInvoiceModel())
   }
 
@@ -53,13 +51,13 @@ export class PurchaseInvoiceService {
   //     //     new ProductPurchasedModel(productRef)
   //     //   ]
   //     // })
-      
+
   //     const details = this.current$.value.details!
   //     details.push( new ProductInvoiceModel( productRef) )
   //     this.current$.next({
   //       ...this.current$.value,
   //       details
-  //     }) 
+  //     })
   //   }
   //   return new ProductInvoiceModel(productRef)
 
@@ -70,13 +68,13 @@ export class PurchaseInvoiceService {
     if (this.current$.value !== null) {
       // const conceptIndex = this.current$.value.details.findIndex(d => d.UPC === UPC)
       // if (conceptIndex < 0) {throw {message: 'Concepto no encontrado'}}
-      
+
       // const details = this.current$.value.details
       // details. splice(conceptIndex, 1)
       // this.current$.next({
       //   ...this.current$.value,
       //   details
-      // }) 
+      // })
 
       this.current$.next({
         ...this.current$.value,
@@ -86,7 +84,7 @@ export class PurchaseInvoiceService {
       this.totales.emit(foot)
     }
   }
-  
+
   calcFooter(){
     let details = this.current$.value!.details
     let subtotal = 0
@@ -112,10 +110,10 @@ export class PurchaseInvoiceService {
       })
     }
   }
-  
+
  async findInvoice( invoiceId: string){
    try {
-     
+
      const invoiceResult = await this._afs.doc<iInvoice>(`businesses/${this.businessCRF}/purchases/${invoiceId}`).ref.get()
      return invoiceResult.exists ? invoiceResult : null
 
@@ -181,7 +179,7 @@ export class PurchaseInvoiceService {
     let businessRef = `businesses/${this._dashboard.CRF}`
     if (this.current$.value){
       const invoiceRef = this._afs.doc<PurchaseInvoiceModel>(`${businessRef}/purchase/${this.current$.value.invoice_ID}`).ref
-      invoiceRef.set({...invoice}) 
+      invoiceRef.set({...invoice})
 
       let details: iProductInvoice[] = this.current$.value.details
       details.forEach(async det =>{
@@ -199,7 +197,7 @@ export class PurchaseInvoiceService {
           await transaction.set(storeRef,{...productStore},{merge: true})
           const evento = new  ProductEventModel(
             'purchase',
-            this.manager.managerRef,
+            this._dashboard.managerRef,
             invoiceRef
             )
             this._afs.collection(`${businessRef}/products/${det.UPC}/history`)

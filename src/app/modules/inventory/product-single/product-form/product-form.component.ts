@@ -16,21 +16,19 @@ import { CurrentProductService } from '../current-product.service';
   styleUrls: ['./product-form.component.scss'],
 })
 export class ProductFormComponent implements OnInit, OnDestroy {
-  
-  
+
+
   // @Input() product?: Product.DataReference;
   @Input() provider?: Product.ProviderReference
-  
-  
-  public productForm: Product.Form 
+
+
+  public productForm: Product.Form
   public reference_codes: string[] = [];
   public categories: ProductCategory.selected[] = [];
   public aplicacion_modelos: string[] = [];
   public proveedores_ref: any[] = [];
   public currentStore?: StoreReferenceModel;
-  
-  public validForm: boolean = false;
-  
+
   private _productFormSubscription: Subscription;
   private _submitedSubscription: Subscription;
 
@@ -63,18 +61,17 @@ export class ProductFormComponent implements OnInit, OnDestroy {
           ...this.current.product$.value,
           ...changes
         } )
-        this.validForm = this.productFormValid
-        // this.changes.emit( changes )
+
+        this.current.productFormValidation$.next( this.productFormValid )
       });
-    
+
     this._submitedSubscription = this.current.submited$
       .subscribe( () => {
         this.productForm.markAsPristine();
-        this.validForm = false;
     })
   }
 
-  ngOnInit(): void {  
+  ngOnInit(): void {
     const product = this.current.product$.value
     if ( product ) this.productForm.patchValue( { ...product } )
     else this.current.product$.next( new ProductModel() )
@@ -100,7 +97,7 @@ export class ProductFormComponent implements OnInit, OnDestroy {
     this.current.leave()
   }
 
-  
+
 }
 
 @Component({
@@ -115,7 +112,7 @@ export class ProductFormComponent implements OnInit, OnDestroy {
           <button
             mat-raised-button
             color="primary"
-            [disabled]="!(current.formValid | async)"
+            [disabled]="!(current.formValid$ | async)"
             (click)="onSubmit()"
             >
               Guardar
@@ -126,15 +123,15 @@ export class ProductFormComponent implements OnInit, OnDestroy {
   `,
   styleUrls: ['./product-form.component.scss']
 })
-  
+
 export class ProductFormDialog implements OnInit {
-  
+
   constructor (
     // @Inject( MAT_DIALOG_DATA ) data: any,
     public dialog: MatDialogRef<ProductFormDialog>,
     public current: CurrentProductService
   ) { }
-  
+
   ngOnInit() { }
 
   onSubmit() {

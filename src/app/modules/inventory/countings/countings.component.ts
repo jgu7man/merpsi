@@ -16,7 +16,7 @@ export class CountingsComponent implements OnInit {
 
   countingReportSelected?: ProductCountingModel
   readonly stocksFileCols: string[] = [ 'descripcion', 'unidad_medida', 'existencias', 'costoUnitario' ]
-  @ViewChild('balancingPanel') balancingPanel!: MatDrawer
+  @ViewChild('reportPanel') reportPanel!: MatDrawer
 
   constructor (
     public countings: CountingsService,
@@ -39,8 +39,8 @@ export class CountingsComponent implements OnInit {
     this.countingReportSelected = counting
   }
 
-  async closeArqueo() {
-    this.balancingPanel.close()
+  async closeReport() {
+    this.reportPanel.close()
     await this._loading.waitFor(500)
     delete this.countingReportSelected
 

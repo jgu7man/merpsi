@@ -7,7 +7,7 @@
         <div class="col s12 m11">
           <button mat-icon-button
           (click)="close.emit()">
-              <i class="fas fa-times fa-lg"></i>
+              <mat-icon>close</mat-icon>
           </button>
         </div>
         <div class="col s12 m11">
@@ -15,12 +15,15 @@
             <div class="col s12 l4">
               <mat-card>
                 <mat-card-header>
-                  <mat-card-title>{{countingReport.id}}</mat-card-title>
+                  <mat-card-title>Reporte #{{countingReport.id}}</mat-card-title>
                   <mat-card-subtitle>
-                    {{countingReport.startDate | mxTimestamp | date}}
-                    <span *ngIf="countingReport.endDate">
-                      - {{countingReport.endDate |mxTimestamp | date}}
-                    </span>
+                    Iniciado: {{countingReport.startDate | mxTimestamp | date}} <br>
+                    <ng-container *ngIf="countingReport.endDate; else current">
+                      <span> Terminado: {{countingReport.endDate |mxTimestamp | date}} </span>
+                    </ng-container>
+                    <ng-template #current >
+                      <b class="blue-text">ACTUALMENTE ACTIVO</b>
+                    </ng-template>
                   </mat-card-subtitle>
                 </mat-card-header>
                 <mat-card-content>

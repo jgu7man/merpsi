@@ -1,7 +1,7 @@
 import firebase from 'firebase/app';
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
-import { catchError, first, map, mergeMap, pluck, take } from 'rxjs/operators';
+import { catchError, first, map, mergeMap, pluck, take, tap } from 'rxjs/operators';
 import { MxStorage } from '@marxa/storage';
 import { ProductCountingModel, UpdateRecord, DeleteRecord, iProductCountingUpdate } from './product-counting.model';
 import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
@@ -13,11 +13,12 @@ import { formatUPC, Product, ProductModel, StoreReference, StoreReferenceModel }
 import { BehaviorSubject, concat, forkJoin, Observable } from 'rxjs';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import { fireBatch, FireRef } from 'src/app/models/firestore.model';
+import { MxBatchEvent } from 'libs/@marxa/batch/batch.model';
 
 @Injectable({ providedIn: 'root' })
 export class CountingsService {
 
-  current!: ProductCountingModel | null
+  public current!: ProductCountingModel | null
   get mode_on() { return this.current ? true : false; }
   list$ = new BehaviorSubject<ProductCountingModel[]>( [] )
   businessCRF: string = this._cache.getDataKey( 'eid' )!
@@ -31,13 +32,13 @@ export class CountingsService {
     private _storage: MxStorage,
     private _text: MxText,
     private _cache: MxCache,
-    private _productos: InventoryProductsService,
     private _batch: BatchService,
   ) {
     // /* Mantiene actualizado el estado único de arqueo en esta sesión */
     // this.getCurrent().subscribe( current => this.current$ = current )
     /* Mantiene actualizada la lista de arqueos */
-    this.list().subscribe(list => this.list$.next(list))
+    this.list().subscribe( list => this.list$.next( list ) )
+    this.getCurrent().subscribe( current => this.current = current )
   }
 
 
@@ -59,6 +60,7 @@ export class CountingsService {
   get currentRef() {
     let current = this.current
     if ( !current ) throw { message: 'No existe un arqueo de productos ACTIVO' }
+    console.log( current )
     return this.countingsCollectionRef.doc<ProductCountingModel>(current.store_id)
   }
 
@@ -76,7 +78,8 @@ export class CountingsService {
    * @returns {*} Observable<ArqueoModel[]>
    */
    list(): Observable<ProductCountingModel[]> {
-    return this.countingsCollectionRef.valueChanges().pipe(
+     return this.countingsCollectionRef.valueChanges().pipe(
+      tap( list => console.log(list) ),
       catchError( ( error: any ) => {
         console.error(error);
         this._alert.error( 'Problemas para cargar los arqueos', error )
@@ -141,11 +144,12 @@ export class CountingsService {
     }
   }
 
-  increces( key: string ,
+  private _increces( key: string ,
     condition: boolean,
     cant: number ): number {
     if ( !this.current ) throw { message: 'No existe ARQUEO ACTUAL' }
     let current: any = this.current
+    if (current[key] === undefined) current[key] = 0
     return condition ? current[key] + cant : current[key]
   }
 
@@ -156,48 +160,54 @@ export class CountingsService {
    * @param {StoreReference.stateUpdate} state Actualización del producto en el almacen
    * @param {boolean} [NEW] OPCIONAL Producto que se está actualizando
    */
-  async registUpdateRecord( UPC: string,  state: StoreReference.stateUpdate,  NEW: boolean = false,) {
-    this.current = await this.getCurrent().pipe(take(1)).toPromise()
+  async registUpdateRecord(
+    UPC: string,
+    state: StoreReference.stateUpdate,
+    NEW: boolean = false,
+    batch: boolean = false
+  ) {
     if ( this.current ) {
       try {
 
         /* Se crea y se registra el cambio */
-        const productRef = this._afs.doc<Product.DataReference>(`${this.businessCRF}/products/${UPC}`).ref
+        const productRef = this._afs.doc<Product.DataReference>(`businesses/${this.businessCRF}/products/${UPC}`).ref
 
         const record: UpdateRecord = new UpdateRecord( productRef, state, NEW )
-        console.log( record )
         let { leftovers, missings, moneyDiffs } = record
         let { state: stateUpdate, ...restRecord } = record
         let recordId = formatUPC(record.UPC)
-
-        await this.updatesRef.doc(recordId)
-          .set( { ...restRecord, update: {...stateUpdate}  } )
 
 
 
         /* Se actualiza la información del arqueo */
 
-        // let keepValue = firebase.firestore.FieldValue.increment( 0 )
         let countingUpdate: iProductCountingUpdate = {
           recordCount: this.current.recordCount + 1,
-          news: this.increces('newProducts', record.NEW, 1),
+          news: this._increces('newProducts', record.NEW, 1),
           leftovers: {
-            count: this.increces('leftovers.count', leftovers > 0, 1 ),
-            acc: this.increces('leftovers.acc', leftovers > 0, leftovers ),
-            valueAcc: this.increces('leftovers.valueAcc', leftovers > 0, moneyDiffs)
+            count: this._increces('leftovers.count', leftovers > 0, 1 ),
+            acc: this._increces('leftovers.acc', leftovers > 0, leftovers ),
+            valueAcc: this._increces('leftovers.valueAcc', leftovers > 0, moneyDiffs)
           },
           missings: {
-            count:  this.increces('missings.count', missings > 0, 1),
-            acc: this.increces('missings.acc', missings > 0, missings),
-            valueAcc: this.increces('missings.valueAcc', missings > 0, moneyDiffs)
+            count:  this._increces('missings.count', missings > 0, 1),
+            acc: this._increces('missings.acc', missings > 0, missings),
+            valueAcc: this._increces('missings.valueAcc', missings > 0, moneyDiffs)
           },
         }
-        await this.currentRef.update( countingUpdate as any )
 
+        if ( batch ) {
+          return <MxBatchEvent[]>[
+            { type: 'set', ref: this.updatesRef.doc( recordId ).ref, data: restRecord },
+            { type: 'set', ref: this.currentRef.ref, data: countingUpdate }
+          ]
+        } else {
+          await this.updatesRef.doc( recordId )
+            .set( { ...restRecord, update: { ...stateUpdate } } );
+          await this.currentRef.update( countingUpdate as any )
+          return this._alert.notify( 'Registro guardado' )
+        }
 
-
-        this._alert.notify( 'Registro guardado' )
-        return
       } catch (error) {
         console.error(error)
         this._alert.error('Error guardando el registro', error)
@@ -255,12 +265,9 @@ export class CountingsService {
           recordCount: this.current.recordCount + 1,
           deletedProducts: this.current.deletedProducts + 1,
           missings: {
-            count:missings > 0
-              ? this.current.missings.count + 1 : this.current.missings.count,
-            acc:missings > 0
-              ? this.current.missings.acc + missings : this.current.missings.acc,
-            valueAcc: missings > 0
-              ? this.current.missings.valueAcc + moneyDiffs : this.current.leftovers.valueAcc,
+            count: this._increces('missings.count', missings > 0, 1),
+            acc: this._increces( 'missings.acc', missings > 0, missings ),
+            valueAcc: this._increces( 'missings.valueAcc', missings > 0, moneyDiffs )
           }
         }
 

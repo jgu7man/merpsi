@@ -1,3 +1,11 @@
+import firebase from 'firebase/app';
+
+export interface MxBatchEvent {
+  type: 'add' | 'delete' | 'update' | 'set'
+  data: any
+  ref: firebase.firestore.DocumentReference
+}
+
 
 /** Modelos para los errores
  * @class MxErrorAlertModel

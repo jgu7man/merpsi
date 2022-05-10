@@ -1,9 +1,9 @@
 import { Component, OnInit, EventEmitter, OnDestroy, Output, Input } from '@angular/core';
-import { MxIndex } from '@marxa/index';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import { Subscription } from 'rxjs';
 import { ProductCountingModel, UpdateRecord, DeleteRecord } from '../product-counting.model';
 import { CountingsService } from '../countings.service';
+import { MxIndex } from 'libs/@marxa/index/src/public-api';
 
 @Component({
   selector: 'app-counting-report',
@@ -27,7 +27,7 @@ export class CountingReportComponent implements OnInit, OnDestroy {
     const recordsPath = `${this.countings.path}/${this.countingReport.id}/records`
     this._index.initIndex( recordsPath, 'productId', 20 );
     this.indexSubscription =
-    this._index.queryData.subscribe( data => {
+    this._index.page$.subscribe( data => {
       this.records = data
     })
   }

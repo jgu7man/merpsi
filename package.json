@@ -22,7 +22,6 @@
     "@angular/platform-browser-dynamic": "~12.2.0",
     "@angular/router": "~12.2.0",
     "@marxa/auth": "0.0.8",
-    "@marxa/index": "0.0.9",
     "@marxa/search": "0.0.2",
     "@marxa/storage": "0.0.21",
     "@sweetalert2/theme-material-ui": "^5.0.10",

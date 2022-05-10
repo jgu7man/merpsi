@@ -7,6 +7,7 @@ import { map } from 'rxjs/operators';
 import { DashboardService } from 'src/app/dashboard/dashboard.service';
 import { txn } from 'src/app/models/firestore.model';
 import { SalesInvoiceModel } from 'src/app/modules/finances/sales-invoices/sales-invoice.model';
+import { AuthService } from 'src/app/services/auth.service';
 import { CurrentProductService } from '../../inventory/product-single/current-product.service';
 import { ProductEventModel, ProductModel, StoreReferenceModel } from '../../inventory/products/products.model';
 import { iInvoiceFooter, invoiceFooter, iProductInvoice, ProductInvoiceModel } from '../invoices/invoice.model';
@@ -19,7 +20,7 @@ import { TaxesService } from '../taxes/taxes.service';
 export class SalesService {
   businessRef = this._dashboard.businessRef
   current$= new BehaviorSubject<SalesInvoiceModel | null> ( null )
-  
+
   businessCRF: string = this._cache.getDataKey('eid')!
   public totales: EventEmitter<iInvoiceFooter> = new EventEmitter();
 
@@ -28,11 +29,8 @@ export class SalesService {
     private _cache: MxCache,
     public _taxes: TaxesService,
     private _dashboard: DashboardService,
-    private manager: CurrentProductService
+  ) { }
 
-
-    ) { }
-    
     updateCurrent(
       param: keyof SalesInvoiceModel,
     value: SalesInvoiceModel[ typeof param ]
@@ -52,7 +50,7 @@ export class SalesService {
         ...this.current$.value,
         details: this.current$.value.details!.filter( c => c.UPC !== UPC)
       })
-      
+
       this.current$.next({
         ...this.current$.value,
         details: this.current$.value.details!.filter( c => c.UPC !== UPC)
@@ -61,7 +59,7 @@ export class SalesService {
       this.totales.emit(foot)
     }
   }
-  
+
   calcFooter(){
     let details = this.current$.value!.details
     let subtotal = 0
@@ -70,7 +68,7 @@ export class SalesService {
     })
     let foot = this.current$.value!.footer
     foot.subtotal = subtotal
-    foot.total = (subtotal + foot.shipping + this._taxes.appliedTaxesTotal ) - (foot.discount) 
+    foot.total = (subtotal + foot.shipping + this._taxes.appliedTaxesTotal ) - (foot.discount)
     this.updateCurrent('footer', foot)
     return foot
   }
@@ -81,9 +79,9 @@ export class SalesService {
       details.push(new ProductInvoiceModel(concept,store,stock))
       this.updateCurrent('details', details)
     }
-    
+
   }
-  
+
   getChanges(changes: any, concept: any) {
     let details = this.current$.value!.details
     let subtotal = 0
@@ -108,11 +106,11 @@ export class SalesService {
     foot.subtotal = subtotal
     foot.total = (subtotal + foot.shipping + this._taxes.appliedTaxesTotal) - (foot.discount)
     this.updateCurrent('footer', foot)
-    
+
     this.totales.emit(foot)
     return foot
   }
-  
+
   getFooter(changes: iInvoiceFooter) {
     if (this.current$.value != null) {
       let footer = this.current$.value.footer
@@ -129,7 +127,7 @@ export class SalesService {
     let businessRef = `businesses/${this._dashboard.CRF}`
     if (this.current$.value){
       const invoiceRef = this._afs.doc<SalesInvoiceModel>(`${businessRef}/sale/${this.current$.value.invoice_ID}`).ref
-      invoiceRef.set({...invoice}) 
+      invoiceRef.set({...invoice})
 
       let details: iProductInvoice[] = this.current$.value.details
       details.forEach(async det =>{
@@ -147,7 +145,7 @@ export class SalesService {
           await transaction.set(storeRef,{...productStore},{merge: true})
           const evento = new  ProductEventModel(
             'sale',
-            this.manager.managerRef,
+            this._dashboard.managerRef,
             invoiceRef
             )
             this._afs.collection(`${businessRef}/products/${det.UPC}/history`)
@@ -157,7 +155,7 @@ export class SalesService {
       })
     }
   }
-  
+
 
    async getStokProductByStore(product: ProductModel[]) {
      let stores:StoreReferenceModel[] = []
@@ -169,7 +167,7 @@ export class SalesService {
          )
        }
      })
-    
+
     return stores
   }
   getStoreStock(UPC: string) {
@@ -178,5 +176,5 @@ export class SalesService {
     return storeP
 
   }
-  
+
 }

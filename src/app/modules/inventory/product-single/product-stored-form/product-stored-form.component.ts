@@ -1,7 +1,8 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { debounceTime, distinctUntilChanged, filter, map, tap } from 'rxjs/operators';
-import { Product, StoreReference, StoreReferenceModel } from 'src/app/modules/inventory/products/products.model';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Subscription } from 'rxjs';
+import { debounceTime, distinctUntilChanged, map, skip, tap } from 'rxjs/operators';
+import { StoreReference, StoreReferenceModel } from 'src/app/modules/inventory/products/products.model';
 import { CountingsService } from '../../countings/countings.service';
 import { CurrentProductService } from '../current-product.service';
 
@@ -10,20 +11,35 @@ import { CurrentProductService } from '../current-product.service';
   templateUrl: './product-stored-form.component.html',
   styleUrls: ['./product-stored-form.component.scss']
 })
-export class ProductStoredFormComponent implements OnInit {
+export class ProductStoredFormComponent implements OnInit, OnDestroy {
 
-  @Input() store_id?: string
-  public current_state?: StoreReferenceModel
+  // @Input() store_id?: string
+  @Input() store?: StoreReferenceModel
   public current_stock: number = 0
-  public productStoredForm: StoreReference.StoreForm
+  public productStoredForm!: StoreReference.StoreForm
 
+  private _submitedSubscription?: Subscription;
 
   constructor (
     public current: CurrentProductService,
-    public balancing: CountingsService
+    public countings: CountingsService
   ) {
+    console.log( 'new' )
+  }
 
-    let disabled = this.balancing.current?.store_id !== this.store_id
+  ngOnInit(): void {
+    this.createForm()
+    if ( this.store ) {
+      this.productStoredForm.patchValue( {
+        ...this.store,
+      } )
+      this.productStoredForm.markAsPristine()
+    }
+  }
+
+  createForm() {
+
+    let disabled = this.countings.current?.store_id !== this.store!.store_id
     this.productStoredForm = new FormGroup( {
       store_id: new FormControl('', [Validators.required]),
       product_code: new FormControl('', [Validators.required]),
@@ -37,41 +53,24 @@ export class ProductStoredFormComponent implements OnInit {
 
     /* Actualiza automáticamente los cambios en el array de stores */
     this.productStoredForm.valueChanges.pipe(
+      skip(this.store ? 1 : 0),
       distinctUntilChanged( ( x, y ) => JSON.stringify( x ) == JSON.stringify(y)),
       debounceTime( 1000 ),
       map( (store: StoreReferenceModel ) => {
-        let {min_required, bookshelves, store_id } = store
-        this.current.updateStore( { min_required, bookshelves }, store_id )
-
-        if ( this.balancing.current ) {
-          const stored = this.current.product$.value!.stored
-
-          this.balancing.registUpdateRecord( store.UPC, {
-            ...store,
-            stock: this.current_state!.stock,
-            stock_update: store.stock,
-          }, !stored )
-        }
+        let { store_id } = store
+        this.current.updateStore( store, store_id )
       }),
-      tap( () => this.current.formValid$.next( {
-        ...this.current.formValid$.value,
-        [ this.store_id! ]: this.productStoredForm.valid || !this.productStoredForm.pristine
-      } ) )
+      tap( () => {
+        this.current.storeFormsValidation$.next( {
+        ...this.current.storeFormsValidation$.value,
+        [ this.store!.store_id ]: this.productStoredForm.valid || !this.productStoredForm.pristine
+        } )
+        console.log( this.current.storeFormsValidation$.value )
+      } )
     ).subscribe()
-  }
 
-  ngOnInit(): void {
-    if ( this.store_id ) {
-      this.current_state = this.current.storage$
-        .value.find( s => s.store_id === this.store_id )
-
-      if ( this.current_state ) {
-        this.current_stock = this.current_state.stock
-        this.productStoredForm.patchValue( {
-          ...this.current_state,
-        })
-      }
-    }
+    this._submitedSubscription = this.current.submited$
+      .subscribe( () => this.productStoredForm.markAsPristine())
   }
 
   get bookshelves(): string[] {
@@ -80,6 +79,10 @@ export class ProductStoredFormComponent implements OnInit {
 
   set bookshelves( value: string[] ) {
     this.productStoredForm.controls.bookshelves.patchValue(value)
+  }
+
+  ngOnDestroy(): void {
+    this._submitedSubscription?.unsubscribe()
   }
 
 }

@@ -30,6 +30,10 @@ $merpsi-theme: mat.define-light-theme((
 
 
 
-html, body { height: 100%; }
+html, body { height: 100%; width: 100%; overflow: hidden; }
 body { margin: 0; font-family: "Maven Pro",  sans-serif !important; }
 .p-component { font-family: "Maven Pro" !important}
+
+table {
+  min-width: 100%;
+}

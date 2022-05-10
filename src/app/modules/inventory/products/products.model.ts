@@ -67,8 +67,12 @@ export class ProductModel {
     this.gallery = productData?.gallery || []
 
     /* Se genera un primer evento de creación */
-    const event = new ProductEventModel( this.stored ? 'edit' : 'create' , manager )
-    this.last_update = {...event}
+    const event = new ProductEventModel(
+      this.stored ? 'edit' : 'create',
+      manager
+    )
+    this.last_update = { ...event }
+    console.log( this.last_update )
     /* Genera un slug basado en la referencia (nombre del producto)
     TODO: Realizar un método que pueda actualizar el slug,
     este no debe ser editable tan fácil
