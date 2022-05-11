@@ -3,8 +3,8 @@ import { AngularFirestore } from '@angular/fire/firestore';
 import firebase from 'firebase/app'
 import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { BehaviorSubject, Observable, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { DashboardService } from 'src/app/dashboard/dashboard.service';
 import { txn } from 'src/app/models/firestore.model';
 import { SalesInvoiceModel } from 'src/app/modules/finances/sales-invoices/sales-invoice.model';
@@ -18,6 +18,7 @@ import { TaxesService } from '../taxes/taxes.service';
   providedIn: 'root'
 })
 export class SalesService {
+
   businessRef = this._dashboard.businessRef
   current$ = new BehaviorSubject<SalesInvoiceModel | null>(null)
 
@@ -31,7 +32,9 @@ export class SalesService {
     private _dashboard: DashboardService,
     private manager: CurrentProductService,
     private _alert: MxAlert,
-  ) { }
+  ) {
+
+  }
 
   updateCurrent(
     param: keyof SalesInvoiceModel,
@@ -86,32 +89,34 @@ export class SalesService {
   }
 
   getChanges(changes: any, concept: any) {
-    let details = this.current$.value!.details
-    let subtotal = 0
-    details = details.map(d => {
-      let details
-      if (d.UPC === concept!.UPC) {
-        changes.amount = changes.cant * changes.unit_cost
-        details = {
-          ...d,
-          ...changes
-        }
-        subtotal += changes.amount
-      } else {
-        details = d
-        subtotal += d.amount
-      }
-      return details
-    }
-    )
-    this.updateCurrent('details', details)
-    let foot = this.current$.value!.footer
-    foot.subtotal = subtotal
-    foot.total = (subtotal + foot.shipping + this._taxes.appliedTaxesTotal) - (foot.discount)
-    this.updateCurrent('footer', foot)
+    if (changes && concept) {
 
-    this.totales.emit(foot)
-    return foot
+      let details = this.current$.value!.details
+      let subtotal = 0
+      details = details.map(d => {
+        let details
+        if (d.UPC === concept!.UPC) {
+          changes.amount = changes.cant * changes.unit_cost
+          details = {
+            ...d,
+            ...changes
+          }
+          subtotal += changes.amount
+        } else {
+          details = d
+          subtotal += d.amount
+        }
+        return details
+      }
+      )
+      this.updateCurrent('details', details)
+      let foot = this.current$.value!.footer
+      foot.subtotal = subtotal
+      foot.total = (subtotal + foot.shipping + this._taxes.appliedTaxesTotal) - (foot.discount)
+      this.updateCurrent('footer', foot)
+
+      this.totales.emit(foot)
+    }
   }
 
   getFooter(changes: iInvoiceFooter) {
@@ -185,4 +190,23 @@ export class SalesService {
 
   }
 
+  listInvoice(): Observable<SalesInvoiceModel[]> {
+    return this._afs.collection<SalesInvoiceModel>(`businesses/${this._dashboard.CRF}/sale`).valueChanges()
+      .pipe(
+        map(result => {
+          const sales: SalesInvoiceModel[] = [];
+          result.forEach(s => {
+            sales.push(s);
+          });
+          console.log(sales);
+
+          return sales;
+        }),
+        catchError(error => {
+          console.error(error);
+          this._alert.error('No se logró cargar la lista del personal', error);
+          return of([]);
+        })
+      );
+  }
 }

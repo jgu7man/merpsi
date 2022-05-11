@@ -20,6 +20,8 @@ export class InvoiceModel {
   
   public details: iProductInvoice[] = [] ;
   // public footer: iInvoiceFooter;
+
+  public status:string = 'Activo'
   constructor (
     invoice?: InvoiceModel
 	) {
@@ -27,6 +29,7 @@ export class InvoiceModel {
       subtotal: 0,
       discount: 0,
       taxes: [],
+      totalTaxes: 0,
       shipping: 0,
       total: 0,
     }
@@ -41,11 +44,13 @@ export class invoiceFooter {
   /** Descuento aplicado a la compra en moneda */
   discount: number;
   /** Lista de impuestos aplicados a la compra */
-  taxes: iAppliedTax[];
+  taxes: AppliedTaxModel[];
   /** Costo generado por envío */
   shipping: number;
   /** Total de restar descuentos e impuestos y agregado de costo de envío */
 	total: number;
+
+  totalTaxes: number
 
   constructor(
     subtotal?:number,
@@ -59,8 +64,10 @@ export class invoiceFooter {
     this.taxes = taxes || []
     this.shipping = shipping || 0
     this.total = (this.subtotal + this.shipping) - this.discount;
+    this.totalTaxes = 0
 
   }
+  
   get data(){
     let { data, ...object} = this
     return {...object}

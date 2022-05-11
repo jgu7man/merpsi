@@ -9,6 +9,7 @@ import { SedesService } from 'src/app/modules/admin/stores/sedes.service';
 import { iProductInvoice } from 'src/app/modules/finances/invoices/invoice.model';
 import { ProductModel } from 'src/app/modules/inventory/products/products.model';
 import { PurchaseInvoiceService } from '../../purchase-invoices/puchase-invoice.service';
+import { SalesInvoiceModel } from '../sales-invoice.model';
 import { SalesService } from '../sales.service';
 
 @Component({
@@ -20,6 +21,8 @@ export class InvoiceConceptSalesComponent implements OnInit {
 
   @Input() concept: iProductInvoice | null = null
   @Input() stock: number = 0
+  @Input() invoice: SalesInvoiceModel | null= null
+
   businessRef = this._cache.getDataKey('eid')
   productSelect: ProductModel | null  = null
   productListEmpty = false
@@ -59,6 +62,7 @@ export class InvoiceConceptSalesComponent implements OnInit {
 
   ngOnInit(): void {
 
+    
     if (this.concept) {
       this.formAddProduct.controls.cant.setValidators(Validators.max(this.concept!.stock))
       this.disableForm()
@@ -69,18 +73,14 @@ export class InvoiceConceptSalesComponent implements OnInit {
         skip( 1),
         debounceTime(1000),
       ).subscribe(changes => {
-     /* if (this.sales.current$.value){
-        this.sales.current$.value.details.forEach(concept =>{
-          if (this.concept?.UPC === concept.UPC){
-            if (changes.cant> concept.stock){
-              this._alert.message('ingresa una cantidad menor, el stok es:' + concept.stock,'text')
-            }
-          }
-        })
-      }*/
+      changes.UPC = this.formAddProduct.getRawValue().UPC
         this.changes.emit( changes )
       })
 
+      console.log('-----invoice concept-----');
+      
+      console.log(this.concept);
+      
       this.formAddProduct.patchValue(this.concept)
       this.formAddProduct.markAsPristine()
     }

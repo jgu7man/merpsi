@@ -12,22 +12,30 @@ import { SalesService } from './sales.service';
 })
 export class SalesInvoicesComponent implements OnInit {
 
+  listInvoice: SalesInvoiceModel[] = []
+
+
   constructor(
     public sales: SalesService,
     private _auth: AuthService,
     private _dashboard: DashboardService
-  ) { } 
+  ) {
+    this.sales.listInvoice().subscribe(invoice => this.listInvoice = invoice);
+    console.log(this.listInvoice);
+    
+
+  }
 
   ngOnInit(): void {
   }
 
 
-  async onCreate(){
+  async onCreate() {
     this.sales.current$.next(new SalesInvoiceModel());
     let user = this._auth.userState$.value
-    if (!user) throw {message: 'No se ha iniciado sesión'}
-      this.sales.updateCurrent('manager', user!.name)
-    
+    if (!user) throw { message: 'No se ha iniciado sesión' }
+    this.sales.updateCurrent('manager', user!.name)
+
   }
 
 }

@@ -1,0 +1,14 @@
+<label>Selecciona el concepto de la Nota de Credito</label>
+<div class="row">
+  <mat-radio-group
+ [formControl]="concept">
+  <mat-radio-button  [value]="1">
+    <b>Nota Crédito por Devolución Mercancias clientes:</b> <br/> 
+    Aplica para registrar la devolución de mercancia realizada por los clientes afectando las existencias de inventarios
+  </mat-radio-button>
+  <mat-radio-button  [value]="2">
+    <b>Nota Crédito de Cientes:</b> <br/> Aplica para disminuir el valor a cobrar de una factura de venta por descuentos otorgados o por errores en los precios cobrados. No afecta existencias
+  </mat-radio-button>
+</mat-radio-group>
+</div>
+<button mat-raised-button color="primary" (click)="createCN()">aceptar</button>

@@ -62,7 +62,8 @@
           <button 
           mat-raised-button
           color="warn" 
-          (click)="deleteConcept(concept)">
+          (click)="deleteConcept(concept)"
+          [disabled]="invoice!=null">
           X
           </button>
         </div>

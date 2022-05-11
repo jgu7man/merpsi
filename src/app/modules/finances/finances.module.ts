@@ -21,6 +21,9 @@ import { InvoiceConceptSalesComponent } from './sales-invoices/invoice-concept-s
 import { SelectConceptSalesDialogComponent } from './sales-invoices/select-concept-sales-dialog/select-concept-sales-dialog.component';
 import { StubsInvoiceComponent } from './stubs-invoice/stubs-invoice.component';
 import { StubFormCreateComponent } from './stubs-invoice/stub-form/stub-form-create/stub-form-create.component';
+import { CreditNoteComponent } from './credit-note/credit-note.component';
+import { FormCreditNoteComponent } from './credit-note/form-credit-note/form-credit-note.component';
+import { CreditDebitNoteDialogComponent } from './sales-invoices/create-invoice-sales/credit-debit-note.dialog/credit-debit-note.dialog.component';
 
 
 @NgModule({
@@ -41,7 +44,10 @@ import { StubFormCreateComponent } from './stubs-invoice/stub-form/stub-form-cre
     InvoiceConceptSalesComponent,
     SelectConceptSalesDialogComponent,
     StubsInvoiceComponent,
-    StubFormCreateComponent
+    StubFormCreateComponent,
+    CreditNoteComponent,
+    FormCreditNoteComponent,
+    CreditDebitNoteDialogComponent
   ],
   imports: [
     CommonModule,

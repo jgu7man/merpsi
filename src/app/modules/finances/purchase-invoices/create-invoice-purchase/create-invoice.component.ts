@@ -48,7 +48,7 @@ export class CreateInvoiceComponent implements OnInit {
     provider: this.providerForm,
     document_date: new FormControl('', [Validators.required]),
     invoice_ID : new FormControl('', [Validators.required]),
-    payment_method: new FormControl('', [Validators.required]),
+   // payment_method: new FormControl('', [Validators.required]),
   })
 
   productList: ProductInvoiceModel[] = []
@@ -178,7 +178,7 @@ export class CreateInvoiceComponent implements OnInit {
   }
 
   async saveInvoice(){
-    if (this.invoiceForm.valid && this.invoiceForm.pristine){
+    if (this.invoiceForm.valid ){
       let invoice = this.purchase.current$.value!
       let taxs: any = []
       invoice.footer.taxes.map(tax => {
@@ -191,7 +191,9 @@ export class CreateInvoiceComponent implements OnInit {
       this.cleanForm()
       this.submited.emit()
     }else{
-      this._alert.message('Debe llenar todos los campos requeridos')
+      this._alert.message('Debe llenar todos los campos requeridos','text')
+      console.log(this.invoiceForm.controls);
+      
     }
     
   }
