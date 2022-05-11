@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
 import { MenuItem } from 'primeng/api';
 import { from, Subscription } from 'rxjs';
-import { map, mergeMap } from 'rxjs/operators';
+import { map, mergeMap, tap } from 'rxjs/operators';
 import { CountingsService } from '../../countings/countings.service';
 import { StoreReferenceModel } from '../../products/products.model';
 import { CurrentProductService } from '../current-product.service';
@@ -15,8 +15,6 @@ import { CurrentProductService } from '../current-product.service';
 export class ProductStorageComponent implements OnInit, OnDestroy {
 
   items: MenuItem[] = [];
-  readonly storage: StoreReferenceModel[] = []
-  private _storageSubscription: Subscription
 
   constructor (
     public current: CurrentProductService,
@@ -30,15 +28,6 @@ export class ProductStorageComponent implements OnInit, OnDestroy {
       },
     ]
 
-    /* Update storage */
-    this._storageSubscription = this.current.storage$.pipe(
-      mergeMap( storage => from( storage ) ),
-      map( store => {
-        let indexStore = this.storage.findIndex( store => store.store_id === store.store_id )
-        if ( indexStore < 0 ) this.storage[ this.storage.length ] = store
-        else this.storage.map( (s, i) => i === indexStore ? store : s )
-      } )
-    ).subscribe()
   }
 
   ngOnInit(): void { }
@@ -88,7 +77,6 @@ export class ProductStorageComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this._storageSubscription?.unsubscribe()
   }
 
 }

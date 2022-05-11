@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { CountingInitializationDialog } from './counting-initialization.dialog';
 
-describe('ProductBalancingInitializationDialog', () => {
+describe('CountingInitializationDialog', () => {
   let component: CountingInitializationDialog;
   let fixture: ComponentFixture<CountingInitializationDialog>;
 

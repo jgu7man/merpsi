@@ -9,11 +9,12 @@ import { MxLoading } from 'libs/@marxa/devkit/loading/loading.service';
 import { MxText } from 'libs/@marxa/devkit/text/mx-text.service';
 import { BatchService } from 'libs/@marxa/batch/batch.service';
 import { InventoryProductsService } from '../products/products.service';
-import { formatUPC, Product, ProductModel, StoreReference, StoreReferenceModel } from '../products/products.model';
-import { BehaviorSubject, concat, forkJoin, Observable } from 'rxjs';
+import { formatUPC, Product, ProductEventModel, ProductModel, StoreReference, StoreReferenceModel } from '../products/products.model';
+import { BehaviorSubject, concat, forkJoin, Observable, race, zip } from 'rxjs';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import { fireBatch, FireRef } from 'src/app/models/firestore.model';
 import { MxBatchEvent } from 'libs/@marxa/batch/batch.model';
+import { DashboardService } from 'src/app/dashboard/dashboard.service';
 
 @Injectable({ providedIn: 'root' })
 export class CountingsService {
@@ -33,8 +34,9 @@ export class CountingsService {
     private _text: MxText,
     private _cache: MxCache,
     private _batch: BatchService,
+    private _dashboard: DashboardService
   ) {
-    // /* Mantiene actualizado el estado único de arqueo en esta sesión */
+    /* Mantiene actualizado el estado único de arqueo en esta sesión */
     // this.getCurrent().subscribe( current => this.current$ = current )
     /* Mantiene actualizada la lista de arqueos */
     this.list().subscribe( list => this.list$.next( list ) )
@@ -48,7 +50,7 @@ export class CountingsService {
    * @readonly
    */
   get countingsCollectionRef() {
-    if (!this.businessCRF) throw {message: 'No se tiene el CRF de la empresa'}
+    if ( !this.businessCRF ) throw { message: 'No se tiene el CRF de la empresa' }
     return this._afs.collection<ProductCountingModel>(this.path)
   }
 
@@ -58,18 +60,16 @@ export class CountingsService {
    * @readonly
    */
   get currentRef() {
-    let current = this.current
-    if ( !current ) throw { message: 'No existe un arqueo de productos ACTIVO' }
-    console.log( current )
-    return this.countingsCollectionRef.doc<ProductCountingModel>(current.store_id)
+    if ( !this.current ) throw { message: 'No existe un arqueo de productos ACTIVO' }
+    return this.countingsCollectionRef.doc<ProductCountingModel>(this.current.id)
   }
 
   get updatesRef() {
-    return this.currentRef.collection( 'updates' )
+    return this.currentRef.collection<UpdateRecord>( 'updates' )
   }
 
   get deletingsRef() {
-    return this.currentRef.collection( 'deletings' )
+    return this.currentRef.collection<DeleteRecord>( 'deletings' )
   }
 
   /**
@@ -79,7 +79,6 @@ export class CountingsService {
    */
    list(): Observable<ProductCountingModel[]> {
      return this.countingsCollectionRef.valueChanges().pipe(
-      tap( list => console.log(list) ),
       catchError( ( error: any ) => {
         console.error(error);
         this._alert.error( 'Problemas para cargar los arqueos', error )
@@ -170,12 +169,14 @@ export class CountingsService {
       try {
 
         /* Se crea y se registra el cambio */
-        const productRef = this._afs.doc<Product.DataReference>(`businesses/${this.businessCRF}/products/${UPC}`).ref
+        const productPath = `businesses/${this.businessCRF}/products/${UPC}`
+        const productRef = this._afs.doc<Product.DataReference>(productPath).ref
 
         const record: UpdateRecord = new UpdateRecord( productRef, state, NEW )
+        console.log( record )
         let { leftovers, missings, moneyDiffs } = record
-        let { state: stateUpdate, ...restRecord } = record
-        let recordId = formatUPC(record.UPC)
+        // let { state: stateUpdate, ...restRecord } = record
+        let recordId = formatUPC( record.UPC )
 
 
 
@@ -198,12 +199,11 @@ export class CountingsService {
 
         if ( batch ) {
           return <MxBatchEvent[]>[
-            { type: 'set', ref: this.updatesRef.doc( recordId ).ref, data: restRecord },
+            { type: 'set', ref: this.updatesRef.doc( recordId ).ref, data: record },
             { type: 'set', ref: this.currentRef.ref, data: countingUpdate }
           ]
         } else {
-          await this.updatesRef.doc( recordId )
-            .set( { ...restRecord, update: { ...stateUpdate } } );
+          await this.updatesRef.doc( recordId ).set( { ...record } );
           await this.currentRef.update( countingUpdate as any )
           return this._alert.notify( 'Registro guardado' )
         }
@@ -349,14 +349,20 @@ export class CountingsService {
    * @param {string} UPC Código del producto
    * @returns {*}  {(Promise<ArqueoRecord | null>)}
    */
-  async searchRecord( UPC: string ): Promise<UpdateRecord | null> {
+  async searchRecord( UPC: string ): Promise<UpdateRecord | DeleteRecord | null> {
     try {
-      let recordId = formatUPC(UPC)
-      const recordDoc = await this.updatesRef
-        .doc<UpdateRecord>( recordId )
-        .ref.get()
+      let docs = await zip(
+        this.updatesRef.ref.where( 'UPC', '==', UPC ).get(),
+        this.deletingsRef.ref.where( 'UPC', '==', UPC ).get(),
+      ).pipe(
+        take( 1 ),
+        map( ( [ updates, deletings ] ) => {
+          return [ ...(updates.docs || []), ...(deletings.docs || []) ]
+        } )
+      ).toPromise()
 
-      return  recordDoc.data() || null
+      return docs.length > 0 ?
+        docs[ 0 ].data()! : null
 
     } catch (error) {
       console.error(error)
@@ -542,7 +548,7 @@ export class CountingsService {
         const updatesCol = await this.updatesRef.ref.get()
         const deletingCol = await this.deletingsRef.ref.get()
 
-        this._batch.init(( updatesCol.size * 2 ) + ( deletingCol.size * 2)  + 1)
+        this._batch.init(( updatesCol.size * 3 ) + ( deletingCol.size * 2)  + 1)
 
 
 
@@ -550,19 +556,26 @@ export class CountingsService {
 
         await this._loading.asyncForEach(
           updatesCol.docs, ( async (r) => {
-            const {product, state: store } = r.data()
-            const recordId = formatUPC( product.UPC );
+            const {state, diffs } = r.data()
+            const recordId = formatUPC( r.id );
             const ref = productsRef.doc( recordId )
 
             try {
-              await this._batch.set( ref, {
-                ...product,
-                stock: firebase.firestore.FieldValue.increment(store.stock),
-                last_update: new Date()
-              }, { merge: true} )
 
-              await this._batch.set( ref.collection( 'stores' ).doc( store.store_id ),
-                { ...store }, { merge: true})
+              /* BATCH EVENT 1 */
+              await this._batch.update( ref, {
+                stock: firebase.firestore.FieldValue.increment(diffs),
+                last_update: new Date()
+              } )
+
+              /* BATCH EVENT 2 */
+              await this._batch.set( ref.collection( 'stores' ).doc( state.store_id ),
+                { ...state }, { merge: true } )
+
+              /* BATCH EVENT 3 */
+              const historyRef = ref.collection( 'history' ).doc( `${new Date().getTime()}`)
+              const event = new ProductEventModel('close_counting', this._dashboard.managerRef, this.currentRef)
+              await this._batch.set( historyRef, { ...event }, { merge: true } )
 
 
             } catch (error) {
@@ -584,6 +597,8 @@ export class CountingsService {
 
 
             try {
+
+              /* BATCH EVENT 4 */
               await this._loading.asyncForEach( stores.docs,
                 async almacen => {
                   if ( almacen.id === this.current?.id ) {
@@ -591,6 +606,7 @@ export class CountingsService {
                   }
               } )
 
+              /* BATCH EVENT 5 */
               await this._batch.delete(ref)
 
             } catch (error) {

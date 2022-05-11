@@ -58,14 +58,17 @@ export class UpdateRecord {
     NEW?: boolean,
   ) {
 
+    console.log( state )
     this.UPC = state.UPC
-    this.diffs = state?.stock_update !== undefined
-      ? state.stock - state.stock_update
+    this.diffs = state.last_stock !== undefined
+      ? state.stock - state.last_stock
       : state.stock
     this.leftovers = this.diffs > 0 ? this.diffs : 0
     this.missings = this.diffs < 0 ? this.diffs : 0
     this.moneyDiffs = this.diffs !== 0 ? this.diffs * state.unit_cost : 0
     this.NEW = NEW || false
+
+    console.log( this )
   }
 }
 
@@ -76,11 +79,11 @@ export class DeleteRecord {
 
   constructor (
     public productRef: FireRef<Product.DataReference>,
-    public state?: StoreReferenceModel,
+    public state: StoreReferenceModel,
   ) {
-    this.diffs = 0 - (state?.stock || 0)
-    this.missings =  (state?.stock || 0)
-    this.moneyDiffs = 0 - ((state?.stock || 0) * (state?.unit_cost || 0))
+    this.diffs = 0 - (state.stock || 0)
+    this.missings =  (state.stock || 0)
+    this.moneyDiffs = 0 - ((state.stock || 0) * (state.unit_cost || 0))
   }
 }
 

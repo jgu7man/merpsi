@@ -1,7 +1,8 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Subscription } from 'rxjs';
+import { BehaviorSubject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map, skip, tap } from 'rxjs/operators';
+import { listenChanges } from 'src/app/models/operators-chains.model';
 import { StoreReference, StoreReferenceModel } from 'src/app/modules/inventory/products/products.model';
 import { CountingsService } from '../../countings/countings.service';
 import { CurrentProductService } from '../current-product.service';
@@ -13,8 +14,11 @@ import { CurrentProductService } from '../current-product.service';
 })
 export class ProductStoredFormComponent implements OnInit, OnDestroy {
 
-  // @Input() store_id?: string
-  @Input() store?: StoreReferenceModel
+  private _store = new BehaviorSubject<StoreReferenceModel | undefined>(undefined);
+  @Input() set store(s: StoreReferenceModel | undefined) { this._store.next(s); }
+  get store() { return this._store.getValue()}
+  private _storeSubs?: Subscription
+
   public current_stock: number = 0
   public productStoredForm!: StoreReference.StoreForm
 
@@ -24,17 +28,20 @@ export class ProductStoredFormComponent implements OnInit, OnDestroy {
     public current: CurrentProductService,
     public countings: CountingsService
   ) {
-    console.log( 'new' )
   }
 
   ngOnInit(): void {
     this.createForm()
-    if ( this.store ) {
-      this.productStoredForm.patchValue( {
-        ...this.store,
-      } )
-      this.productStoredForm.markAsPristine()
-    }
+    this._storeSubs = this._store
+      .pipe( listenChanges( 500 ) )
+      .subscribe( store => {
+      if ( this.store ) {
+        this.productStoredForm.patchValue( {
+          ...this.store,
+        } )
+        this.productStoredForm.markAsPristine()
+      }
+    } )
   }
 
   createForm() {
@@ -42,7 +49,7 @@ export class ProductStoredFormComponent implements OnInit, OnDestroy {
     let disabled = this.countings.current?.store_id !== this.store!.store_id
     this.productStoredForm = new FormGroup( {
       store_id: new FormControl('', [Validators.required]),
-      product_code: new FormControl('', [Validators.required]),
+      UPC: new FormControl('', [Validators.required]),
       stock: new FormControl({value: 0, disabled }, [Validators.required]),
       unit_price: new FormControl({value: 0, disabled }, [Validators.required]),
       unit_cost: new FormControl({value: 0, disabled }, [Validators.required]),
@@ -63,9 +70,10 @@ export class ProductStoredFormComponent implements OnInit, OnDestroy {
       tap( () => {
         this.current.storeFormsValidation$.next( {
         ...this.current.storeFormsValidation$.value,
-        [ this.store!.store_id ]: this.productStoredForm.valid || !this.productStoredForm.pristine
+        [ this.store!.store_id ]: this.productStoredForm.valid
         } )
-        console.log( this.current.storeFormsValidation$.value )
+
+        this.current.allPristine$.next( this.productStoredForm.pristine )
       } )
     ).subscribe()
 
@@ -83,6 +91,7 @@ export class ProductStoredFormComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this._submitedSubscription?.unsubscribe()
+    this._storeSubs?.unsubscribe()
   }
 
 }

@@ -19,7 +19,7 @@
       mat-raised-button
       color="primary"
       (click)="current.save()"
-      [disabled]="!(current.formValid$ | async)"
+      [disabled]="!(current.wholeFormValid$ | async)"
     >Guardar</button>
   </div>
 </div>

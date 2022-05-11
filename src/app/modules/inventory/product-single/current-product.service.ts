@@ -6,7 +6,7 @@ import { BehaviorSubject, Observable, of, Subject, Subscription, zip,  } from 'r
 import { catchError, map, mergeMap, switchMap, tap } from 'rxjs/operators';
 import { DashboardService } from 'src/app/dashboard/dashboard.service';
 import { fireBatch, FireDoc, txn } from 'src/app/models/firestore.model';
-import { Product, ProductModel, StoreReference, StoreReferenceModel } from 'src/app/modules/inventory/products/products.model';
+import { Product, ProductEventModel, ProductModel, StoreReference, StoreReferenceModel } from 'src/app/modules/inventory/products/products.model';
 import { MxLoading } from 'libs/@marxa/devkit/loading/loading.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { AngularFirestore } from '@angular/fire/firestore';
@@ -39,22 +39,11 @@ export class CurrentProductService {
   /**
    * Notifica la validación de los formularios de existencias del producto de cada almacén
    */
-  public storeFormsValidation$ = new BehaviorSubject<{[store:string]: boolean}>( {} )
+  public storeFormsValidation$ = new BehaviorSubject<{ [ store: string ]: boolean }>( {} )
   /**
-   * Obtiene la validación de todos los formularios del producto. Aplica Pristine
+   * Notifica cuando uno de los formularios del producto ha sufrido cambios
    */
-  public get formValid$(): Observable<boolean> {
-    return zip(
-      this._storeFormsValid$,
-      this.productFormValidation$
-    ).pipe(
-      map( ( [ stores, product ] ) => {
-        console.log( stores, product )
-        return stores || product
-      } ),
-      tap( valid => console.log( 'Formularios validos', valid ) )
-    )
-  }
+  public allPristine$ = new BehaviorSubject<boolean>( true )
   /**
    * ID de la empresa
    */
@@ -63,20 +52,7 @@ export class CurrentProductService {
    * Almacena cambios de existencias de un almacen. Sólo funciona en modo arqueo.
    */
   private _stockUpdate?: StoreReference.stateUpdate
-  /**
-   * Obtiene la validación de los formularios de almacenes
-   */
-   private get _storeFormsValid$(): Observable<boolean> {
-     return this.storeFormsValidation$.pipe( map( formList => {
-      console.log( formList )
-      const stores = Object.keys( formList )
-      return stores.length > 0
-        ? stores
-          .map( id => formList[ id ] )
-          .every( valid => valid === true )
-        : true
-    }))
-  }
+
 
   private storageSubscription: Subscription
 
@@ -93,6 +69,42 @@ export class CurrentProductService {
       .pipe( mergeMap( () => this.storage$
       ) ).subscribe()
   }
+
+  public leave() {
+    this.storage$.next( [] )
+    this.product$.next( null )
+    this.allPristine$.next( true )
+    this.storeFormsValidation$.next( {} )
+    this.storageSubscription.unsubscribe()
+  }
+
+  /**
+   * Obtiene la validación de todos los formularios del producto. Aplica Pristine
+   */
+   public get wholeFormValid$(): Observable<boolean> {
+    return zip(
+      this._storeFormsValid$,
+      this.productFormValidation$,
+      this.allPristine$,
+    ).pipe(
+      map( ( [ stores, product, allPristine ] ) => {
+        return (stores && product) || !allPristine
+      } ),
+    )
+  }
+  /**
+   * Obtiene la validación de los formularios de almacenes
+   */
+   private get _storeFormsValid$(): Observable<boolean> {
+    return this.storeFormsValidation$.pipe( map( formList => {
+     const stores = Object.keys( formList )
+     return stores.length > 0
+       ? stores
+         .map( id => formList[ id ] )
+         .every( valid => valid === true )
+       : true
+   }))
+ }
 
   /**
    * Referencia Firestore al producto seleccionado
@@ -124,20 +136,24 @@ export class CurrentProductService {
         return this._productRef.collection
           <StoreReferenceModel>( `stores` )
           .valueChanges().pipe(
-            tap( storage => {
+            tap( async storage => {
               this.storage$.next( storage )
-
               if ( this._countings.current ) {
-                const current_store = storage
+                let current_store = storage
                   .find( store => store.store_id === this._countings.current!.store_id )
 
                 if ( !current_store ) {
-                  this._enableStore( this._countings.current!.store_id )
+                  await this._enableStore( this._countings.current!.store_id )
+                } else {
+                  const record = await this._countings.searchRecord( product.UPC )
+                  if ( record ) {
+                    await this.updateStore(record.state, current_store.store_id )
+                  }
 
                 }
+              } else {
+                this.storage$.next( [...storage, ...this.storage$.value]  )
               }
-
-              console.log( storage )
             } ),
             catchError( ( error ) => {
               console.error(error);
@@ -151,7 +167,6 @@ export class CurrentProductService {
           )
 
     }))
-
    }
 
 
@@ -160,42 +175,35 @@ export class CurrentProductService {
    *
    * @param {StoreReferenceModel} store Modelo de la referencia del almacen
    */
-  public updateStore( store: StoreReferenceModel, store_id: string ) {
-    const currentIndex = this.storage$
-      .value.findIndex( s => s.store_id === store_id )
+  public async updateStore( store: StoreReferenceModel, store_id: string ) {
+    const storage = this.storage$.value
+    const currentIndex = storage.findIndex( s => s.store_id === store_id )
 
     if ( currentIndex !== -1 ) {
-      let currentStore = this.storage$.value[ currentIndex ]
-      // let stores = this.storage$.value
+      let currentStore = storage[ currentIndex ]
 
       if ( currentStore.stock !== store.stock ) {
         this._stockUpdate = {
-          ...currentStore,
-          stock_update: store.stock
+          ...store,
+          last_stock: currentStore.stock
         }
+        this._alert.notify( 'Cambio de existencias notificado' )
       }
 
       this.storage$.next( [
-        ...this.storage$.value.slice( 0, currentIndex ),
-        store,
-        ...this.storage$.value.slice( currentIndex + 1 )
+        ...storage.slice( 0, currentIndex ),
+        {...store},
+        ...storage.slice( currentIndex + 1 )
       ] )
-      // currentStore = store
-      // stores[ currentIndex ] = currentStore
-
-      // console.log( stores )
-      // this.storage$.next( stores )
+    } else {
+      this.storage$.next( [...storage, store ] )
     }
 
-    // else
-    //   this.storage$
-    //     .value.push( store )
-
-    // this.storage$.next(this.storage$.value)
+    return
   }
 
 
-  private _enableStore( store_id: string ) {
+  private async _enableStore( store_id: string ) {
     try {
       if ( this.storage$.value.find( store => store.store_id === store_id ) )
         throw { message: 'El almacen ya está habilitado' }
@@ -213,7 +221,7 @@ export class CurrentProductService {
         nuStore
       ] )
 
-      console.log( 'storage', this.storage$.value )
+      return
 
     } catch (error: any) {
       if ('message' in error) {
@@ -241,6 +249,7 @@ export class CurrentProductService {
 
       const productState = await this.product$.value
       const product = new ProductModel( productState, this._dashboard.managerRef )
+      const historyRef = this._productRef.collection( 'history' ).doc( `${ new Date().getTime() }` ).ref
       product.last_update.eventRef = this._countings.currentRef.ref
 
       /* Guarda el producto */
@@ -270,17 +279,22 @@ export class CurrentProductService {
           fireBatch.set( event.ref, {
             ...event.data,
           }, { merge: true } )
-        })
+        } )
+
+        const counting_event = new ProductEventModel(
+          'counting_report',
+          this._dashboard.managerRef,
+          this._countings.currentRef.ref,
+        )
+
+        fireBatch.set( historyRef, { ...counting_event })
       }
 
 
       /* Asigna un evento */
-      fireBatch.set( this._productRef
-        .collection( `history` )
-        .doc( `${ new Date().getTime() }` ).ref,
-        { ...product!.last_update }
-      )
+      fireBatch.set( historyRef, { ...product!.last_update } )
 
+      /* Ejecuta todo el batch */
       await fireBatch.commit()
 
       /* Obtiene el producto agregado */
@@ -288,6 +302,7 @@ export class CurrentProductService {
 
       this._loading.spinner('close')
       this._alert.notify( 'Producto guardado' )
+      this.allPristine$.next(true)
       return productSetted
 
     } catch ( error: any ) {
@@ -310,10 +325,5 @@ export class CurrentProductService {
     }
   }
 
-  public leave() {
-    this.product$.next( null )
-    this.storage$.next( [] )
-    this.storeFormsValidation$.next( {} )
-    this.storageSubscription.unsubscribe()
-  }
+
 }

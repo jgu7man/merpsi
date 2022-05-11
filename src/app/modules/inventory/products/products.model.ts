@@ -6,11 +6,12 @@ import { createDate, FireDoc, FireRef, FireTime } from '../../../models/firestor
 import { MesureUnitModel } from '../mesure-units/mesure-unit.model'
 import { ProviderModel } from '../providers/provider.model'
 import { ProductCategory } from '../product-categories/product-category.model'
+import { AngularFirestoreDocument } from '@angular/fire/firestore'
 
 /**
  * Clase para crear productos desde 0.
  * @note Procurar sólo usarlo para creación de productos
- * @path businesses/{CRF}/products/{product_code}
+ * @path businesses/{CRF}/products/{UPC}
  */
 export class ProductModel {
   /** Código del producto. Se espera que pueda ser el UPC (Código Universal del Producto).*/
@@ -114,7 +115,7 @@ export class ProductModel {
 /**
  * Clase para crear un evento del historial del producto
  *
- * @path businesses/{CRF}/products/{product_code}/history/{event.id}
+ * @path businesses/{CRF}/products/{UPC}/history/{event.id}
  */
 export class ProductEventModel {
   /**
@@ -128,7 +129,7 @@ export class ProductEventModel {
     /** Referencia de manager que realiza el evento */
     public manager?: firebase.firestore.DocumentReference,
     /* Referencia a la factura o arqueo que tuvo efecto en la modificación del producto */
-    public eventRef?: firebase.firestore.DocumentReference
+    public eventRef?: firebase.firestore.DocumentReference | AngularFirestoreDocument
   ) {
     this.date = createDate(new Date())
 
@@ -146,7 +147,7 @@ export declare namespace Product {
   /**
    * Clase principal para la consulta y renderizado de productos de la base de datos
    *
-   * @path businesses/{CRF}/products/{product_code}
+   * @path businesses/{CRF}/products/{UPC}
    */
   interface DataReference
     extends Omit<ProductModel,
@@ -189,7 +190,7 @@ export declare namespace Product {
   interface Form extends FormGroup {
     value: DataReference | ProductModel
     controls: {
-      product_code: AbstractControl
+      UPC: AbstractControl
       reference: AbstractControl
       description: AbstractControl
       brand: AbstractControl
@@ -208,7 +209,7 @@ export declare namespace Product {
   namespace history {
 
     /** Tipo de evento de un producto */
-    type UpdateType = 'sale' | 'purchase' | 'edit' | 'create' | 'balancing'
+    type UpdateType = 'sale' | 'purchase' | 'edit' | 'create' | 'close_counting' | 'counting_report' | 'delete'
 
 
   }
@@ -217,7 +218,7 @@ export declare namespace Product {
 /**
  * Modelo de objeto para la referencia de un producto en una store
  *
- * @path businesses/{CRF}/products/{product_code}/store/{store.id}
+ * @path businesses/{CRF}/products/{UPC}/store/{store.id}
  */
 export class StoreReferenceModel  {
   /** Existencias del producto en el almacen */
@@ -257,7 +258,7 @@ export declare namespace StoreReference {
   interface data extends Pick<StoreReferenceModel, 'min_required' | 'bookshelves'> { }
 
   interface stateUpdate extends StoreReferenceModel {
-    stock_update: number
+    last_stock: number
   }
 
   /**
@@ -281,7 +282,7 @@ export declare namespace StoreReference {
     value: StoreReferenceModel
     controls: {
       store_id: AbstractControl,
-      product_code: AbstractControl,
+      UPC: AbstractControl,
       stock_update: AbstractControl,
       unit_price: AbstractControl,
       unit_cost: AbstractControl,

@@ -57,12 +57,16 @@ export class ProductFormComponent implements OnInit, OnDestroy {
         skip( 1 ),
         listenChanges(1000),
       ).subscribe( changes => {
+
+        /* Actualiza los cambios en el state */
         this.current.product$.next( {
           ...this.current.product$.value,
           ...changes
         } )
 
-        this.current.productFormValidation$.next( this.productFormValid )
+        /* Notifica las validaciones del formulario. */
+        this.current.productFormValidation$.next( this.productForm.valid )
+        this.current.allPristine$.next( this.productForm.pristine )
       });
 
     this._submitedSubscription = this.current.submited$
@@ -87,10 +91,6 @@ export class ProductFormComponent implements OnInit, OnDestroy {
     this.productForm.patchValue( { [list]: value})
   }
 
-  get productFormValid() {
-    return this.productForm.valid || !this.productForm.pristine;
-  }
-
   ngOnDestroy() {
     this._productFormSubscription?.unsubscribe();
     this._submitedSubscription?.unsubscribe();
@@ -112,7 +112,7 @@ export class ProductFormComponent implements OnInit, OnDestroy {
           <button
             mat-raised-button
             color="primary"
-            [disabled]="!(current.formValid$ | async)"
+            [disabled]="!(current.productFormValidation$ | async)"
             (click)="onSubmit()"
             >
               Guardar
