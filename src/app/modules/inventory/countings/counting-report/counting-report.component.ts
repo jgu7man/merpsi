@@ -24,10 +24,11 @@ export class CountingReportComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    const recordsPath = `${this.countings.path}/${this.countingReport.id}/records`
-    this._index.initIndex( recordsPath, 'productId', 20 );
+    const recordsPath = `${this.countings.path}/${this.countingReport.id}/updates`
+    this._index.initIndex( recordsPath, 'UPC', 20 );
     this.indexSubscription =
-    this._index.page$.subscribe( data => {
+      this._index.page$.subscribe( data => {
+      console.log( data )
       this.records = data
     })
   }

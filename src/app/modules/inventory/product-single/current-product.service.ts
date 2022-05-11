@@ -75,7 +75,7 @@ export class CurrentProductService {
     this.product$.next( null )
     this.allPristine$.next( true )
     this.storeFormsValidation$.next( {} )
-    this.storageSubscription.unsubscribe()
+    // this.storageSubscription.unsubscribe()
   }
 
   /**
@@ -131,12 +131,14 @@ export class CurrentProductService {
    private _listenStorage(): Observable<StoreReferenceModel[]> {
     return this.product$.pipe(
       switchMap( product => {
+        console.log( 'product', product )
         if (!product) return of( [] )
 
         return this._productRef.collection
           <StoreReferenceModel>( `stores` )
           .valueChanges().pipe(
             tap( async storage => {
+              console.log( 'storage', storage )
               this.storage$.next( storage )
               if ( this._countings.current ) {
                 let current_store = storage

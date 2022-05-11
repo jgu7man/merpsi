@@ -562,10 +562,13 @@ export class CountingsService {
 
             try {
 
+              const historyRef = ref.collection( 'history' ).doc( `${new Date().getTime()}`)
+              const event = new ProductEventModel('close_counting', this._dashboard.managerRef, this.currentRef)
+
               /* BATCH EVENT 1 */
               await this._batch.update( ref, {
                 stock: firebase.firestore.FieldValue.increment(diffs),
-                last_update: new Date()
+                last_update: event
               } )
 
               /* BATCH EVENT 2 */
@@ -573,8 +576,7 @@ export class CountingsService {
                 { ...state }, { merge: true } )
 
               /* BATCH EVENT 3 */
-              const historyRef = ref.collection( 'history' ).doc( `${new Date().getTime()}`)
-              const event = new ProductEventModel('close_counting', this._dashboard.managerRef, this.currentRef)
+
               await this._batch.set( historyRef, { ...event }, { merge: true } )
 
 

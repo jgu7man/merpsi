@@ -127,7 +127,7 @@ mxStretchHeight>
                 <ng-container matColumnDef="last_update">
                   <th mat-header-cell *matHeaderCellDef> Actualizado </th>
                   <td mat-cell *matCellDef="let product">
-                    {{product.last_update.date | mxTimestamp | date: 'short'}}
+                    {{(product.last_update?.date || product.last_update) | mxTimestamp | date: 'short'}}
                   </td>
                 </ng-container>
 

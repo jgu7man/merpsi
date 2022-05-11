@@ -79,7 +79,7 @@
               <table mat-table #table [dataSource]="records">
                 <ng-container matColumnDef="productId">
                   <th mat-header-cell *matHeaderCellDef> ID de prod. </th>
-                  <td mat-cell *matCellDef="let record"> {{record.productId}} </td>
+                  <td mat-cell *matCellDef="let record"> {{record.UPC}} </td>
                 </ng-container>
                 <ng-container matColumnDef="diffs">
                   <th mat-header-cell *matHeaderCellDef> Diferencias </th>
@@ -101,8 +101,20 @@
                     ${{record.moneyDiffs}}
                   </td>
                 </ng-container>
-                <tr mat-header-row *matHeaderRowDef="['productId','diffs', 'moneyDiffs']"></tr>
-                <tr mat-row *matRowDef="let record; columns: ['productId','diffs', 'moneyDiffs'];"></tr>
+
+                <ng-container matColumnDef="options">
+                  <th mat-header-cell *matHeaderCellDef></th>
+                  <td mat-cell *matCellDef="let record">
+                    <button mat-icon-button
+                    [routerLink]="['../list']"
+                    [queryParams]="{'UPC': record.UPC}">
+                      <mat-icon class="mat-18">shortcut</mat-icon>
+                    </button>
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="['productId','diffs', 'moneyDiffs', 'options']"></tr>
+                <tr mat-row *matRowDef="let record; columns: ['productId','diffs', 'moneyDiffs', 'options'];"></tr>
               </table>
               <mx-index-caller></mx-index-caller>
             </div>
