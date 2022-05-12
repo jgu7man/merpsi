@@ -5,7 +5,9 @@ import { CommonModule } from '@angular/common';
 import { ConfirmPopupModule } from 'primeng/confirmpopup';
 import { SidebarModule } from 'primeng/sidebar';
 import {TreeTableModule} from 'primeng/treetable';
-import {TreeSelectModule} from 'primeng/treeselect';
+import { TreeSelectModule } from 'primeng/treeselect';
+import {SplitButtonModule} from 'primeng/splitbutton';
+
 
 // SERVICES
 import {
@@ -24,7 +26,8 @@ import {
     ConfirmPopupModule,
     SidebarModule,
     TreeTableModule,
-    TreeSelectModule
+    TreeSelectModule,
+    SplitButtonModule
   ],
   providers: [
     ConfirmationService,

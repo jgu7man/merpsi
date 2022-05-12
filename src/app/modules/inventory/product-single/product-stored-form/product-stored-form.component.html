@@ -1,7 +1,7 @@
 <form class="row" [formGroup]="productStoredForm">
- 
+
   <!-- STOCK -->
-  <mat-form-field appearance="outline" class="col s6">
+  <mat-form-field appearance="outline" class="col s12">
     <mat-label>Existencias</mat-label>
     <input
       matInput
@@ -14,9 +14,9 @@
       Existencias es necesario
     </mat-error>
   </mat-form-field>
- 
+
   <!-- UNIT_PRICE -->
-  <mat-form-field appearance="outline" class="col s6">
+  <mat-form-field appearance="outline" class="col s12">
     <mat-label>Precio unitario</mat-label>
     <input
       matInput
@@ -29,35 +29,25 @@
       El precio unitario es necesario
     </mat-error>
   </mat-form-field>
-  
+
   <!-- MINIMO REQUERIDO -->
-  <mat-form-field appearance="outline" class="col s6">
+  <mat-form-field appearance="outline" class="col s12">
     <mat-label>Mínimo requerido</mat-label>
     <input
       matInput
       type="number"
-      name="min_requerido"
-      formControlName="min_requerido"
+      name="min_required"
+      formControlName="min_required"
       required
     />
-    <mat-error *ngIf="productStoredForm.hasError('required', 'min_requerido')">
+    <mat-error *ngIf="productStoredForm.hasError('required', 'min_required')">
       Mínimo requerido es necesario
     </mat-error>
   </mat-form-field>
-  
-  <!-- ESTANTERIAS -->
-  <app-chips-crud
-    [listValue]="bookshelves"
-    (change)="(bookshelves)"
-    label="Estanterías"
-    placeholder="Agrega una palabra clave"
-    hint="Escribe una etiqueta de estantería y después presiona COMA o TAB para que se agreguen a la lista."
-  >
-  </app-chips-crud>
-  
+
   <!-- PROVIDER SELECT -->
   <!-- Proveedor -->
-  <mat-form-field appearance="outline" class="col s3">
+  <mat-form-field appearance="outline" class="col s12">
     <mat-label>Proveedor</mat-label>
     <mat-select
       placeholder="Placeholder"
@@ -71,4 +61,16 @@
           </mat-option> -->
     </mat-select>
   </mat-form-field>
+
+  <!-- ESTANTERIAS -->
+  <app-chips-crud class="col s12"
+    [listValue]="bookshelves"
+    (change)="(bookshelves)"
+    label="Estanterías"
+    placeholder="Agrega una palabra clave"
+    hint="Escribe una etiqueta de estantería y después presiona COMA o TAB para que se agreguen a la lista."
+  >
+  </app-chips-crud>
+
+
 </form>

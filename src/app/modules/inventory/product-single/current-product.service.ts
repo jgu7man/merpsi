@@ -2,141 +2,311 @@ import firebase from 'firebase/app';
 import { Injectable } from '@angular/core';
 import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
 import { MxText } from 'libs/@marxa/devkit/text/mx-text.service';
-import { BehaviorSubject, Observable, of, Subject,  } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { BehaviorSubject, Observable, of, Subject, Subscription, zip,  } from 'rxjs';
+import { catchError, map, mergeMap, switchMap, tap } from 'rxjs/operators';
 import { DashboardService } from 'src/app/dashboard/dashboard.service';
-import { FireDoc, txn } from 'src/app/models/firestore.model';
-import { Product, ProductModel, StoreReferenceModel } from 'src/app/modules/inventory/products/products.model';
+import { fireBatch, FireDoc, txn } from 'src/app/models/firestore.model';
+import { Product, ProductEventModel, ProductModel, StoreReference, StoreReferenceModel } from 'src/app/modules/inventory/products/products.model';
 import { MxLoading } from 'libs/@marxa/devkit/loading/loading.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { ManagerModel } from '../../admin/managers/manager.model';
+import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
+import { CountingsService } from '../countings/countings.service';
+import { MxBatchEvent } from 'libs/@marxa/batch/batch.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CurrentProductService {
 
-  product$ = new BehaviorSubject<Product.DataReference | null>( null )
-  storage$ = new BehaviorSubject<StoreReferenceModel[]>( [] )
-  formValid$ = new BehaviorSubject<{[store:string]: boolean}>( {} )
-  submited$ = new Subject<void>()
-  get formValid(): Observable<boolean> {
-    return this.formValid$.pipe( map( formList => {
-      const stores = Object.keys( formList )
-      return stores.length > 0
-        ? stores
-          .map( id => formList[ id ] )
-          .every( valid => valid === true )
-        : true
-    }))
-  }
+  /**
+   * Mantiene el estado actual del producto
+   */
+  public product$ = new BehaviorSubject<Product.DataReference | null>( null )
+  /**
+   * Referencias a los almacenes donde se encuentra el producto
+   */
+  public storage$ = new BehaviorSubject<StoreReferenceModel[]>( [] )
+  /**
+   * Notificación cuando el producto ha sido enviado a guardar
+   */
+  public submited$ = new Subject<void>()
+  /**
+   * Notifica la validación del formulario principal del producto.
+   */
+  public productFormValidation$ = new BehaviorSubject<boolean>(false);
+  /**
+   * Notifica la validación de los formularios de existencias del producto de cada almacén
+   */
+  public storeFormsValidation$ = new BehaviorSubject<{ [ store: string ]: boolean }>( {} )
+  /**
+   * Notifica cuando uno de los formularios del producto ha sufrido cambios
+   */
+  public allPristine$ = new BehaviorSubject<boolean>( true )
+  /**
+   * ID de la empresa
+   */
+  private _businessRef = this._cache.getDataKey('eid')
+  /**
+   * Almacena cambios de existencias de un almacen. Sólo funciona en modo arqueo.
+   */
+  private _stockUpdate?: StoreReference.stateUpdate
 
+
+  private storageSubscription: Subscription
 
 
   constructor (
     private _dashboard: DashboardService,
-    private _text: MxText,
     private _alert: MxAlert,
     private _loading: MxLoading,
-    private _auth: AuthService,
-    private _afs: AngularFirestore
-  ) { }
-
-  get managerRef() {
-    let user = this._auth.userState$.value
-    if (!user) throw {message: 'No se ha iniciado sesión'}
-    let userRef = this._dashboard.businessRef
-      .collection( 'managers' )
-      .doc<ManagerModel>( user.uid )
-      .ref
-    return userRef
+    private _afs: AngularFirestore,
+    private _cache: MxCache,
+    private _countings: CountingsService
+  ) {
+    this.storageSubscription = this._listenStorage()
+      .pipe( mergeMap( () => this.storage$
+      ) ).subscribe()
   }
 
-  listenStorage(): BehaviorSubject<StoreReferenceModel[]> {
-    this.product$.pipe( map( product => {
-      if ( product != null ) {
-        this.retriveStoresRef( product.UPC ).pipe(
-          map(storage => { this.storage$.next( storage ) })
-        )
-      }
-    }))
-    return this.storage$
+  public leave() {
+    this.storage$.next( [] )
+    this.product$.next( null )
+    this.allPristine$.next( true )
+    this.storeFormsValidation$.next( {} )
+    // this.storageSubscription.unsubscribe()
   }
+
+  /**
+   * Obtiene la validación de todos los formularios del producto. Aplica Pristine
+   */
+   public get wholeFormValid$(): Observable<boolean> {
+    return zip(
+      this._storeFormsValid$,
+      this.productFormValidation$,
+      this.allPristine$,
+    ).pipe(
+      map( ( [ stores, product, allPristine ] ) => {
+        return (stores && product) || !allPristine
+      } ),
+    )
+  }
+  /**
+   * Obtiene la validación de los formularios de almacenes
+   */
+   private get _storeFormsValid$(): Observable<boolean> {
+    return this.storeFormsValidation$.pipe( map( formList => {
+     const stores = Object.keys( formList )
+     return stores.length > 0
+       ? stores
+         .map( id => formList[ id ] )
+         .every( valid => valid === true )
+       : true
+   }))
+ }
+
+  /**
+   * Referencia Firestore al producto seleccionado
+   */
+  private get _productRef() {
+    let UPC = this.product$.value?.UPC || ''
+    if (!UPC) throw {message: 'No se ha seleccionado un producto'}
+    return this._afs.doc<Product.DataReference>(`businesses/${this._businessRef}/products/${UPC}`)
+  }
+
+  private get _storesRef() {
+    return this._productRef.collection<StoreReferenceModel>( 'stores' )
+  }
+
+
+
 
   /**
    * Consulta y se suscribe a las existencias del producto en los diferentes almacenes de la empresa presente
    *
    * @param {string} UPC
-   * @returns {*} 
+   * @returns {*} {Observable<StoreReferenceModel[]>} - Observable de los almacenes
    */
-   retriveStoresRef( UPC: string ): Observable<StoreReferenceModel[]> {
-    const productId =  this._text.slugify(UPC);
-    
-    return this._dashboard.businessRef.collection
-      <StoreReferenceModel>( `products/${ productId }/stores` )
-      .valueChanges().pipe(
-        catchError( ( error ) => {
-          this._alert.error(
-            'No se pudo tener contacto con la base de datos',
-            error,
-            'productos.service#retriveAlamacenesRef'
-          );
-          return of([])
-        })
-      )
+   private _listenStorage(): Observable<StoreReferenceModel[]> {
+    return this.product$.pipe(
+      switchMap( product => {
+        console.log( 'product', product )
+        if (!product) return of( [] )
 
+        return this._productRef.collection
+          <StoreReferenceModel>( `stores` )
+          .valueChanges().pipe(
+            tap( async storage => {
+              console.log( 'storage', storage )
+              this.storage$.next( storage )
+              if ( this._countings.current ) {
+                let current_store = storage
+                  .find( store => store.store_id === this._countings.current!.store_id )
+
+                if ( !current_store ) {
+                  await this._enableStore( this._countings.current!.store_id )
+                } else {
+                  const record = await this._countings.searchRecord( product.UPC )
+                  if ( record ) {
+                    await this.updateStore(record.state, current_store.store_id )
+                  }
+
+                }
+              } else {
+                this.storage$.next( [...storage, ...this.storage$.value]  )
+              }
+            } ),
+            catchError( ( error ) => {
+              console.error(error);
+              this._alert.error(
+                'No se pudo tener contacto con la base de datos',
+                error,
+                'productos.service#retriveAlamacenesRef'
+              );
+              return of([])
+            })
+          )
+
+    }))
    }
-  
-  
-  updateStore( store: StoreReferenceModel ) {
-    const currentIndex = this.storage$
-    .value.findIndex( s => s.store_id ===  store.store_id )
-  
-    if ( currentIndex !== -1 )
-      this.storage$
-        .value[ currentIndex ] = store
-    else
-      this.storage$
-        .value.push( store )
-    
-    this.storage$.next(this.storage$.value)
+
+
+  /**
+   * Actualiza producto en el almacen indicado
+   *
+   * @param {StoreReferenceModel} store Modelo de la referencia del almacen
+   */
+  public async updateStore( store: StoreReferenceModel, store_id: string ) {
+    const storage = this.storage$.value
+    const currentIndex = storage.findIndex( s => s.store_id === store_id )
+
+    if ( currentIndex !== -1 ) {
+      let currentStore = storage[ currentIndex ]
+
+      if ( currentStore.stock !== store.stock ) {
+        this._stockUpdate = {
+          ...store,
+          last_stock: currentStore.stock
+        }
+        this._alert.notify( 'Cambio de existencias notificado' )
+      }
+
+      this.storage$.next( [
+        ...storage.slice( 0, currentIndex ),
+        {...store},
+        ...storage.slice( currentIndex + 1 )
+      ] )
+    } else {
+      this.storage$.next( [...storage, store ] )
+    }
+
+    return
   }
 
-  async save(): Promise<FireDoc<Product.DataReference>> {
+
+  private async _enableStore( store_id: string ) {
+    try {
+      if ( this.storage$.value.find( store => store.store_id === store_id ) )
+        throw { message: 'El almacen ya está habilitado' }
+      if ( !this.product$.value )
+        throw { message: 'No se ha seleccionado un producto' }
+
+      let { UPC } = this.product$.value
+
+      let nuStore = new StoreReferenceModel(
+        store_id, UPC, 0, 0, 0, 0, []
+      )
+
+      this.storage$.next( [
+        ...this.storage$.value,
+        nuStore
+      ] )
+
+      return
+
+    } catch (error: any) {
+      if ('message' in error) {
+        this._alert.error(error.message, error)
+      } else {
+        this._alert.error('mensaje de error', error)
+      }
+      return console.error(error)
+    }
+  }
+
+
+  /**
+   * Guardar el estado actual del producto
+   *
+   * @returns {*}  {Promise<FireDoc<Product.DataReference>>} Regresa la referencia de firestore del producto recien guardado
+   */
+  public async save(): Promise<FireDoc<Product.DataReference>> {
     this._loading.spinner('open')
     try {
-      
-      
+
+
       if ( this.product$.value == null )
         throw { message: 'Se ha perdido el state del producto actual' }
-      
+
       const productState = await this.product$.value
-      const product = new ProductModel( productState, this.managerRef )
-      console.log( product.getData() )
-      const productRef = this._dashboard.businessRef
-        .collection( 'products' )
-        .doc<ProductModel>( product!.UPC).ref
-      
+      const product = new ProductModel( productState, this._dashboard.managerRef )
+      const historyRef = this._productRef.collection( 'history' ).doc( `${ new Date().getTime() }` ).ref
+      product.last_update.eventRef = this._countings.currentRef.ref
+
       /* Guarda el producto */
-      await productRef.set( {
+      fireBatch.set(this._productRef.ref, {
         ...product.getData(),
-        // last_update: {...product.last_update}
       }, { merge: true } )
-      
+
+      /* Guarda las referencias de almacen */
+      await this._loading.asyncForEach( this.storage$.value, store => {
+        fireBatch.set( this._storesRef.doc( store.store_id ).ref, {
+          bookshelves: store.bookshelves,
+          min_required: store.min_required,
+          unit_price: store.unit_price,
+        }, { merge: true } )
+
+      })
+
+      /* Guarda la actualización del stock */
+      if ( this._countings.current && this._stockUpdate ) {
+        const {stored, UPC} = this.product$.value!
+
+        let events = await this._countings.registUpdateRecord( UPC, {
+          ...this._stockUpdate,
+        }, !stored, true ) as MxBatchEvent[]
+
+        await this._loading.asyncForEach( events, event => {
+          fireBatch.set( event.ref, {
+            ...event.data,
+          }, { merge: true } )
+        } )
+
+        const counting_event = new ProductEventModel(
+          'counting_report',
+          this._dashboard.managerRef,
+          this._countings.currentRef.ref,
+        )
+
+        fireBatch.set( historyRef, { ...counting_event })
+      }
+
+
       /* Asigna un evento */
-      await productRef
-        .collection( `history` )
-        .doc( `${ new Date().getTime() }` )
-        .set( { ...product!.last_update } )
-      
+      fireBatch.set( historyRef, { ...product!.last_update } )
+
+      /* Ejecuta todo el batch */
+      await fireBatch.commit()
+
       /* Obtiene el producto agregado */
-      const productSetted = await productRef.get()
-      
+      const productSetted = await this._productRef.ref.get()
+
       this._loading.spinner('close')
       this._alert.notify( 'Producto guardado' )
+      this.allPristine$.next(true)
       return productSetted
-      
+
     } catch ( error: any ) {
       this._loading.spinner('close')
       this._alert.error('No se logró guardar el producto', error)
@@ -145,7 +315,7 @@ export class CurrentProductService {
     }
   }
 
-  updateState(
+  public updateState(
     param: keyof Product.DataReference,
     value: Product.DataReference[ typeof param ]
   ) {
@@ -157,9 +327,5 @@ export class CurrentProductService {
     }
   }
 
-  leave() {
-    this.product$.next( null )
-    this.storage$.next( [] )
-    this.formValid$.next( {} )
-  }
+
 }

@@ -1,0 +1,103 @@
+<mat-drawer-container [hasBackdrop]="true" mxStretchHeight>
+  <mat-drawer #reportPanel="matDrawer"
+  [position]="'start'"
+  [mode]="'over'"
+  [opened]="countingReportSelected ? true : false">
+
+    <app-counting-report
+      *ngIf="countingReportSelected"
+      [countingReport]="countingReportSelected"
+      (close)="closeReport()"
+    ></app-counting-report>
+
+  </mat-drawer>
+  <mat-drawer-content>
+
+    <div class="container">
+      <div class="row">
+        <div class="col s12">
+          <mat-card>
+            <mat-card-title-group>
+              <mat-card-title>Arqueos</mat-card-title>
+              <mat-card-subtitle
+                >Activa el modo arqueo para realizar ajustes en el inventario de
+                manera masiva</mat-card-subtitle
+              >
+              <div class="action-button">
+                <ng-container *ngIf="!countings.current; else finalize">
+                  <button
+                    mat-raised-button
+                    (click)="initCounting()"
+                    color="primary"
+                  >
+                    Iniciar arqueo
+                  </button>
+                </ng-container>
+                <ng-template #finalize>
+                  <button
+                    mat-raised-button
+                    color="accent"
+                    (click)="countings.finalize()"
+                  >
+                    Finalizar arqueo
+                  </button>
+                </ng-template>
+              </div>
+            </mat-card-title-group>
+            <mat-card-content>
+              <div id="countings-list" *ngIf="(countings.list$ | async) as list">
+                <table mat-table #table [dataSource]="list">
+                  <ng-container matColumnDef="id">
+                    <th mat-header-cell *matHeaderCellDef>ID</th>
+                    <td mat-cell *matCellDef="let counting">
+                      {{ counting.id }}
+                    </td>
+                  </ng-container>
+                  <ng-container matColumnDef="startDate">
+                    <th mat-header-cell *matHeaderCellDef>Realizada</th>
+                    <td mat-cell *matCellDef="let counting">
+                      {{ counting.startDate | mxTimestamp | date: 'dd/MM/yy - hh:mm' }}
+                    </td>
+                  </ng-container>
+                  <ng-container matColumnDef="recordCount">
+                    <th mat-header-cell *matHeaderCellDef>Cotabilizados</th>
+                    <td mat-cell *matCellDef="let counting">
+                      {{ counting.recordCount }}
+                    </td>
+                  </ng-container>
+                  <ng-container matColumnDef="endDate">
+                    <th mat-header-cell *matHeaderCellDef>Terminó</th>
+                    <td mat-cell *matCellDef="let counting">
+                      {{ counting.endDate | mxTimestamp | date: 'dd/MM/yy - hh:mm' }}
+                    </td>
+                  </ng-container>
+                  <tr
+                    mat-header-row
+                    *matHeaderRowDef="[
+                      'id',
+                      'startDate',
+                      'recordCount',
+                      'endDate'
+                    ]"
+                  ></tr>
+                  <tr
+                    class="table-row"
+                    mat-row
+                    *matRowDef="
+                      let counting;
+                      columns: ['id', 'startDate', 'recordCount', 'endDate']
+                    "
+                    (click)="selectCounting(counting)"
+                  ></tr>
+                </table>
+              </div>
+            </mat-card-content>
+            <mat-card-actions>
+
+            </mat-card-actions>
+          </mat-card>
+        </div>
+      </div>
+    </div>
+  </mat-drawer-content>
+</mat-drawer-container>

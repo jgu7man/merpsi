@@ -21,6 +21,10 @@ import { ProductCategoryFormComponent } from './product-categories/product-categ
 import { ProductSubcategoryFormComponent } from './product-categories/product-subcategory-form/product-subcategory-form.component';
 import { ProductCategorySelectorComponent } from './product-categories/product-category-selector/product-category-selector.component';
 import { SubcategoryValuePipe } from './product-categories/subcategory-value.pipe';
+import { CountingsComponent } from './countings/countings.component';
+import { CountingInitializationDialog } from './countings/counting-initialization/counting-initialization.dialog';
+import { CountingReportComponent } from './countings/counting-report/counting-report.component';
+import { CountingModeComponent } from './countings/counting-mode/counting-mode.component';
 
 
 @NgModule({
@@ -44,6 +48,10 @@ import { SubcategoryValuePipe } from './product-categories/subcategory-value.pip
     ProductSubcategoryFormComponent,
     ProductCategorySelectorComponent,
     SubcategoryValuePipe,
+    CountingsComponent,
+    CountingReportComponent,
+    CountingInitializationDialog,
+    CountingModeComponent,
   ],
   imports: [
     CommonModule,

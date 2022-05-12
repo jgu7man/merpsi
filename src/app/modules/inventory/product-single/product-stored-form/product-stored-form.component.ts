@@ -1,7 +1,10 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { debounceTime, distinctUntilChanged, filter, map, tap } from 'rxjs/operators';
-import { Product, StoreReference } from 'src/app/modules/inventory/products/products.model';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { BehaviorSubject, Subscription } from 'rxjs';
+import { debounceTime, distinctUntilChanged, map, skip, tap } from 'rxjs/operators';
+import { listenChanges } from 'src/app/models/operators-chains.model';
+import { StoreReference, StoreReferenceModel } from 'src/app/modules/inventory/products/products.model';
+import { CountingsService } from '../../countings/countings.service';
 import { CurrentProductService } from '../current-product.service';
 
 @Component({
@@ -9,46 +12,73 @@ import { CurrentProductService } from '../current-product.service';
   templateUrl: './product-stored-form.component.html',
   styleUrls: ['./product-stored-form.component.scss']
 })
-export class ProductStoredFormComponent implements OnInit {
+export class ProductStoredFormComponent implements OnInit, OnDestroy {
 
-  @Input() store_id?: string
-  public productStoredForm: StoreReference.StoreForm
-  
+  private _store = new BehaviorSubject<StoreReferenceModel | undefined>(undefined);
+  @Input() set store(s: StoreReferenceModel | undefined) { this._store.next(s); }
+  get store() { return this._store.getValue()}
+  private _storeSubs?: Subscription
+
+  public current_stock: number = 0
+  public productStoredForm!: StoreReference.StoreForm
+
+  private _submitedSubscription?: Subscription;
 
   constructor (
-    public current: CurrentProductService
-  ) { 
+    public current: CurrentProductService,
+    public countings: CountingsService
+  ) {
+  }
+
+  ngOnInit(): void {
+    this.createForm()
+    this._storeSubs = this._store
+      .pipe( listenChanges( 500 ) )
+      .subscribe( store => {
+      if ( this.store ) {
+        this.productStoredForm.patchValue( {
+          ...this.store,
+        } )
+        this.productStoredForm.markAsPristine()
+      }
+    } )
+  }
+
+  createForm() {
+
+    let disabled = this.countings.current?.store_id !== this.store!.store_id
     this.productStoredForm = new FormGroup( {
       store_id: new FormControl('', [Validators.required]),
-      product_code: new FormControl('', [Validators.required]),
-      stock: new FormControl(0, [Validators.required]),
-      unit_price: new FormControl(0, [Validators.required]),
-      unit_cost: new FormControl(0, [Validators.required]),
+      UPC: new FormControl('', [Validators.required]),
+      stock: new FormControl({value: 0, disabled }, [Validators.required]),
+      unit_price: new FormControl({value: 0, disabled }, [Validators.required]),
+      unit_cost: new FormControl({value: 0, disabled }, [Validators.required]),
       min_required: new FormControl(0, [Validators.required]),
       bookshelves: new FormControl([], [Validators.required]),
       provider: new FormControl(''),
     } ) as StoreReference.StoreForm
-    
+
     /* Actualiza automáticamente los cambios en el array de stores */
     this.productStoredForm.valueChanges.pipe(
+      skip(this.store ? 1 : 0),
       distinctUntilChanged( ( x, y ) => JSON.stringify( x ) == JSON.stringify(y)),
       debounceTime( 1000 ),
-      map( this.current.updateStore ),
-      tap( () => this.current.formValid$.next( {
-        ...this.current.formValid$.value,
-        [ this.store_id! ]: this.productStoredForm.valid || !this.productStoredForm.pristine
-      } ) )
-    ).subscribe()
-  }
+      map( (store: StoreReferenceModel ) => {
+        let { store_id } = store
+        this.current.updateStore( store, store_id )
+      }),
+      tap( () => {
+        this.current.storeFormsValidation$.next( {
+        ...this.current.storeFormsValidation$.value,
+        [ this.store!.store_id ]: this.productStoredForm.valid
+        } )
 
-  ngOnInit(): void {
-    if ( this.store_id ) {
-      const current_store = this.current.storage$
-        .value.find( s => s.store_id === this.store_id )
-      
-      if ( current_store )
-        this.productStoredForm.patchValue( current_store )
-    }
+        this.current.allPristine$.next( this.productStoredForm.pristine )
+      } )
+    ).subscribe()
+
+    this._submitedSubscription = this.current.submited$
+      .subscribe( () => this.productStoredForm.markAsPristine())
   }
 
   get bookshelves(): string[] {
@@ -57,6 +87,11 @@ export class ProductStoredFormComponent implements OnInit {
 
   set bookshelves( value: string[] ) {
     this.productStoredForm.controls.bookshelves.patchValue(value)
+  }
+
+  ngOnDestroy(): void {
+    this._submitedSubscription?.unsubscribe()
+    this._storeSubs?.unsubscribe()
   }
 
 }

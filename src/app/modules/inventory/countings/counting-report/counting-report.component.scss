@@ -1,0 +1,10 @@
+.data-item{
+  display: flex;
+  justify-content: space-between;
+  &.multiline{
+    flex-direction: column;
+  }
+  .data-value {
+    font-weight: bold;
+  }
+}

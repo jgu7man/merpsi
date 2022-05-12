@@ -1,8 +1,10 @@
-import { Component, Input, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatDrawer } from '@angular/material/sidenav';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
+import { MxLoading } from 'libs/@marxa/devkit/loading/loading.service';
 import { MxIndex } from 'libs/@marxa/index/src/public-api';
 import { Subscription } from 'rxjs';
 import { CurrentProductService } from '../../product-single/current-product.service';
@@ -14,7 +16,7 @@ import { InventoryProductsService } from '../products.service';
     templateUrl: './product-list.component.html',
     styleUrls: ['./product-list.component.scss']
 })
-export class ProductListComponent {
+export class ProductListComponent implements OnInit {
   /** Lista de productos obtenida de la consulta */
   public products: Product.DataReference[] = []
   /** Producto que se mostrará en el panel */
@@ -26,34 +28,61 @@ export class ProductListComponent {
   /** Suscripción a la lista de productos */
   private _listSubscription: Subscription
   /** Panel del producto */
-  @ViewChild('productDrawer') productDrawer!: MatDrawer
-  
+  @ViewChild( 'productDrawer' ) productDrawer!: MatDrawer
+
+  public UPC?: string
+
   constructor (
     private _cache: MxCache,
     private _index: MxIndex,
-    private _dialog: MatDialog,
     private _productos: InventoryProductsService,
     public current: CurrentProductService,
-  ) { 
+    private _route: ActivatedRoute,
+    private _router: Router,
+    private _loading: MxLoading
+  ) {
     /* Obtiene el Business ID */
-    const CRF = this._cache.getDataKey('eid')
+    const CRF = this._cache.getDataKey( 'eid' )
+
+    this.UPC = this._route.snapshot.queryParams[ 'UPC' ]
+    if ( this.UPC ) this._loading.spinner( 'open' )
+
     /* Se inicializa el indexado de productos */
     this._index.initIndex( `businesses/${ CRF }/products`, 'UPC', 20 )
     /* Se suscribe a la respuesta del índice */
     this._listSubscription =
       this._index.page$.subscribe( data => {
-        console.log( data )
         this.products = data
     })
+  }
+
+  async ngOnInit() {
+    if ( this.UPC ) {
+      this.products = await this._productos.searchByIdentifier( this.UPC )
+      if ( this.products.length == 1 ) {
+        this.current.product$.next( this.products[ 0 ] )
+      }
+      this._loading.spinner( 'close' )
+    }
+  }
+
+  onSelect(product: Product.DataReference): void {
+    this.current.product$.next( product )
+    this._router.navigate([], { queryParams: { UPC: product.UPC } })
   }
 
   /**
    * Cierra el Panel del producto
    */
-   closeProductPanel(product: Product.DataReference): void {
-    this.productDrawer.close()
-    delete this.productoSelected
-    this.products.map(p =>  p.UPC == product.UPC ? product : p)
+  closeProductPanel(product: Product.DataReference): void {
+    this.productDrawer.close();
+    delete this.productoSelected;
+    this.products.map( p => p.UPC == product.UPC ? product : p )
+
+    this._router.navigate( [], {
+      queryParams: { UPC: null },
+      queryParamsHandling: 'merge'
+    } )
   }
 
 
@@ -66,7 +95,7 @@ export class ProductListComponent {
     this.products.filter(p => p.UPC != product.UPC)
   }
 
-  
+
   /**
    * Toma el valor obtenido del scanner
    */
@@ -98,6 +127,6 @@ export class ProductListComponent {
     this.productDrawer.close()
     this.current.leave()
   }
-  
+
 
 }

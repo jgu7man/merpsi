@@ -8,6 +8,7 @@ import { map } from 'rxjs/operators';
 import { DashboardService } from 'src/app/dashboard/dashboard.service';
 import { txn } from 'src/app/models/firestore.model';
 import { SalesInvoiceModel } from 'src/app/modules/finances/sales-invoices/sales-invoice.model';
+import { AuthService } from 'src/app/services/auth.service';
 import { CurrentProductService } from '../../inventory/product-single/current-product.service';
 import { ProductEventModel, ProductModel, StoreReferenceModel } from '../../inventory/products/products.model';
 import { iInvoiceFooter, invoiceFooter, iProductInvoice, ProductInvoiceModel } from '../invoices/invoice.model';
@@ -19,7 +20,7 @@ import { TaxesService } from '../taxes/taxes.service';
 })
 export class SalesService {
   businessRef = this._dashboard.businessRef
-  current$ = new BehaviorSubject<SalesInvoiceModel | null>(null)
+  current$= new BehaviorSubject<SalesInvoiceModel | null> ( null )
 
   businessCRF: string = this._cache.getDataKey('eid')!
   public totales: EventEmitter<iInvoiceFooter> = new EventEmitter();
@@ -29,13 +30,11 @@ export class SalesService {
     private _cache: MxCache,
     public _taxes: TaxesService,
     private _dashboard: DashboardService,
-    private manager: CurrentProductService,
-    private _alert: MxAlert,
   ) { }
 
-  updateCurrent(
-    param: keyof SalesInvoiceModel,
-    value: SalesInvoiceModel[typeof param]
+    updateCurrent(
+      param: keyof SalesInvoiceModel,
+    value: SalesInvoiceModel[ typeof param ]
   ) {
     if (this.current$.value !== null) {
       this.current$.next({
@@ -63,7 +62,7 @@ export class SalesService {
     }
   }
 
-  calcFooter() {
+  calcFooter(){
     let details = this.current$.value!.details
     let subtotal = 0
     details.map(d => {
@@ -71,7 +70,7 @@ export class SalesService {
     })
     let foot = this.current$.value!.footer
     foot.subtotal = subtotal
-    foot.total = (subtotal + foot.shipping + this._taxes.appliedTaxesTotal) - (foot.discount)
+    foot.total = (subtotal + foot.shipping + this._taxes.appliedTaxesTotal ) - (foot.discount)
     this.updateCurrent('footer', foot)
     return foot
   }
@@ -126,31 +125,31 @@ export class SalesService {
     }
   }
 
-  saveInvoice(invoice: SalesInvoiceModel) {
+  saveInvoice( invoice: SalesInvoiceModel ) {
     try {
-      let businessRef = `businesses/${this._dashboard.CRF}`
-      if (this.current$.value) {
-        const invoiceRef = this._afs.doc<SalesInvoiceModel>(`${businessRef}/sale/${this.current$.value.invoice_ID}`).ref
-        invoiceRef.set({ ...invoice })
+    let businessRef = `businesses/${this._dashboard.CRF}`
+    if (this.current$.value){
+      const invoiceRef = this._afs.doc<SalesInvoiceModel>(`${businessRef}/sale/${this.current$.value.invoice_ID}`).ref
+      invoiceRef.set({...invoice})
 
-        let details: iProductInvoice[] = this.current$.value.details
-        details.forEach(async det => {
-          let productRef = this._afs.doc(`${businessRef}/products/${det.UPC}`).ref
-          await firebase.firestore().runTransaction(async transaction => {
-            let store_Id = det.store
-            const storeRef = productRef.collection('stores').doc(store_Id)
-            let productStore = (await transaction.get(storeRef)).data()
+      let details: iProductInvoice[] = this.current$.value.details
+      details.forEach(async det =>{
+        let productRef= this._afs.doc(`${businessRef}/products/${det.UPC}`).ref
+        await firebase.firestore().runTransaction(async transaction => {
+          let store_Id = det.store
+          const storeRef = productRef.collection('stores').doc(store_Id)
+          let productStore = (await transaction.get(storeRef)).data()
 
-            if (!productStore) {
-              productStore = new StoreReferenceModel(store_Id, det.UPC, det.unit_cost)
-            }
-            productStore.stock = productStore.stock - det.cant
+          if (!productStore) {
+          productStore  = new StoreReferenceModel(store_Id,det.UPC,det.unit_cost)
+          }
+          productStore.stock = productStore.stock - det.cant
 
-            await transaction.set(storeRef, { ...productStore }, { merge: true })
-            const evento = new ProductEventModel(
-              'sale',
-              this.manager.managerRef,
-              invoiceRef
+          await transaction.set(storeRef,{...productStore},{merge: true})
+          const evento = new  ProductEventModel(
+            'sale',
+            this._dashboard.managerRef,
+            invoiceRef
             )
             this._afs.collection(`${businessRef}/products/${det.UPC}/history`)
               .doc(`${new Date().getTime()}`)
@@ -159,22 +158,22 @@ export class SalesService {
         })
       }
     } catch (error) {
-      this._alert.error('ha ocurrido un error al crear la factura', error)
+      // this._alert.error('ha ocurrido un error al crear la factura', error)
       console.error(error);
     }
   }
 
 
-  async getStokProductByStore(product: ProductModel[]) {
-    let stores: StoreReferenceModel[] = []
-    product.forEach(async p => {
-      let storesResult = await this.getStoreStock(p.UPC)
-      if (storesResult.docs.length > 0) {
-        storesResult.docs.forEach(docs =>
-          stores.push(docs.data())
-        )
-      }
-    })
+   async getStokProductByStore(product: ProductModel[]) {
+     let stores:StoreReferenceModel[] = []
+     product.forEach( async p =>{
+       let storesResult = await this.getStoreStock(p.UPC)
+       if (storesResult.docs.length > 0){
+         storesResult.docs.forEach(docs =>
+           stores.push(docs.data())
+         )
+       }
+     })
 
     return stores
   }

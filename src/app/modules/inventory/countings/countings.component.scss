@@ -1,0 +1,18 @@
+.table-row {
+  transition: all 0.3s;
+  cursor: pointer;
+  &:hover{
+    background: #ececec;
+  }
+}
+
+mat-drawer {
+  height:100%;
+}
+
+#countings-list {
+  width: 100%;
+  table {
+    min-width: 100%;
+  }
+}

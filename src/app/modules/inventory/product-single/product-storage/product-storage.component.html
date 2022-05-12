@@ -7,29 +7,44 @@
       <!-- VALIDATE STORAGE CONNECTION -->
       <ng-container *ngIf="(current.storage$ | async) as storage">
 
+
         <!-- VALIDATE STORAGE LENGTH -->
         <ng-container *ngIf="storage.length > 0">
-          
+
           <!-- ITERATE STORAGE -->
           <mat-expansion-panel class="mat-elevation-z0 col s12 almacen-container"
           *ngFor="let store of storage; let i = index"
           [expanded]="i === 0">
-            
+
             <mat-expansion-panel-header>
-              {{store.store_id}}
+              {{store.store_id | store | async}}
             </mat-expansion-panel-header>
-    
+
             <app-product-stored-form
-            [store_id]="store.store_id"
+            [store]="store"
             ></app-product-stored-form>
-            
+
           </mat-expansion-panel>
 
         </ng-container>
-      
-      
+
+
       </ng-container>
 
     </mat-accordion>
   </div>
 </div>
+
+<div class="row" *ngIf="counting.current">
+  <div class="col s12">
+    <p-splitButton
+      label="Eliminar existencias"
+      icon="pi pi-trash"
+      (onClick)="deleteCurrent()"
+      [model]="items"
+      styleClass="p-button-danger p-mb-2"
+    ></p-splitButton>
+  </div>
+</div>
+
+

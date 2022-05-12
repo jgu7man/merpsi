@@ -9,3 +9,22 @@ table {
     background: #ececec;
   }
 }
+
+#productos-container {
+  // min-height: 100vh;
+  mat-drawer {
+    height: 100vh
+  }
+  #producto-panel {
+    width: 100%;
+    // height:100vh;
+  }
+  #product-list {
+    min-height: 80vh;
+    width: 100%;
+    overflow-x: auto;
+    table {
+      min-width: 800px;
+    }
+  }
+}

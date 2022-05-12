@@ -1,25 +1,27 @@
 <div class="row product-container">
-  <div class="col s12 m6">
-    <!-- <mat-card *ngIf="(current.product$ | async) as product"> -->
+  <div class="col s12 m7">
     <mat-card>
-      <mat-card-header>
-        <!-- <mat-card-title>{{product.reference}}</mat-card-title> -->
-        <!-- <mat-card-subtitle>{{product.UPC}}</mat-card-subtitle> -->
-      </mat-card-header>
       <mat-card-content>
-
         <app-product-form></app-product-form>
-
       </mat-card-content>
-      <!-- NOTE ONLY ACTIVATE FOR DEV CASES -->
-      <!-- <mat-card-actions>
-        <button mat-button color="warn" (click)="onDelete()">Eliminar</button>
-      </mat-card-actions> -->
     </mat-card>
   </div>
 
-  <div class="col s12 m6">
+  <div class="col s12 m5">
     <!-- ALMACENES -->
     <app-product-storage></app-product-storage>
   </div>
 </div>
+
+<div class="row">
+  <div class="col s12 center">
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="current.save()"
+      [disabled]="!(current.wholeFormValid$ | async)"
+    >Guardar</button>
+  </div>
+</div>
+
+

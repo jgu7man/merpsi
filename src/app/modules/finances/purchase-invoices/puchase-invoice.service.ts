@@ -33,14 +33,10 @@ export class PurchaseInvoiceService {
     private _cache: MxCache,
     public _taxes: TaxesService,
     private _dashboard: DashboardService,
-    private manager: CurrentProductService,
-    private _alert: MxAlert,
-
-
   ) {
   }
 
-  create() {
+  create( ){
 
     // this.current$.next(new PurchaseInvoiceModel())
   }
@@ -62,7 +58,7 @@ export class PurchaseInvoiceService {
   //     this.current$.next({
   //       ...this.current$.value,
   //       details
-  //     }) 
+  //     })
   //   }
   //   return new ProductInvoiceModel(productRef)
 
@@ -79,7 +75,7 @@ export class PurchaseInvoiceService {
       // this.current$.next({
       //   ...this.current$.value,
       //   details
-      // }) 
+      // })
 
       this.current$.next({
         ...this.current$.value,
@@ -116,20 +112,20 @@ export class PurchaseInvoiceService {
     }
   }
 
-  async findInvoice(invoiceId: string) {
-    try {
+ async findInvoice( invoiceId: string){
+   try {
 
-      const invoiceResult = await this._afs.doc<iInvoice>(`businesses/${this.businessCRF}/purchases/${invoiceId}`).ref.get()
-      return invoiceResult.exists ? invoiceResult : null
+     const invoiceResult = await this._afs.doc<iInvoice>(`businesses/${this.businessCRF}/purchases/${invoiceId}`).ref.get()
+     return invoiceResult.exists ? invoiceResult : null
 
-    } catch (error: any) {
-      Swal.fire({
-        icon: 'error',
-        text: error.message
-      })
-      return null
-    }
-  }
+   }catch (error: any) {
+    Swal.fire( {
+      icon: 'error',
+      text: error.message
+    } )
+   return null
+   }
+ }
 
   addConcept(concept: ProductModel) {
     if (this.current$.value != null) {
@@ -180,31 +176,31 @@ export class PurchaseInvoiceService {
     }
   }
 
-  async saveInvoice(invoice: PurchaseInvoiceModel) {
+  async saveInvoice( invoice: PurchaseInvoiceModel ) {
     try {
-      let businessRef = `businesses/${this._dashboard.CRF}`
-      if (this.current$.value) {
-        const invoiceRef = this._afs.doc<PurchaseInvoiceModel>(`${businessRef}/purchase/${this.current$.value.invoice_ID}`).ref
-        invoiceRef.set({ ...invoice })
+    let businessRef = `businesses/${this._dashboard.CRF}`
+    if (this.current$.value){
+      const invoiceRef = this._afs.doc<PurchaseInvoiceModel>(`${businessRef}/purchase/${this.current$.value.invoice_ID}`).ref
+      invoiceRef.set({...invoice})
 
-        let details: iProductInvoice[] = this.current$.value.details
-        details.forEach(async det => {
-          let productRef = this._afs.doc(`${businessRef}/products/${det.UPC}`).ref
-          await firebase.firestore().runTransaction(async transaction => {
-            let store_Id = this.current$.value!.store.id
-            const storeRef = productRef.collection('stores').doc(store_Id)
-            let productStore = (await transaction.get(storeRef)).data()
+      let details: iProductInvoice[] = this.current$.value.details
+      details.forEach(async det =>{
+        let productRef= this._afs.doc(`${businessRef}/products/${det.UPC}`).ref
+        await firebase.firestore().runTransaction(async transaction => {
+          let store_Id = this.current$.value!.store.id
+          const storeRef = productRef.collection('stores').doc(store_Id)
+          let productStore = (await transaction.get(storeRef)).data()
 
-            if (!productStore) {
-              productStore = new StoreReferenceModel(store_Id, det.UPC, det.unit_cost)
-            }
-            productStore.stock = productStore.stock + det.cant
+          if (!productStore) {
+          productStore  = new StoreReferenceModel(store_Id,det.UPC,det.unit_cost)
+          }
+          productStore.stock = productStore.stock + det.cant
 
-            await transaction.set(storeRef, { ...productStore }, { merge: true })
-            const evento = new ProductEventModel(
-              'purchase',
-              this.manager.managerRef,
-              invoiceRef
+          await transaction.set(storeRef,{...productStore},{merge: true})
+          const evento = new  ProductEventModel(
+            'purchase',
+            this._dashboard.managerRef,
+            invoiceRef
             )
             this._afs.collection(`${businessRef}/products/${det.UPC}/history`)
               .doc(`${new Date().getTime()}`)
@@ -213,7 +209,7 @@ export class PurchaseInvoiceService {
         })
       }
     } catch (error: any) {
-      this._alert.error('ha ocurrido un error al crear la factura', error)
+      // this._alert.error('ha ocurrido un error al crear la factura', error)
       console.error(error);
     }
   }

@@ -12,6 +12,7 @@ import { DeleteSedeDialog } from './stores/delete-sede/delete-sede.dialog';
 import { SharedModule } from 'src/app/shared/shared.module';
 
 
+
 @NgModule({
   declarations: [
     AdminComponent,
@@ -21,12 +22,12 @@ import { SharedModule } from 'src/app/shared/shared.module';
     SedesComponent,
     SetSedeComponent,
     DeleteSedeDialog,
-    
   ],
   imports: [
     CommonModule,
     AdminRoutingModule,
     SharedModule
-  ]
+  ],
 })
 export class AdminModule { }
+

@@ -1,0 +1,13 @@
+<mat-form-field appearance="outline">
+  <mat-label>Almacen o sede</mat-label>
+  <mat-select placeholder="Elige un almacen o sede"
+  [formControl]="storeCtrl"
+  name="almacen">
+    <mat-option *ngFor="let almacen of (stores.list$ | async)" [value]="almacen.id">
+      {{almacen.referencia}}
+    </mat-option>
+  </mat-select>
+  <mat-error *ngIf="storeCtrl.hasError('required')">
+  Este dato es necesario
+  </mat-error>
+</mat-form-field>

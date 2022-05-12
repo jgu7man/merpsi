@@ -11,6 +11,7 @@ import firebase from 'firebase/app'
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { MxLoading } from 'libs/@marxa/devkit/loading/loading.service';
 import { MxTest } from 'libs/@marxa/devkit/test/mx-test.service';
+import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -20,20 +21,23 @@ export class AuthService {
   /** Estado actualizado de los cambios del usuario autenticado */
   userState$ = new BehaviorSubject<iManager | null>( null )
 
+  private _CRF = this._cache.getDataKey( 'eid' )
+
   constructor (
     private _afAuth: AngularFireAuth,
     private _afs: AngularFirestore,
     private _router: Router,
     private _business: BusinessService,
     private _loading: MxLoading,
-    private _test: MxTest
-  ) { 
+    private _test: MxTest,
+    private _cache: MxCache,
+  ) {
     // this._test.testOn( this.regist )
     //   .then( async ( {business, regist} ) => {
     //     console.log( await this.regist(business, regist))
     //   } )
-    //   .catch( console.error ) 
-    
+    //   .catch( console.error )
+
     this.authVerification()
   }
 
@@ -68,13 +72,13 @@ export class AuthService {
    */
   async regist( business: BusinessModel, register: iManagerRegist ): Promise<void> {
     try {
-      
+
       /* Validamos que el CRF (clave de registro fiscal) no exista en base de datos */
       let business_result = await this._business.validateBusiness(business.CRF)
       if ( business_result ) {
         throw { message: 'El CRF que estas registrando ya existe'}
-      } 
-      
+      }
+
       /* Se deconstruye el objeto manager para obtener los datos necesarios */
       let {email, password} = register
 
@@ -85,7 +89,7 @@ export class AuthService {
           console.error(error);
           throw {message:'Falló la creación de la cuenta'}
         } )
-      
+
       /* Validamos la existencia de user y credenciales */
       if ( !credentials.user ) {
         let error = { message: 'No se obtuvieron las credenciales de Firebase' }
@@ -100,23 +104,23 @@ export class AuthService {
                       credentials.user.uid,
                       business.CRF
                     )
-      
+
       /* Paso 2: Crear la empresa */
       const businessRef = this._afs.doc( `businesses/${business.CRF}` )
-      
+
       /* Ya que firestore no acepta objetos tipo class, se deconstruye la clase y se envía como objeto */
       await businessRef.set( { ...business } );
-      
+
       /* Paso 3: Guardar el manager en la sub-colección de managers */
       await businessRef
         .collection( 'managers' )
         .doc( credentials.user.uid )
         .set({...manager})
-      
+
       /* Paso 4: Redirección a el dashboard */
       this._router.navigate(['d'])
-      
-    
+
+
 
       /* IMPORTANTE: Hacer return para terminar la promesa */
       return
@@ -125,7 +129,7 @@ export class AuthService {
       // console.log( error )
       /* Cerrar la sesión en cualquier error */
       this._afAuth.signOut()
-      
+
       Swal.fire( {
         icon: 'error',
         text: error.message
@@ -138,12 +142,12 @@ export class AuthService {
   async login({ email, password }: iManagerLogin) {
     try {
       /* Para cerrar sesion cuando se cierre la pestaña del navegador */
-      await this._afAuth.setPersistence(firebase.auth.Auth.Persistence.SESSION)
+      await this._afAuth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
 
       /* Inicio de sesión con email para obtener credenciales de firebase */
       const credentials = await this._afAuth
         .signInWithEmailAndPassword( email, password )
-      
+
       const uid = credentials.user?.uid
       if (uid) {
         var manager = await this.retriveManager(uid).pipe(first()).toPromise()
@@ -151,7 +155,7 @@ export class AuthService {
         if ( manager ) {
           if ( manager.businesses.length == 1 ) {
             this._router.navigate(['/business', manager.businesses[0]])
-            
+
           } else {
             this._router.navigate( [ '/profile', manager.uid ] )
             if ( manager.businesses.length == 0 ) {
@@ -161,14 +165,14 @@ export class AuthService {
               } )
             }
           }
-        
+
           return manager
-          
+
         } else  throw { message: 'No se encontró el usuario en la base de datos' }
       } else throw {
         message: `
-          No se pudo iniciar sesión, 
-          Lamentamos los inconvenientes técnicos. 
+          No se pudo iniciar sesión,
+          Lamentamos los inconvenientes técnicos.
           Intenta de nuevo o más tarde
         `
       }
@@ -202,7 +206,7 @@ export class AuthService {
           let manager: iManager = {
             ...documento,
             registered: documento.registered as firebase.firestore.Timestamp,
-            businesses: list.docs.map(doc => doc.data().CRF || '') 
+            businesses: list.docs.map(doc => doc.data().CRF || '')
           }
           return ref ? documento : manager
         } else  return null
@@ -226,20 +230,20 @@ export class AuthService {
   *
   * @param {iManagerRegist} register
   * @param {string} CRF_
-  * @return {*} 
+  * @return {*}
   * @memberof AuthService
   */
   async registManagerInvited(register: iManagerRegist,CRF_: string) {
     try{
       let {email,password} = register
-      
+
       /* Se busca en base de datos la informacion con la cual se hizo la invitacion */
       let managerRef =  this._afs.doc<ManagerModel>( `businesses/${CRF_}/managers/${email}`).ref
       let managerDoc = await managerRef.get()
       console.log( managerDoc.exists, managerDoc.data() )
-      
+
       if ( managerDoc.exists ) {
-    
+
         /* Se crea la cuenta en auth  */
         const credentials = await this._afAuth.createUserWithEmailAndPassword( email, password ).catch( error => {
           throw {message:'Falló la creación de la cuenta', error}
@@ -281,6 +285,6 @@ export class AuthService {
       return console.error(error);
     }
   }
-      
+
 
 }

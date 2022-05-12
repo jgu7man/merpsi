@@ -6,15 +6,16 @@ import { MesureUnitsComponent } from './mesure-units/mesure-units.component';
 import { ProductListComponent } from './products/product-list/product-list.component';
 import { ProductsComponent } from './products/products.component';
 import { ProviderComponent } from './providers/provider.component';
+import { CountingsComponent } from './countings/countings.component';
 
 const routes: Routes = [
   { path: 'products', component: ProductsComponent, children: [
     { path: '', pathMatch: 'full', redirectTo: 'list' },
     { path: 'list', component: ProductListComponent },
     { path: 'categories', component: ProductCategoriesComponent} ,
-    // { path: 'balancings', component:  },
     { path: 'measure_units', component: MesureUnitsComponent },
   ] },
+  { path: 'countings', component: CountingsComponent },
   { path: 'providers', component: ProviderComponent },
 ];
 
