@@ -19,7 +19,8 @@ import { SalesService } from '../sales.service';
 })
 export class InvoiceConceptSalesComponent implements OnInit {
 
-  @Input() concept: iProductInvoice | null = null
+  @Input() public concept: iProductInvoice | null = null
+  
   @Input() stock: number = 0
   @Input() invoice: SalesInvoiceModel | null= null
 
@@ -76,11 +77,6 @@ export class InvoiceConceptSalesComponent implements OnInit {
       changes.UPC = this.formAddProduct.getRawValue().UPC
         this.changes.emit( changes )
       })
-
-      console.log('-----invoice concept-----');
-      
-      console.log(this.concept);
-      
       this.formAddProduct.patchValue(this.concept)
       this.formAddProduct.markAsPristine()
     }

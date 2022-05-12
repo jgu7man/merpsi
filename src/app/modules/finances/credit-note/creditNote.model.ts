@@ -3,22 +3,27 @@ import { iInvoiceFooter, invoiceFooter, iProductInvoice } from "../invoices/invo
 
 export class creditNoteModel{
   date_emition:FireTime = createDate(new Date())
-  invoiceIdRef:string
   invoiceId:string
+  noteId:string
   manager:string
-  total:number
+  concept:string
   footer: iInvoiceFooter
   details: iProductInvoice[]
   constructor(
-    date:creditNoteModel
+    invoiceId:string,
+    noteId:string,
+    manager:string,
+    concept:string,
+    footer:iInvoiceFooter,
+    details: iProductInvoice[]
   )
   {
-    this.invoiceIdRef = date.invoiceIdRef
-    this.invoiceId = date.invoiceId
-    this.manager = date.manager
-    this.total = date.total
-    this.footer = date.footer
-    this.details = date.details
+    this.invoiceId = invoiceId
+    this.noteId = noteId
+    this.manager = manager
+    this.concept = concept
+    this.footer = footer
+    this.details = details
   }
 
 }

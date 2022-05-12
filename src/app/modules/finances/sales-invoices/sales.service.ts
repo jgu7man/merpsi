@@ -10,6 +10,7 @@ import { txn } from 'src/app/models/firestore.model';
 import { SalesInvoiceModel } from 'src/app/modules/finances/sales-invoices/sales-invoice.model';
 import { CurrentProductService } from '../../inventory/product-single/current-product.service';
 import { ProductEventModel, ProductModel, StoreReferenceModel } from '../../inventory/products/products.model';
+import { FooterService } from '../invoices/footer-invoice/footer.service';
 import { iInvoiceFooter, invoiceFooter, iProductInvoice, ProductInvoiceModel } from '../invoices/invoice.model';
 import { PurchaseInvoiceModel } from '../purchase-invoices/pucharce-invoice.model';
 import { TaxesService } from '../taxes/taxes.service';
@@ -24,7 +25,7 @@ export class SalesService {
 
   businessCRF: string = this._cache.getDataKey('eid')!
   public totales: EventEmitter<iInvoiceFooter> = new EventEmitter();
-
+  
   constructor(
     private _afs: AngularFirestore,
     private _cache: MxCache,
@@ -32,6 +33,7 @@ export class SalesService {
     private _dashboard: DashboardService,
     private manager: CurrentProductService,
     private _alert: MxAlert,
+    private foot: FooterService
   ) {
 
   }
@@ -115,7 +117,8 @@ export class SalesService {
       foot.total = (subtotal + foot.shipping + this._taxes.appliedTaxesTotal) - (foot.discount)
       this.updateCurrent('footer', foot)
 
-      this.totales.emit(foot)
+      this.foot.currentfoot$.next(foot)
+      // this.totales.emit(foot)
     }
   }
 
@@ -127,7 +130,9 @@ export class SalesService {
       footer.total = (footer.subtotal + shipping) - discount
       this.updateCurrent('footer', { ...footer, discount: discount, shipping: shipping }
       )
-      this.totales.emit(footer)
+      this.foot.currentfoot$.next(footer)
+
+      // this.totales.emit(footer)
     }
   }
 

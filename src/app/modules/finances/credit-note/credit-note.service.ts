@@ -8,6 +8,7 @@ import { DashboardService } from 'src/app/dashboard/dashboard.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { CurrentProductService } from '../../inventory/product-single/current-product.service';
 import { ProductEventModel, StoreReferenceModel } from '../../inventory/products/products.model';
+import { FooterService } from '../invoices/footer-invoice/footer.service';
 import { iInvoiceFooter, iProductInvoice } from '../invoices/invoice.model';
 import { SalesInvoiceModel } from '../sales-invoices/sales-invoice.model';
 import { TaxesService } from '../taxes/taxes.service';
@@ -17,8 +18,7 @@ import { creditNoteModel } from './creditNote.model';
   providedIn: 'root'
 })
 export class  CreditNoteService {
-  
-  
+ 
   businessCRF: string = this._cache.getDataKey('eid')!
   businessRef = `businesses/${this._dashboard.CRF}`
   public totales: EventEmitter<iInvoiceFooter> = new EventEmitter();
@@ -33,31 +33,22 @@ export class  CreditNoteService {
     private _dashboard: DashboardService,
     private manager: CurrentProductService,
     private _taxes: TaxesService,
+    private foot: FooterService
   ) {
 
   }
-  async saveCreditNote(details: iProductInvoice[], creditNote: creditNoteModel,concept: number,invoiceRefence:SalesInvoiceModel) {
+  async saveCreditNote( creditNote: creditNoteModel) {
     try {
       /**se guarda la nota de credito */
 
-      const creditRef = this._afs.doc<creditNoteModel>(`${this.businessRef}/creditNote/${creditNote.invoiceId}`).ref
+      const creditRef = this._afs.doc<creditNoteModel>(`${this.businessRef}/creditNote/${creditNote.noteId}`).ref
       const managerRef = this.manager.managerRef
       const man = (await managerRef.get()).data()
       creditNote.manager = man!.name
-      creditNote.footer = this.currentNC$.value!.footer
-      creditNote.details = this.currentNC$.value!.details 
-      creditNote.total = -(invoiceRefence.footer.total - this.currentNC$.value!.footer.total)
-      creditRef.set({ ...creditNote })
-      if (concept == 1){
-        /**se actualiza el estatusde la factura afectada a ANULADO */
-        let invoiceRef = this._afs.doc<SalesInvoiceModel>(`${this.businessRef}/sale/${creditNote.invoiceIdRef}`).ref
-        let invoice = (await (invoiceRef.get())).data()
-        if (invoice) {
-          invoice.status = 'Anulada'
-          invoiceRef.set({ ...invoice })
-        }
-        /**se actualiza el stock de cada producto/concepto */
-        details.forEach(async det => {
+     // creditNote.footer = this.currentNC$.value!.footer
+      if (creditNote.concept == 'devolucion') {
+        /* se  */
+        creditNote.details.forEach(async det => {
           let productRef = this._afs.doc(`${this.businessRef}/products/${det.UPC}`).ref
           await firebase.firestore().runTransaction(async transaction => {
             let store_Id = det.store
@@ -79,7 +70,7 @@ export class  CreditNoteService {
               .set({ ...evento })
           })
         })
-      }
+      } 
     } catch (error: any) {
       if ('message' in error) {
         this._alert.error(error.message, error)
@@ -89,7 +80,7 @@ export class  CreditNoteService {
       return console.error(error)
     }
   }
-  async recalculate(det: any){
+  async recalculate(det: iProductInvoice){
   
     if (this.currentNC$.value){
       let details = this.currentNC$.value!.details
@@ -112,19 +103,15 @@ export class  CreditNoteService {
       console.log(details);
       await this.updateCurrent('details', details)
       let foot = this.currentNC$.value!.footer
-      console.log(`subtotal: ${subtotal}`);
-      console.log(foot);
       
       foot.subtotal = subtotal
-      foot.taxes.forEach(tax => {
-        
-        foot.totalTaxes += tax.amount
-      })
-      foot.total = (subtotal + foot.shipping + foot.totalTaxes) - (foot.discount)
+      foot.taxes = []
+      this._taxes.applidedTaxes = []
+      foot.total = (subtotal + foot.shipping ) - (foot.discount)
       this.updateCurrent('footer', foot)
   
-      this.totales.emit(foot)
-   console.log(this.currentNC$.value);
+      //this.totales.emit(foot)
+      this.foot.currentfoot$.next(foot)
 
     }
     
@@ -137,7 +124,9 @@ export class  CreditNoteService {
         let discount = foot.discount
         let shipping = foot.shipping
         footer.total = (footer.subtotal + shipping) - discount
-        this.totales.emit(footer)
+
+        this.foot.currentfoot$.next(footer)
+        // this.totales.emit(footer)
       }
     }
 
@@ -158,4 +147,10 @@ export class  CreditNoteService {
       let invoice = (await (invoiceRef.get())).data()
       return invoice || null
     }
+
+    nextCurrent(invoice_Ref: SalesInvoiceModel | null) {
+      this.currentNC$.next(invoice_Ref)
+    }
+    
+
 }

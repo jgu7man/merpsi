@@ -19,9 +19,8 @@ export class FormCreditNoteComponent implements OnInit {
 
   businessRef = this._cache.getDataKey('eid')
   invoice_Ref: SalesInvoiceModel | null = null
-  invoice_Ref_1: SalesInvoiceModel | null = null
   conceptNC: number = 1
-  invoiceId: string | null = null;
+  invoiceId: string | null = null
 
   creditNoteForm: FormGroup = new FormGroup({
     date_emition: new FormControl(''),
@@ -44,39 +43,32 @@ export class FormCreditNoteComponent implements OnInit {
     this.activatedRoute.params.subscribe(params => {
       this.conceptNC = params.tipo
       this.invoiceId = params.invoiceId
-    })    
-   }
+    })
+  }
 
   async ngOnInit(): Promise<void> {
- 
-    if (this.invoiceId) {
+    console.log(this.sales.current$.value)
+    if (this.invoiceId ) {
       this.invoice_Ref = await this.credit.getInvoice(this.invoiceId)
-      // this.invoice_Ref_1 = await this.credit.getInvoice(this.invoiceId)
-      this.credit.currentNC$.next( this.invoice_Ref)
+      this.credit.nextCurrent(this.invoice_Ref)
       this.creditNoteForm.patchValue({
-        concept:this.conceptNC,
+        concept: this.conceptNC,
         invoiceIdRef: this.invoice_Ref!.invoice_ID
       })
     }
-    console.log('---init----');
-    console.log(this.invoice_Ref!.footer.subtotal);
-
   }
 
 
- 
+
   async save() {
-   // this.invoice_Ref = await this.credit.getInvoice(this.invoiceId!)
-    console.log('---save----');
-    console.log(this.invoice_Ref_1!.footer.subtotal);
     if (this.credit.currentNC$.value) {
-      if (this.credit.currentNC$.value.footer.total<this.invoice_Ref_1!.footer.total) {
-      this.credit.saveCreditNote(this.credit.currentNC$.value.details,
-         this.creditNoteForm.value, 
-         this.conceptNC,
-         this.invoice_Ref_1!)
-      this.submited.emit()
-      }else{
+      if (this.credit.currentNC$.value.footer.total <= this.invoice_Ref!.footer.total) {
+        //  this.credit.saveCreditNote(this.credit.currentNC$.value.details,
+        //    this.creditNoteForm.value, 
+        //    this.conceptNC,
+        //    this.invoice_Ref!)
+        this.submited.emit()
+      } else {
         this._alert.notify('El total del Documento no debe ser mayor a la factura referenciada ')
       }
     }
@@ -84,17 +76,18 @@ export class FormCreditNoteComponent implements OnInit {
   }
 
   getChanges(event: iProductInvoice) {
-   this.credit.recalculate(event)
-   console.log('---getchanges----');
-   console.log(this.invoice_Ref_1!.footer.subtotal);
+    
+    this.credit.recalculate(event)
+    console.log('---getchanges----');
+    console.log(this.invoice_Ref?.footer.subtotal);
   }
 
   getFooter(foot: iInvoiceFooter) {
-    if (this.credit.currentNC$.value){
+    if (this.credit.currentNC$.value) {
       this.credit.getFooter(foot, this.credit.currentNC$.value)
     }
     console.log('---footer----');
-    console.log(this.invoice_Ref_1!.footer.subtotal);
+    console.log(this.invoice_Ref?.footer.subtotal);
   }
 
 }
