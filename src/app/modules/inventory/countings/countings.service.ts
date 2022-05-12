@@ -563,12 +563,12 @@ export class CountingsService {
             try {
 
               const historyRef = ref.collection( 'history' ).doc( `${new Date().getTime()}`)
-              const event = new ProductEventModel('close_counting', this._dashboard.managerRef, this.currentRef)
+              const event = new ProductEventModel('close_counting', this._dashboard.managerRef, this.currentRef.ref)
 
               /* BATCH EVENT 1 */
               await this._batch.update( ref, {
                 stock: firebase.firestore.FieldValue.increment(diffs),
-                last_update: event
+                last_update: { ...event }
               } )
 
               /* BATCH EVENT 2 */
@@ -594,8 +594,10 @@ export class CountingsService {
         console.log( 'Deletings' )
         await this._loading.asyncForEach(
           deletingCol.docs, ( async ( r ) => {
-            let ref = productsRef.doc( r.id )
+            const ref = productsRef.doc( r.id )
             let stores = await ref.collection( 'stores' ).get()
+            const historyRef = ref.collection( 'history' ).doc( `${new Date().getTime()}`)
+            const event = new ProductEventModel('close_counting', this._dashboard.managerRef, this.currentRef.ref)
 
 
             try {
@@ -611,6 +613,9 @@ export class CountingsService {
               /* BATCH EVENT 5 */
               await this._batch.delete(ref)
 
+              /* BATCH EVENT 6 */
+              await this._batch.set( historyRef, { ...event }, { merge: true } )
+
             } catch (error) {
               throw error
             }
@@ -619,7 +624,7 @@ export class CountingsService {
         )
 
         await this._loading.waitFor(1000)
-        console.log( 'finalize' )
+        console.log( 'Finalize' )
 
         this._batch.update(countingRef, {
           endDate: new Date(),

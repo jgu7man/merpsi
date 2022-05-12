@@ -13,9 +13,9 @@ const routes: Routes = [
     { path: '', pathMatch: 'full', redirectTo: 'list' },
     { path: 'list', component: ProductListComponent },
     { path: 'categories', component: ProductCategoriesComponent} ,
-    { path: 'countings', component: CountingsComponent },
     { path: 'measure_units', component: MesureUnitsComponent },
   ] },
+  { path: 'countings', component: CountingsComponent },
   { path: 'providers', component: ProviderComponent },
 ];
 

@@ -129,7 +129,7 @@ export class ProductEventModel {
     /** Referencia de manager que realiza el evento */
     public manager?: firebase.firestore.DocumentReference,
     /* Referencia a la factura o arqueo que tuvo efecto en la modificación del producto */
-    public eventRef?: firebase.firestore.DocumentReference | AngularFirestoreDocument
+    public eventRef?: firebase.firestore.DocumentReference
   ) {
     this.date = createDate(new Date())
 
@@ -209,7 +209,7 @@ export declare namespace Product {
   namespace history {
 
     /** Tipo de evento de un producto */
-    type UpdateType = 'sale' | 'purchase' | 'edit' | 'create' | 'close_counting' | 'counting_report' | 'delete'
+    type UpdateType = 'sale' | 'purchase' | 'edit' | 'create' | 'close_counting' | 'counting_report' | 'delete' | 'return'
 
 
   }

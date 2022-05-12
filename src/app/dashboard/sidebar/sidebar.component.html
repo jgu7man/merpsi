@@ -5,22 +5,22 @@
   </button>
 </div>
 
-<ul 
-  class="collapsible" 
-  data-collapsible="accordion" 
-  id="sidenav-menu" 
+<ul
+  class="collapsible"
+  data-collapsible="accordion"
+  id="sidenav-menu"
   *ngIf="auth.userState$ | async as user">
-    
+
     <!-- MAIN MENU -->
     <li id="main-menu">
       <div class="collection">
-        
+
         <!-- DASHBOARD LINK -->
         <a class="collection-item" [routerLink]="[ '/business', eid ]">
           <mat-icon class="material-icons-round">dashboard</mat-icon>
           Dashboard
         </a>
-        
+
         <!-- USER LINK -->
         <a *ngIf="user" class="collection-item" [routerLink]="[ 'profile' ]">
           <mat-icon class="material-icons-outlined">account_circle</mat-icon>
@@ -29,9 +29,9 @@
 
         <!-- PAGE LINK -->
         <!-- <ng-container *ngIf="isLocalhost; else prod">
-          <a class="collection-item" [href]="href.includes('localhost') 
-            ? 'http://localhost:4200/site' 
-            : 'https://tiendalasmotos.com'" 
+          <a class="collection-item" [href]="href.includes('localhost')
+            ? 'http://localhost:4200/site'
+            : 'https://tiendalasmotos.com'"
           >Ir a página</a>
         </ng-container>
         <ng-template #prod >
@@ -85,7 +85,7 @@
         </div>
       </mat-expansion-panel> -->
 
-      
+
 
       <!-- INVENTORY -->
       <mat-expansion-panel [expanded]="onActive('inventory')"
@@ -97,31 +97,30 @@
           </mat-panel-title>
         </mat-expansion-panel-header>
         <div class="collection">
-          
-          <a 
+
+          <a
             class="collection-item"
             [routerLink]="['inventory/products']"
             routerLinkActive="active"
             >Productos</a
           >
-          <!-- <a 
+          <!-- <a
             class="collection-item"
             [routerLink]="['inventory/store-db']"
             routerLinkActive="active"
             >Base de datos</a
           > -->
-          <a
-            class="collection-item"
+          <a class="collection-item"
             [routerLink]="['inventory/providers']"
             routerLinkActive="active"
             >Proveedores</a
           >
-          <!-- <a *ngIf="arqueos.current"
+          <a *ngIf="user.rol == 'administrador'"
             class="collection-item"
-            [routerLink]="['/dashboard/modo-arqueo']"
+            [routerLink]="['inventory/countings']"
             routerLinkActive="active"
             >Arqueo</a
-          > -->
+          >
         </div>
       </mat-expansion-panel>
 
@@ -147,7 +146,7 @@
               routerLinkActive="active"
               >Facturas de venta</a
             >
-             
+
             <a
               class="collection-item"
               [routerLink]="['finances/purchases']"
@@ -210,7 +209,7 @@
           > -->
         </div>
       </mat-expansion-panel>
-      
+
       <!-- ADMINISTRACIÓN -->
       <mat-expansion-panel [expanded]="onActive('admin')"
       *ngIf="user.rol == 'administrador' || user.rol == 'propietario'">
@@ -252,7 +251,7 @@
         </div>
       </mat-expansion-panel>
 
-      
+
     </mat-accordion>
   <div class="version">
     <small>Version:</small>
