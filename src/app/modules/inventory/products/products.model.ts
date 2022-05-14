@@ -44,7 +44,9 @@ export class ProductModel {
   public last_update: ProductEventModel
   /** Referencia de firestore del producto si le pertenece a un tercero */
   public third_reference?: FireRef<ProductModel>
-  public stored: boolean
+  /** Define si el producto es nuevo o no en la base de datos. Si es true, ya está registrado. */
+  public stored: boolean;
+
   constructor (
     product?: Product.DataReference | FireDoc<Product.DataReference>,
     /** Reference del manager creador del producto */
@@ -163,12 +165,13 @@ export declare namespace Product {
    *
    * @interface MainData
    */
-  interface MainData {
-    UPC: string,
-    reference: string,
-    description: string,
-    brand?: string,
-    measure_unit: number,
+  interface MainData extends Pick<DataReference,
+    | 'UPC'
+    | 'reference'
+    | 'description'
+    | 'brand'
+    | 'measure_unit'
+  > {
     document_ref?: FireRef<ProductModel>
   }
 
@@ -188,7 +191,7 @@ export declare namespace Product {
    * Modelo del formulario de un producto
    */
   interface Form extends FormGroup {
-    value: DataReference | ProductModel
+    value: DataReference
     controls: {
       UPC: AbstractControl
       reference: AbstractControl

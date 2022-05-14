@@ -127,34 +127,46 @@ export class SalesService {
 
   saveInvoice( invoice: SalesInvoiceModel ) {
     try {
-    let businessRef = `businesses/${this._dashboard.CRF}`
-    if (this.current$.value){
-      const invoiceRef = this._afs.doc<SalesInvoiceModel>(`${businessRef}/sale/${this.current$.value.invoice_ID}`).ref
-      invoiceRef.set({...invoice})
+      let businessRef = `businesses/${this._dashboard.CRF}`
+      if (this.current$.value) {
+        const invoiceRef = this._afs
+          .doc<SalesInvoiceModel>( `${ businessRef }/sale/${ this.current$.value.invoice_ID }` ).ref
+        invoiceRef.set({...invoice})
 
-      let details: iProductInvoice[] = this.current$.value.details
-      details.forEach(async det =>{
-        let productRef= this._afs.doc(`${businessRef}/products/${det.UPC}`).ref
-        await firebase.firestore().runTransaction(async transaction => {
-          let store_Id = det.store
-          const storeRef = productRef.collection('stores').doc(store_Id)
-          let productStore = (await transaction.get(storeRef)).data()
+        let details: iProductInvoice[] = this.current$.value.details
+        details.forEach(async det =>{
+          let productRef= this._afs.doc(`${businessRef}/products/${det.UPC}`).ref
 
-          if (!productStore) {
-          productStore  = new StoreReferenceModel(store_Id,det.UPC,det.unit_cost)
-          }
-          productStore.stock = productStore.stock - det.cant
+          await firebase.firestore().runTransaction( async transaction => {
+            let store_Id = det.store
+            const storeRef = productRef.collection('stores').doc(store_Id)
+            const productStore = (await transaction.get(storeRef)).data()
 
-          await transaction.set(storeRef,{...productStore},{merge: true})
-          const evento = new  ProductEventModel(
-            'sale',
-            this._dashboard.managerRef,
-            invoiceRef
-            )
-            this._afs.collection(`${businessRef}/products/${det.UPC}/history`)
-              .doc(`${new Date().getTime()}`)
-              .set({ ...evento })
-          })
+            if ( !productStore )
+              throw { message: 'Store not found' }
+            if ( productStore.stock > det.stock )
+              throw { message: 'Stock not available' }
+
+            productStore.stock = productStore.stock - (det.cant || 1)
+
+            await transaction.set(storeRef,{ ...productStore },{merge: true})
+
+
+            /* Se guarda el evento */
+            const evento = new ProductEventModel(
+              'sale',
+              this._dashboard.managerRef,
+              invoiceRef
+            );
+
+            const eventRef = this._afs
+              .collection( `${ businessRef }/products/${ det.UPC }/history` )
+              .doc<ProductEventModel>( `${ new Date().getTime() }` )
+
+            await transaction.set( eventRef.ref, {...evento} )
+
+          } )
+
         })
       }
     } catch (error) {

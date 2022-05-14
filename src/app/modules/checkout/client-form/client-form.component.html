@@ -1,0 +1,73 @@
+<div class="container">
+  <div class="row" style="width:100%">
+    <div class="col s11">
+      <h2>Agregar cliente</h2>
+    </div>
+    <div class="col s1">
+      <button mat-icon-button (click)="onClose.emit()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  </div>
+  <form class="row" [formGroup]="clienteForm">
+
+
+
+    <!-- NOMBRE -->
+    <mat-form-field appearance="outline" class="col s12">
+      <mat-label>Nombre del cliente</mat-label>
+      <input
+      matInput
+      type="text"
+      name="name"
+      formControlName="name"
+      required
+      >
+      <mat-error *ngIf="clienteForm.hasError('required', 'name')">
+       Nombre del cliente es necesario
+      </mat-error>
+    </mat-form-field>
+
+    <!-- CELULAR -->
+    <mat-form-field appearance="outline" class="col s12">
+      <mat-label>Celular</mat-label>
+      <input
+      matInput
+      type="text"
+      name="cellphone"
+      formControlName="cellphone"
+      >
+    </mat-form-field>
+
+    <!-- EMAIL -->
+    <mat-form-field appearance="outline" class="col s12">
+      <mat-label>Email</mat-label>
+      <input
+      matInput
+      type="text"
+      name="email"
+      formControlName="email"
+      >
+    </mat-form-field>
+
+    <!-- CRF -->
+    <mat-form-field appearance="outline" class="col s12">
+      <mat-label>CRF</mat-label>
+      <input
+      matInput
+      type="text"
+      name="CRF"
+      formControlName="CRF"
+      >
+    </mat-form-field>
+
+    <div class="col s12 center">
+      <button mat-raised-button color="primary"
+      [disabled]="clienteForm.invalid || clienteForm.pristine"
+      (click)="onSubmit()"
+      >Guardar</button>
+    </div>
+
+  </form>
+
+</div>

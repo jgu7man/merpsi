@@ -48,6 +48,24 @@
 
     <mat-accordion >
 
+      <mat-expansion-panel [expanded]="onActive('checkout')">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <mat-icon>point_of_sale</mat-icon>
+            Punto de venta
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <div class="collection">
+          <a
+            class="collection-item"
+            [routerLink]="['checkout/panel']"
+            routerLinkActive="active"
+            >Panel</a
+          >
+        </div>
+      </mat-expansion-panel>
+
       <!-- PÁGINA -->
       <!-- <mat-expansion-panel *ngIf="user.rol == 'administrador'" [expanded]="onActive('website')">
         <mat-expansion-panel-header>

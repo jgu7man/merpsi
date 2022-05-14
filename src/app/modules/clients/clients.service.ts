@@ -3,8 +3,8 @@ import { AngularFirestore } from '@angular/fire/firestore';
 import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import { Observable, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
-import { ClientModel } from 'src/app/modules/clients/clients.model';
+import { catchError, map, tap } from 'rxjs/operators';
+import { Client, ClientModel } from 'src/app/modules/clients/clients.model';
 import { FireDoc } from 'src/app/models/firestore.model';
 import Swal from 'sweetalert2';
 
@@ -13,7 +13,8 @@ import Swal from 'sweetalert2';
 })
 export class ClientsService {
 
-  businessCRF: string = this._cache.getDataKey('eid')!
+  businessCRF: string = this._cache.getDataKey( 'eid' )!
+  path: string = `businesses/${this.businessCRF}/clients`
 
   constructor(
     private _afs: AngularFirestore,
@@ -21,16 +22,26 @@ export class ClientsService {
     private _alert: MxAlert,
   ) { }
 
+  get collectionRef() {
+    return this._afs.collection<ClientModel>(this.path)
+  }
+
+  search(prefix: string) {
+    return this._afs.collection<ClientModel>(this.path,
+      ref => ref
+      .where('name', '>=', prefix)
+      .where('name', '<=', prefix + '~')
+    ).valueChanges().pipe(
+      tap(list => {console.log(list)})
+    )
+  }
+
   getAll(): Observable<ClientModel[]> {
-    return this._afs.collection<ClientModel>(`businesses/${this.businessCRF}/clients`).valueChanges()
+    return this.collectionRef.valueChanges()
       .pipe(
         map(list => {
-          const clients: ClientModel[] = []
-          list.forEach( cli => {
-            clients.push(new ClientModel(cli))
-          })
-          console.log(clients)
-          return clients
+          console.log(list)
+          return list
         }),
         catchError(error => {
           console.error(error);
@@ -42,21 +53,25 @@ export class ClientsService {
 
   async save(client: ClientModel): Promise<void> {
     try{
-      const clientRef = client.id ? this._afs.doc(`businesses/${this.businessCRF}/clients/${client.id}`).ref 
-      : this._afs.collection(`businesses/${this.businessCRF}/clients/`).doc().ref
-      const id = clientRef.id
+
+      const clientRef = this._afs
+        .collection( `businesses/${ this.businessCRF }/clients/` )
+        .doc<ClientModel>( client.id ).ref;
+      const id = clientRef.id;
+
+
       await clientRef.set({...client, id})
-      await Swal.fire('Guardado')
+      this._alert.notify('Cliente guardado')
 
       return
     }catch(error){
       Swal.fire( {
-        icon: 'error', 
+        icon: 'error',
         text: 'No se pudo guardar'
       })
       return console.error(error)
     }
-  
+
   }
 
   async delete(client: ClientModel) {
@@ -66,7 +81,7 @@ export class ClientsService {
       return
     } catch (error) {
       Swal.fire( {
-        icon: 'error', 
+        icon: 'error',
         text: 'No se pudo eliminar'
       })
       return console.error(error);

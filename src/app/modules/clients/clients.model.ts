@@ -1,32 +1,77 @@
+import { AbstractControl, FormGroup } from "@angular/forms"
+import { createDate, FireRef, FireTime } from "src/app/models/firestore.model"
+import { ManagerModel } from "../admin/managers/manager.model"
 
 export class ClientModel{
-  public name?: string
-  public cellphone?: string
-  public email?: string
-  /** Clave de Indentificacion Personal (cedula) */
-  public cip?: string
-  public facebookId?: string
-  public attendedBy?: string
-  registered: Date
-  lastContact: Date
-  id?: string 
-  viewed: boolean
-  tags: string[]
-  constructor(
-    client?: ClientModel
-  ) {
-    this.name = client?.name || ''
-    this.cellphone = client?.cellphone || ''
-    this.email = client?.email || ''
-    this.cip = client?.cip || ''
-    this.facebookId = client?.facebookId || ''
-    //this.attendedBy= client?.attendedBy || ''
-    this.id = client?.id || ''
+  readonly id?: string
+  registered: FireTime
+  lastContact: FireTime
+  public contact?: Client.contact
 
-    this.registered = new Date()
-    this.lastContact = new Date()
-    this.viewed = false
-    this.tags = ['Nuevo']
-  } 
-  
+  tags: string[]
+
+  constructor (
+    public name: string,
+    /** Clave de Indentificacion Personal (cedula) */
+    public CRF?: string,
+    email?: string,
+    cellphone?: string,
+    facebookId?: string,
+  ) {
+
+    this.registered = createDate( new Date() )
+    this.lastContact = createDate( new Date() )
+    this.tags = [ 'Nuevo' ]
+
+    this.contact = {
+      email: email || '',
+      cellphone: cellphone || '',
+      facebookId: facebookId || '',
+    }
+  }
+
+}
+
+export declare namespace Client {
+
+  export interface address {
+    streetName?: string,
+    streetNumber?: string,
+    neighborhood?: string,
+    city?: string,
+    state?: string,
+    country?: string,
+    zipCode?: string
+  }
+
+  export interface contact {
+    cellphone?: string,
+    email?: string,
+    facebookId?: string
+  }
+
+  export interface management {
+    managerRef?: FireRef<ManagerModel>
+    attendedBy?: string
+    lastAttendedDate?: FireTime
+    attendedNotes?: string[]
+  }
+
+  export interface registForm {
+    name: string
+    cellphone: string
+    email: string
+    CRF: string
+  }
+
+  export interface form extends FormGroup {
+    value: registForm
+    controls: {
+      name: AbstractControl,
+      cellphone: AbstractControl,
+      email: AbstractControl,
+      CRF: AbstractControl,
+    }
+  }
+
 }

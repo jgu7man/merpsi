@@ -192,7 +192,7 @@ export class PurchaseInvoiceService {
           let productStore = (await transaction.get(storeRef)).data()
 
           if (!productStore) {
-          productStore  = new StoreReferenceModel(store_Id,det.UPC,det.unit_cost)
+          productStore  = new StoreReferenceModel(store_Id,det.UPC,det.unit_price)
           }
           productStore.stock = productStore.stock + det.cant
 

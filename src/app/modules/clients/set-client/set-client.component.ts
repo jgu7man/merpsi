@@ -13,8 +13,8 @@ import { ClientsService } from '../clients.service';
 export class SetClientComponent implements OnInit {
 
 
-  private _client: BehaviorSubject<ClientModel> = new BehaviorSubject(new ClientModel());
-  @Input() set client(cli: ClientModel) { this._client.next(cli); }
+  private _client = new BehaviorSubject<ClientModel | undefined>(undefined);
+  @Input() set client(cli: ClientModel | undefined) { this._client.next(cli); }
   get client() { return this._client.getValue() }
   @Output() saved: EventEmitter<any> = new EventEmitter()
 
@@ -46,12 +46,12 @@ export class SetClientComponent implements OnInit {
   }
 
   onSubmit(): void {
-  this.client = {...this.client, ...this.clientForm.getRawValue()}
-  this._clientService.save(this.client)
-  console.log(this.client)
-  console.log(this.clientForm.controls.value)
-  this.clientForm.patchValue(new ClientModel())
-  this.saved.emit()
+    this.client = { ...this.client, ...this.clientForm.getRawValue() }
+    if (!this.client) throw { message: 'Client is undefined' }
+    this._clientService.save(this.client)
+    console.log(this.client)
+    console.log(this.clientForm.controls.value)
+    this.saved.emit()
   }
 
 
@@ -60,5 +60,5 @@ export class SetClientComponent implements OnInit {
     let number = control.value as string
     return !number.startsWith('3') ? {'prefix': true} : null;
 }
-  
+
 }

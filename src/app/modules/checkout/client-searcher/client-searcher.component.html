@@ -1,0 +1,14 @@
+<mx-searcher-list
+[label]="'Buscar cliente'"
+[collection]="'businesses/' + businessRef + '/clients/'"
+[param]="'name'"
+(results)="getValue($event)"
+(listLoaded)="getList($event)">
+</mx-searcher-list>
+<ng-container *ngIf="emptyList">
+  <small>
+    ¿No se encuentra el cliente? Para agregarlo haz click</small>
+    <button mat-icon-button color="accent" (click)="createClient()">
+    aqui
+  </button>
+</ng-container>

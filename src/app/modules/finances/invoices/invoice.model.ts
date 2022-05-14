@@ -17,7 +17,7 @@ export class InvoiceModel {
   public  manager: string = ''
   /**fecha de registro */
   public readonly registered_date: FireTime = createDate( new Date() )
-  
+
   public details: iProductInvoice[] = [] ;
   // public footer: iInvoiceFooter;
   constructor (
@@ -31,8 +31,8 @@ export class InvoiceModel {
       total: 0,
     }
   }
-  
-  
+
+
 }
 /** Modelo de consulta de balances de factura */
 export class invoiceFooter {
@@ -75,41 +75,44 @@ export interface InvoiceStore {
 
 
 export class ProductInvoiceModel implements Product.MainData {
-  /** Costo unitario del producto comprado*/
+  /** Precio unitaio de venta */
+  public unit_price: number = 0
+  /** Costo unitario del producto comprado */
   public unit_cost: number = 0
   /** Cantidad de productos comprados */
-  public cant: number = 0
+  public cant?: number = 0
   /** Resultado de multiplicar cantidad por costo unitario del producto */
   public amount: number;
-  public store: string
+  public store?: string
+
   UPC: string
   reference: string
   description: string
   measure_unit: number
   brand?: string
   stock: number
-  
+
 
   constructor (
     /** Referencia del producto comprado (Debe seleccionarse de la lista de productos registrados de la empresa) */
-    concept?: ProductModel,
+    concept?: Product.MainData,
     storeRef?: string,
     stock?:number,
   ) {
 
-    let data = concept
+    // let data = concept
 
-		this.amount = this.unit_cost * this.cant;
-    this.UPC = data?.UPC || ''
-    this.reference = data?.reference || ''
-    this.description = data?.description || ''
-    this.brand = data?.brand || ''
-    this.measure_unit = data?.measure_unit || 0
+		this.amount = this.unit_price * (this.cant || 1);
+    this.UPC = concept?.UPC || ''
+    this.reference = concept?.reference || ''
+    this.description = concept?.description || ''
+    this.brand = concept?.brand || ''
+    this.measure_unit = concept?.measure_unit || 0
     this.store = storeRef || ''
     this.stock = stock || 0
 	}
   get data(){
-    let { data, ...object} = this
+    let { data:concept, ...object} = this
     return {...object}
   }
 }

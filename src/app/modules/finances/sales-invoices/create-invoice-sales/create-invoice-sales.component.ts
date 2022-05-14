@@ -11,7 +11,7 @@ import { ClientModel } from 'src/app/modules/clients/clients.model';
 import { AuthService } from 'src/app/services/auth.service';
 import { iInvoiceFooter, invoiceFooter, ProductInvoiceModel } from '../../invoices/invoice.model';
 import { SelectConceptDialogComponent } from '../../invoices/select-concept.dialog/select-concept.dialog.component';
-import { iStub, StubModel } from '../../stubs-invoice/stub.model';
+import { iStub } from '../../stubs-invoice/stub.model';
 import { StubService } from '../../stubs-invoice/stub.service';
 import { SalesInvoiceModel } from '../sales-invoice.model';
 import { SalesService } from '../sales.service';
@@ -34,7 +34,7 @@ export class CreateInvoiceSalesComponent implements OnInit {
 
   clientform: FormGroup = new FormGroup({
     client: new FormControl('', [Validators.required]),
-    cip: new FormControl('', [Validators.required]),
+    CRF: new FormControl('', [Validators.required]),
     email: new FormControl('', [Validators.required]),
   })
 
@@ -66,7 +66,7 @@ export class CreateInvoiceSalesComponent implements OnInit {
 
 
   ) {
-    
+
   }
 
   ngOnInit() {
@@ -74,7 +74,7 @@ export class CreateInvoiceSalesComponent implements OnInit {
     this.stub.list$.value.forEach(d => {
       if (d.active && d.currentIndex<d.endIndex){
         this.stubList.push(d)
-      } 
+      }
     });
 
     this.salesForm.valueChanges.pipe(
@@ -110,8 +110,8 @@ export class CreateInvoiceSalesComponent implements OnInit {
     this.client = client_
     this.clientform.patchValue({
       client: this.client.name,
-      cip: this.client.cip,
-      email: this.client.email
+      CRF: this.client.CRF,
+      email: this.client.contact?.email || ''
     })
     this.clientform.controls.cip.disable()
   }
@@ -188,7 +188,7 @@ export class CreateInvoiceSalesComponent implements OnInit {
      let nro = stub.prefix + '-' + ((stub.currentIndex || 0) + 1)
      await this.sales.updateCurrent('invoice_ID',nro)
      }
-    // this.stubSelect!.nroStub = 
+    // this.stubSelect!.nroStub =
     // this.stubSelect!.currentIndex = stub.currentIndex + 1
   }
 }
