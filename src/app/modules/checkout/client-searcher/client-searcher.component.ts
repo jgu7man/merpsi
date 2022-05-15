@@ -8,7 +8,7 @@ import { ClientModel } from '../../clients/clients.model';
 import { ClientsService } from '../../clients/clients.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
-import { ClientFormComponent, ClientFormDialog } from '../client-form/client-form.component';
+import { ClientFormComponent, ClientFormDialog } from '../../clients/client-form/client-form.component';
 
 @Component({
   selector: 'app-client-searcher',

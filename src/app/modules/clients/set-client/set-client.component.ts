@@ -48,7 +48,7 @@ export class SetClientComponent implements OnInit {
   onSubmit(): void {
     this.client = { ...this.client, ...this.clientForm.getRawValue() }
     if (!this.client) throw { message: 'Client is undefined' }
-    this._clientService.save(this.client)
+    // this._clientService.save(this.client)
     console.log(this.client)
     console.log(this.clientForm.controls.value)
     this.saved.emit()

@@ -12,3 +12,16 @@
     aqui
   </button>
 </ng-container>
+
+<ng-container *ngIf="clientSelected">
+  <p>
+    {{clientSelected.CRF}} <br>
+    <span *ngIf="clientSelected.contact as contact">
+      <span *ngIf="contact.email">{{contact.email}}</span> <br>
+      <span *ngIf="contact.cellphone">{{contact.cellphone}}</span>
+    </span>
+  </p>
+  <p *ngIf="clientSelected.address">
+    {{clientSelected.getAddress()}}
+  </p>
+</ng-container>

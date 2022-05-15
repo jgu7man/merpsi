@@ -1,15 +1,9 @@
-<div class="container">
-  <div class="row" style="width:100%">
-    <div class="col s11">
-      <h2>Agregar cliente</h2>
-    </div>
-    <div class="col s1">
-      <button mat-icon-button (click)="onClose.emit()">
-        <mat-icon>close</mat-icon>
-      </button>
-    </div>
-  </div>
-  <form class="row" [formGroup]="clienteForm">
+<mat-card class="mat-elevtation-z0">
+
+  <mat-card-header>
+    <mat-card-title>{{client && client.id ? 'Actualizar' : 'Agregar'}} cliente</mat-card-title>
+  </mat-card-header>
+  <form class="row" [formGroup]="clientForm">
 
 
 
@@ -23,7 +17,7 @@
       formControlName="name"
       required
       >
-      <mat-error *ngIf="clienteForm.hasError('required', 'name')">
+      <mat-error *ngIf="clientForm.hasError('required', 'name')">
        Nombre del cliente es necesario
       </mat-error>
     </mat-form-field>
@@ -37,6 +31,12 @@
       name="cellphone"
       formControlName="cellphone"
       >
+      <mat-error *ngIf="clientForm.hasError('minlength', 'cellphone')">
+        El número de celular debe contener al menos 10 dígitos
+      </mat-error>
+      <mat-error *ngIf="clientForm.hasError('maxlength', 'cellphone')">
+        El número de celular no debe tener más de 10 dígitos
+      </mat-error>
     </mat-form-field>
 
     <!-- EMAIL -->
@@ -61,13 +61,23 @@
       >
     </mat-form-field>
 
-    <div class="col s12 center">
-      <button mat-raised-button color="primary"
-      [disabled]="clienteForm.invalid || clienteForm.pristine"
-      (click)="onSubmit()"
-      >Guardar</button>
-    </div>
 
   </form>
 
-</div>
+
+</mat-card>
+
+<ng-container *ngIf="enableAddress">
+  <app-client-address-form></app-client-address-form>
+</ng-container>
+
+<ng-container *ngIf="enableSubmit">
+  <div class="row">
+    <div class="col s12 center">
+      <button mat-raised-button color="primary"
+      [disabled]="!clients.valid$.value"
+      (click)="onSubmit()"
+      >Guardar</button>
+    </div>
+  </div>
+</ng-container>

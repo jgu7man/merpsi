@@ -17,7 +17,7 @@ import { ScanProductBottom } from '../scan-product/scan-product.bottom';
 })
 export class CheckoutPanelComponent implements OnInit {
 
-  client: ClientModel = new ClientModel('Venta General')
+  client?: ClientModel
   product?: Product.DataReference
   productoCtrl: FormControl = new FormControl()
   productList: ProductInvoiceModel[] = []
