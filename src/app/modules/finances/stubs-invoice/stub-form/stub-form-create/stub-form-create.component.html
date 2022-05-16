@@ -1,7 +1,17 @@
 <form [formGroup]="stubForm">
 
   <div class="row">
-  
+  <!-- TIPO -->
+    <mat-form-field class="col s12" appearance="outline">
+      <mat-label>Tipo</mat-label>
+      <mat-select placeholder="Placeholder"
+      name="type"
+      formControlName="type">
+      <mat-option [value]="'venta'">Factura de Venta</mat-option>
+      <mat-option [value]="'credito'">Nota Credito</mat-option>
+      <mat-option [value]="'debito'">Nota de debito </mat-option>
+    </mat-select>
+    </mat-form-field>
     <!-- Nombre -->
     <mat-form-field
       appearance="outline"

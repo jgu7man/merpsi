@@ -19,7 +19,8 @@ export class StubFormCreateComponent implements OnInit {
     currentIndex: new FormControl( 0),
     prefix: new FormControl( '' ),
     name: new FormControl( '' ),
-    active: new FormControl( '')
+    active: new FormControl( ''),
+    type: new FormControl( '')
   })
 
  
@@ -40,7 +41,8 @@ export class StubFormCreateComponent implements OnInit {
       this._stub.update({...this.stubForm.value,
                             index: this.value.index})
     }else {
-      this._stub.add(this.stubForm.value)
+    this._stub.add(this.stubForm.value)
+
       this.save.emit()
     }
 

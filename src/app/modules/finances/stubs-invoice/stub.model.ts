@@ -1,6 +1,7 @@
 import { createDate, FireDoc, FireTime } from "src/app/models/firestore.model"
 
 export class StubModel{
+  type: TYPE_STUB
   starIndex: number
   endIndex: number 
   prefix: string 
@@ -12,7 +13,8 @@ export class StubModel{
 
   constructor(
     readonly index: number,
-    data?: StubModel | iStub
+    data: StubModel | iStub
+  
   )
   {
     this.starIndex = data?.starIndex || 0;
@@ -21,9 +23,8 @@ export class StubModel{
     this.currentIndex = data?.currentIndex || 0;
     this.name = data?.name || ''
     this.active = data?.active || false
+    this.type = data.type 
   }
-
-
 }
 
 export interface iStub{
@@ -36,6 +37,7 @@ export interface iStub{
   lastUpdated: FireTime
   active: boolean
   index: number
+  type: TYPE_STUB
 }
 
 export namespace Stub{
@@ -46,3 +48,5 @@ export namespace Stub{
     list: iStub[]
   }
 }
+
+export type TYPE_STUB = 'venta' | 'credito' | 'debito' 
