@@ -1,13 +1,14 @@
-import { Component, EventEmitter, Inject, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Inject, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
 import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
-import { Footer } from 'primeng/api';
-import { iInvoiceFooter, iProductInvoice } from '../../invoices/invoice.model';
+import Swal from 'sweetalert2';
+import { FooterService } from '../../invoices/footer-invoice/footer.service';
+import { iProductInvoice } from '../../invoices/invoice.model';
 import { SalesInvoiceModel } from '../../sales-invoices/sales-invoice.model';
 import { SalesService } from '../../sales-invoices/sales.service';
+import { AppliedTaxModel } from '../../taxes/taxes.model';
 import { CreditNoteService } from '../credit-note.service';
 
 @Component({
@@ -16,21 +17,22 @@ import { CreditNoteService } from '../credit-note.service';
   styleUrls: ['./form-credit-note.component.scss']
 })
 export class FormCreditNoteComponent implements OnInit {
+  
 
   businessRef = this._cache.getDataKey('eid')
   invoice_Ref: SalesInvoiceModel | null = null
-  conceptNC: number = 1
+  conceptNC: string = ''
   invoiceId: string | null = null
 
   creditNoteForm: FormGroup = new FormGroup({
     date_emition: new FormControl(''),
-    invoiceId: new FormControl(''),
+    noteId: new FormControl(''),
     invoiceIdRef: new FormControl(''),
-    manager: new FormControl(''),
     concept: new FormControl(this.conceptNC),
   })
 
   @Output() submited: EventEmitter<any> = new EventEmitter()
+  taxes: AppliedTaxModel[] = []
 
 
   constructor(
@@ -38,7 +40,8 @@ export class FormCreditNoteComponent implements OnInit {
     public sales: SalesService,
     public credit: CreditNoteService,
     private activatedRoute: ActivatedRoute,
-    private _alert: MxAlert
+    private _alert: MxAlert,
+    private _footer: FooterService
   ) {
     this.activatedRoute.params.subscribe(params => {
       this.conceptNC = params.tipo
@@ -47,47 +50,60 @@ export class FormCreditNoteComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    console.log(this.sales.current$.value)
-    if (this.invoiceId ) {
+    try {
+      if ( !this.invoiceId ) throw { message: 'No existe invoiceId' }
       this.invoice_Ref = await this.credit.getInvoice(this.invoiceId)
       this.credit.nextCurrent(this.invoice_Ref)
       this.creditNoteForm.patchValue({
         concept: this.conceptNC,
         invoiceIdRef: this.invoice_Ref!.invoice_ID
       })
+      if ( this.conceptNC == 'anulacion'){
+        if ( !this.credit.currentSales$.value ) throw { message: 'No existe el currentSales'}
+        this._footer.currentfoot$.next(this.credit.currentSales$.value.footer)
+      }
+
+    } catch (error: any) {
+      if ('message' in error) {
+        this._alert.error(error.message, error)
+      } else {
+        this._alert.error('mensaje de error', error)
+      }
+      return console.error(error)
     }
+
   }
 
 
 
   async save() {
-    if (this.credit.currentNC$.value) {
-      if (this.credit.currentNC$.value.footer.total <= this.invoice_Ref!.footer.total) {
-        //  this.credit.saveCreditNote(this.credit.currentNC$.value.details,
-        //    this.creditNoteForm.value, 
-        //    this.conceptNC,
-        //    this.invoice_Ref!)
-        this.submited.emit()
-      } else {
-        this._alert.notify('El total del Documento no debe ser mayor a la factura referenciada ')
-      }
-    }
 
+    try {
+      if (!this.credit.currentNC$.value) throw { message: 'No existe el current de nota de credito'}
+      let noteCredit = this.credit.currentNC$.value
+      noteCredit.noteId = this.creditNoteForm.controls.noteId.value
+      let taxe: any = []
+      /* destructuracion de taxes para que no se quede el modelo */
+      noteCredit.footer.taxes.forEach(tax => { taxe.push({...tax}) })
+      noteCredit.footer.taxes = taxe
+      
+        await this.credit.saveCreditNote(this.credit.currentNC$.value)
+       console.log(this.credit.currentNC$.value)
+        Swal.fire('Guardado')
+    
+    } catch (error: any) {
+      if ('message' in error) {
+        this._alert.error(error.message, error)
+      } else {
+        this._alert.error('mensaje de error', error)
+      }
+      return console.error(error)
+    }
   }
 
   getChanges(event: iProductInvoice) {
+    this.credit.recalculate(event, this.conceptNC)
     
-    this.credit.recalculate(event)
-    console.log('---getchanges----');
-    console.log(this.invoice_Ref?.footer.subtotal);
-  }
-
-  getFooter(foot: iInvoiceFooter) {
-    if (this.credit.currentNC$.value) {
-      this.credit.getFooter(foot, this.credit.currentNC$.value)
-    }
-    console.log('---footer----');
-    console.log(this.invoice_Ref?.footer.subtotal);
   }
 
 }

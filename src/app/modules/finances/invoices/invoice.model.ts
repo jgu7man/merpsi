@@ -38,7 +38,7 @@ export class InvoiceModel {
   
 }
 /** Modelo de consulta de balances de factura */
-export class invoiceFooter {
+export class InvoiceFooterModel {
   /** Suma de los montos de los productos */
   subtotal: number;
   /** Descuento aplicado a la compra en moneda */
@@ -73,7 +73,7 @@ export class invoiceFooter {
     return {...object}
   }
 }
-export interface iInvoiceFooter extends Omit<invoiceFooter,'data'>{}
+export interface iInvoiceFooter extends Omit<InvoiceFooterModel,'data'>{}
 
 export interface InvoiceStore {
   id: string,

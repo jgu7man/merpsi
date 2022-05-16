@@ -9,7 +9,7 @@ import { SalesInvoiceModel } from '../../sales-invoices/sales-invoice.model';
 import { SalesService } from '../../sales-invoices/sales.service';
 import { AppliedTaxModel } from '../../taxes/taxes.model';
 import { TaxesService } from '../../taxes/taxes.service';
-import { iInvoiceFooter, invoiceFooter } from '../invoice.model';
+import { iInvoiceFooter } from '../invoice.model';
 import { FooterService } from './footer.service';
 
 @Component({
@@ -55,11 +55,11 @@ export class FooterInvoiceComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     if (!this.foot.currentfoot$.value) {
-      if (this.invoice) {
+      if (this.invoice) {        
         this.foot.currentfoot$.next(this.invoice.footer)
         this.formFooter.patchValue({ ...this.invoice.footer })
         this.updateTaxes(this.invoice.footer.taxes)
-      } else {
+      } else {        
         this.foot.currentfoot$.next(this.emptyFoot)
       }
     }

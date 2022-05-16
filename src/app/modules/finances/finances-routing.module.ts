@@ -7,6 +7,7 @@ import { PurchaseInvoicesComponent } from './purchase-invoices/purchase-invoices
 import { SalesInvoicesComponent } from './sales-invoices/sales-invoices.component';
 import { StubsInvoiceComponent } from './stubs-invoice/stubs-invoice.component';
 import { TaxesComponent } from './taxes/taxes.component';
+import { TestFinanceComponent } from './test-finance/test-finance.component';
 
 const routes: Routes = [
   { path: '', component: FinancesComponent },
@@ -16,6 +17,7 @@ const routes: Routes = [
   { path: 'credit-notes', component: CreditNoteComponent },
   { path: 'new-credit-notes/:tipo/:invoiceId', component: FormCreditNoteComponent },
   { path: 'stubs', component: StubsInvoiceComponent },
+  { path: 'test', component: TestFinanceComponent },
 ];
 
 @NgModule({

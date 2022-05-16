@@ -1,0 +1,12 @@
+<div class="row">
+  <h2>Selecciona los conceptos a los cuales se le aplicara la Nota de Credito</h2>
+  <ng-container *ngFor="let det of invoice.details">
+    <div class="col s12">
+      <mat-checkbox
+      (change)="addProduct($event, det)">
+      {{det.UPC}}-{{det.description | uppercase}}
+      </mat-checkbox>
+    </div>
+  </ng-container>
+  <button mat-raised-button color="primary" (click)="goCreditNote()">confirmar</button>
+</div>

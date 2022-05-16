@@ -11,6 +11,8 @@ import { EmailService } from '../../../services/email.service';
 import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import { UsuarioModel } from './personal.model';
+import { AuthService } from 'src/app/services/auth.service';
+import { DashboardService } from 'src/app/dashboard/dashboard.service';
 
 @Injectable({
   providedIn: 'root'
@@ -18,13 +20,16 @@ import { UsuarioModel } from './personal.model';
 export class PersonalService {
 
   businessCRF: string = this._cache.getDataKey('eid')!
+  
   constructor(
     private _afs: AngularFirestore,
     private _afAuth: AngularFireAuth,
     private _alert: MxAlert,
     private _cache: MxCache,
     private _router: Router,
-    private _mails: EmailService
+    private _mails: EmailService,
+    private _auth: AuthService,
+  private _dashboard: DashboardService
   ) { }
 
   getAll(): Observable<ManagerModel[]> {
@@ -170,5 +175,14 @@ async sendInvitationEmail(email: string, CRF: string){
 
   }
 
+    get managerRef() {
+      let user = this._auth.userState$.value
+      if (!user) throw {message: 'No se ha iniciado sesión'}
+      let userRef = this._dashboard.businessRef
+        .collection( 'managers' )
+        .doc<ManagerModel>( user.uid )
+        .ref
+      return userRef.get()
+    }
 
 }

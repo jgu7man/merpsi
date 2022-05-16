@@ -24,6 +24,8 @@ import { StubFormCreateComponent } from './stubs-invoice/stub-form/stub-form-cre
 import { CreditNoteComponent } from './credit-note/credit-note.component';
 import { FormCreditNoteComponent } from './credit-note/form-credit-note/form-credit-note.component';
 import { CreditDebitNoteDialogComponent } from './sales-invoices/create-invoice-sales/credit-debit-note.dialog/credit-debit-note.dialog.component';
+import { TestFinanceComponent } from './test-finance/test-finance.component';
+import { SelectConceptCreditComponent } from './sales-invoices/create-invoice-sales/credit-debit-note.dialog/select-concept-credit/select-concept-credit.component';
 
 
 @NgModule({
@@ -47,7 +49,9 @@ import { CreditDebitNoteDialogComponent } from './sales-invoices/create-invoice-
     StubFormCreateComponent,
     CreditNoteComponent,
     FormCreditNoteComponent,
-    CreditDebitNoteDialogComponent
+    CreditDebitNoteDialogComponent,
+    TestFinanceComponent,
+    SelectConceptCreditComponent
   ],
   imports: [
     CommonModule,

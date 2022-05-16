@@ -9,7 +9,7 @@ import { DashboardService } from 'src/app/dashboard/dashboard.service';
 import { ManagerModel } from 'src/app/modules/admin/managers/manager.model';
 import { ClientModel } from 'src/app/modules/clients/clients.model';
 import { AuthService } from 'src/app/services/auth.service';
-import { iInvoiceFooter, invoiceFooter, ProductInvoiceModel } from '../../invoices/invoice.model';
+import { iInvoiceFooter, InvoiceFooterModel, ProductInvoiceModel } from '../../invoices/invoice.model';
 import { SelectConceptDialogComponent } from '../../invoices/select-concept.dialog/select-concept.dialog.component';
 import { iStub, StubModel } from '../../stubs-invoice/stub.model';
 import { StubService } from '../../stubs-invoice/stub.service';
@@ -152,7 +152,7 @@ export class CreateInvoiceSalesComponent implements OnInit {
   }
 
   /** funcion que se encarga de actualizar el current con los cambios del footer*/
-  getFooter(footer: invoiceFooter) {
+  getFooter(footer: InvoiceFooterModel) {
     this.sales.getFooter(footer)
   }
 

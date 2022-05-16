@@ -197,7 +197,7 @@ export declare namespace Product {
   namespace history {
 
     /** Tipo de evento de un producto */
-    type UpdateType = 'sale' | 'purchase' | 'edit' | 'create' | 'balancing' |'credit-note'
+    type UpdateType = 'sale' | 'purchase' | 'edit' | 'create' | 'balancing' |'return'
     
     
   }

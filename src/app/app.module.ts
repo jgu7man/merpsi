@@ -8,7 +8,6 @@ import { AngularFireModule } from '@angular/fire';
 import { environment } from 'src/environments/environment';
 import { NgxMaskModule, IConfig  } from 'ngx-mask';
 import { SharedModule } from './shared/shared.module';
-import { TestComponent } from './test/test.component';
 
 const maskConfig: Partial<IConfig> = {
   validation: false,
@@ -17,7 +16,6 @@ const maskConfig: Partial<IConfig> = {
 @NgModule({
   declarations: [
     AppComponent,
-    TestComponent,
   ],
   imports: [
     BrowserModule,
