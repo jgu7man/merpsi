@@ -6,14 +6,11 @@ import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import { debounceTime, distinctUntilChanged, skip } from 'rxjs/operators';
 import { DashboardService } from 'src/app/dashboard/dashboard.service';
-import { ManagerModel } from 'src/app/modules/admin/managers/manager.model';
 import { ClientModel } from 'src/app/modules/clients/clients.model';
-import { AuthService } from 'src/app/services/auth.service';
 import { iInvoiceFooter, InvoiceFooterModel, ProductInvoiceModel } from '../../invoices/invoice.model';
-import { SelectConceptDialogComponent } from '../../invoices/select-concept.dialog/select-concept.dialog.component';
-import { iStub, StubModel } from '../../stubs-invoice/stub.model';
+import { iStub } from '../../stubs-invoice/stub.model';
 import { StubService } from '../../stubs-invoice/stub.service';
-import { ClientInvoice, SalesInvoiceModel } from '../sales-invoice.model';
+import { SalesInvoiceModel } from '../sales-invoice.model';
 import { SalesService } from '../sales.service';
 import { SelectConceptSalesDialogComponent } from '../select-concept-sales-dialog/select-concept-sales-dialog.component';
 import { CreditDebitNoteDialogComponent } from './credit-debit-note.dialog/credit-debit-note.dialog.component';
@@ -30,8 +27,8 @@ export class CreateInvoiceSalesComponent implements OnInit {
   concept: ProductInvoiceModel | null = null
   stubList: iStub[] = []
   stubSelect: iStub | null = null
+  
   @Input() invoice: SalesInvoiceModel | null = null
-  // private currentSubscription: Subscription
 
 
   clientform: FormGroup = new FormGroup({
@@ -69,6 +66,16 @@ export class CreateInvoiceSalesComponent implements OnInit {
 
 
   ) {
+   
+    this.stub.list$.pipe(
+      skip( 1 )
+    ).subscribe( list => {
+      list.forEach(d => {
+          if (d.active && d.currentIndex < d.endIndex && d.type === 'venta') {
+            this.stubList.push(d)
+          }
+        })
+    })
   }
 
   ngOnInit() {
@@ -170,12 +177,7 @@ export class CreateInvoiceSalesComponent implements OnInit {
     invoice.footer.taxes = taxs
     await this.sales.saveInvoice(invoice)
     /**Se actualiza el index current en el talonario seleccionado */
-    if (this.stubSelect) {
-      this.stubSelect.currentIndex = this.stubSelect.currentIndex + 1
-      /**Desactivo el Talonario en caso de que la numeracion se termine */
-      if (this.stubSelect.currentIndex >= this.stubSelect.endIndex) {
-        this.stubSelect.active = false
-      }
+    if (this.stubSelect) {  
       this.stub.update(this.stubSelect)
     }
     this._alert.notify('la factura ha sido guardado con exito!')

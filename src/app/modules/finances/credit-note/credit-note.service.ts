@@ -35,12 +35,10 @@ export class CreditNoteService {
     private _afs: AngularFirestore,
     private _cache: MxCache,
     private _dashboard: DashboardService,
-    // private manager: CurrentProductService,
     private _taxes: TaxesService,
     private foot: FooterService,
     private manager: PersonalService
   ) {
-
   }
   async saveCreditNote(creditNote: CreditNoteModel) {
     try {
@@ -198,8 +196,8 @@ export class CreditNoteService {
   }
 
   updateCurrent(
-    param: keyof SalesInvoiceModel,
-    value: SalesInvoiceModel[typeof param]
+    param: keyof CreditNoteModel,
+    value: CreditNoteModel[typeof param]
   ) {
     if (this.currentNC$.value !== null) {
       this.currentNC$.next({

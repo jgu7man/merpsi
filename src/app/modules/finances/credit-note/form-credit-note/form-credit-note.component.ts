@@ -1,13 +1,17 @@
 import { Component, EventEmitter, Inject, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
+import { MatSelectChange } from '@angular/material/select';
 import { ActivatedRoute } from '@angular/router';
 import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
+import { skip } from 'rxjs/operators';
 import Swal from 'sweetalert2';
 import { FooterService } from '../../invoices/footer-invoice/footer.service';
 import { iProductInvoice } from '../../invoices/invoice.model';
 import { SalesInvoiceModel } from '../../sales-invoices/sales-invoice.model';
 import { SalesService } from '../../sales-invoices/sales.service';
+import { iStub } from '../../stubs-invoice/stub.model';
+import { StubService } from '../../stubs-invoice/stub.service';
 import { AppliedTaxModel } from '../../taxes/taxes.model';
 import { CreditNoteService } from '../credit-note.service';
 
@@ -33,6 +37,9 @@ export class FormCreditNoteComponent implements OnInit {
 
   @Output() submited: EventEmitter<any> = new EventEmitter()
   taxes: AppliedTaxModel[] = []
+  stubList: iStub[] = []
+  stubSelect: iStub | null = null
+  prefix: string = ''
 
 
   constructor(
@@ -41,11 +48,19 @@ export class FormCreditNoteComponent implements OnInit {
     public credit: CreditNoteService,
     private activatedRoute: ActivatedRoute,
     private _alert: MxAlert,
-    private _footer: FooterService
+    private _footer: FooterService,
+    public stub: StubService
   ) {
     this.activatedRoute.params.subscribe(params => {
       this.conceptNC = params.tipo
       this.invoiceId = params.invoiceId
+    })
+    this.stub.list$.pipe().subscribe( list => {
+      list.forEach(d => {
+          if (d.active && d.currentIndex < d.endIndex && d.type === 'credito') {
+            this.stubList.push(d)
+          }
+        })
     })
   }
 
@@ -62,7 +77,7 @@ export class FormCreditNoteComponent implements OnInit {
         if ( !this.credit.currentSales$.value ) throw { message: 'No existe el currentSales'}
         this._footer.currentfoot$.next(this.credit.currentSales$.value.footer)
       }
-
+ 
     } catch (error: any) {
       if ('message' in error) {
         this._alert.error(error.message, error)
@@ -81,13 +96,17 @@ export class FormCreditNoteComponent implements OnInit {
     try {
       if (!this.credit.currentNC$.value) throw { message: 'No existe el current de nota de credito'}
       let noteCredit = this.credit.currentNC$.value
-      noteCredit.noteId = this.creditNoteForm.controls.noteId.value
       let taxe: any = []
       /* destructuracion de taxes para que no se quede el modelo */
       noteCredit.footer.taxes.forEach(tax => { taxe.push({...tax}) })
       noteCredit.footer.taxes = taxe
       
         await this.credit.saveCreditNote(this.credit.currentNC$.value)
+        /**Se actualiza el index current en el talonario seleccionado */
+    if (this.stubSelect) {
+      
+      this.stub.update(this.stubSelect)
+    }
        console.log(this.credit.currentNC$.value)
         Swal.fire('Guardado')
     
@@ -104,6 +123,19 @@ export class FormCreditNoteComponent implements OnInit {
   getChanges(event: iProductInvoice) {
     this.credit.recalculate(event, this.conceptNC)
     
+  }
+
+  selectStub(stub: MatSelectChange) {
+    this.stubSelect = stub.value
+    if ( this.credit.currentNC$.value){
+      if (this.stubSelect){
+      let nro = this.stubSelect.prefix + '-' + ((this.stubSelect.currentIndex || 0) + 1)
+      this.prefix = nro
+      this.credit.updateCurrent('noteId',nro)
+      }
+
+    }
+
   }
 
 }

@@ -13,6 +13,7 @@ import { ProductEventModel, ProductModel, StoreReferenceModel } from '../../inve
 import { FooterService } from '../invoices/footer-invoice/footer.service';
 import { iInvoiceFooter, iProductInvoice, ProductInvoiceModel } from '../invoices/invoice.model';
 import { PurchaseInvoiceModel } from '../purchase-invoices/pucharce-invoice.model';
+import { iStub } from '../stubs-invoice/stub.model';
 import { TaxesService } from '../taxes/taxes.service';
 
 @Injectable({
@@ -22,7 +23,7 @@ export class SalesService {
 
   businessRef = this._dashboard.businessRef
   current$ = new BehaviorSubject<SalesInvoiceModel | null>(null)
-
+  stubsList$ = new BehaviorSubject<iStub [] | null>(null)
   businessCRF: string = this._cache.getDataKey('eid')!
   public totales: EventEmitter<iInvoiceFooter> = new EventEmitter();
   

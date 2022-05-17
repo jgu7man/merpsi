@@ -2,40 +2,29 @@
   <div class="row">
     <div class="col s12 m8">
       <form class="row" [formGroup]="creditNoteForm">
-        <!-- NRO FACTURA -->
-        <mat-form-field appearance="outline" class="col s3 l3">
-          <mat-label>Nro de factura</mat-label>
-          <input matInput type="text" name="noteId" formControlName="noteId">
+        <mat-form-field class="col s4" appearance="outline">
+          <mat-label>Talonario</mat-label>
+          <mat-select placeholder="Placeholder"
+          (selectionChange)="selectStub($event)"
+          name="name">
+            <mat-option *ngFor="let stub of stubList" [value]="stub">
+              <h1>{{stub.name}}</h1>
+            </mat-option>
+          </mat-select>
         </mat-form-field>
+        <!-- NRO FACTURA -->
+        <ng-container *ngIf="stubSelect" class="col s4">
+          {{prefix}}
+        </ng-container>
         <!-- fecha -->
-        <mat-form-field appearance="outline" class="col s3 l3">
+        <mat-form-field appearance="outline" class="col s4 l3">
           <mat-label>Fecha de Emision</mat-label>
           <input matInput formControlName="date_emition" [matDatepicker]="emition">
           <mat-datepicker-toggle matSuffix [for]="emition"></mat-datepicker-toggle>
           <mat-datepicker #emition startView="year"></mat-datepicker>
         </mat-form-field>
-        <!-- <mat-form-field appearance="outline" class="col s4 l4">
-          <mat-label>Concepto</mat-label> -->
-        <!-- <input
-          matInput
-          type="text"
-          name="concept"
-          formControlName="concept"
-          [disabled]="true"
-          > -->
-        <!-- Concepto -->
-        <mat-form-field class="col s6">
-          <mat-label>Concepto</mat-label>
-          <mat-select formControlName="concept" name="concept">
-            <mat-option [value]="1">
-              Anulacion de Factura
-            </mat-option>
-            <mat-option [value]="2">
-              Devolucion de parte de los Bienes
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-        <!-- </mat-form-field> -->
+
+        
       </form>
     </div>
   </div>

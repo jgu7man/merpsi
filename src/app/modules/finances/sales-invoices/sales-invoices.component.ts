@@ -1,8 +1,11 @@
 import { Component, OnInit } from '@angular/core';
+import { skip } from 'rxjs/operators';
 import { DashboardService } from 'src/app/dashboard/dashboard.service';
 import { SalesInvoiceModel } from 'src/app/modules/finances/sales-invoices/sales-invoice.model';
 import { AuthService } from 'src/app/services/auth.service';
 import { ManagerModel } from '../../admin/managers/manager.model';
+import { iStub } from '../stubs-invoice/stub.model';
+import { StubService } from '../stubs-invoice/stub.service';
 import { SalesService } from './sales.service';
 
 @Component({
@@ -18,7 +21,8 @@ export class SalesInvoicesComponent implements OnInit {
   constructor(
     public sales: SalesService,
     private _auth: AuthService,
-    private _dashboard: DashboardService
+    private _dashboard: DashboardService,
+    private _stub: StubService
   ) {
     this.sales.listInvoice().subscribe(invoice => this.listInvoice = invoice);
     console.log(this.listInvoice);

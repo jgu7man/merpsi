@@ -17,6 +17,8 @@ export class FooterService {
     
     updateFooter(changes: any) {
       try {
+        console.log('cambie');
+        
         if ( !this.currentfoot$.value ) throw {message: "no existe el footer"}
         const discount = changes.discount
         const shipping =  changes.shipping
