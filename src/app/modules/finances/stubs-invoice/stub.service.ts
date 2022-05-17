@@ -61,7 +61,6 @@ export class StubService {
   
   async update(stub: StubModel) {
     try {
-      stub.currentIndex = stub.currentIndex + 1
       /**Desactivo el Talonario en caso de que la numeracion se termine */
       if (stub.currentIndex >= stub.endIndex) {
         stub.active = false

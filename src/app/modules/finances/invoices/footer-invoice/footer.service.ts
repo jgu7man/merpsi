@@ -20,11 +20,12 @@ export class FooterService {
         console.log('cambie');
         
         if ( !this.currentfoot$.value ) throw {message: "no existe el footer"}
-        const discount = changes.discount
-        const shipping =  changes.shipping
-        const subtotal = this.currentfoot$.value.subtotal
-    const taxes = this.currentfoot$.value.totalTaxes
-    this.currentfoot$.value.total = ( shipping + subtotal + taxes) - discount
+        let footer = this.currentfoot$.value
+        footer.discount = changes.discount
+        footer.shipping =  changes.shipping
+        footer.subtotal = this.currentfoot$.value.subtotal
+        footer.totalTaxes = this._taxes.appliedTaxesTotal
+        this.currentfoot$.value.total = ( footer.shipping + footer.subtotal + footer.totalTaxes) - footer.discount
     
   } catch (error: any) {
     if ('message' in error) {
@@ -40,7 +41,8 @@ export class FooterService {
     try {
       if (!this.currentfoot$.value) throw { message: "no existe el footer" }
       let footer = this.currentfoot$.value
-      footer.total = (footer.subtotal + this._taxes.appliedTaxesTotal + footer.shipping) - footer.discount
+      footer.totalTaxes = this._taxes.appliedTaxesTotal
+      footer.total = (footer.subtotal + footer.totalTaxes + footer.shipping) - footer.discount
       footer.taxes = this._taxes.applidedTaxes
     } catch (error: any) {
       if ('message' in error) {

@@ -73,6 +73,8 @@ export class CreateInvoiceSalesComponent implements OnInit {
       list.forEach(d => {
           if (d.active && d.currentIndex < d.endIndex && d.type === 'venta') {
             this.stubList.push(d)
+            console.log(this.stubList);
+            
           }
         })
     })
@@ -178,6 +180,7 @@ export class CreateInvoiceSalesComponent implements OnInit {
     await this.sales.saveInvoice(invoice)
     /**Se actualiza el index current en el talonario seleccionado */
     if (this.stubSelect) {  
+      this.stubSelect.currentIndex = this.stubSelect.currentIndex + 1
       this.stub.update(this.stubSelect)
     }
     this._alert.notify('la factura ha sido guardado con exito!')

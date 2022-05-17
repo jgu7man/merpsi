@@ -104,7 +104,7 @@ export class FormCreditNoteComponent implements OnInit {
         await this.credit.saveCreditNote(this.credit.currentNC$.value)
         /**Se actualiza el index current en el talonario seleccionado */
     if (this.stubSelect) {
-      
+      this.stubSelect.currentIndex = this.stubSelect.currentIndex + 1
       this.stub.update(this.stubSelect)
     }
        console.log(this.credit.currentNC$.value)

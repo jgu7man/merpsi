@@ -30,15 +30,20 @@ export class StubFormCreateComponent implements OnInit {
 
   ngOnInit(): void {
     if ( this.value ) {
+
       let {index, ...value} = this.value
       this.stubForm.patchValue( { ...value })
+      console.log(this.stubForm);
+      console.log(value);
+      console.log(this.value);
+      
       this.stubForm.controls.currentIndex.disable()
     }
   }
 
   onSubmit(){
     if ( this.value){
-      this._stub.update({...this.stubForm.value,
+      this._stub.update({...this.stubForm.getRawValue(),
                             index: this.value.index})
     }else {
     this._stub.add(this.stubForm.value)
