@@ -1,0 +1,71 @@
+<div class="container">
+  <div class="row">
+    <div class="col s12 m8">
+      <form class="row" [formGroup]="creditNoteForm">
+        <mat-form-field class="col s4" appearance="outline">
+          <mat-label>Talonario</mat-label>
+          <mat-select placeholder="Placeholder"
+          (selectionChange)="selectStub($event)"
+          name="name">
+            <mat-option *ngFor="let stub of stubList" [value]="stub">
+              <h1>{{stub.name}}</h1>
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <!-- NRO FACTURA -->
+        <ng-container *ngIf="stubSelect" class="col s4">
+          {{prefix}}
+        </ng-container>
+        <!-- fecha -->
+        <mat-form-field appearance="outline" class="col s4 l3">
+          <mat-label>Fecha de Emision</mat-label>
+          <input matInput formControlName="date_emition" [matDatepicker]="emition">
+          <mat-datepicker-toggle matSuffix [for]="emition"></mat-datepicker-toggle>
+          <mat-datepicker #emition startView="year"></mat-datepicker>
+        </mat-form-field>
+
+        
+      </form>
+    </div>
+  </div>
+  <ng-container *ngIf="credit.currentSales$.value as invoice_current">
+    <div class="col s3">
+      nro de Factura: {{invoice_current.invoice_ID}}
+    </div>
+    <div class="row">
+      <div class="col s4">
+        Nombre Cliente: {{invoice_current.client.name}}
+      </div>
+      <div class="col s4">
+        correo :{{invoice_current.client.email}}
+      </div>
+      <div class="col s4">
+        identificacion: {{invoice_current.client.cip}}
+      </div>
+    </div>
+    <div class="row">
+      <div class="col s4">
+        Metodo de Pago: {{invoice_current.payment_method}}
+      </div>
+      <div class="col s4">
+        Vendedor: {{invoice_current.seller}}
+      </div>
+      <div class="col s4">
+        Moneda :{{invoice_current.currency}}
+      </div>
+    </div>
+    <ng-container *ngIf="credit.currentNC$.value as det">
+      <ng-container *ngFor="let concept of det.details ">
+        <app-invoice-concept-sales 
+        [document]="'credit-note'" 
+        [concept]="concept" 
+        [invoice]="invoice_current"
+        (changes)="getChanges($event)">
+        </app-invoice-concept-sales>
+      </ng-container>
+      <app-footer-invoice   [footerCalc]="det.footer">
+      </app-footer-invoice>
+    </ng-container>
+  </ng-container>
+  <button mat-raised-button color="primary" (click)="save()">Guardar</button>
+</div>

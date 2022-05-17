@@ -6,7 +6,7 @@ import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import Swal from 'sweetalert2';
 import { DashboardService } from 'src/app/dashboard/dashboard.service';
 import { ProductEventModel, ProductModel, StoreReferenceModel } from '../../inventory/products/products.model';
-import { iInvoiceFooter, invoiceFooter, iProductInvoice, ProductInvoiceModel } from '../invoices/invoice.model';
+import { iInvoiceFooter, InvoiceFooterModel, iProductInvoice, ProductInvoiceModel } from '../invoices/invoice.model';
 import { TaxesService } from '../taxes/taxes.service';
 import { txn } from 'src/app/models/firestore.model';
 import { StoreReference } from 'src/app/modules/inventory/products/products.model';
@@ -164,7 +164,7 @@ export class PurchaseInvoiceService {
     this.totales.emit(foot)
   }
 
-  getFooter(changes: invoiceFooter) {
+  getFooter(changes: InvoiceFooterModel) {
     if (this.current$.value != null) {
       let footer = this.current$.value.footer
       let discount = changes.discount

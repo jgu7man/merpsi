@@ -8,7 +8,7 @@ import firebase from "firebase/app";
 import { FireDoc } from 'src/app/models/firestore.model';
 import { AuthService } from 'src/app/services/auth.service';
 import { MatSelectChange } from '@angular/material/select';
-import { invoiceFooter, InvoiceStore, ProductInvoiceModel } from 'src/app/modules/finances/invoices/invoice.model';
+import { InvoiceFooterModel, InvoiceStore, ProductInvoiceModel } from 'src/app/modules/finances/invoices/invoice.model';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import { debounceTime, distinctUntilChanged, first, skip } from 'rxjs/operators';
 import { SelectConceptDialogComponent } from '../../invoices/select-concept.dialog/select-concept.dialog.component';
@@ -48,7 +48,7 @@ export class CreateInvoiceComponent implements OnInit {
     provider: this.providerForm,
     document_date: new FormControl('', [Validators.required]),
     invoice_ID : new FormControl('', [Validators.required]),
-    payment_method: new FormControl('', [Validators.required]),
+   // payment_method: new FormControl('', [Validators.required]),
   })
 
   productList: ProductInvoiceModel[] = []
@@ -56,7 +56,7 @@ export class CreateInvoiceComponent implements OnInit {
   providerRef: firebase.firestore.DocumentReference | null = null
   productSelect : FireDoc<Product.DataReference> | null = null
   concept: ProductInvoiceModel | null = null 
-  footerCalc: invoiceFooter | null = null
+  footerCalc: InvoiceFooterModel | null = null
 
   @Output() submited: EventEmitter<any> = new EventEmitter()
 
@@ -178,7 +178,7 @@ export class CreateInvoiceComponent implements OnInit {
   }
 
   async saveInvoice(){
-    if (this.invoiceForm.valid && this.invoiceForm.pristine){
+    if (this.invoiceForm.valid ){
       let invoice = this.purchase.current$.value!
       let taxs: any = []
       invoice.footer.taxes.map(tax => {
@@ -191,7 +191,9 @@ export class CreateInvoiceComponent implements OnInit {
       this.cleanForm()
       this.submited.emit()
     }else{
-      this._alert.message('Debe llenar todos los campos requeridos')
+      this._alert.message('Debe llenar todos los campos requeridos','text')
+      console.log(this.invoiceForm.controls);
+      
     }
     
   }

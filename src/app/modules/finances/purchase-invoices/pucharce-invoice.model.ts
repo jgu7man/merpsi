@@ -26,6 +26,7 @@ export class PurchaseInvoiceModel extends InvoiceModel{
       subtotal: 0,
       discount: 0,
       taxes: [],
+      totalTaxes: 0,
       shipping: 0,
       total: 0,
     }

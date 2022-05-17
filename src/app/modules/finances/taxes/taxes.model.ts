@@ -54,20 +54,35 @@ export namespace Tax {
 export class AppliedTaxModel extends TaxModel {
   /** Resultado de multiplicar el monto aplicado por la tasa del impuesto */
   
+  amount: number
   constructor (
     /** Impuesto seleccionado */
     tax: TaxModel,
     /** Monto al cuál se le aplicará el impuesto */
-    public amount_base: number = 0
+    public amount_base: number = 0,
     ) {
       super(tax.index, tax.name, tax.rate)
+      this.amount = this.amount_calc
     }
-    get data(){
-      let { data, ...object} = this
-      return {...object}
-    }
-    get amount() { return ((this.rate / 100) * this.amount_base) || 0}
+    
+    get amount_calc() { return ((this.rate / 100) * this.amount_base) || 0}
 }
+
+// export class AppliedTaxReverseModel extends TaxModel {
+//   /** Resultado de multiplicar el monto aplicado por la tasa del impuesto */
+  
+//   amount: number
+//   constructor (
+//     /** Impuesto seleccionado */
+//     tax: TaxModel,
+//     /** Monto al cuál se le aplicará el impuesto */
+//     public total: number
+//     ) {
+//       super(tax.index, tax.name, tax.rate)
+//       this.amount = this.amount_base
+//     }
+    
+//     get amount_base():number { return (this.total / (1 + (this.rate / 100))) || 0}}
 
 export interface iAppliedTax extends Omit<AppliedTaxModel,'data'>{}
 

@@ -9,6 +9,7 @@ import { SedesService } from 'src/app/modules/admin/stores/sedes.service';
 import { iProductInvoice } from 'src/app/modules/finances/invoices/invoice.model';
 import { ProductModel } from 'src/app/modules/inventory/products/products.model';
 import { PurchaseInvoiceService } from '../../purchase-invoices/puchase-invoice.service';
+import { SalesInvoiceModel } from '../sales-invoice.model';
 import { SalesService } from '../sales.service';
 
 @Component({
@@ -18,8 +19,12 @@ import { SalesService } from '../sales.service';
 })
 export class InvoiceConceptSalesComponent implements OnInit {
 
-  @Input() concept: iProductInvoice | null = null
+  @Input() public concept: iProductInvoice | null = null
+  /* indica el tipo de documento */
+  @Input() document: string = '' 
   @Input() stock: number = 0
+  @Input() invoice: SalesInvoiceModel | null= null
+
   businessRef = this._cache.getDataKey('eid')
   productSelect: ProductModel | null  = null
   productListEmpty = false
@@ -58,32 +63,44 @@ export class InvoiceConceptSalesComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
-    if (this.concept) {
-      this.formAddProduct.controls.cant.setValidators(Validators.max(this.concept!.stock))
-      this.disableForm()
-      this.formAddProduct.valueChanges.pipe(
-        distinctUntilChanged((x, y) =>
-          typeof x != 'object' ? x === y : JSON.stringify(x) === JSON.stringify(y)
-        ),
-        skip( 1),
-        debounceTime(1000),
-      ).subscribe(changes => {
-     /* if (this.sales.current$.value){
-        this.sales.current$.value.details.forEach(concept =>{
-          if (this.concept?.UPC === concept.UPC){
-            if (changes.cant> concept.stock){
-              this._alert.message('ingresa una cantidad menor, el stok es:' + concept.stock,'text')
-            }
-          }
+    try {
+      if (!this.concept) throw { message: 'No existe el concepto'}
+        if ( this.document == 'credit-note' ) { 
+          if ( !this.invoice ) throw { message: 'No existe invoice'}
+            let d = this.invoice.details       
+            d.forEach( det => {
+              if ( det.UPC == this.concept!.UPC){
+                this.formAddProduct.controls.cant.setValidators(Validators.max(det.cant))
+                this.formAddProduct.controls.unit_cost.setValidators(Validators.max(det.unit_cost)) 
+              }
+            })
+              
+        } else {
+          this.formAddProduct.controls.cant.setValidators(Validators.max(this.concept.stock))
+  
+        }
+        this.formAddProduct.valueChanges.pipe(
+          distinctUntilChanged((x, y) =>
+            typeof x != 'object' ? x === y : JSON.stringify(x) === JSON.stringify(y)
+          ),
+          skip( 1),
+          debounceTime(1000),
+        ).subscribe(changes => {
+        changes.UPC = this.formAddProduct.getRawValue().UPC
+          this.changes.emit( changes )
         })
-      }*/
-        this.changes.emit( changes )
-      })
-
-      this.formAddProduct.patchValue(this.concept)
-      this.formAddProduct.markAsPristine()
+        this.formAddProduct.patchValue(this.concept)
+        this.formAddProduct.markAsPristine()
+      
+    } catch (error: any) {
+      if ('message' in error) {
+        this._alert.error(error.message, error)
+      } else {
+        this._alert.error('mensaje de error', error)
+      }
+      return console.error(error)
     }
+    
     //console.log(this.purchase.current$.value)
 
   }
@@ -105,12 +122,7 @@ export class InvoiceConceptSalesComponent implements OnInit {
     alert("abrir form de crear producto")
   }
 
-  disableForm() {
-    this.formAddProduct.controls.UPC.disable()
-    this.formAddProduct.controls.description.disable()
-    this.formAddProduct.controls.amount.disable()
-    
-  }
+  
 
   deleteConcept(concept: iProductInvoice | null ){
     if (concept){

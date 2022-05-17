@@ -5,7 +5,7 @@
       {{appliedTax.name}} ({{appliedTax.rate}}%)
     </div>
     <div class="tax-amount-result">
-      ${{appliedTax.amount}}
+      ${{appliedTax.amount | number}}
     </div>
     <div class="tax-amount-deleter">
       <button mat-icon-button (click)="remove(i)" >

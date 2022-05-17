@@ -1,15 +1,18 @@
+
 <form class="row" [formGroup]="salesForm">
   <!-- Nro de Factura -->
-  <mat-form-field appearance="outline" class="col s12 l4">
-    <mat-label>Talonario</mat-label>
-    <mat-select placeholder="Placeholder" name="stub" (selectionChange)="selectStubInvoice($event)">
-      <mat-option *ngFor="let item of stubList" [value]="item">
-        {{item.name}}
-      </mat-option>
-    </mat-select>
-  </mat-form-field>
-  <ng-container *ngIf="stubSelect && sales.current$.value">
-    <div appearance="outline" class="col s12 l4">
+  <ng-container *ngIf="!invoice">
+    <mat-form-field appearance="outline" class="col s12 l4">
+      <mat-label>Talonario</mat-label>
+      <mat-select placeholder="Placeholder" name="stub" (selectionChange)="selectStubInvoice($event)">
+        <mat-option *ngFor="let item of stubList" [value]="item">
+          {{item.name}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </ng-container>
+  <ng-container *ngIf="(stubSelect || invoice) && sales.current$.value">
+    <div appearance="outline" class="col s12 offset-l4">
       <mat-label>Factura Nro: </mat-label>
       <h1>{{sales.current$.value.invoice_ID}}</h1>
     </div>
@@ -29,15 +32,24 @@
     </mat-form-field>
 
     <!-- clientes -->
-    <mx-searcher-list [collection]="'businesses/' + businessRef + '/clients'" [param]="'name'" [label]="'clientes'"
-      (results)="getValue($event)"></mx-searcher-list>
-    <ng-container *ngIf="client!= null">
+    <ng-container *ngIf="invoice else autoComplete">
+      <div appearance="outline" class="col s12 l4">
+        <mat-label>Cliente </mat-label>
+        <h3>{{invoice.client.name}}</h3>
+      </div>
+    </ng-container>
+    <ng-template #autoComplete>
+      <mx-searcher-list [collection]="'businesses/' + businessRef + '/clients'" [param]="'name'" [label]="'clientes'"
+        (results)="getValue($event)">
+      </mx-searcher-list>
+    </ng-template>
+    <ng-container *ngIf="clientform.value">
       <form class="row" [formGroup]="clientform">
         <mat-form-field appearance="outline" class="col s12 l4">
           <mat-label>Clave de Identificacion Personal</mat-label>
           <input matInput type="text" name="cip" formControlName="cip">
         </mat-form-field>
-        <mat-form-field appearance="outline" class="col s12 l4 offset-l4">
+        <mat-form-field appearance="outline" class="col s12 l4">
           <mat-label>email</mat-label>
           <input matInput type="text" name="email" formControlName="email">
         </mat-form-field>
@@ -55,7 +67,7 @@
         <!-- Moneda -->
         <mat-form-field appearance="outline" class="col s12 l4 offset-l4">
           <mat-label>Moneda</mat-label>
-          <mat-select formControlName="currency">
+          <mat-select formControlName="currency" [FormControl]="">
             <mat-option value="USD">USD</mat-option>
             <mat-option value="COP">COP</mat-option>
           </mat-select>
@@ -78,22 +90,27 @@
         </mat-form-field>
         <div class="row">
           <ng-container>
-            <button mat-raised-button color="accent" (click)="addConcept()">
+            <button mat-raised-button color="accent" [disabled]="invoice!=null" (click)="addConcept()">
               Agregar Concepto
             </button>
             <ng-container *ngFor="let concept of sales.details ">
-              <app-invoice-concept-sales [concept]="concept" (changes)="getChanges($event)"
+              <app-invoice-concept-sales [concept]="concept" (changes)="getChanges($event)" [invoice]="invoice"
                 (delete)="deleteConcept($event)">
               </app-invoice-concept-sales>
             </ng-container>
             <!-- <ng-container *ngIf="sales.details.length > 0"> -->
-            <app-footer-invoice (getFooter)="getFooter($event)" [footerCalc]="footerCalc"></app-footer-invoice>
+            <app-footer-invoice (getFooter)="getFooter($event)" [footerCalc]="footerCalc" [invoice]="invoice">
+            </app-footer-invoice>
             <!-- </ng-container> -->
           </ng-container>
         </div>
         <button mat-raised-button color="primary"
-          [disabled]="(salesForm.invalid || clientform.invalid) && sales.details.length <= 0"
+          [disabled]="((salesForm.invalid || clientform.invalid) && sales.details.length <= 0) || invoice != null"
           (click)="saveInvoice()">Guardar</button>
+          <ng-container *ngIf="invoice">
+            <button mat-raised-button color="accent"
+                    (click)="createNoteCD()">Crear Nota Credito/Debito</button>
+          </ng-container>
       </ng-container>
     </ng-container>
   </ng-container>

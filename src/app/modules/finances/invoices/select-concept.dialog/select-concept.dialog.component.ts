@@ -34,11 +34,11 @@ export class SelectConceptDialogComponent implements OnInit {
   }
 
   
-  getValue(product: ProductModel){
-    this.productSelect = product  
-    //this.invoice.addConcept(product)
-    this._dialog.close(product)
-  }
+    getValue(product: ProductModel){
+      this.productSelect = product    
+      //this.invoice.addConcept(product)
+      this._dialog.close(product)
+    }
 
   getList(product: ProductModel[]){
     this.productListEmpty = product.length ==0 ? true : false
