@@ -46,21 +46,12 @@ export class CreateInvoiceSalesComponent implements OnInit {
     payment_method: new FormControl(''),
 
   })
-  footerCalc: iInvoiceFooter = {
-    shipping: 0,
-    subtotal: 0,
-    discount: 0,
-    total: 0,
-    taxes: [],
-    totalTaxes: 0,
-  }
   @Output() submited: EventEmitter<any> = new EventEmitter()
 
   constructor(
     private _cache: MxCache,
     private _dialog: MatDialog,
     public sales: SalesService,
-    private _dashboard: DashboardService,
     private _alert: MxAlert,
     public stub: StubService
 
@@ -93,16 +84,10 @@ export class CreateInvoiceSalesComponent implements OnInit {
         date_emition: this.invoice.document_date,
         payment_method: this.invoice.payment_method,
       })
-      console.log(this.sales.current$.value);
 
       this.sales.current$.next(this.invoice)
     }
-    this.stub.list$.value.forEach(d => {
-      if (d.active && d.currentIndex < d.endIndex) {
-        this.stubList.push(d)
-      }
-    });
-
+    
     this.salesForm.valueChanges.pipe(
       distinctUntilChanged((x, y) => JSON.stringify(x) == JSON.stringify(y)),
       debounceTime(500),
@@ -112,7 +97,6 @@ export class CreateInvoiceSalesComponent implements OnInit {
         ...this.sales.current$.value,
         ...changes
       })
-      console.log(this.sales.current$.value)
     })
 
   }
@@ -149,7 +133,6 @@ export class CreateInvoiceSalesComponent implements OnInit {
       width: '600px ',
     }).afterClosed().subscribe(concept => {
       this.concept = concept
-      // this.sales.addConcept(concept)
     })
   }
 

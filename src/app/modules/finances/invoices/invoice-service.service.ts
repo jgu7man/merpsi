@@ -1,6 +1,4 @@
 import { Injectable } from '@angular/core';
-import { ProductInvoiceModel } from 'src/app/modules/finances/invoices/invoice.model';
-import { ProductModel } from '../../inventory/products/products.model';
 import { PurchaseInvoiceService } from '../purchase-invoices/puchase-invoice.service';
 import { SalesService } from '../sales-invoices/sales.service';
 

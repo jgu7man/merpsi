@@ -1,14 +1,13 @@
 import { EventEmitter, Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
-import firebase from 'firebase';
+import firebase from 'firebase/app';
 import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import { BehaviorSubject } from 'rxjs';
 import { DashboardService } from 'src/app/dashboard/dashboard.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { PersonalService } from '../../admin/managers/personal.service';
-import { CurrentProductService } from '../../inventory/product-single/current-product.service';
-import { ProductEventModel, StoreReferenceModel } from '../../inventory/products/products.model';
+import { ProductEventModel } from '../../inventory/products/products.model';
 import { FooterService } from '../invoices/footer-invoice/footer.service';
 import { iInvoiceFooter, iProductInvoice } from '../invoices/invoice.model';
 import { SalesInvoiceModel } from '../sales-invoices/sales-invoice.model';
@@ -209,6 +208,9 @@ export class CreditNoteService {
 
   async getInvoice(invoice_ID: string) {
     let invoiceRef = this._afs.doc<SalesInvoiceModel>(`${this.businessRef}/sale/${invoice_ID}`).ref
+   if (this.currentNC$.value){
+     this.currentNC$.value.invoiceRef = invoiceRef
+   }
     let invoice = (await (invoiceRef.get())).data()
     return invoice || null
   }

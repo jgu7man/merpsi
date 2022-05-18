@@ -8,18 +8,16 @@ import firebase from "firebase/app";
 import { FireDoc } from 'src/app/models/firestore.model';
 import { AuthService } from 'src/app/services/auth.service';
 import { MatSelectChange } from '@angular/material/select';
-import { InvoiceFooterModel, InvoiceStore, ProductInvoiceModel } from 'src/app/modules/finances/invoices/invoice.model';
+import { InvoiceFooterModel, ProductInvoiceModel } from 'src/app/modules/finances/invoices/invoice.model';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
-import { debounceTime, distinctUntilChanged, first, skip } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, skip } from 'rxjs/operators';
 import { SelectConceptDialogComponent } from '../../invoices/select-concept.dialog/select-concept.dialog.component';
 import { iManager } from 'src/app/modules/admin/managers/manager.model';
 import { InventoryProductsService } from 'src/app/modules/inventory/products/products.service';
 import { iSede } from '../../../admin/stores/sede.model';
 import { SedesService } from '../../../admin/stores/sedes.service';
 import { PurchaseInvoiceService } from '../puchase-invoice.service';
-import { iProvider } from '../../../inventory/providers/provider.model';
 import { ProviderService } from '../../../inventory/providers/provider.service';
-import { PurchaseInvoiceModel } from '../pucharce-invoice.model';
 
 
 @Component({

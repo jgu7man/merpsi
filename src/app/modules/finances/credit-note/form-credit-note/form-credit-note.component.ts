@@ -1,10 +1,9 @@
-import { Component, EventEmitter, Inject, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatSelectChange } from '@angular/material/select';
 import { ActivatedRoute } from '@angular/router';
 import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
-import { skip } from 'rxjs/operators';
 import Swal from 'sweetalert2';
 import { FooterService } from '../../invoices/footer-invoice/footer.service';
 import { iProductInvoice } from '../../invoices/invoice.model';

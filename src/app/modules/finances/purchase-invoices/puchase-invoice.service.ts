@@ -8,12 +8,7 @@ import { DashboardService } from 'src/app/dashboard/dashboard.service';
 import { ProductEventModel, ProductModel, StoreReferenceModel } from '../../inventory/products/products.model';
 import { iInvoiceFooter, InvoiceFooterModel, iProductInvoice, ProductInvoiceModel } from '../invoices/invoice.model';
 import { TaxesService } from '../taxes/taxes.service';
-import { txn } from 'src/app/models/firestore.model';
-import { StoreReference } from 'src/app/modules/inventory/products/products.model';
-import { AuthService } from 'src/app/services/auth.service';
-import { CurrentProductService } from '../../inventory/product-single/current-product.service';
 import firebase from 'firebase/app'
-import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
 
 
 

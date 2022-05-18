@@ -13,7 +13,6 @@ import { iStub, Stub, StubModel } from './stub.model';
 export class StubService {
   
   businessCRF: string = this._cache.getDataKey( 'eid' )!
-  private _listSubscription: Subscription
   list$:BehaviorSubject<iStub[]> = new BehaviorSubject<iStub[]>( [] )
 
   constructor(
@@ -23,7 +22,6 @@ export class StubService {
     private _alert: MxAlert
 
   ) {
-    this._listSubscription = this.listenList().subscribe()
 
    }
 

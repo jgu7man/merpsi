@@ -1,7 +1,6 @@
-import { FireTime, createDate, FireRef } from "../../../models/firestore.model"
+import { FireTime, createDate } from "../../../models/firestore.model"
 import { Product, ProductModel } from "../../inventory/products/products.model"
-import { iSede } from "../../admin/stores/sede.model"
-import { AppliedTaxModel, iAppliedTax } from "../taxes/taxes.model"
+import { AppliedTaxModel } from "../taxes/taxes.model"
 
 export class InvoiceModel {
   /**folio de la factura */

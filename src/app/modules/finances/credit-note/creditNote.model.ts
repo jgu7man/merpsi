@@ -1,10 +1,11 @@
-import { createDate, FireDoc, FireTime } from "src/app/models/firestore.model";
+import { createDate, FireDoc, FireRef, FireTime } from "src/app/models/firestore.model";
 import { iInvoiceFooter, InvoiceFooterModel, iProductInvoice } from "../invoices/invoice.model";
 import { SalesInvoiceModel } from "../sales-invoices/sales-invoice.model";
 
 export class CreditNoteModel {
   date_emition: FireTime = createDate(new Date())
   invoiceId: string
+  invoiceRef: FireRef<SalesInvoiceModel> | null = null
   // invoiceRef: FireDoc<SalesInvoiceModel>
   noteId: string
   manager: string

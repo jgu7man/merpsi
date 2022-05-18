@@ -4,9 +4,7 @@
       <form class="row" [formGroup]="creditNoteForm">
         <mat-form-field class="col s4" appearance="outline">
           <mat-label>Talonario</mat-label>
-          <mat-select placeholder="Placeholder"
-          (selectionChange)="selectStub($event)"
-          name="name">
+          <mat-select placeholder="Placeholder" (selectionChange)="selectStub($event)" name="name">
             <mat-option *ngFor="let stub of stubList" [value]="stub">
               <h1>{{stub.name}}</h1>
             </mat-option>
@@ -24,7 +22,7 @@
           <mat-datepicker #emition startView="year"></mat-datepicker>
         </mat-form-field>
 
-        
+
       </form>
     </div>
   </div>
@@ -56,14 +54,11 @@
     </div>
     <ng-container *ngIf="credit.currentNC$.value as det">
       <ng-container *ngFor="let concept of det.details ">
-        <app-invoice-concept-sales 
-        [document]="'credit-note'" 
-        [concept]="concept" 
-        [invoice]="invoice_current"
-        (changes)="getChanges($event)">
+        <app-invoice-concept-sales [document]="'credit-note'" [concept]="concept" [invoice]="invoice_current"
+          (changes)="getChanges($event)">
         </app-invoice-concept-sales>
       </ng-container>
-      <app-footer-invoice   [footerCalc]="det.footer">
+      <app-footer-invoice [footerCalc]="det.footer">
       </app-footer-invoice>
     </ng-container>
   </ng-container>
