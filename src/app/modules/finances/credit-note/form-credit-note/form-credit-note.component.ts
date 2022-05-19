@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatSelectChange } from '@angular/material/select';
 import { ActivatedRoute } from '@angular/router';
@@ -12,6 +12,7 @@ import { SalesService } from '../../sales-invoices/sales.service';
 import { iStub } from '../../stubs-invoice/stub.model';
 import { StubService } from '../../stubs-invoice/stub.service';
 import { AppliedTaxModel } from '../../taxes/taxes.model';
+import { TaxesService } from '../../taxes/taxes.service';
 import { CreditNoteService } from '../credit-note.service';
 
 @Component({
@@ -19,7 +20,7 @@ import { CreditNoteService } from '../credit-note.service';
   templateUrl: './form-credit-note.component.html',
   styleUrls: ['./form-credit-note.component.scss']
 })
-export class FormCreditNoteComponent implements OnInit {
+export class FormCreditNoteComponent implements OnInit, OnDestroy{
   
 
   businessRef = this._cache.getDataKey('eid')
@@ -48,7 +49,8 @@ export class FormCreditNoteComponent implements OnInit {
     private activatedRoute: ActivatedRoute,
     private _alert: MxAlert,
     private _footer: FooterService,
-    public stub: StubService
+    public stub: StubService,
+    private _taxes: TaxesService
   ) {
     this.activatedRoute.params.subscribe(params => {
       this.conceptNC = params.tipo
@@ -56,11 +58,14 @@ export class FormCreditNoteComponent implements OnInit {
     })
     this.stub.list$.pipe().subscribe( list => {
       list.forEach(d => {
-          if (d.active && d.currentIndex < d.endIndex && d.type === 'credito') {
+          if (d.active && d.currentIndex < d.endIndex && d.type === 'credit') {
             this.stubList.push(d)
           }
         })
     })
+  }
+  ngOnDestroy(): void {
+    this._taxes.leave()
   }
 
   async ngOnInit(): Promise<void> {
@@ -89,7 +94,6 @@ export class FormCreditNoteComponent implements OnInit {
   }
 
 
-
   async save() {
 
     try {
@@ -103,7 +107,7 @@ export class FormCreditNoteComponent implements OnInit {
         await this.credit.saveCreditNote(this.credit.currentNC$.value)
         /**Se actualiza el index current en el talonario seleccionado */
     if (this.stubSelect) {
-      
+      this.stubSelect.currentIndex = this.stubSelect.currentIndex + 1
       this.stub.update(this.stubSelect)
     }
        console.log(this.credit.currentNC$.value)
@@ -136,5 +140,7 @@ export class FormCreditNoteComponent implements OnInit {
     }
 
   }
+
+  
 
 }

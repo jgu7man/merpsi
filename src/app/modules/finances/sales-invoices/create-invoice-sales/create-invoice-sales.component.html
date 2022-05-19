@@ -93,12 +93,16 @@
               Agregar Concepto
             </button>
             <ng-container *ngFor="let concept of sales.details ">
-              <app-invoice-concept-sales [concept]="concept" (changes)="getChanges($event)" [invoice]="invoice"
+              <app-invoice-concept-sales 
+              [document]="'sale'"
+              [concept]="concept" 
+              (changes)="getChanges($event)" 
+              [invoice]="invoice"
                 (delete)="deleteConcept($event)">
               </app-invoice-concept-sales>
             </ng-container>
             <!-- <ng-container *ngIf="sales.details.length > 0"> -->
-            <app-footer-invoice [invoice]="invoice">
+            <app-footer-invoice [invoice]="invoice" [document]="'sale'">
             </app-footer-invoice>
             <!-- </ng-container> -->
           </ng-container>
@@ -107,7 +111,8 @@
           [disabled]="((salesForm.invalid || clientform.invalid) && sales.details.length <= 0) || invoice != null"
           (click)="saveInvoice()">Guardar</button>
         <ng-container *ngIf="invoice">
-          <button mat-raised-button color="accent" (click)="createNoteCD()">Crear Nota Credito/Debito</button>
+          <button mat-raised-button color="accent" (click)="createCredit()">Crear Nota Credito</button>
+          <button mat-raised-button color="primary" (click)="createDebit()">Crear Debito</button>
         </ng-container>
       </ng-container>
     </ng-container>

@@ -175,14 +175,17 @@ async sendInvitationEmail(email: string, CRF: string){
 
   }
 
-    get managerRef() {
+    get current() {
+      return this._auth.userState$.value
+    }
+
+    get managerRef(){
       let user = this._auth.userState$.value
       if (!user) throw {message: 'No se ha iniciado sesión'}
-      let userRef = this._dashboard.businessRef
+       return this._dashboard.businessRef
         .collection( 'managers' )
         .doc<ManagerModel>( user.uid )
         .ref
-      return userRef.get()
     }
 
 }

@@ -1,15 +1,19 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { T } from '@angular/cdk/keycodes';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSelectChange } from '@angular/material/select';
+import { Router } from '@angular/router';
 import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import { debounceTime, distinctUntilChanged, skip } from 'rxjs/operators';
 import { DashboardService } from 'src/app/dashboard/dashboard.service';
 import { ClientModel } from 'src/app/modules/clients/clients.model';
+import Swal from 'sweetalert2';
 import { iInvoiceFooter, InvoiceFooterModel, ProductInvoiceModel } from '../../invoices/invoice.model';
 import { iStub } from '../../stubs-invoice/stub.model';
 import { StubService } from '../../stubs-invoice/stub.service';
+import { TaxesService } from '../../taxes/taxes.service';
 import { SalesInvoiceModel } from '../sales-invoice.model';
 import { SalesService } from '../sales.service';
 import { SelectConceptSalesDialogComponent } from '../select-concept-sales-dialog/select-concept-sales-dialog.component';
@@ -20,7 +24,7 @@ import { CreditDebitNoteDialogComponent } from './credit-debit-note.dialog/credi
   templateUrl: './create-invoice-sales.component.html',
   styleUrls: ['./create-invoice-sales.component.scss']
 })
-export class CreateInvoiceSalesComponent implements OnInit {
+export class CreateInvoiceSalesComponent implements OnInit, OnDestroy{
 
   businessRef: string = this._cache.getDataKey('eid')!
   client: ClientModel | null = null
@@ -53,23 +57,24 @@ export class CreateInvoiceSalesComponent implements OnInit {
     private _dialog: MatDialog,
     public sales: SalesService,
     private _alert: MxAlert,
-    public stub: StubService
+    public stub: StubService,
+    private _router: Router,
+    private _taxes: TaxesService
 
 
   ) {
    
     this.stub.list$.pipe(
-      skip( 1 )
     ).subscribe( list => {
       list.forEach(d => {
-          if (d.active && d.currentIndex < d.endIndex && d.type === 'venta') {
+          if (d.active && d.currentIndex < d.endIndex && d.type === 'sale') {
             this.stubList.push(d)
           }
         })
-    })
+    })  
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     if (this.invoice) {
       this.clientform.patchValue({
         cip: this.invoice.client.cip,
@@ -161,6 +166,7 @@ export class CreateInvoiceSalesComponent implements OnInit {
     await this.sales.saveInvoice(invoice)
     /**Se actualiza el index current en el talonario seleccionado */
     if (this.stubSelect) {  
+      this.stubSelect.currentIndex = this.stubSelect.currentIndex + 1
       this.stub.update(this.stubSelect)
     }
     this._alert.notify('la factura ha sido guardado con exito!')
@@ -198,13 +204,47 @@ export class CreateInvoiceSalesComponent implements OnInit {
     // this.stubSelect!.currentIndex = stub.currentIndex + 1
   }
 
-  createNoteCD(){
+  createCredit(){
     this._dialog.open(CreditDebitNoteDialogComponent, {
       width: '1200px',
-      height: '400px'
+      height: '400px',
+      data: 'credit'
     }).afterClosed().subscribe(concept => {
       this.concept = concept
       // this.sales.addConcept(concept)
     })
+  }
+  createDebit(){
+    try {
+      this._dialog.open(CreditDebitNoteDialogComponent, {
+        width: '1200px',
+        height: '400px',
+        data: 'debit'
+      }).afterClosed().subscribe(concept => {
+        this.concept = concept
+        // this.sales.addConcept(concept)
+      })
+      // Swal.fire({
+      // title: 'Estas seguro en crear una nota de Debito?',
+      //   confirmButtonText:'aceptar',
+      //   showCancelButton:true
+      // }).then(result =>{
+      //   if (result.isConfirmed){
+      //     if ( !this.sales.current$.value ) throw { message: ' No existe el current de sales'}
+      //       this._router.navigate([`/business/${this.businessRef}/finances/new-debit-notes/${this.sales.current$.value.invoice_ID}`])
+      //   }
+      // })
+    } catch (error: any) {
+      if ('message' in error) {
+        this._alert.error(error.message, error)
+      } else {
+        this._alert.error('mensaje de error', error)
+      }
+      return console.error(error)
+    }
+  }
+
+  ngOnDestroy(): void {
+    this._taxes.leave()
   }
 }

@@ -38,7 +38,7 @@ export class StubFormCreateComponent implements OnInit {
 
   onSubmit(){
     if ( this.value){
-      this._stub.update({...this.stubForm.value,
+      this._stub.update({...this.stubForm.getRawValue(),
                             index: this.value.index})
     }else {
     this._stub.add(this.stubForm.value)

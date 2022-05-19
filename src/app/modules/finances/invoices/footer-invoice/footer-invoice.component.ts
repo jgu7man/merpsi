@@ -20,6 +20,7 @@ export class FooterInvoiceComponent implements OnInit, OnDestroy {
 
   @Input() footerCalc: iInvoiceFooter | null = null
   @Input() invoice: SalesInvoiceModel | null = null
+  @Input() document: string | null = null
 
   formFooter: FormGroup = new FormGroup({
     discount: new FormControl(this.footerCalc != null ? this.footerCalc.discount : 0),
@@ -32,7 +33,7 @@ export class FooterInvoiceComponent implements OnInit, OnDestroy {
   constructor(
     public purchase: PurchaseInvoiceService,
     public sales: SalesService,
-    private _taxes: TaxesService,
+    public taxes: TaxesService,
     public credit: CreditNoteService,
     public foot: FooterService
 
@@ -44,13 +45,17 @@ export class FooterInvoiceComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     if ( !this.foot.currentfoot$.value) {
-      if ( this.invoice ) {
-        this.foot.currentfoot$.next(this.invoice.footer)
-        this.formFooter.patchValue({ ...this.invoice.footer })
-        this.updateTaxes(this.invoice.footer.taxes)
-      } else {
-        this.foot.currentfoot$.next(new InvoiceFooterModel())
-      }
+      
+        if ( this.invoice ) {
+          this.foot.currentfoot$.next(this.invoice.footer)
+          this.formFooter.patchValue({ ...this.invoice.footer })
+          this.updateTaxes(this.invoice.footer.taxes)
+          if ( this.document == 'sale'){
+            this.readonlyAll()
+        }
+        } else {
+          this.foot.currentfoot$.next(new InvoiceFooterModel())
+        }
     }
 
     this.formFooter.valueChanges.pipe(
@@ -63,8 +68,12 @@ export class FooterInvoiceComponent implements OnInit, OnDestroy {
       this.foot.updateFooter(changes)
     })
   }
+  readonlyAll() {
+    this.formFooter.controls.discount.disable()
+    this.formFooter.controls.shipping.disable()
+  }
   updateTaxes(taxes: AppliedTaxModel[]) {
-    this._taxes.applidedTaxes = taxes
+    this.taxes.applidedTaxes = taxes
   }
 
   getTotalTaxes() {

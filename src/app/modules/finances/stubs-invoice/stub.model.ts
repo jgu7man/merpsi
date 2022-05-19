@@ -49,4 +49,4 @@ export namespace Stub{
   }
 }
 
-export type TYPE_STUB = 'venta' | 'credito' | 'debito' 
+export type TYPE_STUB = 'sale' | 'credit' | 'debit' 

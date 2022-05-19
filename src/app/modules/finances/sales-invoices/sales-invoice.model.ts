@@ -1,4 +1,5 @@
 import firebase from "firebase/app"
+import { FireRef } from "src/app/models/firestore.model";
 import { InvoiceModel, ProductInvoiceModel } from '../invoices/invoice.model';
 
 export class SalesInvoiceModel extends InvoiceModel {
@@ -52,4 +53,11 @@ export interface ClientInvoice{
   cip: '',
   name: '',
   email: '',
+}
+
+export declare namespace Sales{
+  interface invoice{
+    id: string
+    ref: FireRef<SalesInvoiceModel>
+  }
 }

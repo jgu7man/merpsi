@@ -1,4 +1,5 @@
 import firebase from 'firebase/app'
+import { FireRef } from 'src/app/models/firestore.model'
 
 export interface iUsuario {
   email: string,

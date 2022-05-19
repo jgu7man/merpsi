@@ -43,10 +43,10 @@ export class CreditNoteService {
     try {
       /**se guarda la nota de credito */
 
-      const creditRef = this._afs.doc<CreditNoteModel>(`${this.businessRef}/creditNote/${creditNote.noteId}`).ref
-      const managerRef = await this.manager.managerRef
-      const managerData = managerRef.data()
-      if (!managerData) throw { message: "No existe el Manager" }
+      const creditRef = this._afs.doc<CreditNoteModel>(`${this.businessRef}/credit_note/${creditNote.noteId}`).ref
+      const managerRef = this.manager.managerRef
+      const managerData = this.manager.current
+      if (!managerData) throw { message: "No se ha iniciado sesion" }
       creditNote.manager = managerData.name
       creditRef.set({ ...creditNote })
       if (creditNote.concept == 'devolucion') {
@@ -65,7 +65,7 @@ export class CreditNoteService {
             /**Historial del producto */
             const evento = new ProductEventModel(
               'return',
-              managerRef.ref,
+              managerRef,
               creditRef
             )
             this._afs.collection(`${this.businessRef}/products/${det.UPC}/history`)

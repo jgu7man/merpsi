@@ -75,9 +75,24 @@ export class InvoiceConceptSalesComponent implements OnInit {
               }
             })
               
-        } else {
+        } else 
+        if ( this.document == 'debit-note' ){
+          if ( !this.invoice ) throw { message: 'No existe invoice'}
+          let d = this.invoice.details       
+          d.forEach( det => {
+            if ( det.UPC == this.concept!.UPC){
+              this.formAddProduct.controls.cant.setValidators(Validators.min(det.cant))
+              this.formAddProduct.controls.unit_cost.setValidators(Validators.min(det.unit_cost)) 
+            }
+          })
+          
+        } else
+        if ( this.document == 'sale' ){
+          if ( this.invoice){
+            this.readonlyAll()
+          }
+        }else{
           this.formAddProduct.controls.cant.setValidators(Validators.max(this.concept.stock))
-  
         }
         this.formAddProduct.valueChanges.pipe(
           distinctUntilChanged((x, y) =>
@@ -122,12 +137,23 @@ export class InvoiceConceptSalesComponent implements OnInit {
     alert("abrir form de crear producto")
   }
 
-  
-
   deleteConcept(concept: iProductInvoice | null ){
     if (concept){
      this.delete.emit(concept)
     }
+  }
+
+  readonlyAll(){
+    this.formAddProduct.controls.store.disable()
+    this.formAddProduct.controls.product.disable()
+    this.formAddProduct.controls.cant.disable()
+    this.formAddProduct.controls.unit_cost.disable()
+    this.formAddProduct.controls.UPC .disable()
+    this.formAddProduct.controls.reference.disable()
+    this.formAddProduct.controls.description.disable()
+    this.formAddProduct.controls.brand .disable()
+    this.formAddProduct.controls.measure_unit.disable()
+    this.formAddProduct.controls.amount .disable()
   }
 
 }

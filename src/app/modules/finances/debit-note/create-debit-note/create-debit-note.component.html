@@ -1,0 +1,61 @@
+<div class="row">
+  <div class="col s4">
+    <mat-form-field class="col s12" appearance="outline">
+      <mat-label>Talonario</mat-label>
+      <mat-select placeholder="Talonario" (selectionChange)="seletedStub($event)" name="stub">
+        <mat-option *ngFor="let stub of stubsList" [value]="stub">
+          {{stub.name}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+  <div class="col s4">
+    <ng-container *ngIf="stubSelect">
+      <h1>{{nroStub}}</h1>
+    </ng-container>
+  </div>
+  <mat-form-field appearance="outline" class="col s4 l3">
+    <mat-label>Fecha de Emision</mat-label>
+    <input matInput [formControl]="date_emition" [matDatepicker]="emition">
+    <mat-datepicker-toggle matSuffix [for]="emition"></mat-datepicker-toggle>
+    <mat-datepicker #emition startView="year"></mat-datepicker>
+  </mat-form-field>
+  <div class="row">
+    <ng-container *ngIf="invoice_Ref">
+      <div class="col s3">
+        nro de Factura: {{invoice_Ref.invoice_ID}}
+      </div>
+      <div class="row">
+        <div class="col s4">
+          Nombre Cliente: {{invoice_Ref.client.name}}
+        </div>
+        <div class="col s4">
+          correo :{{invoice_Ref.client.email}}
+        </div>
+        <div class="col s4">
+          identificacion: {{invoice_Ref.client.cip}}
+        </div>
+      </div>
+      <div class="row">
+        <div class="col s4">
+          Metodo de Pago: {{invoice_Ref.payment_method}}
+        </div>
+        <div class="col s4">
+          Vendedor: {{invoice_Ref.seller}}
+        </div>
+        <div class="col s4">
+          Moneda :{{invoice_Ref.currency}}
+        </div>
+      </div>
+      <ng-container *ngFor="let det of debit.details$.value as details">
+        <app-invoice-concept-sales [document]="'debit-note'" [concept]="det" [invoice]="invoice_Ref"
+          (changes)="getChanges($event)">
+        </app-invoice-concept-sales>
+      </ng-container>
+      <!-- FOOTER -->
+      <app-footer-invoice>
+      </app-footer-invoice>
+    </ng-container>
+  </div>
+  <button mat-raised-button color="primary" (click)="save()" >guardar</button>
+</div>

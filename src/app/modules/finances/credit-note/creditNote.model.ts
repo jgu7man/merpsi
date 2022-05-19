@@ -6,7 +6,6 @@ export class CreditNoteModel {
   date_emition: FireTime = createDate(new Date())
   invoiceId: string
   invoiceRef: FireRef<SalesInvoiceModel> | null = null
-  // invoiceRef: FireDoc<SalesInvoiceModel>
   noteId: string
   manager: string
   concept: string

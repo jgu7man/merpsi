@@ -1,4 +1,5 @@
 import firebase from 'firebase/app'
+import { FireRef } from 'src/app/models/firestore.model'
 import { iSede } from '../stores/sede.model'
 
 /** Usuarios que van a administrar/consumir el sistema */
@@ -43,6 +44,14 @@ export interface iManager extends ManagerModel {
 export interface iManagerLogin{
   readonly email: string,
   readonly password: string
+}
+
+export declare namespace Manager {
+
+  interface invoice{
+    nombre: string
+    ref: FireRef<ManagerModel>
+  }
 }
 
 

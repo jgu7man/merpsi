@@ -14,6 +14,7 @@ export class StubService {
   
   businessCRF: string = this._cache.getDataKey( 'eid' )!
   list$:BehaviorSubject<iStub[]> = new BehaviorSubject<iStub[]>( [] )
+  private _listSubscription: Subscription
 
   constructor(
     private _afs: AngularFirestore,
@@ -22,7 +23,7 @@ export class StubService {
     private _alert: MxAlert
 
   ) {
-
+    this._listSubscription = this.listenList().subscribe()
    }
 
   get stubRef() {
@@ -59,7 +60,7 @@ export class StubService {
   
   async update(stub: StubModel) {
     try {
-      stub.currentIndex = stub.currentIndex + 1
+      //
       /**Desactivo el Talonario en caso de que la numeracion se termine */
       if (stub.currentIndex >= stub.endIndex) {
         stub.active = false
