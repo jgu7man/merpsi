@@ -10,7 +10,7 @@ import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 export class AppComponent {
   title = 'merpsi';
 
-  constructor(private _afs: AngularFirestore,
+  constructor(
 		private _cache: MxCache,
 		){
 			this._cache.cacheTagName = 'merpsi';

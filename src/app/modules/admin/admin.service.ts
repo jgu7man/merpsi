@@ -9,10 +9,7 @@ import { iCountry } from 'src/app/models/country.model';
 export class AdminService {
 
   constructor(
-    private _afs: AngularFirestore,
-    private _test: MxTest
-  ) { 
-    // this._test.testOn(this.getCountry)
+    private _afs: AngularFirestore  ) { 
   }
 
   async getCountry(): Promise<iCountry[]> {

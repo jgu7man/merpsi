@@ -1,16 +1,15 @@
-import { T } from '@angular/cdk/keycodes';
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSelectChange } from '@angular/material/select';
 import { Router } from '@angular/router';
+import { MxCrudService } from 'libs/@marxa/crud-panel/src/public-api';
 import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
+import { Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, skip } from 'rxjs/operators';
-import { DashboardService } from 'src/app/dashboard/dashboard.service';
 import { ClientModel } from 'src/app/modules/clients/clients.model';
-import Swal from 'sweetalert2';
-import { iInvoiceFooter, InvoiceFooterModel, ProductInvoiceModel } from '../../invoices/invoice.model';
+import { InvoiceFooterModel, ProductInvoiceModel } from '../../invoices/invoice.model';
 import { iStub } from '../../stubs-invoice/stub.model';
 import { StubService } from '../../stubs-invoice/stub.service';
 import { TaxesService } from '../../taxes/taxes.service';
@@ -31,10 +30,11 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy{
   concept: ProductInvoiceModel | null = null
   stubList: iStub[] = []
   stubSelect: iStub | null = null
+  closesSub:Subscription
   
   @Input() invoice: SalesInvoiceModel | null = null
 
-
+  stubForm: FormControl = new FormControl('')
   clientform: FormGroup = new FormGroup({
     cip: new FormControl('', [Validators.required]),
     name: new FormControl('', [Validators.required]),
@@ -53,25 +53,17 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy{
   @Output() submited: EventEmitter<any> = new EventEmitter()
 
   constructor(
+    public sales: SalesService,
+    public stub: StubService,
     private _cache: MxCache,
     private _dialog: MatDialog,
-    public sales: SalesService,
     private _alert: MxAlert,
-    public stub: StubService,
-    private _router: Router,
-    private _taxes: TaxesService
-
-
+    private _taxes: TaxesService,
+    private _crud:MxCrudService
   ) {
-   
-    this.stub.list$.pipe(
-    ).subscribe( list => {
-      list.forEach(d => {
-          if (d.active && d.currentIndex < d.endIndex && d.type === 'sale') {
-            this.stubList.push(d)
-          }
-        })
-    })  
+   this.closesSub = this._crud.onClosed.subscribe(() => {
+     this.stubForm.patchValue('')
+   })
   }
 
   async ngOnInit() {
@@ -90,6 +82,8 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy{
         payment_method: this.invoice.payment_method,
       })
 
+      this.readOnlyForm()
+
       this.sales.current$.next(this.invoice)
     }
     
@@ -103,6 +97,20 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy{
         ...changes
       })
     })
+
+  }
+  readOnlyForm() {
+
+    this.clientform.controls.cip.disable()
+    this.clientform.controls.name.disable()
+    this.clientform.controls.email.disable()
+
+    this.salesForm.controls.client.disable()
+    this.salesForm.controls.seller.disable()
+    this.salesForm.controls.date_expiration.disable()
+    this.salesForm.controls.currency.disable()
+    this.salesForm.controls.date_emition.disable()
+    this.salesForm.controls.payment_method.disable()
 
   }
 
@@ -190,19 +198,26 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy{
       payment_method: '',
 
     })
+    this.stubForm.patchValue('seleccione')
   }
 
   async selectStubInvoice(event: MatSelectChange) {
     console.log(event.value)
     let stub = event.value
-    this.stubSelect = stub
-    if (this.sales.current$.value) {
-      let nro = stub.prefix + '-' + ((stub.currentIndex || 0) + 1)
-      await this.sales.updateCurrent('invoice_ID', nro)
+    if (stub != ''){
+      this.sales.stubSelect$.next(stub)
+      if (this.sales.current$.value) {
+        this.sales.stubSelect$.value!.prefixIndexCurrent = stub.prefix + '-' + ((stub.currentIndex || 0) + 1)
+        this.sales.updateCurrent('invoice_ID', this.sales.stubSelect$.value!.prefixIndexCurrent)
+        console.log(this.sales.stubSelect$.value!.prefixIndexCurrent);
+        
+      }
     }
+    
     // this.stubSelect!.nroStub = 
     // this.stubSelect!.currentIndex = stub.currentIndex + 1
   }
+
 
   createCredit(){
     this._dialog.open(CreditDebitNoteDialogComponent, {
@@ -224,16 +239,6 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy{
         this.concept = concept
         // this.sales.addConcept(concept)
       })
-      // Swal.fire({
-      // title: 'Estas seguro en crear una nota de Debito?',
-      //   confirmButtonText:'aceptar',
-      //   showCancelButton:true
-      // }).then(result =>{
-      //   if (result.isConfirmed){
-      //     if ( !this.sales.current$.value ) throw { message: ' No existe el current de sales'}
-      //       this._router.navigate([`/business/${this.businessRef}/finances/new-debit-notes/${this.sales.current$.value.invoice_ID}`])
-      //   }
-      // })
     } catch (error: any) {
       if ('message' in error) {
         this._alert.error(error.message, error)
@@ -246,5 +251,6 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy{
 
   ngOnDestroy(): void {
     this._taxes.leave()
+    this.stubForm.patchValue('')
   }
 }

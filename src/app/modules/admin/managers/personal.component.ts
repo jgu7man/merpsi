@@ -22,9 +22,9 @@ export class PersonalComponent implements OnInit, OnDestroy {
   ]
 
   constructor(
+    public index: MxIndex,
     private _personal: PersonalService,
     private _dialog: MatDialog,
-    public index: MxIndex,
     private _cache: MxCache
   ) {
     // this._personal.getAll().subscribe( users => {

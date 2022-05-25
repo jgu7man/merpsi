@@ -10,6 +10,7 @@
       itemSelector="invoice_ID"
       #crudPanel
       (onAdd)="onCreate()"
+      (onClose)="onClose()"
       >
       <ng-template #add ><app-create-invoice-sales
         (submited)="crudPanel.closeAll()"></app-create-invoice-sales>

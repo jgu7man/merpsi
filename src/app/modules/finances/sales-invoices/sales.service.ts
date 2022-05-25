@@ -26,6 +26,8 @@ export class SalesService {
   current$ = new BehaviorSubject<SalesInvoiceModel | null>(null)
   stubsList$ = new BehaviorSubject<iStub [] | null>(null)
   businessCRF: string = this._cache.getDataKey('eid')!
+  stubList$= new BehaviorSubject<iStub[] >([])
+  stubSelect$= new BehaviorSubject<iStub | null>(null)
   public totales: EventEmitter<iInvoiceFooter> = new EventEmitter();
   
   constructor(
@@ -33,7 +35,6 @@ export class SalesService {
     private _cache: MxCache,
     public _taxes: TaxesService,
     private _dashboard: DashboardService,
-    private manager: CurrentProductService,
     private _alert: MxAlert,
     private foot: FooterService
   ) {

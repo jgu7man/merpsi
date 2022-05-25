@@ -29,7 +29,7 @@ export class PersonalService {
     private _router: Router,
     private _mails: EmailService,
     private _auth: AuthService,
-  private _dashboard: DashboardService
+    private _dashboard: DashboardService
   ) { }
 
   getAll(): Observable<ManagerModel[]> {

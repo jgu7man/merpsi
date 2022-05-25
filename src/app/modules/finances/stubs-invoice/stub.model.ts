@@ -6,6 +6,7 @@ export class StubModel{
   endIndex: number 
   prefix: string 
   currentIndex: number
+  prefixIndexCurrent: string
   name: string
   active: boolean
   created: FireTime = createDate(new Date())
@@ -24,20 +25,16 @@ export class StubModel{
     this.name = data?.name || ''
     this.active = data?.active || false
     this.type = data.type 
+    this.prefixIndexCurrent = this.getPrefixIndexCurrent
+  }
+
+  get getPrefixIndexCurrent(){
+    return this.prefix + '-' + (this.currentIndex + 1)
   }
 }
 
-export interface iStub{
-  starIndex: number
-  endIndex: number 
-  prefix: string 
-  currentIndex: number
-  name: string
-  created: FireTime 
-  lastUpdated: FireTime
-  active: boolean
-  index: number
-  type: TYPE_STUB
+export interface iStub extends Omit<StubModel,'getPrefixIndexCurrent'> {
+  
 }
 
 export namespace Stub{

@@ -31,15 +31,14 @@ export class CreateDebitNoteComponent implements OnInit, OnDestroy {
 
   constructor(
     public stub: StubService,
-    private _alert: MxAlert,
-    private activatedRoute: ActivatedRoute,
-    private credit: CreditNoteService,
     public debit:DebitNoteService,
     public manager: PersonalService,
+    private _alert: MxAlert,
+    private _activatedRoute: ActivatedRoute,
     private _taxes: TaxesService
 
   ) { 
-    this.activatedRoute.params.subscribe(params => {
+    this._activatedRoute.params.subscribe(params => {
       this.invoiceId = params.invoiceId
     })
     this.stub.list$.pipe(
@@ -111,6 +110,7 @@ export class CreateDebitNoteComponent implements OnInit, OnDestroy {
         taxesList.push({...tax})
       })
       this.debit.footer$.value.taxes = taxesList
+      this._taxes.applidedTaxes = taxesList
      // this.debit.footer$.value.taxes = {...this.debit.footer$.value.taxes}
       let ref =this.manager.managerRef
       let manager: Manager.invoice = {

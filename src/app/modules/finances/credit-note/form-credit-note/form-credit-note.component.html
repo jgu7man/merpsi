@@ -6,13 +6,13 @@
           <mat-label>Talonario</mat-label>
           <mat-select placeholder="Placeholder" (selectionChange)="selectStub($event)" name="name">
             <mat-option *ngFor="let stub of stubList" [value]="stub">
-              <h1>{{stub.name}}</h1>
+              {{stub.name}}
             </mat-option>
           </mat-select>
         </mat-form-field>
         <!-- NRO FACTURA -->
         <ng-container *ngIf="stubSelect" class="col s4">
-          {{prefix}}
+          <h1>{{prefix}}</h1>
         </ng-container>
         <!-- fecha -->
         <mat-form-field appearance="outline" class="col s4 l3">
@@ -21,8 +21,6 @@
           <mat-datepicker-toggle matSuffix [for]="emition"></mat-datepicker-toggle>
           <mat-datepicker #emition startView="year"></mat-datepicker>
         </mat-form-field>
-
-
       </form>
     </div>
   </div>

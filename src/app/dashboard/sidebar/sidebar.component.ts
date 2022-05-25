@@ -29,8 +29,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
     public responsive: MxResponsive,
     private _router: Router,
     private _cache: MxCache,
-    private _personal: PersonalService,
-    private route: ActivatedRoute
+    private _route: ActivatedRoute
   ) {
     this.responsive.smallWidth = 415
 
@@ -48,7 +47,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
     this.userSubscription = this.auth.authUser$.pipe(
       mergeMap(() => this.auth.userState$)
     ).subscribe(user => {
-      let eid = this.route.snapshot.params.eid
+      let eid = this._route.snapshot.params.eid
       if (!eid) {
         if (user?.businesses.length==1){
           this._router.navigate(['/',user.businesses[0]])

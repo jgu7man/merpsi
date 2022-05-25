@@ -18,18 +18,16 @@ export class DebitNoteService {
   
   details$ = new BehaviorSubject<iProductInvoice[] | null>(null)
   footer$ = new BehaviorSubject<iInvoiceFooter | null>(null)
-  taxes: AppliedTaxModel[] = [];
+  listTaxes: AppliedTaxModel[] = [];
   businessRef = `businesses/${this._dashboard.CRF}`
   
   
   constructor(
-    private _alert: MxAlert,
-    public _taxes: TaxesService,
+    public taxes: TaxesService,
     public foot: FooterService,
+    private _alert: MxAlert,
     private _dashboard: DashboardService,
-    private _afs: AngularFirestore,
-    private _manager: PersonalService
-
+    private _afs: AngularFirestore
   ) { }
 
   async recalculate(det: iProductInvoice) {
@@ -39,7 +37,7 @@ export class DebitNoteService {
 
     let details = this.details$.value
     let foot = this.footer$.value
-    this.taxes = foot.taxes
+    this.listTaxes = foot.taxes
     let subtotal = 0
     let total = 0
 
@@ -62,12 +60,12 @@ export class DebitNoteService {
     this.details$.next(details)
 
     foot.subtotal = subtotal
-    this.taxes.forEach(tax => {
+    this.listTaxes.forEach(tax => {
       let taxe = new TaxModel(0, tax.name, tax.rate)
-      this._taxes.calcTax(taxe, subtotal)
+      this.taxes.calcTax(taxe, subtotal)
     })
-    foot.taxes = this._taxes.applidedTaxes
-    foot.totalTaxes = this._taxes.appliedTaxesTotal
+    foot.taxes = this.taxes.applidedTaxes
+    foot.totalTaxes = this.taxes.appliedTaxesTotal
 
     foot.total = (subtotal + foot.shipping + foot.totalTaxes) - (foot.discount)
 

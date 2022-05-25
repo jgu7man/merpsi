@@ -42,9 +42,9 @@ export class InvoiceConceptComponent implements OnInit {
   @Output() changes = new EventEmitter();
   @Output() delete = new EventEmitter();
   constructor(
-    private _cache: MxCache,
-    public purchase: PurchaseInvoiceService,
     public sales: SalesService,
+    public purchase: PurchaseInvoiceService,
+    private _cache: MxCache,
     private _stores: SedesService,
 
 

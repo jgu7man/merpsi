@@ -9,7 +9,7 @@ import { FooterService } from '../../invoices/footer-invoice/footer.service';
 import { iProductInvoice } from '../../invoices/invoice.model';
 import { SalesInvoiceModel } from '../../sales-invoices/sales-invoice.model';
 import { SalesService } from '../../sales-invoices/sales.service';
-import { iStub } from '../../stubs-invoice/stub.model';
+import { iStub, StubModel } from '../../stubs-invoice/stub.model';
 import { StubService } from '../../stubs-invoice/stub.service';
 import { AppliedTaxModel } from '../../taxes/taxes.model';
 import { TaxesService } from '../../taxes/taxes.service';
@@ -43,16 +43,16 @@ export class FormCreditNoteComponent implements OnInit, OnDestroy{
 
 
   constructor(
-    private _cache: MxCache,
     public sales: SalesService,
     public credit: CreditNoteService,
-    private activatedRoute: ActivatedRoute,
+    public stub: StubService,
+    private _cache: MxCache,
+    private _activatedRoute: ActivatedRoute,
     private _alert: MxAlert,
     private _footer: FooterService,
-    public stub: StubService,
-    private _taxes: TaxesService
+    private _taxes: TaxesService,
   ) {
-    this.activatedRoute.params.subscribe(params => {
+    this._activatedRoute.params.subscribe(params => {
       this.conceptNC = params.tipo
       this.invoiceId = params.invoiceId
     })
@@ -66,6 +66,9 @@ export class FormCreditNoteComponent implements OnInit, OnDestroy{
   }
   ngOnDestroy(): void {
     this._taxes.leave()
+    this.prefix =''
+    this.stubSelect = null
+    this.stubList = []
   }
 
   async ngOnInit(): Promise<void> {
@@ -92,8 +95,6 @@ export class FormCreditNoteComponent implements OnInit, OnDestroy{
     }
 
   }
-
-
   async save() {
 
     try {

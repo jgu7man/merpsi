@@ -24,9 +24,9 @@ export class PurchaseInvoiceService {
 
 
   constructor(
+    public _taxes: TaxesService,
     private _afs: AngularFirestore,
     private _cache: MxCache,
-    public _taxes: TaxesService,
     private _dashboard: DashboardService,
   ) {
   }

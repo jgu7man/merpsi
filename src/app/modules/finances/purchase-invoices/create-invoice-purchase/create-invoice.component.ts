@@ -17,7 +17,6 @@ import { InventoryProductsService } from 'src/app/modules/inventory/products/pro
 import { iSede } from '../../../admin/stores/sede.model';
 import { SedesService } from '../../../admin/stores/sedes.service';
 import { PurchaseInvoiceService } from '../puchase-invoice.service';
-import { ProviderService } from '../../../inventory/providers/provider.service';
 
 
 @Component({
@@ -60,7 +59,6 @@ export class CreateInvoiceComponent implements OnInit {
 
   
   constructor(
-    private _provider: ProviderService,
     private _stores: SedesService,
     private _alert: MxAlert,
     private _dialog: MatDialog,

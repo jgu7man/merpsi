@@ -19,12 +19,12 @@ export class SelectConceptDialogComponent implements OnInit {
   productListEmpty: boolean = false;
 
   constructor(
-    private _cache: MxCache,
-    private _dialog: MatDialogRef<SelectConceptDialogComponent>,
     public purchase: PurchaseInvoiceService,
     public sales: SalesService,
+    public invoice: InvoiceService,
+    private _cache: MxCache,
+    private _dialog: MatDialogRef<SelectConceptDialogComponent>,
     private _dialogProduct: MatDialog,
-    public invoice: InvoiceService
 
     
   ) { }

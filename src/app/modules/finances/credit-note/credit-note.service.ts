@@ -29,14 +29,13 @@ export class CreditNoteService {
 
 
   constructor(
-    private auth: AuthService,
     private _alert: MxAlert,
     private _afs: AngularFirestore,
     private _cache: MxCache,
     private _dashboard: DashboardService,
     private _taxes: TaxesService,
-    private foot: FooterService,
-    private manager: PersonalService
+    private _foot: FooterService,
+    private _manager: PersonalService
   ) {
   }
   async saveCreditNote(creditNote: CreditNoteModel) {
@@ -44,8 +43,8 @@ export class CreditNoteService {
       /**se guarda la nota de credito */
 
       const creditRef = this._afs.doc<CreditNoteModel>(`${this.businessRef}/credit_note/${creditNote.noteId}`).ref
-      const managerRef = this.manager.managerRef
-      const managerData = this.manager.current
+      const managerRef = this._manager.managerRef
+      const managerData = this._manager.current
       if (!managerData) throw { message: "No se ha iniciado sesion" }
       creditNote.manager = managerData.name
       creditRef.set({ ...creditNote })
@@ -132,7 +131,7 @@ export class CreditNoteService {
         foot.total = total
         foot.total = (subtotal + foot.shipping + foot.totalTaxes) - (foot.discount)
         this.updateCurrent('footer', foot)
-        this.foot.currentfoot$.next(foot)
+        this._foot.currentfoot$.next(foot)
 
       } else {
 
@@ -166,7 +165,7 @@ export class CreditNoteService {
         foot.total = (subtotal + foot.shipping + foot.totalTaxes) - (foot.discount)
 
         this.updateCurrent('footer', foot)
-        this.foot.currentfoot$.next(foot)
+        this._foot.currentfoot$.next(foot)
       }
 
 
@@ -189,7 +188,7 @@ export class CreditNoteService {
       let shipping = foot.shipping
       footer.total = (footer.subtotal + shipping) - discount
 
-      this.foot.currentfoot$.next(footer)
+      this._foot.currentfoot$.next(footer)
       // this.totales.emit(footer)
     }
   }

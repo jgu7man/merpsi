@@ -46,7 +46,7 @@ export class StubService {
     try {
       const list = this.list$.value
       const stubData = new StubModel(list.length, stub)
-      list.push({ ...stubData })
+      list.push({...stubData})
       await this.stubRef.set({ list })
     } catch (error: any) {
       if ('message' in error) {
@@ -58,7 +58,7 @@ export class StubService {
     }
   }
   
-  async update(stub: StubModel) {
+  async update(stub: StubModel | iStub) {
     try {
       //
       /**Desactivo el Talonario en caso de que la numeracion se termine */

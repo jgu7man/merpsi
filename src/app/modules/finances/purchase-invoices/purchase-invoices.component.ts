@@ -20,9 +20,9 @@ export class PurchaseInvoicesComponent implements OnInit {
 
   
   constructor(
+    public purchases: PurchaseInvoiceService,
     private _provider: ProviderService,
     private _stores : SedesService,
-    public purchases: PurchaseInvoiceService,
     private _auth: AuthService,
     private _taxes: TaxesService
 
