@@ -23,15 +23,15 @@ import { CreditDebitNoteDialogComponent } from './credit-debit-note.dialog/credi
   templateUrl: './create-invoice-sales.component.html',
   styleUrls: ['./create-invoice-sales.component.scss']
 })
-export class CreateInvoiceSalesComponent implements OnInit, OnDestroy{
+export class CreateInvoiceSalesComponent implements OnInit, OnDestroy {
 
   businessRef: string = this._cache.getDataKey('eid')!
   client: ClientModel | null = null
   concept: ProductInvoiceModel | null = null
   stubList: iStub[] = []
   stubSelect: iStub | null = null
-  closesSub:Subscription
-  
+  closesSub: Subscription
+
   @Input() invoice: SalesInvoiceModel | null = null
 
   stubForm: FormControl = new FormControl('')
@@ -59,11 +59,11 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy{
     private _dialog: MatDialog,
     private _alert: MxAlert,
     private _taxes: TaxesService,
-    private _crud:MxCrudService
+    private _crud: MxCrudService
   ) {
-   this.closesSub = this._crud.onClosed.subscribe(() => {
-     this.stubForm.patchValue('')
-   })
+    this.closesSub = this._crud.onClosed.subscribe(() => {
+      this.stubForm.patchValue('')
+    })
   }
 
   async ngOnInit() {
@@ -78,7 +78,7 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy{
         seller: this.invoice.seller,
         date_expiration: this.invoice.date_expiration,
         currency: this.invoice.currency,
-        date_emition: this.invoice.document_date,
+        date_emition: this.invoice.date_emition,
         payment_method: this.invoice.payment_method,
       })
 
@@ -86,7 +86,7 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy{
 
       this.sales.current$.next(this.invoice)
     }
-    
+
     this.salesForm.valueChanges.pipe(
       distinctUntilChanged((x, y) => JSON.stringify(x) == JSON.stringify(y)),
       debounceTime(500),
@@ -114,16 +114,6 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy{
 
   }
 
-
-  getfooterCalculos(invoice: SalesInvoiceModel) {
-    let subtotal = 0
-    if (invoice) {
-      invoice.details.forEach(d => subtotal += d.amount)
-      invoice.footer.subtotal = subtotal
-      invoice.footer.total = (invoice.footer.shipping + invoice.footer.subtotal) - invoice.footer.discount
-    }
-  }
-
   onSubmit() {
     console.log(this.salesForm.getRawValue())
   }
@@ -149,12 +139,12 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy{
     })
   }
 
-  /**funcion que se encarga de actualizar el current con los cambios realizados en el concept */
+  /* Funcion que se encarga de actualizar el current con los cambios realizados en el concept */
   getChanges(changes: any) {
     this.sales.getChanges(changes, this.concept)
   }
 
-  /** funcion que se encarga de actualizar el current con los cambios del footer*/
+  /* Funcion que se encarga de actualizar el current con los cambios del footer*/
   getFooter(footer: InvoiceFooterModel) {
     this.sales.getFooter(footer)
   }
@@ -172,8 +162,9 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy{
     })
     invoice.footer.taxes = taxs
     await this.sales.saveInvoice(invoice)
-    /**Se actualiza el index current en el talonario seleccionado */
-    if (this.stubSelect) {  
+
+    /* Se actualiza el index current en el talonario seleccionado */
+    if (this.stubSelect) {
       this.stubSelect.currentIndex = this.stubSelect.currentIndex + 1
       this.stub.update(this.stubSelect)
     }
@@ -204,22 +195,19 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy{
   async selectStubInvoice(event: MatSelectChange) {
     console.log(event.value)
     let stub = event.value
-    if (stub != ''){
+    if (stub != '') {
       this.sales.stubSelect$.next(stub)
       if (this.sales.current$.value) {
         this.sales.stubSelect$.value!.prefixIndexCurrent = stub.prefix + '-' + ((stub.currentIndex || 0) + 1)
-        this.sales.updateCurrent('invoice_ID', this.sales.stubSelect$.value!.prefixIndexCurrent)
+        this.sales.updateCurrent('invoiceId', this.sales.stubSelect$.value!.prefixIndexCurrent)
         console.log(this.sales.stubSelect$.value!.prefixIndexCurrent);
-        
+
       }
     }
-    
-    // this.stubSelect!.nroStub = 
-    // this.stubSelect!.currentIndex = stub.currentIndex + 1
   }
 
 
-  createCredit(){
+  createCredit() {
     this._dialog.open(CreditDebitNoteDialogComponent, {
       width: '1200px',
       height: '400px',
@@ -229,7 +217,7 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy{
       // this.sales.addConcept(concept)
     })
   }
-  createDebit(){
+  createDebit() {
     try {
       this._dialog.open(CreditDebitNoteDialogComponent, {
         width: '1200px',
@@ -237,7 +225,6 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy{
         data: 'debit'
       }).afterClosed().subscribe(concept => {
         this.concept = concept
-        // this.sales.addConcept(concept)
       })
     } catch (error: any) {
       if ('message' in error) {

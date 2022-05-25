@@ -8,7 +8,7 @@ import { Manager } from 'src/app/modules/admin/managers/manager.model';
 import { PersonalService } from 'src/app/modules/admin/managers/personal.service';
 import { CreditNoteService } from '../../credit-note/credit-note.service';
 import { InvoiceFooterModel, iProductInvoice } from '../../invoices/invoice.model';
-import { SalesInvoiceModel } from '../../sales-invoices/sales-invoice.model';
+import { Sales, SalesInvoiceModel } from '../../sales-invoices/sales-invoice.model';
 import { iStub } from '../../stubs-invoice/stub.model';
 import { StubService } from '../../stubs-invoice/stub.service';
 import { TaxesService } from '../../taxes/taxes.service';
@@ -117,12 +117,12 @@ export class CreateDebitNoteComponent implements OnInit, OnDestroy {
         nombre: this.manager.current.name,
         ref
       }
-      let invoice = {
+      let invoice: Sales.invoice= {
         id: this.invoiceId,
         ref: this.debit.getInvoiceRef(this.invoiceId)
       }
       
-     let debit: DebitNoteModel = new DebitNoteModel(invoice,this.nroStub,manager,this.debit.details$.value,this.debit.footer$.value)
+     let debit: DebitNoteModel = new DebitNoteModel(this.nroStub,invoice,manager,this.debit.details$.value,this.debit.footer$.value)
      console.log(debit);
      
      this.debit.saveDebitNote(debit)

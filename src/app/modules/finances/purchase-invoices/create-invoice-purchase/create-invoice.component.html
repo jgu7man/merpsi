@@ -4,9 +4,9 @@
     <!-- numero de factura -->
     <mat-form-field appearance="outline" class="col s12 l4 ">
       <mat-label>Nro de Factura</mat-label>
-      <input matInput type="text" name="invoice_ID" formControlName="invoice_ID"
-        (blur)="findInvoice(invoiceForm.controls.invoice_ID.value)" />
-      <mat-error *ngIf="invoiceForm.hasError('required', 'invoice_ID')">
+      <input matInput type="text" name="invoiceId" formControlName="invoiceId"
+        (blur)="findInvoice(invoiceForm.controls.invoiceId.value)" />
+      <mat-error *ngIf="invoiceForm.hasError('required', 'invoiceId')">
         Este dato es necesario
       </mat-error>
       <mat-error *ngIf="invoiceForm.hasError('exist', 'true')">
@@ -28,7 +28,7 @@
 
   <ng-container *ngIf="purchase.current$ | async as purchase">
     <div class="row">
-      <ng-container *ngIf="purchase.invoice_ID">
+      <ng-container *ngIf="purchase.invoiceId">
 
         <!-- PROVIDER -->
         <div class="col s12 l4">

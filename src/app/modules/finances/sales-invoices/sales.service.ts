@@ -143,7 +143,7 @@ export class SalesService {
     try {
     let businessRef = `businesses/${this._dashboard.CRF}`
     if (this.current$.value){
-      const invoiceRef = this._afs.doc<SalesInvoiceModel>(`${businessRef}/sale/${this.current$.value.invoice_ID}`).ref
+      const invoiceRef = this._afs.doc<SalesInvoiceModel>(`${businessRef}/sale/${this.current$.value.invoiceId}`).ref
       invoiceRef.set({...invoice})
 
       let details: iProductInvoice[] = this.current$.value.details

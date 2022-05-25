@@ -42,7 +42,7 @@ export class CreditNoteService {
     try {
       /**se guarda la nota de credito */
 
-      const creditRef = this._afs.doc<CreditNoteModel>(`${this.businessRef}/credit_note/${creditNote.noteId}`).ref
+      const creditRef = this._afs.doc<CreditNoteModel>(`${this.businessRef}/credit_note/${creditNote.id}`).ref
       const managerRef = this._manager.managerRef
       const managerData = this._manager.current
       if (!managerData) throw { message: "No se ha iniciado sesion" }

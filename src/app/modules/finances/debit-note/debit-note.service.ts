@@ -3,6 +3,7 @@ import { AngularFirestore } from '@angular/fire/firestore';
 import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
 import { BehaviorSubject } from 'rxjs';
 import { DashboardService } from 'src/app/dashboard/dashboard.service';
+import { FireRef } from 'src/app/models/firestore.model';
 import { PersonalService } from '../../admin/managers/personal.service';
 import { FooterService } from '../invoices/footer-invoice/footer.service';
 import { iInvoiceFooter, iProductInvoice, ProductInvoiceModel } from '../invoices/invoice.model';
@@ -92,7 +93,7 @@ export class DebitNoteService {
     return invoice || null
   }
 
-  getInvoiceRef( invoice_ID: string ){
+  getInvoiceRef( invoice_ID: string ):FireRef<SalesInvoiceModel>{
     return this._afs.doc<SalesInvoiceModel>(`${this.businessRef}/sale/${invoice_ID}`).ref
   }
 

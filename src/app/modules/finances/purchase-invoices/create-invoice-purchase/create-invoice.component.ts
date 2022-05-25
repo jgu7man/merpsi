@@ -44,7 +44,7 @@ export class CreateInvoiceComponent implements OnInit {
     store: this.storeForm,
     provider: this.providerForm,
     document_date: new FormControl('', [Validators.required]),
-    invoice_ID : new FormControl('', [Validators.required]),
+    invoiceId : new FormControl('', [Validators.required]),
    // payment_method: new FormControl('', [Validators.required]),
   })
 
@@ -122,14 +122,14 @@ export class CreateInvoiceComponent implements OnInit {
   }
 
 
-  async findInvoice( invoice_id: string ){
-    if (invoice_id.length>5){
-      const validation = await this.purchase.findInvoice( invoice_id )
+  async findInvoice( invoiceId: string ){
+    if (invoiceId.length>5){
+      const validation = await this.purchase.findInvoice( invoiceId )
       if (validation) {
-        this.invoiceForm.controls.invoice_ID.setErrors( { exist: true } )
+        this.invoiceForm.controls.invoiceId.setErrors( { exist: true } )
       } else {
         // console.log(this.purchase.current$.value)
-        this.purchase.updateCurrent('invoice_ID',invoice_id)
+        this.purchase.updateCurrent('invoiceId',invoiceId)
       }
     }
   }
@@ -168,7 +168,7 @@ export class CreateInvoiceComponent implements OnInit {
     })
     this.invoiceForm.patchValue({
       document_date: '',
-      invoice_ID : '',
+      invoiceId : '',
       payment_method: ''
     })
   }

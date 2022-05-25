@@ -6,7 +6,7 @@ export class CreditNoteModel {
   date_emition: FireTime = createDate(new Date())
   invoiceId: string
   invoiceRef: FireRef<SalesInvoiceModel> | null = null
-  noteId: string
+  id: string
   manager: string
   concept: string
   footer: iInvoiceFooter
@@ -20,7 +20,7 @@ export class CreditNoteModel {
     footer?: iInvoiceFooter,
   ) {
     this.invoiceId = invoiceId
-    this.noteId = noteId
+    this.id = noteId
     this.manager = manager
     this.concept = concept
     this.details = details

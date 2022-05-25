@@ -51,7 +51,7 @@ export class CreditDebitNoteDialogComponent implements OnInit {
   createCDN(){
     try {
       if (!this.sales.current$.value) throw { message: 'No existe sales '}
-      const id_invoice= this.sales.current$.value.invoice_ID
+      const id_invoice= this.sales.current$.value.invoiceId
       Swal.fire({
         title: 'Estas seguro en crear el documento?',
         confirmButtonText:'aceptar',

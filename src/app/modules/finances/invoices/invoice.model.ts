@@ -4,9 +4,9 @@ import { AppliedTaxModel } from "../taxes/taxes.model"
 
 export class InvoiceModel {
   /**folio de la factura */
-  public invoice_ID: string = ''
+  public invoiceId: string = ''
   /** fecha de la factura */
-  public document_date: FireTime = createDate(new Date())
+  public date_emition: FireTime = createDate(new Date())
   /** metodos de pagos */
   public payment_method: string = ''
 

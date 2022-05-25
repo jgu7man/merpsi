@@ -78,7 +78,7 @@ export class FormCreditNoteComponent implements OnInit, OnDestroy{
       this.credit.nextCurrent(this.invoice_Ref)
       this.creditNoteForm.patchValue({
         concept: this.conceptNC,
-        invoiceIdRef: this.invoice_Ref!.invoice_ID
+        invoiceIdRef: this.invoice_Ref!.invoiceId
       })
       if ( this.conceptNC == 'anulacion'){
         if ( !this.credit.currentSales$.value ) throw { message: 'No existe el currentSales'}
@@ -135,7 +135,7 @@ export class FormCreditNoteComponent implements OnInit, OnDestroy{
       if (this.stubSelect){
       let nro = this.stubSelect.prefix + '-' + ((this.stubSelect.currentIndex || 0) + 1)
       this.prefix = nro
-      this.credit.updateCurrent('noteId',nro)
+      this.credit.updateCurrent('id',nro)
       }
 
     }

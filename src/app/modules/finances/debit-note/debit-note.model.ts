@@ -7,9 +7,9 @@ export class DebitNoteModel {
   date_emition: FireTime = createDate(new Date())
 
   constructor(
+    public id: string,
     /** Informacion de la factura */
     public invoice: Sales.invoice,
-    public id: string,
     /**Informacion del Manager  */
     public manager:  Manager.invoice,
     /**Array de los conceptos de la Nota de Debito */
