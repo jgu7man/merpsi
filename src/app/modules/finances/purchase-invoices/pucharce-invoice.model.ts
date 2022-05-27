@@ -1,57 +1,46 @@
 import firebase from "firebase/app";
 import { FireTime, createDate } from "../../../models/firestore.model";
-import { InvoiceModel, InvoiceStore, ProductInvoiceModel } from "../invoices/invoice.model";
+import { Invoice, InvoiceModel, ProductInvoiceModel } from "../invoices/invoice.model";
 
 
 /** Modelo para crear una factura de compra */
-export class PurchaseInvoiceModel extends InvoiceModel{
-  /** Fecha de la compra */
-  public purshase_date: FireTime =  createDate(new Date());
+export class PurchaseInvoiceModel implements InvoiceModel {
   
-  
-  /** Proveedor de la factura: CRF o referencia de firestore */
-  public provider: InvoiceProvider = {
-    CRF: '',
-    businessName: '',
-  }
-  public store: InvoiceStore = {
-    id: '',
-    name: '',
-  }
+  registered_date: firebase.firestore.Timestamp = createDate(new Date())
+  invoiceId: string;
+  action_date: firebase.firestore.Timestamp;
+  provider: Invoice.provider
+  store: Invoice.store;
+  details: Invoice.concept[];
+  footer: Invoice.footer;
+  payment_method: string | undefined;
+  currency: string | undefined;
+  manager: Invoice.manager
   constructor (
-    invoice?: PurchaseInvoiceModel
+  invoiceId: string,
+  action_date: Date,
+  provider: Invoice.provider,
+  store: Invoice.store,
+  details: Invoice.concept[],
+  footer: Invoice.footer,
+  payment_method: string | undefined,
+  currency: string | undefined,
+  manager: Invoice.manager
   ) {
-    super(invoice)
-    this.footer = {
-      subtotal: 0,
-      discount: 0,
-      taxes: [],
-      totalTaxes: 0,
-      shipping: 0,
-      total: 0,
-    }
+    this.invoiceId = invoiceId;
+    this.action_date = createDate(action_date);
+    this.provider = provider;
+    this.store = store;
+    this.details = details;
+    this.footer = footer;
+    this.manager = manager;
   }
 
-  
-  
-  
 }
 
-export interface InvoiceProvider {
-  CRF: string,
-  businessName: string,
+export interface iPurchaseInvoice extends PurchaseInvoiceModel{
+
 }
 
-
-/** Modelo de consulta de una factura de compra  */
-export interface iInvoice extends Omit<PurchaseInvoiceModel, "purshase_date"> {
-	purshase_date: firebase.firestore.Timestamp;
-}
-
-/** Modelo de agregado de productos a la factura de compra */
-
-interface iProductPurchased extends ProductInvoiceModel {}
-
-interface iPurchaseInvoice extends PurchaseInvoiceModel {}
 
 

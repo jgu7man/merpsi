@@ -1,5 +1,5 @@
 import { createDate, FireDoc, FireRef, FireTime } from "src/app/models/firestore.model";
-import { iInvoiceFooter, InvoiceFooterModel, iProductInvoice } from "../invoices/invoice.model";
+import { Invoice, InvoiceFooter } from "../invoices/invoice.model";
 import { SalesInvoiceModel } from "../sales-invoices/sales-invoice.model";
 
 export class CreditNoteModel {
@@ -9,22 +9,22 @@ export class CreditNoteModel {
   id: string
   manager: string
   concept: string
-  footer: iInvoiceFooter
-  details: iProductInvoice[]
+  footer: InvoiceFooter
+  details: Invoice.concept[]
   constructor(
     invoiceId: string,
     noteId: string,
     manager: string,
     concept: string,
-    details: iProductInvoice[],
-    footer?: iInvoiceFooter,
+    details: Invoice.concept[],
+    footer: InvoiceFooter,
   ) {
     this.invoiceId = invoiceId
     this.id = noteId
     this.manager = manager
     this.concept = concept
     this.details = details
-    this.footer = footer ? footer : footerEmpty
+    this.footer = footer 
   }
 
 }

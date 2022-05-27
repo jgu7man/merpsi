@@ -17,18 +17,18 @@
     <!-- fecha de la factura -->
     <mat-form-field appearance="outline" class="col s12 l4">
       <mat-label>Fecha de Compra</mat-label>
-      <input matInput formControlName="document_date" [matDatepicker]="picker" />
+      <input matInput formControlName="action_date" [matDatepicker]="picker" />
       <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
       <mat-datepicker #picker startView="year"></mat-datepicker>
-      <mat-error *ngIf="invoiceForm.hasError('required', 'document_date')">
+      <mat-error *ngIf="invoiceForm.hasError('required', 'action_date')">
         Este dato es necesario
       </mat-error>
     </mat-form-field>
   </div>
 
-  <ng-container *ngIf="purchase.current$ | async as purchase">
+  <!-- <ng-container *ngIf="purchase.current$ | async as purchase"> -->
     <div class="row">
-      <ng-container *ngIf="purchase.invoiceId">
+      <ng-container *ngIf="invoiceId != null">
 
         <!-- PROVIDER -->
         <div class="col s12 l4">
@@ -51,18 +51,17 @@
 
     <div class="row">
       <div class="col s12">
-
-        store: {{ storeForm.invalid}}
-        provider: {{ providerForm.invalid }}
-        <button mat-raised-button color="accent" [disabled]="storeForm.invalid || providerForm.invalid"
+        <button mat-raised-button color="accent" [disabled]="(store == null || provider == null)"
           (click)="addConcept()">
           Agregar Concepto
         </button>
 
-        <ng-container *ngIf="purchase.store && purchase.provider">
-          <ng-container *ngFor="let concept of purchase.details ">
-            <app-invoice-concept [concept]="concept" (changes)="getChanges($event)" (delete)="deleteConcept($event)">
-            </app-invoice-concept>
+        <ng-container *ngIf="store && provider">
+          <ng-container *ngIf="conceptInvoice.details$.value">
+            <ng-container *ngFor="let concept of conceptInvoice.details$.value ">
+              <app-invoice-concept [concept]="concept">
+              </app-invoice-concept>
+            </ng-container>
           </ng-container>
         </ng-container>
       </div>
@@ -70,15 +69,14 @@
 
     <div class="row">
       <div class="col s12">
-        <ng-container *ngIf="purchase.details.length > 0">
-          <app-footer-invoice [footerCalc]="footerCalc" (getFooter)="getFooter($event)"></app-footer-invoice>
-        </ng-container>
+          <app-footer-invoice ></app-footer-invoice>
       </div>
     </div>
+    {{store != null || provider != null}}
     <button 
         mat-raised-button 
         color="primary"
-        [disabled]="(invoiceForm.invalid || storeForm.invalid || providerForm.invalid ) && purchase.details.length <= 0"
+        [disabled]="(store == null || provider == null)"
         (click)="saveInvoice()">Guardar</button>
-  </ng-container>
+  <!-- </ng-container> -->
 </form>

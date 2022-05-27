@@ -38,7 +38,7 @@
     <ng-container *ngIf="invoice else autoComplete">
       <div>
         <b>Cliente:</b> {{invoice.client.name}}
-        <b>identificacion:</b> {{invoice.client.cip}} <br>
+        <!-- <b>identificacion:</b> {{invoice.client.cip}} <br> -->
         <b>vendedor:</b> {{invoice.seller}}
         <b>Moneda:</b> {{invoice.currency}}
         <b>Metodo de Pago:</b> {{invoice.payment_method}}
@@ -106,7 +106,7 @@
           </app-invoice-concept-sales>
         </ng-container>
         <!-- <ng-container *ngIf="sales.details.length > 0"> -->
-        <app-footer-invoice [invoice]="invoice" [document]="'sale'">
+        <app-footer-invoice [document]="'sale'">
         </app-footer-invoice>
         <!-- </ng-container> -->
       </div>

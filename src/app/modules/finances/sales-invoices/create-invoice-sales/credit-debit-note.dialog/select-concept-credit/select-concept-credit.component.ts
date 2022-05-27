@@ -1,7 +1,7 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { iProductInvoice, ProductInvoiceModel } from 'src/app/modules/finances/invoices/invoice.model';
+import { ProductInvoiceModel } from 'src/app/modules/finances/invoices/invoice.model';
 import Swal from 'sweetalert2';
 import { SalesInvoiceModel } from '../../../sales-invoice.model';
 
@@ -12,7 +12,7 @@ import { SalesInvoiceModel } from '../../../sales-invoice.model';
 })
 export class SelectConceptCreditComponent implements OnInit {
 
-  concepts: iProductInvoice[] = []
+  concepts: ProductInvoiceModel[] = []
   constructor(
     @Inject(MAT_DIALOG_DATA) public invoice: SalesInvoiceModel
   ) { }
@@ -20,11 +20,11 @@ export class SelectConceptCreditComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  addProduct(event: MatCheckboxChange, concept: iProductInvoice) {
+  addProduct(event: MatCheckboxChange, concept: ProductInvoiceModel) {
     if (event.checked) {
       this.concepts.push(concept);
     } else {
-      this.concepts= this.concepts.filter(c => c.UPC != concept.UPC)
+      this.concepts= this.concepts.filter(c => c.product.UPC != concept.product.UPC)
     }
   }
 

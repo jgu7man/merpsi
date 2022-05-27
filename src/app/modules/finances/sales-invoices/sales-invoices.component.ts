@@ -1,9 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { skip } from 'rxjs/operators';
-import { DashboardService } from 'src/app/dashboard/dashboard.service';
 import { SalesInvoiceModel } from 'src/app/modules/finances/sales-invoices/sales-invoice.model';
 import { AuthService } from 'src/app/services/auth.service';
-import { ManagerModel } from '../../admin/managers/manager.model';
 import { iStub } from '../stubs-invoice/stub.model';
 import { StubService } from '../stubs-invoice/stub.service';
 import { TaxesService } from '../taxes/taxes.service';
@@ -35,7 +32,7 @@ export class SalesInvoicesComponent implements OnInit {
 
 
   async onCreate() {
-    this.sales.current$.next(new SalesInvoiceModel());
+   // this.sales.current$.next(new SalesInvoiceModel());
     let user = this._auth.userState$.value
     if (!user) throw { message: 'No se ha iniciado sesión' }
     this.sales.updateCurrent('manager', user!.name)

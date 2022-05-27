@@ -33,12 +33,7 @@ export class PurchaseInvoicesComponent implements OnInit {
   }
 
   async onCreate() {
-    this.purchases.current$.next(new PurchaseInvoiceModel())
     this._taxes.applidedTaxes = []
-    let user = this._auth.userState$.value
-    if (!user) throw {message: 'No se ha iniciado sesión'}
-      this.purchases.updateCurrent('manager', user.name)
-    
   }
 
   async listStores() {

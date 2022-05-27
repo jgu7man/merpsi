@@ -1,6 +1,7 @@
 import { createDate, FireRef, FireTime } from "src/app/models/firestore.model"
 import { Manager } from "../../admin/managers/manager.model"
-import { iInvoiceFooter, iProductInvoice } from "../invoices/invoice.model"
+import { InvoiceFooter, ProductInvoiceModel } from "../invoices/invoice.model"
+// import { iInvoiceFooter, iProductInvoice } from "../invoices/invoice.model"
 import { Sales, SalesInvoiceModel } from "../sales-invoices/sales-invoice.model"
 
 export class DebitNoteModel {
@@ -13,15 +14,15 @@ export class DebitNoteModel {
     /**Informacion del Manager  */
     public manager:  Manager.invoice,
     /**Array de los conceptos de la Nota de Debito */
-    public details: iProductInvoice[],
+    public details: ProductInvoiceModel[],
     /**Informacion del footer de la Nota de debito */
-    public footer?: iInvoiceFooter,
+    public footer: InvoiceFooter,
   ) {
     this.invoice = invoice
     this.id = id
     this.manager = manager
     this.details = details
-    this.footer = footer ? footer : footerEmpty
+    this.footer = footer 
   }
 }
 

@@ -2,67 +2,58 @@
   <div class="row">
     <div class="col s12 ">
       <form [formGroup]="formAddProduct">
-        <!-- UPC -->
-        <div class="col s2">
-          <mat-form-field  class="col s12">
-            <mat-label>UPC</mat-label>
-            <input matInput type="text" name="UPC" formControlName="UPC">
-          </mat-form-field>
-        </div>
-        <!-- DESCRIPTION -->
-        <div class="col s2">
-          <mat-form-field  class="col s12">
-            <mat-label>descripcion</mat-label>
-            <input matInput type="text" name="description" formControlName="description">
-          </mat-form-field>
-        </div>
-        <!-- STORE -->
-        <!-- <div class="col s2">
-          <mat-form-field  class="col s12">
-            <mat-label>Sede</mat-label>
-        <mat-select formControlName="store">
-          <mat-option *ngFor="let store of stores$ | async" value="store">{{store.name}}</mat-option>
-        </mat-select>
-        </mat-form-field>
-        </div> -->
-        <!-- cantidad -->
-        <div class="col s2">
-          <mat-form-field appearance="outline" class="col s12">
-            <mat-label>Cantidad</mat-label>
-            <input matInput type="number" name="cantidad" formControlName="cant">
-            <mat-error *ngIf="formAddProduct.hasError('required', 'cant')">
-              Este dato es necesario
-            </mat-error>
-          </mat-form-field>
-        </div>
-        <!-- precio -->
-        <div class="col s2">
-          <mat-form-field appearance="outline" class="col s12">
-            <mat-label>Precio Unitario</mat-label>
-            <input matInput type="number" name="amount" formControlName="unit_cost">
-            <mat-error *ngIf="formAddProduct.hasError('required', 'unit_cost')">
-              Este dato es necesario
-            </mat-error>
-          </mat-form-field>
-        </div>
-        <!-- total -->
-        <div class="col s2">
-          <mat-form-field  class="col s12">
-            <mat-label>Valor Total</mat-label>
-            <input matInput type="number" name="amount" formControlName="amount">
-            <mat-error *ngIf="formAddProduct.hasError('required', 'unit_cost')">
-              Este dato es necesario
-            </mat-error>
-          </mat-form-field>
-        </div>
-        <div class="col s2">
-          <button 
-          mat-raised-button
-          color="warn" 
-          (click)="deleteConcept(concept)">
-          X
-          </button>
-        </div>
+        <ng-container *ngIf="concept">
+          <!-- UPC -->
+          <div class="col s2">
+            {{concept.product.UPC}}
+          </div>
+          <!-- DESCRIPTION -->
+          <div class="col s2">
+            {{concept.product.description}}
+          </div>
+          <!-- STORE -->
+          <!-- <div class="col s2">
+  <mat-form-field  class="col s12">
+    <mat-label>Sede</mat-label>
+<mat-select formControlName="store">
+  <mat-option *ngFor="let store of stores$ | async" value="store">{{store.name}}</mat-option>
+</mat-select>
+</mat-form-field>
+</div> -->
+          <!-- cantidad -->
+          <div class="col s2">
+            <mat-form-field appearance="outline" class="col s12">
+              <mat-label>Cantidad</mat-label>
+              <input matInput type="number" name="cantidad" formControlName="cant">
+              <mat-error *ngIf="formAddProduct.hasError('required', 'cant')">
+                Este dato es necesario
+              </mat-error>
+            </mat-form-field>
+          </div>
+          <!-- precio -->
+          <div class="col s2">
+            <mat-form-field appearance="outline" class="col s12">
+              <mat-label>Precio Unitario</mat-label>
+              <input matInput type="number" name="unit_price" formControlName="unit_price">
+              <mat-error *ngIf="formAddProduct.hasError('required', 'unit_price')">
+                Este dato es necesario
+              </mat-error>
+            </mat-form-field>
+          </div>
+          <!-- total -->
+          <div class="col s2">
+            <ng-container *ngFor="let item of conceptInvoice.details$.value">
+              <ng-container *ngIf="item.product.UPC == concept.product.UPC">
+                {{item.amount || 0 | currency}}
+              </ng-container>
+            </ng-container>
+          </div>
+          <div class="col s2">
+            <button mat-raised-button color="warn" (click)="deleteConcept(concept)">
+              X
+            </button>
+          </div>
+        </ng-container>
       </form>
     </div>
   </div>

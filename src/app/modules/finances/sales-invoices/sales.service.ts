@@ -12,7 +12,8 @@ import { AuthService } from 'src/app/services/auth.service';
 import { CurrentProductService } from '../../inventory/product-single/current-product.service';
 import { ProductEventModel, ProductModel, StoreReferenceModel } from '../../inventory/products/products.model';
 import { FooterService } from '../invoices/footer-invoice/footer.service';
-import { iInvoiceFooter, iProductInvoice, ProductInvoiceModel } from '../invoices/invoice.model';
+import { InvoiceFooter, ProductInvoiceModel } from '../invoices/invoice.model';
+//import { iInvoiceFooter, iProductInvoice, ProductInvoiceModel } from '../invoices/invoice.model';
 import { PurchaseInvoiceModel } from '../purchase-invoices/pucharce-invoice.model';
 import { iStub } from '../stubs-invoice/stub.model';
 import { TaxesService } from '../taxes/taxes.service';
@@ -28,7 +29,7 @@ export class SalesService {
   businessCRF: string = this._cache.getDataKey('eid')!
   stubList$= new BehaviorSubject<iStub[] >([])
   stubSelect$= new BehaviorSubject<iStub | null>(null)
-  public totales: EventEmitter<iInvoiceFooter> = new EventEmitter();
+  public totales: EventEmitter<InvoiceFooter> = new EventEmitter();
   
   constructor(
     private _afs: AngularFirestore,
@@ -59,15 +60,15 @@ export class SalesService {
     if (this.current$.value !== null) {
       this.current$.next({
         ...this.current$.value,
-        details: this.current$.value.details!.filter(c => c.UPC !== UPC)
+        details: this.current$.value.details!.filter(c => c.product.UPC !== UPC)
       })
 
       this.current$.next({
         ...this.current$.value,
-        details: this.current$.value.details!.filter(c => c.UPC !== UPC)
+        details: this.current$.value.details!.filter(c => c.product.UPC !== UPC)
       })
       let foot = this.calcFooter()
-      this.totales.emit(foot)
+      //this.totales.emit(foot)
     }
   }
 
@@ -79,16 +80,16 @@ export class SalesService {
     })
     let foot = this.current$.value!.footer
     foot.subtotal = subtotal
-    foot.total = (subtotal + foot.shipping + this._taxes.appliedTaxesTotal ) - (foot.discount)
+    //foot.total = (subtotal + foot.shipping + this._taxes.appliedTaxesTotal ) - (foot.discount)
     this.updateCurrent('footer', foot)
     return foot
   }
   addConcept(concept: ProductModel, store: string, stock: number) {
     console.log(concept)
     if (this.current$.value != null) {
-      let details: iProductInvoice[] = this.current$.value.details
-      details.push(new ProductInvoiceModel(concept, store, stock))
-      this.updateCurrent('details', details)
+     // let details: iProductInvoice[] = this.current$.value.details
+      //details.push(new ProductInvoiceModel(concept, store, stock))
+     // this.updateCurrent('details', details)
     }
 
   }
@@ -100,7 +101,7 @@ export class SalesService {
       let subtotal = 0
       details = details.map(d => {
         let details
-        if (d.UPC === concept!.UPC) {
+        if (d.product.UPC === concept!.UPC) {
           changes.amount = changes.cant * changes.unit_cost
           details = {
             ...d,
@@ -117,23 +118,23 @@ export class SalesService {
       this.updateCurrent('details', details)
       let foot = this.current$.value!.footer
       foot.subtotal = subtotal
-      foot.total = (subtotal + foot.shipping + this._taxes.appliedTaxesTotal) - (foot.discount)
+     // foot.total = (subtotal + foot.shipping + this._taxes.appliedTaxesTotal) - (foot.discount)
       this.updateCurrent('footer', foot)
 
-      this.foot.currentfoot$.next(foot)
+     // this.foot.currentfoot$.next(foot)
       // this.totales.emit(foot)
     }
   }
 
-  getFooter(changes: iInvoiceFooter) {
+  getFooter(changes: InvoiceFooter) {
     if (this.current$.value != null) {
       let footer = this.current$.value.footer
       let discount = changes.discount
       let shipping = changes.shipping
-      footer.total = (footer.subtotal + shipping) - discount
+    //  footer.total = (footer.subtotal + shipping) - discount
       this.updateCurrent('footer', { ...footer, discount: discount, shipping: shipping }
       )
-      this.foot.currentfoot$.next(footer)
+     // this.foot.currentfoot$.next(footer)
 
       // this.totales.emit(footer)
     }
@@ -141,12 +142,12 @@ export class SalesService {
 
   saveInvoice( invoice: SalesInvoiceModel ) {
     try {
-    let businessRef = `businesses/${this._dashboard.CRF}`
+   /* let businessRef = `businesses/${this._dashboard.CRF}`
     if (this.current$.value){
       const invoiceRef = this._afs.doc<SalesInvoiceModel>(`${businessRef}/sale/${this.current$.value.invoiceId}`).ref
       invoiceRef.set({...invoice})
 
-      let details: iProductInvoice[] = this.current$.value.details
+      let details: ProductInvoiceModel[] = this.current$.value.details
       details.forEach(async det =>{
         let productRef= this._afs.doc(`${businessRef}/products/${det.UPC}`).ref
         await firebase.firestore().runTransaction(async transaction => {
@@ -170,7 +171,7 @@ export class SalesService {
               .set({ ...evento })
           })
         })
-      }
+      }*/
     } catch (error) {
       // this._alert.error('ha ocurrido un error al crear la factura', error)
       console.error(error);

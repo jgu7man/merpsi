@@ -6,7 +6,7 @@ import { DashboardService } from 'src/app/dashboard/dashboard.service';
 import { FireRef } from 'src/app/models/firestore.model';
 import { PersonalService } from '../../admin/managers/personal.service';
 import { FooterService } from '../invoices/footer-invoice/footer.service';
-import { iInvoiceFooter, iProductInvoice, ProductInvoiceModel } from '../invoices/invoice.model';
+import { InvoiceFooter, ProductInvoiceModel } from '../invoices/invoice.model';
 import { SalesInvoiceModel } from '../sales-invoices/sales-invoice.model';
 import { AppliedTaxModel, TaxModel } from '../taxes/taxes.model';
 import { TaxesService } from '../taxes/taxes.service';
@@ -17,8 +17,8 @@ import { DebitNoteModel } from './debit-note.model';
 })
 export class DebitNoteService {
   
-  details$ = new BehaviorSubject<iProductInvoice[] | null>(null)
-  footer$ = new BehaviorSubject<iInvoiceFooter | null>(null)
+  details$ = new BehaviorSubject<ProductInvoiceModel[] | null>(null)
+  footer$ = new BehaviorSubject<InvoiceFooter | null>(null)
   listTaxes: AppliedTaxModel[] = [];
   businessRef = `businesses/${this._dashboard.CRF}`
   
@@ -31,47 +31,47 @@ export class DebitNoteService {
     private _afs: AngularFirestore
   ) { }
 
-  async recalculate(det: iProductInvoice) {
+  async recalculate(det: ProductInvoiceModel) {
   try {
-    if ( !this.details$.value ) throw { message: ' No existe el details '}
-    if ( !this.footer$.value ) throw { message: ' No existe el footer '}
+    // if ( !this.details$.value ) throw { message: ' No existe el details '}
+    // if ( !this.footer$.value ) throw { message: ' No existe el footer '}
 
-    let details = this.details$.value
-    let foot = this.footer$.value
-    this.listTaxes = foot.taxes
-    let subtotal = 0
-    let total = 0
+    // let details = this.details$.value
+    // let foot = this.footer$.value
+    // this.listTaxes = foot.taxes
+    // let subtotal = 0
+    // let total = 0
 
-    details = details.map(d => {
-      let details
-      if (d.UPC === det!.UPC) {
-        d.amount = det.cant * det.unit_cost
-        details = {
-          ...det,
-          amount: d.amount
-        }
-        subtotal += d.amount
-      } else {
-        details = d
-        subtotal += d.amount
-      }
-      return details
-    })
-    console.log(details)
-    this.details$.next(details)
+    // details = details.map(d => {
+    //   let details
+    //   if (d.UPC === det!.UPC) {
+    //     d.amount = det.cant * det.unit_cost
+    //     details = {
+    //       ...det,
+    //       amount: d.amount
+    //     }
+    //     subtotal += d.amount
+    //   } else {
+    //     details = d
+    //     subtotal += d.amount
+    //   }
+    //   return details
+    // })
+    // console.log(details)
+    // this.details$.next(details)
 
-    foot.subtotal = subtotal
-    this.listTaxes.forEach(tax => {
-      let taxe = new TaxModel(0, tax.name, tax.rate)
-      this.taxes.calcTax(taxe, subtotal)
-    })
-    foot.taxes = this.taxes.applidedTaxes
-    foot.totalTaxes = this.taxes.appliedTaxesTotal
+    // foot.subtotal = subtotal
+    // this.listTaxes.forEach(tax => {
+    //   let taxe = new TaxModel(0, tax.name, tax.rate)
+    //   this.taxes.calcTax(taxe, subtotal)
+    // })
+    // foot.taxes = this.taxes.applidedTaxes
+    // foot.totalTaxes = this.taxes.appliedTaxesTotal
 
-    foot.total = (subtotal + foot.shipping + foot.totalTaxes) - (foot.discount)
+    // foot.total = (subtotal + foot.shipping + foot.totalTaxes) - (foot.discount)
 
-    this.footer$.next(foot)
-    this.foot.currentfoot$.next(foot)
+    // this.footer$.next(foot)
+    // this.foot.currentfoot$.next(foot)
   } catch (error: any) {
     if ('message' in error) {
       this._alert.error(error.message, error)
@@ -82,8 +82,8 @@ export class DebitNoteService {
   }
 
 }
-  updatedetails(param: keyof iProductInvoice,
-    value: iProductInvoice[typeof param]) {
+  updatedetails(param: keyof ProductInvoiceModel,
+    value: ProductInvoiceModel[typeof param]) {
     throw new Error('Method not implemented.');
   }
 

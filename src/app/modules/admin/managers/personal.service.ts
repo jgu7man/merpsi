@@ -6,7 +6,7 @@ import { MxAuth } from '@marxa/auth';
 import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import Swal from 'sweetalert2';
-import { ManagerModel } from './manager.model';
+import { iManager, ManagerModel } from './manager.model';
 import { EmailService } from '../../../services/email.service';
 import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
@@ -184,7 +184,7 @@ async sendInvitationEmail(email: string, CRF: string){
       if (!user) throw {message: 'No se ha iniciado sesión'}
        return this._dashboard.businessRef
         .collection( 'managers' )
-        .doc<ManagerModel>( user.uid )
+        .doc<iManager>( user.uid )
         .ref
     }
 

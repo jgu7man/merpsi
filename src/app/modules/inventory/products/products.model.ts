@@ -168,7 +168,7 @@ export declare namespace Product {
     reference: string,
     description: string,
     brand?: string,
-    measure_unit: number,
+    measure_unit?: number,
     document_ref?: FireRef<ProductModel>
   }
 

@@ -5,10 +5,11 @@ import { Observable } from 'rxjs';
 import { debounceTime, distinctUntilChanged, skip } from 'rxjs/operators';
 import { iSede } from 'src/app/modules/admin/stores/sede.model';
 import { SedesService } from 'src/app/modules/admin/stores/sedes.service';
-import { iProductInvoice } from 'src/app/modules/finances/invoices/invoice.model';
+import { Invoice, ProductInvoiceModel } from 'src/app/modules/finances/invoices/invoice.model';
 import { ProductModel } from 'src/app/modules/inventory/products/products.model';
 import { PurchaseInvoiceService } from '../../purchase-invoices/puchase-invoice.service';
 import { SalesService } from '../../sales-invoices/sales.service';
+import { InvoiceConceptService } from './invoice-concept.service';
 
 @Component({
   selector: 'app-invoice-concept',
@@ -17,7 +18,7 @@ import { SalesService } from '../../sales-invoices/sales.service';
 })
 export class InvoiceConceptComponent implements OnInit {
 
-  @Input() concept: iProductInvoice | null = null
+  @Input() concept:  ProductInvoiceModel | null = null
   businessRef = this._cache.getDataKey('eid')
   productSelect: ProductModel | string  = ''
   productListEmpty = false
@@ -25,16 +26,8 @@ export class InvoiceConceptComponent implements OnInit {
 
 
   formAddProduct: FormGroup = new FormGroup({
-    store: new FormControl(''),
-    product: new FormControl('', ),
     cant: new FormControl(0, ),
-    unit_cost: new FormControl(0, ),
-    UPC: new FormControl('', ),
-    reference: new FormControl('', ),
-    description: new FormControl('', ),
-    brand: new FormControl('', ),
-    measure_unit: new FormControl('', ),
-    amount  : new FormControl(0, ),
+    unit_price: new FormControl(0, ),
   })
 
   
@@ -44,6 +37,7 @@ export class InvoiceConceptComponent implements OnInit {
   constructor(
     public sales: SalesService,
     public purchase: PurchaseInvoiceService,
+    public conceptInvoice: InvoiceConceptService,
     private _cache: MxCache,
     private _stores: SedesService,
 
@@ -56,7 +50,6 @@ export class InvoiceConceptComponent implements OnInit {
   ngOnInit(): void {
 
     if (this.concept) {
-      this.disableForm()
       this.formAddProduct.valueChanges.pipe(
         distinctUntilChanged((x, y) =>
           typeof x != 'object' ? x === y : JSON.stringify(x) === JSON.stringify(y)
@@ -64,7 +57,7 @@ export class InvoiceConceptComponent implements OnInit {
         skip( 1),
         debounceTime(1000),
       ).subscribe(changes => {
-        this.changes.emit( changes )
+        this.conceptInvoice.update(changes,this.concept!);
       })
 
       this.formAddProduct.patchValue(this.concept)
@@ -91,16 +84,11 @@ export class InvoiceConceptComponent implements OnInit {
     alert("abrir form de crear producto")
   }
 
-  disableForm() {
-    this.formAddProduct.controls.UPC.disable()
-    this.formAddProduct.controls.description.disable()
-    this.formAddProduct.controls.amount.disable()
-    
-  }
+  
 
-  deleteConcept(concept: iProductInvoice | null ){
+  deleteConcept(concept: ProductInvoiceModel){
     if (concept){
-     this.delete.emit(concept)
+     this.conceptInvoice.delete(concept)
     }
   }
 

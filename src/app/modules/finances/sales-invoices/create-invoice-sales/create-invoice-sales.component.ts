@@ -9,7 +9,7 @@ import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import { Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, skip } from 'rxjs/operators';
 import { ClientModel } from 'src/app/modules/clients/clients.model';
-import { InvoiceFooterModel, ProductInvoiceModel } from '../../invoices/invoice.model';
+import { ProductInvoiceModel } from '../../invoices/invoice.model';
 import { iStub } from '../../stubs-invoice/stub.model';
 import { StubService } from '../../stubs-invoice/stub.service';
 import { TaxesService } from '../../taxes/taxes.service';
@@ -69,16 +69,16 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy {
   async ngOnInit() {
     if (this.invoice) {
       this.clientform.patchValue({
-        cip: this.invoice.client.cip,
+        // cip: this.invoice.cliente.name,
         name: this.invoice.client.name,
-        email: this.invoice.client.email
+        // email: this.invoice.cliente.
       })
       this.salesForm.patchValue({
         client: this.invoice.client,
         seller: this.invoice.seller,
-        date_expiration: this.invoice.date_expiration,
+        date_expiration: this.invoice.action_date,
         currency: this.invoice.currency,
-        date_emition: this.invoice.date_emition,
+        date_emition: this.invoice.registered_date,
         payment_method: this.invoice.payment_method,
       })
 
@@ -121,9 +121,9 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy {
   getValue(client_: ClientModel) {
     this.client = client_
     this.clientform.patchValue({
-      cip: this.client.cip,
+      // cip: this.client.cip,
       name: this.client.name,
-      email: this.client.email
+      // email: this.client.email
     })
     this.clientform.controls.cip.disable()
     this.sales.updateCurrent('client', this.clientform.getRawValue())
@@ -145,12 +145,12 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy {
   }
 
   /* Funcion que se encarga de actualizar el current con los cambios del footer*/
-  getFooter(footer: InvoiceFooterModel) {
-    this.sales.getFooter(footer)
-  }
+  // getFooter(footer: InvoiceFooterModel) {
+  //   this.sales.getFooter(footer)
+  // }
 
   deleteConcept(concept: ProductInvoiceModel) {
-    this.sales.deleteConcept(concept.UPC)
+    this.sales.deleteConcept(concept.product.UPC)
   }
 
   async saveInvoice() {

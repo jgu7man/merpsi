@@ -39,8 +39,7 @@
       </thead>
       <tbody>
         <tr *ngFor="let det of invoice.details">
-          <td>{{det.UPC}}-{{det.description | uppercase}}</td>
-          <td>{{det.store}}</td>
+          <td>{{det.product.UPC}}-{{det.product.description | uppercase}}</td>
           <td>{{det.cant}}</td>
           <td>{{det.unit_cost}}</td>
           <td class>

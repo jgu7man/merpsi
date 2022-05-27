@@ -1,35 +1,34 @@
 import firebase from "firebase/app"
-import { FireRef } from "src/app/models/firestore.model";
-import { InvoiceModel, ProductInvoiceModel } from '../invoices/invoice.model';
+import { createDate, FireRef, FireTime } from "src/app/models/firestore.model";
+import { Invoice, InvoiceModel, ProductInvoiceModel } from '../invoices/invoice.model';
 
-export class SalesInvoiceModel extends InvoiceModel {
-  public client : ClientInvoice= { 
-    cip: '',
-    name: '',
-    email: ''
+export class SalesInvoiceModel implements InvoiceModel {
+  action_date: FireTime = createDate( new Date());
+  registered_date: FireTime = createDate( new Date());
+  
+  constructor(
+    public invoiceId: string,
+    public client: Invoice.client,
+    public seller: string,
+    public details: ProductInvoiceModel[],
+    public footer: Invoice.footer,
+    public manager: Invoice.manager,
+    public payment_method?: string | undefined,
+    public currency?: string | undefined,
+  
+  ){
+    // this.invoiceId = invoiceId,
+    // this.cliente = cliente,
+    // this.details= details
+    // this.footer= footer
+    // this.manager= manager
+    // this.payment_method = payment_method
+    // this.currency = currency
   }
-  public seller: string | ''
-  public date_expiration : firebase.firestore.Timestamp | ''
-  public currency: string | ''
-  constructor (
-    salesI?:SalesInvoiceModel
-  ) {
-    super(salesI)
-    this.seller = salesI?.seller || ''
-    this.date_expiration = salesI?.date_expiration || ''
-    this.currency = salesI?.currency || ''
-    this.footer = {
-      subtotal: 0,
-      discount: 0,
-      taxes: [],
-      totalTaxes: 0,
-      shipping: 0,
-      total: 0,
-    }
-  }
+
     
 }
-export interface iInvoice extends SalesInvoiceModel { }
+export interface iSalesInvoice extends SalesInvoiceModel { }
 
 
 export interface iFacturaDatos {

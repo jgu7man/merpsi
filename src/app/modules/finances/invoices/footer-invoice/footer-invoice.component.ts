@@ -2,12 +2,12 @@ import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angu
 import { FormControl, FormGroup } from '@angular/forms';
 import { debounceTime, distinctUntilChanged, skip } from 'rxjs/operators';
 import { CreditNoteService } from '../../credit-note/credit-note.service';
+import { PurchaseInvoiceModel } from '../../purchase-invoices/pucharce-invoice.model';
 import { PurchaseInvoiceService } from '../../purchase-invoices/puchase-invoice.service';
-import { SalesInvoiceModel } from '../../sales-invoices/sales-invoice.model';
 import { SalesService } from '../../sales-invoices/sales.service';
 import { AppliedTaxModel } from '../../taxes/taxes.model';
 import { TaxesService } from '../../taxes/taxes.service';
-import { iInvoiceFooter, InvoiceFooterModel } from '../invoice.model';
+import { InvoiceFooter } from '../invoice.model';
 import { FooterService } from './footer.service';
 
 @Component({
@@ -18,13 +18,13 @@ import { FooterService } from './footer.service';
 export class FooterInvoiceComponent implements OnInit, OnDestroy {
 
 
-  @Input() footerCalc: iInvoiceFooter | null = null
-  @Input() invoice: SalesInvoiceModel | null = null
+  // @Input() footerCalc: iInvoiceFooter | null = null
+  @Input() invoice: PurchaseInvoiceModel | null = null
   @Input() document: string | null = null
 
   formFooter: FormGroup = new FormGroup({
-    discount: new FormControl(this.footerCalc != null ? this.footerCalc.discount : 0),
-    shipping: new FormControl(this.footerCalc != null ? this.footerCalc.shipping : 0),
+    discount: new FormControl(0),
+    shipping: new FormControl(0),
   })
 
 
@@ -44,20 +44,21 @@ export class FooterInvoiceComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    if ( !this.foot.currentfoot$.value) {
-      
-        if ( this.invoice ) {
-          this.foot.currentfoot$.next(this.invoice.footer)
-          this.formFooter.patchValue({ ...this.invoice.footer })
-          this.updateTaxes(this.invoice.footer.taxes)
-          if ( this.document == 'sale'){
-            this.readonlyAll()
-        }
-        } else {
-          this.foot.currentfoot$.next(new InvoiceFooterModel())
-        }
-    }
-
+    // if ( !this.foot.currentfoot$.value) {
+    //     if ( this.invoice ) {
+    //       let footer = new InvoiceFooter()
+    //       footer.subtotal = this.invoice.footer.subtotal
+    //       this.foot.currentfoot$.next(footer)
+    //       this.formFooter.patchValue({ ...this.invoice.footer })
+    //       this.updateTaxes(this.invoice.footer.taxes)
+    //       if ( this.document == 'sale'){
+    //         this.readonlyAll()
+    //     }
+    //     } else {
+    //       
+    //     }
+    // }
+    this.foot.currentfoot$.next(new InvoiceFooter())
     this.formFooter.valueChanges.pipe(
       distinctUntilChanged((x, y) =>
         typeof x != 'object' ? x === y : JSON.stringify(x) === JSON.stringify(y)
@@ -73,11 +74,16 @@ export class FooterInvoiceComponent implements OnInit, OnDestroy {
     this.formFooter.controls.shipping.disable()
   }
   updateTaxes(taxes: AppliedTaxModel[]) {
-    this.taxes.applidedTaxes = taxes
+    
+    
   }
 
   getTotalTaxes() {
-    this.foot.getTotalTaxes()
+    if (!this.foot.currentfoot$.value) throw { message: ' No existe el footer'}
+    let footer = this.foot.currentfoot$.value
+    footer.taxes = this.taxes.applidedTaxes
+    this.foot.currentfoot$.next(footer)
+    console.log(this.foot.currentfoot$.value);
   }
 
 }

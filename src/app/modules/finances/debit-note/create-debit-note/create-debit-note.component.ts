@@ -7,7 +7,8 @@ import { skip } from 'rxjs/operators';
 import { Manager } from 'src/app/modules/admin/managers/manager.model';
 import { PersonalService } from 'src/app/modules/admin/managers/personal.service';
 import { CreditNoteService } from '../../credit-note/credit-note.service';
-import { InvoiceFooterModel, iProductInvoice } from '../../invoices/invoice.model';
+import { InvoiceFooter, ProductInvoiceModel } from '../../invoices/invoice.model';
+// import { InvoiceFooterModel, iProductInvoice } from '../../invoices/invoice.model';
 import { Sales, SalesInvoiceModel } from '../../sales-invoices/sales-invoice.model';
 import { iStub } from '../../stubs-invoice/stub.model';
 import { StubService } from '../../stubs-invoice/stub.service';
@@ -61,7 +62,7 @@ export class CreateDebitNoteComponent implements OnInit, OnDestroy {
       if ( !this.invoiceId ) throw { message: 'No existe invoiceId' }
       this.invoice_Ref = await this.debit.getInvoice(this.invoiceId)
       if ( !this.invoice_Ref ) throw { message: 'No se encontro la factura'}
-      this.debit.footer$.next(new InvoiceFooterModel())
+      this.debit.footer$.next(new InvoiceFooter())
     } catch (error: any) {
       if ('message' in error) {
         this._alert.error(error.message, error)
@@ -94,7 +95,7 @@ export class CreateDebitNoteComponent implements OnInit, OnDestroy {
     return this.stubSelect.currentIndex + 1
   }
 
-  getChanges(event: iProductInvoice) {
+  getChanges(event: ProductInvoiceModel) {
     this.debit.recalculate(event)
     
   }

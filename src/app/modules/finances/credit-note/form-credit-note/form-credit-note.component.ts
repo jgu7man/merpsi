@@ -6,7 +6,7 @@ import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import Swal from 'sweetalert2';
 import { FooterService } from '../../invoices/footer-invoice/footer.service';
-import { iProductInvoice } from '../../invoices/invoice.model';
+// import { iProductInvoice } from '../../invoices/invoice.model';
 import { SalesInvoiceModel } from '../../sales-invoices/sales-invoice.model';
 import { SalesService } from '../../sales-invoices/sales.service';
 import { iStub, StubModel } from '../../stubs-invoice/stub.model';
@@ -73,17 +73,17 @@ export class FormCreditNoteComponent implements OnInit, OnDestroy{
 
   async ngOnInit(): Promise<void> {
     try {
-      if ( !this.invoiceId ) throw { message: 'No existe invoiceId' }
-      this.invoice_Ref = await this.credit.getInvoice(this.invoiceId)
-      this.credit.nextCurrent(this.invoice_Ref)
-      this.creditNoteForm.patchValue({
-        concept: this.conceptNC,
-        invoiceIdRef: this.invoice_Ref!.invoiceId
-      })
-      if ( this.conceptNC == 'anulacion'){
-        if ( !this.credit.currentSales$.value ) throw { message: 'No existe el currentSales'}
-        this._footer.currentfoot$.next(this.credit.currentSales$.value.footer)
-      }
+      // if ( !this.invoiceId ) throw { message: 'No existe invoiceId' }
+      // this.invoice_Ref = await this.credit.getInvoice(this.invoiceId)
+      // this.credit.nextCurrent(this.invoice_Ref)
+      // this.creditNoteForm.patchValue({
+      //   concept: this.conceptNC,
+      //   invoiceIdRef: this.invoice_Ref!.invoiceId
+      // })
+      // if ( this.conceptNC == 'anulacion'){
+      //   if ( !this.credit.currentSales$.value ) throw { message: 'No existe el currentSales'}
+      //   this._footer.currentfoot$.next(this.credit.currentSales$.value.footer)
+      // }
  
     } catch (error: any) {
       if ('message' in error) {
@@ -98,21 +98,21 @@ export class FormCreditNoteComponent implements OnInit, OnDestroy{
   async save() {
 
     try {
-      if (!this.credit.currentNC$.value) throw { message: 'No existe el current de nota de credito'}
-      let noteCredit = this.credit.currentNC$.value
-      let taxe: any = []
-      /* destructuracion de taxes para que no se quede el modelo */
-      noteCredit.footer.taxes.forEach(tax => { taxe.push({...tax}) })
-      noteCredit.footer.taxes = taxe
+    //   if (!this.credit.currentNC$.value) throw { message: 'No existe el current de nota de credito'}
+    //   let noteCredit = this.credit.currentNC$.value
+    //   let taxe: any = []
+    //   /* destructuracion de taxes para que no se quede el modelo */
+    //   noteCredit.footer.taxes.forEach(tax => { taxe.push({...tax}) })
+    //   noteCredit.footer.taxes = taxe
       
-        await this.credit.saveCreditNote(this.credit.currentNC$.value)
-        /**Se actualiza el index current en el talonario seleccionado */
-    if (this.stubSelect) {
-      this.stubSelect.currentIndex = this.stubSelect.currentIndex + 1
-      this.stub.update(this.stubSelect)
-    }
-       console.log(this.credit.currentNC$.value)
-        Swal.fire('Guardado')
+    //     await this.credit.saveCreditNote(this.credit.currentNC$.value)
+    //     /**Se actualiza el index current en el talonario seleccionado */
+    // if (this.stubSelect) {
+    //   this.stubSelect.currentIndex = this.stubSelect.currentIndex + 1
+    //   this.stub.update(this.stubSelect)
+    // }
+    //    console.log(this.credit.currentNC$.value)
+    //     Swal.fire('Guardado')
     
     } catch (error: any) {
       if ('message' in error) {
@@ -124,23 +124,23 @@ export class FormCreditNoteComponent implements OnInit, OnDestroy{
     }
   }
 
-  getChanges(event: iProductInvoice) {
-    this.credit.recalculate(event, this.conceptNC)
+  // getChanges(event: iProductInvoice) {
+  //   this.credit.recalculate(event, this.conceptNC)
     
-  }
+  // }
 
-  selectStub(stub: MatSelectChange) {
-    this.stubSelect = stub.value
-    if ( this.credit.currentNC$.value){
-      if (this.stubSelect){
-      let nro = this.stubSelect.prefix + '-' + ((this.stubSelect.currentIndex || 0) + 1)
-      this.prefix = nro
-      this.credit.updateCurrent('id',nro)
-      }
+  // selectStub(stub: MatSelectChange) {
+  //   this.stubSelect = stub.value
+  //   if ( this.credit.currentNC$.value){
+  //     if (this.stubSelect){
+  //     let nro = this.stubSelect.prefix + '-' + ((this.stubSelect.currentIndex || 0) + 1)
+  //     this.prefix = nro
+  //     this.credit.updateCurrent('id',nro)
+  //     }
 
-    }
+  //   }
 
-  }
+  // }
 
   
 

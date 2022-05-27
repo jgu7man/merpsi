@@ -6,8 +6,9 @@ import { Observable } from 'rxjs';
 import { debounceTime, distinctUntilChanged, skip } from 'rxjs/operators';
 import { iSede } from 'src/app/modules/admin/stores/sede.model';
 import { SedesService } from 'src/app/modules/admin/stores/sedes.service';
-import { iProductInvoice } from 'src/app/modules/finances/invoices/invoice.model';
+// import { iProduct  Invoice } from 'src/app/modules/finances/invoices/invoice.model';
 import { ProductModel } from 'src/app/modules/inventory/products/products.model';
+import { ProductInvoiceModel } from '../../invoices/invoice.model';
 import { PurchaseInvoiceService } from '../../purchase-invoices/puchase-invoice.service';
 import { SalesInvoiceModel } from '../sales-invoice.model';
 import { SalesService } from '../sales.service';
@@ -19,7 +20,7 @@ import { SalesService } from '../sales.service';
 })
 export class InvoiceConceptSalesComponent implements OnInit {
 
-  @Input() public concept: iProductInvoice | null = null
+  @Input() public concept: ProductInvoiceModel | null = null
   /* indica el tipo de documento */
   @Input() document: string = '' 
   @Input() stock: number = 0
@@ -69,8 +70,8 @@ export class InvoiceConceptSalesComponent implements OnInit {
           if ( !this.invoice ) throw { message: 'No existe invoice'}
             let d = this.invoice.details       
             d.forEach( det => {
-              if ( det.UPC == this.concept!.UPC){
-                this.formAddProduct.controls.cant.setValidators(Validators.max(det.cant))
+              if ( det.product.UPC == this.concept!.product.UPC){
+                this.formAddProduct.controls.cant.setValidators(Validators.max(det.cant!))
                 this.formAddProduct.controls.unit_cost.setValidators(Validators.max(det.unit_cost)) 
               }
             })
@@ -80,8 +81,8 @@ export class InvoiceConceptSalesComponent implements OnInit {
           if ( !this.invoice ) throw { message: 'No existe invoice'}
           let d = this.invoice.details       
           d.forEach( det => {
-            if ( det.UPC == this.concept!.UPC){
-              this.formAddProduct.controls.cant.setValidators(Validators.min(det.cant))
+            if ( det.product.UPC == this.concept!.product.UPC){
+              this.formAddProduct.controls.cant.setValidators(Validators.min(det.cant!))
               this.formAddProduct.controls.unit_cost.setValidators(Validators.min(det.unit_cost)) 
             }
           })
@@ -137,7 +138,7 @@ export class InvoiceConceptSalesComponent implements OnInit {
     alert("abrir form de crear producto")
   }
 
-  deleteConcept(concept: iProductInvoice | null ){
+  deleteConcept(concept: ProductInvoiceModel | null ){
     if (concept){
      this.delete.emit(concept)
     }
