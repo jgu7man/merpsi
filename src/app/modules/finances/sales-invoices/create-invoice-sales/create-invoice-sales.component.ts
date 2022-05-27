@@ -9,6 +9,7 @@ import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import { Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, skip } from 'rxjs/operators';
 import { ClientModel } from 'src/app/modules/clients/clients.model';
+import { InvoiceConceptService } from '../../invoices/invoice-concept/invoice-concept.service';
 import { ProductInvoiceModel } from '../../invoices/invoice.model';
 import { iStub } from '../../stubs-invoice/stub.model';
 import { StubService } from '../../stubs-invoice/stub.service';
@@ -59,7 +60,8 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy {
     private _dialog: MatDialog,
     private _alert: MxAlert,
     private _taxes: TaxesService,
-    private _crud: MxCrudService
+    private _crud: MxCrudService,
+    public conceptInvoice: InvoiceConceptService
   ) {
     this.closesSub = this._crud.onClosed.subscribe(() => {
       this.stubForm.patchValue('')
@@ -197,12 +199,12 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy {
     let stub = event.value
     if (stub != '') {
       this.sales.stubSelect$.next(stub)
-      if (this.sales.current$.value) {
+      //if (this.sales.current$.value) {
         this.sales.stubSelect$.value!.prefixIndexCurrent = stub.prefix + '-' + ((stub.currentIndex || 0) + 1)
         this.sales.updateCurrent('invoiceId', this.sales.stubSelect$.value!.prefixIndexCurrent)
         console.log(this.sales.stubSelect$.value!.prefixIndexCurrent);
 
-      }
+     // }
     }
   }
 

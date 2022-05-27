@@ -25,7 +25,7 @@ export class ProductModel {
   /** Existencias totales */
   public stock: number = 0
   /** Unidad de medida */
-  public measure_unit?: number
+  public measure_unit: number
   /** Referencia sin caracteres especiales */
   public slug: string
   /** Códigos adicionales o necesarios para el manejo de inventarios y consultas */
@@ -60,6 +60,7 @@ export class ProductModel {
     this.reference = productData?.reference || ''
     this.description = productData?.description || ''
     this.brand = productData?.brand || ''
+    this.measure_unit = productData ? productData.measure_unit : 0
     this.slug = this.createSlug( this.reference )
     /* Genera un array de códigos de referencia para que el producto pueda ser buscado */
     this.keywords = this.getKeywords()
@@ -167,8 +168,8 @@ export declare namespace Product {
     UPC: string,
     reference: string,
     description: string,
-    brand?: string,
     measure_unit?: number,
+    brand?: string,
     document_ref?: FireRef<ProductModel>
   }
 

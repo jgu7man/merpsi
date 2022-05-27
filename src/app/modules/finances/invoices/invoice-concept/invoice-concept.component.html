@@ -28,6 +28,10 @@
               <mat-error *ngIf="formAddProduct.hasError('required', 'cant')">
                 Este dato es necesario
               </mat-error>
+              <mat-error *ngIf="formAddProduct.hasError('max', 'cant')">
+                cantidad no disponible, ingrese un numero menor
+              </mat-error>
+
             </mat-form-field>
           </div>
           <!-- precio -->

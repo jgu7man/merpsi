@@ -81,7 +81,6 @@ export class PurchaseInvoiceService {
       let details: ProductInvoiceModel[] = this.conceptInvoice.details$.value
       details.push(new ProductInvoiceModel(concept))
       this.conceptInvoice.details$.next(details)
-     // this.updateCurrent('details', details)
     }
   }
 

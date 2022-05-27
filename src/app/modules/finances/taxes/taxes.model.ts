@@ -54,7 +54,7 @@ export namespace Tax {
 export class AppliedTaxModel extends TaxModel {
   /** Resultado de multiplicar el monto aplicado por la tasa del impuesto */
   
-  amount: number
+  public amount: number
   constructor (
     /** Impuesto seleccionado */
     tax: TaxModel,

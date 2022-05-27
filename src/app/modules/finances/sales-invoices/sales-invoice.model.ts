@@ -13,17 +13,18 @@ export class SalesInvoiceModel implements InvoiceModel {
     public details: ProductInvoiceModel[],
     public footer: Invoice.footer,
     public manager: Invoice.manager,
-    public payment_method?: string | undefined,
-    public currency?: string | undefined,
+    public payment_method: string,
+    public currency: string,
   
   ){
-    // this.invoiceId = invoiceId,
-    // this.cliente = cliente,
-    // this.details= details
-    // this.footer= footer
-    // this.manager= manager
-    // this.payment_method = payment_method
-    // this.currency = currency
+    this.invoiceId = invoiceId,
+    this.client = client,
+    this.seller = seller,
+    this.details= details,
+    this.footer= footer,
+    this.manager= manager,
+    this.payment_method = payment_method,
+    this.currency = currency
   }
 
     

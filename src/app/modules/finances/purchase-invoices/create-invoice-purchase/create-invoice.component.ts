@@ -6,18 +6,15 @@ import { Observable } from 'rxjs';
 import { Product } from 'src/app/modules/inventory/products/products.model';
 import firebase from "firebase/app";
 import { FireDoc } from 'src/app/models/firestore.model';
-import { AuthService } from 'src/app/services/auth.service';
 import { MatSelectChange } from '@angular/material/select';
-import { Invoice, InvoiceFooter, ProductInvoiceModel } from 'src/app/modules/finances/invoices/invoice.model';
+import { Invoice, ProductInvoiceModel } from 'src/app/modules/finances/invoices/invoice.model';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
-import { debounceTime, distinctUntilChanged, skip } from 'rxjs/operators';
 import { SelectConceptDialogComponent } from '../../invoices/select-concept.dialog/select-concept.dialog.component';
-import { iManager } from 'src/app/modules/admin/managers/manager.model';
 import { InventoryProductsService } from 'src/app/modules/inventory/products/products.service';
 import { iSede } from '../../../admin/stores/sede.model';
 import { SedesService } from '../../../admin/stores/sedes.service';
 import { PurchaseInvoiceService } from '../puchase-invoice.service';
-import { QueryProvider } from 'src/app/modules/inventory/providers/provider.model';
+import { iProvider } from 'src/app/modules/inventory/providers/provider.model';
 import { InvoiceConceptService } from '../../invoices/invoice-concept/invoice-concept.service';
 import { PurchaseInvoiceModel } from '../pucharce-invoice.model';
 import { FooterService } from '../../invoices/footer-invoice/footer.service';
@@ -34,8 +31,8 @@ export class CreateInvoiceComponent implements OnInit {
   stores$: Observable<iSede[]>
   businessRef = this._cache.getDataKey( 'eid' )
   
-  provider: Invoice.provider | null = null
-  store: Invoice.store | null = null
+  provider: iProvider | null = null
+  store: iSede | null = null
   invoiceId: string | null = null
   invoiceForm: FormGroup = new FormGroup({
     action_date: new FormControl('', [Validators.required]),
@@ -59,7 +56,6 @@ export class CreateInvoiceComponent implements OnInit {
     private _dialog: MatDialog,
     private _products: InventoryProductsService,
     private _cache: MxCache,
-    private _auth: AuthService,
     private _footer: FooterService,
     private _manager: PersonalService,
 
@@ -77,27 +73,11 @@ export class CreateInvoiceComponent implements OnInit {
   }
 
   onStoreSelected( event: MatSelectChange ) {
-    const store: iSede = event.value
-    this.store = {
-      id: store.id!,
-      name: store.name,
-      ref: null // !! preguntar
-    }
-
-    console.log(this.store);
-    
-    
+    this.store = event.value
   }
 
-  setProvider( provider: QueryProvider ) {
-    console.log( provider )
-    this.provider = {
-      id: provider.CRF,
-      name: provider.businessName,
-      ref: null //!preguntar a jorge
-    }
-    console.log(this.provider);
-    
+  setProvider( provider: iProvider ) {
+    this.provider = provider;
   }
 
 /**
@@ -154,28 +134,24 @@ export class CreateInvoiceComponent implements OnInit {
       }
 
       let {action_date, invoiceId} = this.invoiceForm.value
+
       const purchase = new PurchaseInvoiceModel(
         invoiceId,
         action_date,
         this.provider,
         this.store,
         this.conceptInvoice.details$.value,
-        this._footer.currentfoot$.value.data,
-        undefined,
-        undefined,
+        this._footer.currentfoot$.value.getdata(),
+        '',
+        '',
         manager
       )
 
       console.log(purchase)
 
-      // let taxs: any = []
-      // invoice.footer.taxes.map(tax => {
-      //   taxs.push({...tax})
-      // })
-      // invoice.footer.taxes = taxs
        await this.purchase.saveInvoice(purchase)
-      // this._alert.notify('la factura ha sido guardado con exito!')
-      // this.submited.emit()
+       this._alert.notify('la factura ha sido guardado con exito!')
+       this.submited.emit()
     }else{
       this._alert.message('Debe llenar todos los campos requeridos','text')
       console.log(this.invoiceForm.controls);

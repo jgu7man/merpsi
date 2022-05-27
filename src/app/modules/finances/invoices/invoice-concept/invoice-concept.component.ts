@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import { Observable } from 'rxjs';
 import { debounceTime, distinctUntilChanged, skip } from 'rxjs/operators';
@@ -18,6 +18,7 @@ import { InvoiceConceptService } from './invoice-concept.service';
 })
 export class InvoiceConceptComponent implements OnInit {
 
+  @Input() document: string = ''
   @Input() concept:  ProductInvoiceModel | null = null
   businessRef = this._cache.getDataKey('eid')
   productSelect: ProductModel | string  = ''
@@ -29,8 +30,6 @@ export class InvoiceConceptComponent implements OnInit {
     cant: new FormControl(0, ),
     unit_price: new FormControl(0, ),
   })
-
-  
 
   @Output() changes = new EventEmitter();
   @Output() delete = new EventEmitter();
@@ -49,7 +48,17 @@ export class InvoiceConceptComponent implements OnInit {
 
   ngOnInit(): void {
 
+    
     if (this.concept) {
+      if ( this.document == 'sales'){
+        if (!this.conceptInvoice.details$.value) throw { message: ' No existe los detalles'}
+        let details = this.conceptInvoice.details$.value
+        details.map(det =>{
+          if (det.product.UPC === this.concept!.product.UPC){
+            this.formAddProduct.controls.cant.setValidators(Validators.max(det.stock))
+          }
+        })
+      }
       this.formAddProduct.valueChanges.pipe(
         distinctUntilChanged((x, y) =>
           typeof x != 'object' ? x === y : JSON.stringify(x) === JSON.stringify(y)
@@ -66,8 +75,6 @@ export class InvoiceConceptComponent implements OnInit {
     //console.log(this.purchase.current$.value)
 
   }
-
-
  
   getValue(product: ProductModel){
     this.productSelect = product  

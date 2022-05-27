@@ -72,9 +72,9 @@ export interface InvoiceModel {
   /** Cálculos de totales de la factura */
   footer: Invoice.footer
   /** Metodos de pagos */
-  payment_method?: string
+  payment_method: string
   /** Tipo de moneda */
-  currency?: string
+  currency: string
  /** usuario registrado*/
   manager: Invoice.manager
 }
@@ -87,36 +87,38 @@ export class ProductInvoiceModel {
   public unit_cost: number = 0
   /** Cantidad de productos comprados */
   public cant?: number = 0
-
+  
+  product: Product.MainData 
 
 
   constructor (
     /** Referencia del producto comprado (Debe seleccionarse de la lista de productos registrados de la empresa) */
-    private product_doc: Product.DataReference,
+    product_doc: Product.DataReference,
     public stock: number = 0,
-    public transfer_fee?: Invoice.concept.transfer,
+    public transfer_fee?: Invoice.concept.transfer | null,
   ) {
     this.stock = stock || 0
-  }
-
-  get product(): Product.MainData {
-    let {UPC, reference, description, brand, measure_unit} = this.product_doc
-    return {
+    let {UPC, reference, description, brand, measure_unit} = product_doc
+    this.product = {
       UPC,
       reference,
       description,
       brand,
-      measure_unit,
+      measure_unit: measure_unit || 0,
     }
+    this.transfer_fee = transfer_fee || null
   }
+
+  
 
   /** Resultado de multiplicar cantidad por costo unitario del producto */
   get amount(): number {
     return this.unit_price * (this.cant || 1)
   }
 
-  get data(){
-    let { data: concept, ...object } = this
+  getdata(): Invoice.concept{
+    delete this.transfer_fee
+    let { getdata: concept, ...object } = this
     return {
       ...object,
       product: this.product,
@@ -145,9 +147,12 @@ export class InvoiceFooter {
     return ( (this.subtotal + this.shipping) + this.taxesAmount) - this.discount
   }
   /** Extracción del modelo */
-  get data(): Invoice.footer {
-    let {...object} = this
-    return {...object, total: this.total, taxesAmount: this.taxesAmount}
+  getdata(): Invoice.footer {
+    let {getdata, ...object} = this
+    let taxes = this.taxes.map(tax =>{
+      return {...tax}
+    })
+    return {...object, total: this.total, taxesAmount: this.taxesAmount, taxes: taxes}
   }
 
 }
@@ -184,7 +189,7 @@ export declare namespace Invoice {
     ref: FireRef<ClientModel>
   }
 
-  interface concept extends Omit<ProductInvoiceModel, 'data'> { }
+  interface concept extends Omit<ProductInvoiceModel, 'getdata'> { }
 
   namespace concept {
     interface transfer {
@@ -193,7 +198,7 @@ export declare namespace Invoice {
     }
   }
 
-  interface footer extends Omit<InvoiceFooter, 'data'>{}
+  interface footer extends Omit<InvoiceFooter, 'getdata'>{}
 
 }
 

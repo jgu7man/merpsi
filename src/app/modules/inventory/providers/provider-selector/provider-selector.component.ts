@@ -55,10 +55,9 @@ export class ProviderSelectorComponent implements OnInit {
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
         this.provider = provider
-        this.result.emit( {
-          businessName: provider.businessName,
-          CRF: provider.CRF,
-      }) },
+        this.result.emit( 
+          provider
+      ) },
       reject: () => { }
     } )
   }

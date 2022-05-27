@@ -15,7 +15,7 @@ import { SedesService } from '../sedes.service';
 })
 export class SetSedeComponent implements OnInit, OnDestroy{
 
-  private _sede: BehaviorSubject<iSede> = new BehaviorSubject(new SedeModel('', '', ''));
+  private _sede: BehaviorSubject<iSede> = new BehaviorSubject(new SedeModel('','','',''));
   @Input() set sede(suc: iSede) { this._sede.next(suc); }
   get sede() { return this._sede.getValue() }
 

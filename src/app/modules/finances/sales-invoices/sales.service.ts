@@ -12,6 +12,7 @@ import { AuthService } from 'src/app/services/auth.service';
 import { CurrentProductService } from '../../inventory/product-single/current-product.service';
 import { ProductEventModel, ProductModel, StoreReferenceModel } from '../../inventory/products/products.model';
 import { FooterService } from '../invoices/footer-invoice/footer.service';
+import { InvoiceConceptService } from '../invoices/invoice-concept/invoice-concept.service';
 import { InvoiceFooter, ProductInvoiceModel } from '../invoices/invoice.model';
 //import { iInvoiceFooter, iProductInvoice, ProductInvoiceModel } from '../invoices/invoice.model';
 import { PurchaseInvoiceModel } from '../purchase-invoices/pucharce-invoice.model';
@@ -37,7 +38,8 @@ export class SalesService {
     public _taxes: TaxesService,
     private _dashboard: DashboardService,
     private _alert: MxAlert,
-    private foot: FooterService
+    private foot: FooterService,
+    public conceptInvoice: InvoiceConceptService
   ) {
 
   }
@@ -84,14 +86,23 @@ export class SalesService {
     this.updateCurrent('footer', foot)
     return foot
   }
-  addConcept(concept: ProductModel, store: string, stock: number) {
-    console.log(concept)
-    if (this.current$.value != null) {
-     // let details: iProductInvoice[] = this.current$.value.details
-      //details.push(new ProductInvoiceModel(concept, store, stock))
-     // this.updateCurrent('details', details)
-    }
+  // addConcept(concept: ProductModel, store: string, stock: number) {
+  //   console.log(concept)
+  //   // if (this.current$.value != null) {
+  // let details: iProductInvoice[] = this.current$.value.details
+   //details.push(new ProductInvoiceModel(concept, store, stock))
+    // this.updateCurrent('details', details)
+  //   // }
+  // }
 
+  addConcept(concept: ProductModel, stock: number) {
+    if (this.conceptInvoice.details$.value != null) {
+      let details: ProductInvoiceModel[] = this.conceptInvoice.details$.value
+      let det = new ProductInvoiceModel(concept)
+      det.stock=stock      
+      details.push(new ProductInvoiceModel(concept))
+      this.conceptInvoice.details$.next(details)
+    }
   }
 
   getChanges(changes: any, concept: any) {

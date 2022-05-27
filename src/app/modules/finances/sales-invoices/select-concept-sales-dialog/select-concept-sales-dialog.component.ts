@@ -29,7 +29,7 @@ export class SelectConceptSalesDialogComponent implements OnInit {
 
   getValue(store: StoreReferenceModel){
    let p = this.products.find(p => p.UPC==store.UPC)!
-   this.sales.addConcept(p, store.store_id,store.stock)
+   this.sales.addConcept(p,store.stock)
     this._dialog.close(p)
   }
 

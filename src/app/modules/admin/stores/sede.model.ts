@@ -1,15 +1,17 @@
 export class SedeModel {
     constructor(
-    public name: string,
-    public referencia: string,
-    public tipo: string,
-    public direccion?: string,
-    public ciudad?: string,
-    public depto?: string,
-    // public telefono?: string,
-    public linkmap?: string,
-    public id?: string,
-  ) {}
+      public id: string,
+      public name: string,
+      public referencia: string,
+      public tipo: string,
+      public direccion?: string,
+      public ciudad?: string,
+      public depto?: string,
+      // public telefono?: string,
+      public linkmap?: string,
+      ) {
+    this.id = id;
+  }
 }
 
 export interface iSede extends SedeModel { }

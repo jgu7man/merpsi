@@ -14,25 +14,25 @@
       </mat-select>
     </mat-form-field>
   </ng-container>
-  <ng-container *ngIf="(sales.stubSelect$.value || invoice) && sales.current$.value">
+  <ng-container *ngIf="(sales.stubSelect$.value || invoice)">
     <div appearance="outline" class="col s12 offset-l4">
       <mat-label>Factura Nro: </mat-label>
-      <h1>{{sales.current$.value.invoiceId}}</h1>
+      <h1>{{sales.stubSelect$.value!.prefixIndexCurrent}}</h1>
     </div>
     <!-- fecha de emision -->
-    <mat-form-field appearance="outline" class="col s12 l4">
+    <!-- <mat-form-field appearance="outline" class="col s12 l4">
       <mat-label>Fecha de Emision</mat-label>
       <input matInput formControlName="date_emition" [matDatepicker]="emition">
       <mat-datepicker-toggle matSuffix [for]="emition"></mat-datepicker-toggle>
       <mat-datepicker #emition startView="year"></mat-datepicker>
     </mat-form-field>
     <!-- fecha de Vencimiento -->
-    <mat-form-field appearance="outline" class="col s12 l4 offset-l4">
+    <!-- <mat-form-field appearance="outline" class="col s12 l4 offset-l4">
       <mat-label>Fecha de Vencimiento</mat-label>
       <input matInput formControlName="date_expiration" [matDatepicker]="expire">
       <mat-datepicker-toggle matSuffix [for]="expire"></mat-datepicker-toggle>
       <mat-datepicker #expire startView="year"></mat-datepicker>
-    </mat-form-field>
+    </mat-form-field> --> 
 
     <!-- clientes -->
     <ng-container *ngIf="invoice else autoComplete">
@@ -95,15 +95,15 @@
       </mat-error>
     </mat-form-field>
   </ng-container>
-    <ng-container *ngIf="sales.current$ | async as sales">
+    <ng-container *ngIf="conceptInvoice.details$ | async as details">
       <div class="row">
         <button mat-raised-button color="accent" [disabled]="invoice!=null" (click)="addConcept()">
           Agregar Concepto
         </button>
-        <ng-container *ngFor="let concept of sales.details ">
-          <app-invoice-concept-sales [document]="'sale'" [concept]="concept" (changes)="getChanges($event)"
+        <ng-container *ngFor="let concept of details ">
+          <app-invoice-concept [document]="'sale'" [concept]="concept" (changes)="getChanges($event)"
             [invoice]="invoice" (delete)="deleteConcept($event)">
-          </app-invoice-concept-sales>
+          </app-invoice-concept>
         </ng-container>
         <!-- <ng-container *ngIf="sales.details.length > 0"> -->
         <app-footer-invoice [document]="'sale'">
@@ -111,7 +111,7 @@
         <!-- </ng-container> -->
       </div>
       <button mat-raised-button color="primary"
-        [disabled]="((salesForm.invalid || clientform.invalid) && sales.details.length <= 0) || invoice != null"
+        [disabled]="((salesForm.invalid || clientform.invalid) && details.length <= 0) || invoice != null"
         (click)="saveInvoice()">Guardar</button>
       <ng-container *ngIf="invoice">
         <button mat-raised-button color="accent" (click)="createCredit()">Crear Nota Credito</button>
