@@ -11,6 +11,7 @@ import { Invoice, ProductInvoiceModel } from '../invoice.model';
 export class InvoiceConceptService {
 
   details$ = new BehaviorSubject<ProductInvoiceModel[]>([])
+  details_invoice$ = new BehaviorSubject<Invoice.concept[]>([])
   constructor(
     private _footer: FooterService,
     private _alert: MxAlert,
@@ -22,7 +23,7 @@ export class InvoiceConceptService {
    * @param changes cambios que llegan desde el formulario (cantidad y precio unitario)
    * @param concept concepto de la fila
    */
-  update(changes: { cant: number, unit_price: number }, concept: ProductInvoiceModel) {
+  update(changes: { cant: number, unit_price: number }, concept: ProductInvoiceModel | Invoice.concept) {
     console.log(changes);
     let subtotal = 0
     if (this.details$.value) {
@@ -53,7 +54,7 @@ export class InvoiceConceptService {
     return subtotal
   }
 
-  delete(concept: ProductInvoiceModel) {
+  delete(concept: ProductInvoiceModel | Invoice.concept) {
     try {
       if (!this.details$.value) throw { message: ' No existe los detalles' }
       if (!this._footer.currentfoot$.value) throw { message: ' No existe el footer' }

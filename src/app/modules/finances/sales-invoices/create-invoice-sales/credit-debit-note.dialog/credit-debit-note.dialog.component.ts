@@ -10,7 +10,7 @@ import { CreditNoteService } from '../../../credit-note/credit-note.service';
 import { CreditNoteModel } from '../../../credit-note/creditNote.model';
 import { DebitNoteService } from '../../../debit-note/debit-note.service';
 import { FooterService } from '../../../invoices/footer-invoice/footer.service';
-import { ProductInvoiceModel } from '../../../invoices/invoice.model';
+import { Invoice, ProductInvoiceModel } from '../../../invoices/invoice.model';
 import { SelectConceptDialogComponent } from '../../../invoices/select-concept.dialog/select-concept.dialog.component';
 import { AppliedTaxModel } from '../../../taxes/taxes.model';
 import { SalesService } from '../../sales.service';
@@ -23,7 +23,7 @@ import { SalesService } from '../../sales.service';
 export class CreditDebitNoteDialogComponent implements OnInit {
   businessRef = this._dashboard.CRF
   concept: FormControl = new FormControl()
-  products: ProductInvoiceModel[] = []
+  products: Invoice.concept[] = []
   taxes: AppliedTaxModel[] = []
   constructor(
     private _dashboard: DashboardService,
@@ -41,7 +41,7 @@ export class CreditDebitNoteDialogComponent implements OnInit {
     
 
   }
-  addProduct(event: MatCheckboxChange, concept: ProductInvoiceModel) {
+  addProduct(event: MatCheckboxChange, concept: Invoice.concept) {
     if (event.checked) {
       this.products.push(concept);
     } else {

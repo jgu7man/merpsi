@@ -87,16 +87,17 @@ export class ProductInvoiceModel {
   public unit_cost: number = 0
   /** Cantidad de productos comprados */
   public cant?: number = 0
-  
+  public store: string | null
   product: Product.MainData 
-
 
   constructor (
     /** Referencia del producto comprado (Debe seleccionarse de la lista de productos registrados de la empresa) */
     product_doc: Product.DataReference,
+    store: string | null,
     public stock: number = 0,
     public transfer_fee?: Invoice.concept.transfer | null,
   ) {
+    this.store = store || null
     this.stock = stock || 0
     let {UPC, reference, description, brand, measure_unit} = product_doc
     this.product = {
@@ -186,7 +187,8 @@ export declare namespace Invoice {
   }
 
   interface client extends propertyRef {
-    ref: FireRef<ClientModel>
+    cip:string
+    //ref: FireRef<ClientModel>
   }
 
   interface concept extends Omit<ProductInvoiceModel, 'getdata'> { }

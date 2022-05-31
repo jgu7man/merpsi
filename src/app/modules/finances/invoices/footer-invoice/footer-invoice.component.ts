@@ -4,6 +4,7 @@ import { debounceTime, distinctUntilChanged, skip } from 'rxjs/operators';
 import { CreditNoteService } from '../../credit-note/credit-note.service';
 import { PurchaseInvoiceModel } from '../../purchase-invoices/pucharce-invoice.model';
 import { PurchaseInvoiceService } from '../../purchase-invoices/puchase-invoice.service';
+import { SalesInvoiceModel } from '../../sales-invoices/sales-invoice.model';
 import { SalesService } from '../../sales-invoices/sales.service';
 import { AppliedTaxModel } from '../../taxes/taxes.model';
 import { TaxesService } from '../../taxes/taxes.service';
@@ -19,7 +20,7 @@ export class FooterInvoiceComponent implements OnInit, OnDestroy {
 
 
   // @Input() footerCalc: iInvoiceFooter | null = null
-  @Input() invoice: PurchaseInvoiceModel | null = null
+  @Input() invoice: SalesInvoiceModel | null = null
   @Input() document: string | null = null
 
   formFooter: FormGroup = new FormGroup({
@@ -44,30 +45,24 @@ export class FooterInvoiceComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    // if ( !this.foot.currentfoot$.value) {
-    //     if ( this.invoice ) {
-    //       let footer = new InvoiceFooter()
-    //       footer.subtotal = this.invoice.footer.subtotal
-    //       this.foot.currentfoot$.next(footer)
-    //       this.formFooter.patchValue({ ...this.invoice.footer })
-    //       this.updateTaxes(this.invoice.footer.taxes)
-    //       if ( this.document == 'sale'){
-    //         this.readonlyAll()
-    //     }
-    //     } else {
-    //       
-    //     }
-    // }
-    this.foot.currentfoot$.next(new InvoiceFooter())
-    this.formFooter.valueChanges.pipe(
-      distinctUntilChanged((x, y) =>
-        typeof x != 'object' ? x === y : JSON.stringify(x) === JSON.stringify(y)
-      ),
-      skip(1),
-      debounceTime(3000),
-    ).subscribe(changes => {
-      this.foot.updateFooter(changes)
-    })
+    
+    if( this.invoice){
+      this.foot.currentfoot_invoice$.next(this.invoice.footer)
+
+    }else{
+      this.foot.currentfoot$.next(new InvoiceFooter())
+      this.formFooter.valueChanges.pipe(
+        distinctUntilChanged((x, y) =>
+          typeof x != 'object' ? x === y : JSON.stringify(x) === JSON.stringify(y)
+        ),
+        skip(1),
+        debounceTime(3000),
+      ).subscribe(changes => {
+        this.foot.updateFooter(changes)
+      })
+    }
+    
+    
   }
   readonlyAll() {
     this.formFooter.controls.discount.disable()

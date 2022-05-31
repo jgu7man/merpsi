@@ -13,7 +13,7 @@ import { CurrentProductService } from '../../inventory/product-single/current-pr
 import { ProductEventModel, ProductModel, StoreReferenceModel } from '../../inventory/products/products.model';
 import { FooterService } from '../invoices/footer-invoice/footer.service';
 import { InvoiceConceptService } from '../invoices/invoice-concept/invoice-concept.service';
-import { InvoiceFooter, ProductInvoiceModel } from '../invoices/invoice.model';
+import { Invoice, InvoiceFooter, ProductInvoiceModel } from '../invoices/invoice.model';
 //import { iInvoiceFooter, iProductInvoice, ProductInvoiceModel } from '../invoices/invoice.model';
 import { PurchaseInvoiceModel } from '../purchase-invoices/pucharce-invoice.model';
 import { iStub } from '../stubs-invoice/stub.model';
@@ -44,132 +44,35 @@ export class SalesService {
 
   }
 
-    updateCurrent(
-      param: keyof SalesInvoiceModel,
-    value: SalesInvoiceModel[ typeof param ]
-  ) {
-    if (this.current$.value !== null) {
-      this.current$.next({
-        ...this.current$.value,
-        [param]: value
-      })
-    }
-    console.log('actualice current')
-  }
-
-  deleteConcept(UPC: string) {
-
-    if (this.current$.value !== null) {
-      this.current$.next({
-        ...this.current$.value,
-        details: this.current$.value.details!.filter(c => c.product.UPC !== UPC)
-      })
-
-      this.current$.next({
-        ...this.current$.value,
-        details: this.current$.value.details!.filter(c => c.product.UPC !== UPC)
-      })
-      let foot = this.calcFooter()
-      //this.totales.emit(foot)
-    }
-  }
-
-  calcFooter(){
-    let details = this.current$.value!.details
-    let subtotal = 0
-    details.map(d => {
-      subtotal += d.amount
-    })
-    let foot = this.current$.value!.footer
-    foot.subtotal = subtotal
-    //foot.total = (subtotal + foot.shipping + this._taxes.appliedTaxesTotal ) - (foot.discount)
-    this.updateCurrent('footer', foot)
-    return foot
-  }
-  // addConcept(concept: ProductModel, store: string, stock: number) {
-  //   console.log(concept)
-  //   // if (this.current$.value != null) {
-  // let details: iProductInvoice[] = this.current$.value.details
-   //details.push(new ProductInvoiceModel(concept, store, stock))
-    // this.updateCurrent('details', details)
-  //   // }
-  // }
-
-  addConcept(concept: ProductModel, stock: number) {
+  addConcept(concept: ProductModel, stock: number, store: string) {
     if (this.conceptInvoice.details$.value != null) {
       let details: ProductInvoiceModel[] = this.conceptInvoice.details$.value
-      let det = new ProductInvoiceModel(concept)
+      let det = new ProductInvoiceModel(concept,store)
       det.stock=stock      
-      details.push(new ProductInvoiceModel(concept))
+      details.push(det)
       this.conceptInvoice.details$.next(details)
-    }
-  }
-
-  getChanges(changes: any, concept: any) {
-    if (changes && concept) {
-
-      let details = this.current$.value!.details
-      let subtotal = 0
-      details = details.map(d => {
-        let details
-        if (d.product.UPC === concept!.UPC) {
-          changes.amount = changes.cant * changes.unit_cost
-          details = {
-            ...d,
-            ...changes
-          }
-          subtotal += changes.amount
-        } else {
-          details = d
-          subtotal += d.amount
-        }
-        return details
-      }
-      )
-      this.updateCurrent('details', details)
-      let foot = this.current$.value!.footer
-      foot.subtotal = subtotal
-     // foot.total = (subtotal + foot.shipping + this._taxes.appliedTaxesTotal) - (foot.discount)
-      this.updateCurrent('footer', foot)
-
-     // this.foot.currentfoot$.next(foot)
-      // this.totales.emit(foot)
-    }
-  }
-
-  getFooter(changes: InvoiceFooter) {
-    if (this.current$.value != null) {
-      let footer = this.current$.value.footer
-      let discount = changes.discount
-      let shipping = changes.shipping
-    //  footer.total = (footer.subtotal + shipping) - discount
-      this.updateCurrent('footer', { ...footer, discount: discount, shipping: shipping }
-      )
-     // this.foot.currentfoot$.next(footer)
-
-      // this.totales.emit(footer)
     }
   }
 
   saveInvoice( invoice: SalesInvoiceModel ) {
     try {
-   /* let businessRef = `businesses/${this._dashboard.CRF}`
-    if (this.current$.value){
-      const invoiceRef = this._afs.doc<SalesInvoiceModel>(`${businessRef}/sale/${this.current$.value.invoiceId}`).ref
+    let businessRef = `businesses/${this._dashboard.CRF}`
+      const invoiceRef = this._afs.doc<SalesInvoiceModel>(`${businessRef}/sale/${invoice.invoiceId}`).ref
       invoiceRef.set({...invoice})
 
-      let details: ProductInvoiceModel[] = this.current$.value.details
+      let details: Invoice.concept[] = invoice.details
       details.forEach(async det =>{
-        let productRef= this._afs.doc(`${businessRef}/products/${det.UPC}`).ref
+        let productRef= this._afs.doc(`${businessRef}/products/${det.product.UPC}`).ref
         await firebase.firestore().runTransaction(async transaction => {
+          if (det.store==null) throw { message: 'No se encuentra la store del producto: ' + det.product.UPC}
           let store_Id = det.store
           const storeRef = productRef.collection('stores').doc(store_Id)
           let productStore = (await transaction.get(storeRef)).data()
 
           if (!productStore) {
-          productStore  = new StoreReferenceModel(store_Id,det.UPC,det.unit_cost)
+          productStore  = new StoreReferenceModel(store_Id,det.product.UPC,det.unit_cost)
           }
-          productStore.stock = productStore.stock - det.cant
+          productStore.stock = productStore.stock - det.cant!
 
           await transaction.set(storeRef,{...productStore},{merge: true})
           const evento = new  ProductEventModel(
@@ -177,12 +80,12 @@ export class SalesService {
             this._dashboard.managerRef,
             invoiceRef
             )
-            this._afs.collection(`${businessRef}/products/${det.UPC}/history`)
+            this._afs.collection(`${businessRef}/products/${det.product.UPC}/history`)
               .doc(`${new Date().getTime()}`)
               .set({ ...evento })
           })
         })
-      }*/
+      
     } catch (error) {
       // this._alert.error('ha ocurrido un error al crear la factura', error)
       console.error(error);

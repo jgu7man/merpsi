@@ -35,7 +35,6 @@ export class SalesInvoicesComponent implements OnInit {
    // this.sales.current$.next(new SalesInvoiceModel());
     let user = this._auth.userState$.value
     if (!user) throw { message: 'No se ha iniciado sesión' }
-    this.sales.updateCurrent('manager', user!.name)
     this._stub.list$.pipe(
       ).subscribe( list => {
         let stubList: iStub[] = []

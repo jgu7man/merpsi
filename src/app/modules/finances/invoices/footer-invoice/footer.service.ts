@@ -2,13 +2,14 @@ import { Injectable } from '@angular/core';
 import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
 import { BehaviorSubject } from 'rxjs';
 import { TaxesService } from '../../taxes/taxes.service';
-import { InvoiceFooter } from '../invoice.model';
+import { Invoice, InvoiceFooter } from '../invoice.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FooterService {
   currentfoot$ = new BehaviorSubject<InvoiceFooter | null>(null)
+  currentfoot_invoice$ = new BehaviorSubject<Invoice.footer | null>(null)
   
   constructor(
     private _alert: MxAlert,

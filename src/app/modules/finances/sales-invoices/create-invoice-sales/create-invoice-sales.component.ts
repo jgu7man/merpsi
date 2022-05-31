@@ -8,9 +8,11 @@ import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import { Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, skip } from 'rxjs/operators';
+import { PersonalService } from 'src/app/modules/admin/managers/personal.service';
 import { ClientModel } from 'src/app/modules/clients/clients.model';
+import { FooterService } from '../../invoices/footer-invoice/footer.service';
 import { InvoiceConceptService } from '../../invoices/invoice-concept/invoice-concept.service';
-import { ProductInvoiceModel } from '../../invoices/invoice.model';
+import { Invoice, ProductInvoiceModel } from '../../invoices/invoice.model';
 import { iStub } from '../../stubs-invoice/stub.model';
 import { StubService } from '../../stubs-invoice/stub.service';
 import { TaxesService } from '../../taxes/taxes.service';
@@ -43,11 +45,8 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy {
   })
 
   salesForm: FormGroup = new FormGroup({
-    client: this.clientform,
     seller: new FormControl('', [Validators.required]),
-    date_expiration: new FormControl('', [Validators.required]),
     currency: new FormControl('', [Validators.required]),
-    date_emition: new FormControl('', [Validators.required]),
     payment_method: new FormControl(''),
 
   })
@@ -61,7 +60,10 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy {
     private _alert: MxAlert,
     private _taxes: TaxesService,
     private _crud: MxCrudService,
-    public conceptInvoice: InvoiceConceptService
+    public conceptInvoice: InvoiceConceptService,
+    private _manager: PersonalService,
+    private _footer: FooterService
+
   ) {
     this.closesSub = this._crud.onClosed.subscribe(() => {
       this.stubForm.patchValue('')
@@ -76,30 +78,15 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy {
         // email: this.invoice.cliente.
       })
       this.salesForm.patchValue({
-        client: this.invoice.client,
         seller: this.invoice.seller,
-        date_expiration: this.invoice.action_date,
         currency: this.invoice.currency,
-        date_emition: this.invoice.registered_date,
         payment_method: this.invoice.payment_method,
       })
 
-      this.readOnlyForm()
-
-      this.sales.current$.next(this.invoice)
+      //this.readOnlyForm()
+      this.conceptInvoice.details_invoice$.next(this.invoice.details)
+      this._footer.currentfoot_invoice$.next(this.invoice.footer)
     }
-
-    this.salesForm.valueChanges.pipe(
-      distinctUntilChanged((x, y) => JSON.stringify(x) == JSON.stringify(y)),
-      debounceTime(500),
-      skip(1)
-    ).subscribe(changes => {
-      this.sales.current$.next({
-        ...this.sales.current$.value,
-        ...changes
-      })
-    })
-
   }
   readOnlyForm() {
 
@@ -123,14 +110,10 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy {
   getValue(client_: ClientModel) {
     this.client = client_
     this.clientform.patchValue({
-      // cip: this.client.cip,
+      cip: this.client.cip,
       name: this.client.name,
       // email: this.client.email
     })
-    this.clientform.controls.cip.disable()
-    this.sales.updateCurrent('client', this.clientform.getRawValue())
-    console.log(this.clientform.getRawValue());
-
   }
 
   addConcept() {
@@ -138,60 +121,54 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy {
       width: '600px ',
     }).afterClosed().subscribe(concept => {
       this.concept = concept
+      console.log(this.concept);
+      
     })
-  }
-
-  /* Funcion que se encarga de actualizar el current con los cambios realizados en el concept */
-  getChanges(changes: any) {
-    this.sales.getChanges(changes, this.concept)
-  }
-
-  /* Funcion que se encarga de actualizar el current con los cambios del footer*/
-  // getFooter(footer: InvoiceFooterModel) {
-  //   this.sales.getFooter(footer)
-  // }
-
-  deleteConcept(concept: ProductInvoiceModel) {
-    this.sales.deleteConcept(concept.product.UPC)
   }
 
   async saveInvoice() {
-    console.log(this.sales.current$.value)
-    let invoice = this.sales.current$.value!
-    let taxs: any = []
-    invoice.footer.taxes.map(tax => {
-      taxs.push({ ...tax })
-    })
-    invoice.footer.taxes = taxs
+    if (!this.client) throw { message: 'No existe el cliente'}
+    if (!this.sales.stubSelect$.value) throw { message: 'No existe el talonario'}
+    if ( !this._manager.current) throw { message: 'No se ha iniciado la sesion'}
+    if ( !this._footer.currentfoot$.value ) throw { message: ' No existe el footer'}
+
+
+    const client: Invoice.client = {
+      id: this.client.id!,
+      name: this.client.name!,
+      cip: this.client.cip!
+    }
+    const data = {
+      ...this.salesForm.value
+    }
+
+    const manager: Invoice.manager = {
+      id: this._manager.current.uid!,
+      name: this._manager.current.name,
+      ref: this._manager.managerRef
+    }
+
+    const invoice = new SalesInvoiceModel(
+      this.sales.stubSelect$.value.prefixIndexCurrent,
+      client,
+      data.seller,
+      data.currency,
+      data.payment_method,
+      manager,
+      this.conceptInvoice.details$.value,
+      this._footer.currentfoot$.value.getdata()
+    )
+
+    console.log(invoice)
     await this.sales.saveInvoice(invoice)
 
     /* Se actualiza el index current en el talonario seleccionado */
-    if (this.stubSelect) {
-      this.stubSelect.currentIndex = this.stubSelect.currentIndex + 1
-      this.stub.update(this.stubSelect)
-    }
+    const stub = this.sales.stubSelect$.value
+    stub.currentIndex = stub.currentIndex + 1
+      this.stub.update(stub)
+    
     this._alert.notify('la factura ha sido guardado con exito!')
-    this.cleanForm()
     this.submited.emit()
-  }
-
-  cleanForm() {
-    this.clientform.patchValue({
-      client: '',
-      cip: '',
-      email: ''
-    })
-
-    this.salesForm.patchValue({
-      invoice_ID: '',
-      seller: '',
-      date_expiration: '',
-      currency: '',
-      date_emition: '',
-      payment_method: '',
-
-    })
-    this.stubForm.patchValue('seleccione')
   }
 
   async selectStubInvoice(event: MatSelectChange) {
@@ -201,7 +178,6 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy {
       this.sales.stubSelect$.next(stub)
       //if (this.sales.current$.value) {
         this.sales.stubSelect$.value!.prefixIndexCurrent = stub.prefix + '-' + ((stub.currentIndex || 0) + 1)
-        this.sales.updateCurrent('invoiceId', this.sales.stubSelect$.value!.prefixIndexCurrent)
         console.log(this.sales.stubSelect$.value!.prefixIndexCurrent);
 
      // }
@@ -241,5 +217,8 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this._taxes.leave()
     this.stubForm.patchValue('')
+    this.conceptInvoice.details$.next([])
+    this._footer.currentfoot$.next(null)
+
   }
 }

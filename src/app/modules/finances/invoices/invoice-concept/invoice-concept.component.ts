@@ -8,6 +8,7 @@ import { SedesService } from 'src/app/modules/admin/stores/sedes.service';
 import { Invoice, ProductInvoiceModel } from 'src/app/modules/finances/invoices/invoice.model';
 import { ProductModel } from 'src/app/modules/inventory/products/products.model';
 import { PurchaseInvoiceService } from '../../purchase-invoices/puchase-invoice.service';
+import { iSalesInvoice, SalesInvoiceModel } from '../../sales-invoices/sales-invoice.model';
 import { SalesService } from '../../sales-invoices/sales.service';
 import { InvoiceConceptService } from './invoice-concept.service';
 
@@ -18,8 +19,9 @@ import { InvoiceConceptService } from './invoice-concept.service';
 })
 export class InvoiceConceptComponent implements OnInit {
 
+  @Input() invoice: iSalesInvoice | null = null
   @Input() document: string = ''
-  @Input() concept:  ProductInvoiceModel | null = null
+  @Input() concept:  ProductInvoiceModel | Invoice.concept | null = null
   businessRef = this._cache.getDataKey('eid')
   productSelect: ProductModel | string  = ''
   productListEmpty = false
@@ -31,8 +33,6 @@ export class InvoiceConceptComponent implements OnInit {
     unit_price: new FormControl(0, ),
   })
 
-  @Output() changes = new EventEmitter();
-  @Output() delete = new EventEmitter();
   constructor(
     public sales: SalesService,
     public purchase: PurchaseInvoiceService,
@@ -47,17 +47,16 @@ export class InvoiceConceptComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
-    
     if (this.concept) {
       if ( this.document == 'sales'){
-        if (!this.conceptInvoice.details$.value) throw { message: ' No existe los detalles'}
+        if (this.conceptInvoice.details$.value){
         let details = this.conceptInvoice.details$.value
         details.map(det =>{
           if (det.product.UPC === this.concept!.product.UPC){
             this.formAddProduct.controls.cant.setValidators(Validators.max(det.stock))
           }
         })
+      }
       }
       this.formAddProduct.valueChanges.pipe(
         distinctUntilChanged((x, y) =>
@@ -93,7 +92,7 @@ export class InvoiceConceptComponent implements OnInit {
 
   
 
-  deleteConcept(concept: ProductInvoiceModel){
+  deleteConcept(concept: ProductInvoiceModel | Invoice.concept){
     if (concept){
      this.conceptInvoice.delete(concept)
     }

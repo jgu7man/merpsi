@@ -5,22 +5,25 @@ import { Invoice, InvoiceModel, ProductInvoiceModel } from '../invoices/invoice.
 export class SalesInvoiceModel implements InvoiceModel {
   action_date: FireTime = createDate( new Date());
   registered_date: FireTime = createDate( new Date());
+  details: Invoice.concept[]
   
   constructor(
     public invoiceId: string,
     public client: Invoice.client,
     public seller: string,
-    public details: ProductInvoiceModel[],
-    public footer: Invoice.footer,
-    public manager: Invoice.manager,
-    public payment_method: string,
     public currency: string,
+    public payment_method: string,
+    public manager: Invoice.manager,
+    concepts: ProductInvoiceModel[],
+    public footer: Invoice.footer,
   
   ){
     this.invoiceId = invoiceId,
     this.client = client,
     this.seller = seller,
-    this.details= details,
+    this.details= concepts.map(det =>{
+      return det.getdata()
+    }),
     this.footer= footer,
     this.manager= manager,
     this.payment_method = payment_method,
