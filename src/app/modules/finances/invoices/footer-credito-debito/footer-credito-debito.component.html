@@ -1,0 +1,68 @@
+<ng-container *ngIf="foot.footer$.value as footer">
+  <form [formGroup]="formFooter">
+    <div class="row">
+      <div class="col s12 l8 offset-l8">
+        <div class="col s4">
+          Subtotal: {{footer.subtotal | number}}
+        </div>
+      </div>
+    </div>
+    <ng-container *ngIf="concept!='anulacion'; else anulacion">
+      <div class="row">
+        <div class="col s12 l8 offset-l8">
+          <div class="col s4">
+            <mat-form-field appearance="outline" >
+              <mat-label>descuento</mat-label>
+              <input matInput type="number" name="discount" formControlName="discount">
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col s12 l8 offset-l8">
+          <div class="col s4">
+            <mat-form-field appearance="outline" >
+              <mat-label>Fletes</mat-label>
+              <input matInput type="number" name="shipping" formControlName="shipping">
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+    <ng-template #anulacion>
+      <div class="row">
+        <div class="col s12 l8 offset-l8">
+          <div class="col s4">
+            descuento: {{footer.discount | number}}
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col s12 l8 offset-l8">
+          <div class="col s4">
+            Fletes: {{footer.shipping | number}}
+          </div>
+        </div>
+      </div>
+    </ng-template>
+    
+    <div class="row">
+      <div class="col s12 l8 offset-l8">
+        <div class="col s4">
+            <ng-container *ngFor="let tax of footer.taxes">
+              {{tax.name}}({{tax.rate}}%) ${{tax.amount}}
+            </ng-container>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col s12 l8 offset-l8">
+        <div class="col s4">
+         Total: {{footer.total | number}}
+        </div>
+      </div>
+    </div>
+  </form>
+</ng-container>
+
+

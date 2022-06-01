@@ -4,8 +4,12 @@ import { MatSelectChange } from '@angular/material/select';
 import { ActivatedRoute } from '@angular/router';
 import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
+import { Product } from 'src/app/modules/inventory/products/products.model';
 import Swal from 'sweetalert2';
+import { FooterCreditoDebitoService } from '../../invoices/footer-credito-debito/footer-credito-debito.service';
 import { FooterService } from '../../invoices/footer-invoice/footer.service';
+import { InvoiceConceptService } from '../../invoices/invoice-concept/invoice-concept.service';
+import { Invoice } from '../../invoices/invoice.model';
 // import { iProductInvoice } from '../../invoices/invoice.model';
 import { SalesInvoiceModel } from '../../sales-invoices/sales-invoice.model';
 import { SalesService } from '../../sales-invoices/sales.service';
@@ -14,6 +18,7 @@ import { StubService } from '../../stubs-invoice/stub.service';
 import { AppliedTaxModel } from '../../taxes/taxes.model';
 import { TaxesService } from '../../taxes/taxes.service';
 import { CreditNoteService } from '../credit-note.service';
+import { FooterNoteModel, ProductNoteModel } from '../creditNote.model';
 
 @Component({
   selector: 'app-form-credit-note',
@@ -49,8 +54,10 @@ export class FormCreditNoteComponent implements OnInit, OnDestroy{
     private _cache: MxCache,
     private _activatedRoute: ActivatedRoute,
     private _alert: MxAlert,
-    private _footer: FooterService,
+    public footer_service: FooterService,
+    public footer: FooterCreditoDebitoService,
     private _taxes: TaxesService,
+    public invoiceConcept: InvoiceConceptService
   ) {
     this._activatedRoute.params.subscribe(params => {
       this.conceptNC = params.tipo
@@ -62,6 +69,7 @@ export class FormCreditNoteComponent implements OnInit, OnDestroy{
             this.stubList.push(d)
           }
         })
+        this.credit.stubList$.next(this.stubList)
     })
   }
   ngOnDestroy(): void {
@@ -73,17 +81,31 @@ export class FormCreditNoteComponent implements OnInit, OnDestroy{
 
   async ngOnInit(): Promise<void> {
     try {
-      // if ( !this.invoiceId ) throw { message: 'No existe invoiceId' }
-      // this.invoice_Ref = await this.credit.getInvoice(this.invoiceId)
-      // this.credit.nextCurrent(this.invoice_Ref)
-      // this.creditNoteForm.patchValue({
-      //   concept: this.conceptNC,
-      //   invoiceIdRef: this.invoice_Ref!.invoiceId
-      // })
-      // if ( this.conceptNC == 'anulacion'){
-      //   if ( !this.credit.currentSales$.value ) throw { message: 'No existe el currentSales'}
-      //   this._footer.currentfoot$.next(this.credit.currentSales$.value.footer)
-      // }
+      if ( !this.invoiceId ) throw { message: 'No existe invoiceId' }
+
+      this.invoice_Ref = await this.credit.getInvoice(this.invoiceId)
+
+      if (!this.invoice_Ref) throw { message: 'No Existe la factura relacionada'}
+
+      this.creditNoteForm.patchValue({
+        concept: this.conceptNC,
+        invoiceIdRef: this.invoice_Ref.invoiceId
+      })
+
+      let details_note: ProductNoteModel[] = this.invoice_Ref.details.map(det =>{
+        return new ProductNoteModel(det)
+      })
+      console.log(details_note);
+      
+      this.invoiceConcept.details_Credit$.next(details_note)
+      //this._taxes.applidedTaxes = this.invoice_Ref.footer.taxes
+      if ( this.conceptNC == 'anulacion'){
+        const foot = new FooterNoteModel(this.invoice_Ref.footer)
+        this.footer.footer$.next(foot)
+      }else{
+        const foot = new FooterNoteModel(this.invoice_Ref.footer)
+        this.footer.footer$.next(foot)
+      }
  
     } catch (error: any) {
       if ('message' in error) {
@@ -129,16 +151,12 @@ export class FormCreditNoteComponent implements OnInit, OnDestroy{
     
   // }
 
-  // selectStub(stub: MatSelectChange) {
-  //   this.stubSelect = stub.value
-  //   if ( this.credit.currentNC$.value){
-  //     if (this.stubSelect){
-  //     let nro = this.stubSelect.prefix + '-' + ((this.stubSelect.currentIndex || 0) + 1)
-  //     this.prefix = nro
-  //     this.credit.updateCurrent('id',nro)
-  //     }
-
-  //   }
+  selectStub(data: MatSelectChange) {
+    this.credit.stubSelect$.next(data.value)
+    if (!this.credit.stubSelect$.value) throw { message: ' No existe el talonario'}
+    let stub = this.credit.stubSelect$.value
+    stub.prefixIndexCurrent = stub.prefix + '-' + ((stub.currentIndex || 0) + 1)
+  }
 
   // }
 

@@ -10,9 +10,12 @@ import { ProductEventModel } from '../../inventory/products/products.model';
 import { FooterService } from '../invoices/footer-invoice/footer.service';
 import { SalesInvoiceModel } from '../sales-invoices/sales-invoice.model';
 import { TaxesService } from '../taxes/taxes.service';
-import { CreditNoteModel } from './creditNote.model';
+import { CreditNoteModel, NoteCredit, ProductNoteModel } from './creditNote.model';
 import { AppliedTaxModel, TaxModel } from '../taxes/taxes.model'
-import { InvoiceFooter } from '../invoices/invoice.model';
+import { Invoice, InvoiceFooter, ProductInvoiceModel } from '../invoices/invoice.model';
+import { iStub } from '../stubs-invoice/stub.model';
+import { FooterCreditoDebitoService } from '../invoices/footer-credito-debito/footer-credito-debito.service';
+import { InvoiceConceptService } from '../invoices/invoice-concept/invoice-concept.service';
 
 @Injectable({
   providedIn: 'root'
@@ -22,9 +25,9 @@ export class CreditNoteService {
   businessCRF: string = this._cache.getDataKey('eid')!
   businessRef = `businesses/${this._dashboard.CRF}`
   public totales: EventEmitter<InvoiceFooter> = new EventEmitter();
-  currentNC$ = new BehaviorSubject<CreditNoteModel | null>(null)
-  currentSales$ = new BehaviorSubject<SalesInvoiceModel | null>(null)
   taxes: AppliedTaxModel[] = [];
+  stubList$= new BehaviorSubject<iStub[] >([])
+  stubSelect$= new BehaviorSubject<iStub | null>(null)
 
 
   constructor(
@@ -33,7 +36,8 @@ export class CreditNoteService {
     private _cache: MxCache,
     private _dashboard: DashboardService,
     private _taxes: TaxesService,
-    private _foot: FooterService,
+    private _foot: FooterCreditoDebitoService,
+    private invoiceConcept: InvoiceConceptService,
     private _manager: PersonalService
   ) {
   }
@@ -81,103 +85,70 @@ export class CreditNoteService {
   //     return console.error(error)
   //   }
   // }
-  // async recalculate(det: iProductInvoice, concept: string) {
-  //   try {
-  //     if (!this.currentNC$.value) throw { message: ' No existe el currentNC' }
-  //     if (!this.currentSales$.value) throw { message: ' No existe el currentSales' }
-  //     let details = this.currentNC$.value.details
-  //     let foot = this.currentNC$.value.footer
-  //     let subtotal = 0
-  //     let total = 0
-  //     if (concept == 'disminucion') {
-  //       let taxe: TaxModel[] = []
-  //       details.map(async d => {
-  //         if ( d.UPC === det!.UPC  ) {
-  //         let total_item = det.unit_cost * det.cant
-  //         total +=  total_item
-  //         let rate = 0
-  //         this.taxes.forEach(tax => {
-  //           rate +=  tax.rate
-  //           taxe.push(new TaxModel(0, tax.name, tax.rate))
-  //         })
-  //         total_item = this.taxereverse(rate, total_item)
-  //         subtotal += total_item
+  async recalculate(changes: {cant: number, unit_price: number}  ,det: ProductInvoiceModel | Invoice.concept) {
+    try {
+      if (!this.invoiceConcept.details_Credit$.value) throw { message: ' No existe el detalle' }
+      if (!this._foot.footer$.value) throw { message: ' No existe el footer' }
+      let details = this.invoiceConcept.details_Credit$.value
+      let foot = this._foot.footer$.value
+      let subtotal = 0
+      let total = 0
+        let taxe: TaxModel[] = []
+        details.map(async d => {
+          if ( d.product.UPC === det!.product.UPC  ) {
+          let total_item = changes.unit_price * changes.cant
+          total +=  total_item
+          let rate = 0
+          foot.taxes.forEach(tax => {
+            rate +=  tax.rate
+            taxe.push(new TaxModel(0, tax.name, tax.rate))
+          })
+          total_item = this.taxereverse(rate, total_item)
+          subtotal += total_item
 
-  //         details = details.map(d => {
-  //           let details
-  //           if (d.UPC === det!.UPC) {
-  //             details = {
-  //               ...det,
-  //               unit_cost: total_item / det.cant,
-  //               amount: total_item
-  //             }
-  //           }else{
-  //             details = d
-  //           }
-  //           return details
-  //         })
-  //       }else{
-  //         subtotal += d.amount
-  //       }
-  //         await this.updateCurrent('details', details)
-  //       })
-  //       taxe.forEach(t => {
-  //         this._taxes.calcTax(t, subtotal!)
-  //       })
-  //       foot.taxes = this._taxes.applidedTaxes
-  //       foot.totalTaxes = this._taxes.appliedTaxesTotal
-  //       foot.subtotal = subtotal!
-  //       foot.total = total
-  //       foot.total = (subtotal + foot.shipping + foot.totalTaxes) - (foot.discount)
-  //       this.updateCurrent('footer', foot)
-  //       this._foot.currentfoot$.next(foot)
+          let calc = details.map(d => {
+            let details: NoteCredit.concept
+            if (d.product.UPC === det!.product.UPC ) {
+              details = {
+                ...det,
+                unit_price: total_item / det.cant!,
+                amount: total_item
+              }
+            }else{
+              details = d
+            }
+            return details
+          })
+          details = calc.map(d=>{
+            return new ProductNoteModel(d)
+          })
+        }else{
+          subtotal += d.amount
+        }
+          this.invoiceConcept.details_Credit$.next(details)
+        })
+        taxe.forEach(t => {
+          this._taxes.calcTax(t, subtotal!)
+        })
+        foot.taxes = this._taxes.applidedTaxes
+        foot.subtotal = subtotal!
+        this._foot.footer$.next(foot)
 
-  //     } else {
+      
+          console.log(this.invoiceConcept.details_Credit$.value);
+          console.log(this._foot.footer$.value);
+      
 
-  //       details = details.map(d => {
-  //         let details
-  //         if (d.UPC === det!.UPC) {
-  //           d.amount = det.cant * det.unit_cost
-  //           details = {
-  //             ...det,
-  //             amount: d.amount
-  //           }
-  //           subtotal += d.amount
-  //         } else {
-  //           details = d
-  //           subtotal += d.amount
-  //         }
-  //         return details
-  //       })
-  //       console.log(details);
-  //       await this.updateCurrent('details', details)
-  //       let foot = this.currentNC$.value!.footer
+    } catch (error: any) {
+      if ('message' in error) {
+        this._alert.error(error.message, error)
+      } else {
+        this._alert.error('mensaje de error', error)
+      }
+      return console.error(error)
+    }
 
-  //       foot.subtotal = subtotal
-  //       this.taxes.forEach(tax => {
-  //         let taxe = new TaxModel(0, tax.name, tax.rate)
-  //         this._taxes.calcTax(taxe, subtotal)
-  //       })
-  //       foot.taxes = this._taxes.applidedTaxes
-  //       foot.totalTaxes = this._taxes.appliedTaxesTotal
-
-  //       foot.total = (subtotal + foot.shipping + foot.totalTaxes) - (foot.discount)
-
-  //       this.updateCurrent('footer', foot)
-  //       this._foot.currentfoot$.next(foot)
-  //     }
-
-
-  //   } catch (error: any) {
-  //     if ('message' in error) {
-  //       this._alert.error(error.message, error)
-  //     } else {
-  //       this._alert.error('mensaje de error', error)
-  //     }
-  //     return console.error(error)
-  //   }
-
-  // }
+  }
 
   // getFooter(foot: iInvoiceFooter, invoice: SalesInvoiceModel) {
 
@@ -204,14 +175,11 @@ export class CreditNoteService {
   //   }
   // }
 
-  // async getInvoice(invoice_ID: string) {
-  //   let invoiceRef = this._afs.doc<SalesInvoiceModel>(`${this.businessRef}/sale/${invoice_ID}`).ref
-  //  if (this.currentNC$.value){
-  //    this.currentNC$.value.invoiceRef = invoiceRef
-  //  }
-  //   let invoice = (await (invoiceRef.get())).data()
-  //   return invoice || null
-  // }
+  async getInvoice(invoice_ID: string) {
+    let invoiceRef = this._afs.doc<SalesInvoiceModel>(`${this.businessRef}/sale/${invoice_ID}`).ref
+    let invoice = (await (invoiceRef.get())).data()
+    return invoice || null
+  }
 
   // nextCurrent(invoice_Ref: SalesInvoiceModel | null) {
   //   if (invoice_Ref) {
@@ -222,18 +190,18 @@ export class CreditNoteService {
 
   // }
 
-  // taxereverse(rate: number, total: number) {
-  //   try {
-  //     if (total < 0) throw { message: ' el total debe ser mayor a 0' }
-  //     return total / ((rate / 100) + 1)
+  taxereverse(rate: number, total: number) {
+    try {
+      if (total < 0) throw { message: ' el total debe ser mayor a 0' }
+      return total / ((rate / 100) + 1)
 
-  //   } catch (error: any) {
-  //     if ('message' in error) {
-  //       this._alert.error(error.message, error)
-  //     } else {
-  //       this._alert.error('mensaje de error', error)
-  //     }
-  //     return 0
-  //   }
-  // }
+    } catch (error: any) {
+      if ('message' in error) {
+        this._alert.error(error.message, error)
+      } else {
+        this._alert.error('mensaje de error', error)
+      }
+      return 0
+    }
+  }
 }

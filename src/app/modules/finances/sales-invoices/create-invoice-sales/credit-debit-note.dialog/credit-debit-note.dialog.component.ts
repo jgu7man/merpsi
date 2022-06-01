@@ -10,6 +10,7 @@ import { CreditNoteService } from '../../../credit-note/credit-note.service';
 import { CreditNoteModel } from '../../../credit-note/creditNote.model';
 import { DebitNoteService } from '../../../debit-note/debit-note.service';
 import { FooterService } from '../../../invoices/footer-invoice/footer.service';
+import { InvoiceConceptService } from '../../../invoices/invoice-concept/invoice-concept.service';
 import { Invoice, ProductInvoiceModel } from '../../../invoices/invoice.model';
 import { SelectConceptDialogComponent } from '../../../invoices/select-concept.dialog/select-concept.dialog.component';
 import { AppliedTaxModel } from '../../../taxes/taxes.model';
@@ -23,7 +24,7 @@ import { SalesService } from '../../sales.service';
 export class CreditDebitNoteDialogComponent implements OnInit {
   businessRef = this._dashboard.CRF
   concept: FormControl = new FormControl()
-  products: Invoice.concept[] = []
+  products: ProductInvoiceModel[] = []
   taxes: AppliedTaxModel[] = []
   constructor(
     private _dashboard: DashboardService,
@@ -34,14 +35,16 @@ export class CreditDebitNoteDialogComponent implements OnInit {
     private _alert: MxAlert,
     public sales: SalesService,
     public footer: FooterService,
-    @Inject(MAT_DIALOG_DATA) public document: string
+    private invoiceConcept: InvoiceConceptService,
+    @Inject(MAT_DIALOG_DATA) public document: any
   ) { }
 
   ngOnInit(): void {
     
-
+    console.log(this.document);
+    
   }
-  addProduct(event: MatCheckboxChange, concept: Invoice.concept) {
+  addProduct(event: MatCheckboxChange, concept: ProductInvoiceModel) {
     if (event.checked) {
       this.products.push(concept);
     } else {
@@ -50,40 +53,29 @@ export class CreditDebitNoteDialogComponent implements OnInit {
   }
   createCDN(){
     try {
-      // if (!this.sales.current$.value) throw { message: 'No existe sales '}
-      // const id_invoice= this.sales.current$.value.invoiceId
-      // Swal.fire({
-      //   title: 'Estas seguro en crear el documento?',
-      //   confirmButtonText:'aceptar',
-      //   showCancelButton:true
-      // }).then((result) => {
-      //   if (result.isConfirmed) {
-      //     if (this.document == 'debit') {
-      //       this._debit.details$.next(this.products)
-      //       this._router.navigate([`/business/${this.businessRef}/finances/new-debit-notes/${id_invoice}`])
-      //       .then((result) => {
-      //         this._dialogRef.close()
-      //       })    
-      //     } else {
-      //       if (this.concept.value == 'anulacion') {
-      //         if (!this.sales.current$.value) throw { message: 'No existe el current de sales' }
-      //        // this.products = this.sales.current$.value.details
-      //         this._credit.currentNC$.next(new CreditNoteModel(id_invoice, '', '', this.concept.value, this.products, this.sales.current$.value.footer))
-      //         //this.footer.currentfoot$.next(this.sales.current$.value.footer)
-      //         console.log(this._credit.currentNC$.value);
-
-      //       } else {
-      //         this._credit.currentNC$.next(new CreditNoteModel(id_invoice, '', '', this.concept.value, this.products))
-      //       }
-
-      //       this._router.navigate([`/business/${this.businessRef}/finances/new-credit-notes/${this.concept.value}/${id_invoice}`])
-      //         .then((result) => {
-      //           this._dialogRef.close()
-      //         })
-      //     }
-      //   }
+      const id_invoice= this.document.invoice.invoiceId
+      Swal.fire({
+        title: 'Estas seguro en crear el documento?',
+        confirmButtonText:'aceptar',
+        showCancelButton:true
+      }).then((result) => {
+        if (result.isConfirmed) {
+          if (this.document == 'debit') {
+            this.invoiceConcept.details$.next(this.products)
+            this._router.navigate([`/business/${this.businessRef}/finances/new-debit-notes/${id_invoice}`])
+            .then((result) => {
+              this._dialogRef.close()
+            })    
+          } else {
+            this.invoiceConcept.details$.next(this.products)
+            this._router.navigate([`/business/${this.businessRef}/finances/new-credit-notes/${this.concept.value}/${id_invoice}`])
+              .then((result) => {
+                this._dialogRef.close()
+              })
+          }
+        }
           
-      // })
+      })
     } catch (error: any) {
       if ('message' in error) {
         this._alert.error(error.message, error)

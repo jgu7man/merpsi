@@ -1,39 +1,29 @@
-<!-- <div class="container">
+<div class="container">
   <div class="row">
     <div class="col s12 m8">
       <form class="row" [formGroup]="creditNoteForm">
         <mat-form-field class="col s4" appearance="outline">
           <mat-label>Talonario</mat-label>
           <mat-select placeholder="Placeholder" (selectionChange)="selectStub($event)" name="name">
-            <mat-option *ngFor="let stub of stubList" [value]="stub">
+            <mat-option *ngFor="let stub of credit.stubList$ | async" [value]="stub">
               {{stub.name}}
             </mat-option>
           </mat-select>
         </mat-form-field> -->
         <!-- NRO FACTURA -->
-        <!-- <ng-container *ngIf="stubSelect" class="col s4">
-        <h1>{{prefix}}</h1>
-      </ng-container> -->
-        <!-- fecha -->
-        <!-- <mat-form-field appearance="outline" class="col s4 l3">
-          <mat-label>Fecha de Emision</mat-label>
-          <input matInput formControlName="date_emition" [matDatepicker]="emition">
-          <mat-datepicker-toggle matSuffix [for]="emition"></mat-datepicker-toggle>
-          <mat-datepicker #emition startView="year"></mat-datepicker>
-        </mat-form-field>
+        <ng-container *ngIf=" this.credit.stubSelect$.value as stub" class="col s4">
+          <h1>{{stub.prefixIndexCurrent}}</h1>
+        </ng-container>
       </form>
     </div>
   </div>
-  <ng-container *ngIf="credit.currentSales$.value as invoice_current">
+  <ng-container *ngIf="invoice_Ref as invoice_current">
     <div class="col s3">
       nro de Factura: {{invoice_current.invoiceId}}
     </div>
     <div class="row">
       <div class="col s4">
         Nombre Cliente: {{invoice_current.client.name}}
-      </div>
-      <div class="col s4">
-        correo :{{invoice_current.client.email}}
       </div>
       <div class="col s4">
         identificacion: {{invoice_current.client.cip}}
@@ -50,15 +40,14 @@
         Moneda :{{invoice_current.currency}}
       </div>
     </div>
-    <ng-container *ngIf="credit.currentNC$.value as det">
+    <ng-container *ngIf=" invoice_current as det">
       <ng-container *ngFor="let concept of det.details ">
-        <app-invoice-concept-sales [document]="'credit-note'" [concept]="concept" [invoice]="invoice_current"
-          (changes)="getChanges($event)">
-        </app-invoice-concept-sales>
+        <app-invoice-concept [document]="'credit'" [concept]="concept" [tipo_concepto]="conceptNC">
+        </app-invoice-concept>
       </ng-container>
-      <app-footer-invoice [footerCalc]="det.footer">
-      </app-footer-invoice>
+      <app-footer-credito-debito [concept]="conceptNC">
+      </app-footer-credito-debito>
     </ng-container>
   </ng-container>
   <button mat-raised-button color="primary" (click)="save()">Guardar</button>
-</div> -->
+</div>

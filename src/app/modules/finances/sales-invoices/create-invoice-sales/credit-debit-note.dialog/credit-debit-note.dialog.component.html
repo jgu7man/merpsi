@@ -1,6 +1,6 @@
 
 <div class="row">
-  <ng-container *ngIf="document=='credit'">
+  <ng-container *ngIf="document.document=='credit'">
     <label>
       <h2>Selecciona el concepto:</h2>
     </label>
@@ -25,7 +25,7 @@
     </mat-radio-group>
   </ng-container>
   <ng-container
-    *ngIf="(document=='debit' || (concept.value=='devolucion' || concept.value=='disminucion')) && this.sales.current$.value as invoice">
+    *ngIf="(document.document=='debit' || (concept.value=='devolucion' || concept.value=='disminucion')) && document.invoice as invoice">
     <h2>Selecciona los productos a los cuales se le aplicara la nota</h2>
     <table>
       <thead>
@@ -41,7 +41,7 @@
         <tr *ngFor="let det of invoice.details">
           <td>{{det.product.UPC}}-{{det.product.description | uppercase}}</td>
           <td>{{det.cant}}</td>
-          <td>{{det.unit_cost}}</td>
+          <td>{{det.unit_price}}</td>
           <td class>
             <mat-checkbox (change)="addProduct($event, det)">
             </mat-checkbox>

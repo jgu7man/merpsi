@@ -120,8 +120,11 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy {
     this._dialog.open(SelectConceptSalesDialogComponent, {
       width: '600px ',
     }).afterClosed().subscribe(concept => {
-      this.concept = concept
-      console.log(this.concept);
+      if (concept){
+        this.concept = concept
+        console.log(this.concept!.getdata());
+
+      }
       
     })
   }
@@ -189,7 +192,8 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy {
     this._dialog.open(CreditDebitNoteDialogComponent, {
       width: '1200px',
       height: '400px',
-      data: 'credit'
+      data: {document: 'credit',
+            invoice: this.invoice}
     }).afterClosed().subscribe(concept => {
       this.concept = concept
       // this.sales.addConcept(concept)
@@ -200,7 +204,8 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy {
       this._dialog.open(CreditDebitNoteDialogComponent, {
         width: '1200px',
         height: '400px',
-        data: 'debit'
+        data: {document: 'debit',
+              invoice:this.invoice}
       }).afterClosed().subscribe(concept => {
         this.concept = concept
       })

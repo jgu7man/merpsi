@@ -78,8 +78,9 @@ export class PurchaseInvoiceService {
 
   addConcept(concept: ProductModel) {
     if (this.conceptInvoice.details$.value != null) {
-      let details: ProductInvoiceModel[] = this.conceptInvoice.details$.value
-      details.push(new ProductInvoiceModel(concept,null))
+      let details:ProductInvoiceModel[] = this.conceptInvoice.details$.value
+      const det = new ProductInvoiceModel(concept,null)
+      details.push(det)
       this.conceptInvoice.details$.next(details)
     }
   }
