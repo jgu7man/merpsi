@@ -11,7 +11,7 @@
           </mat-select>
         </mat-form-field> -->
         <!-- NRO FACTURA -->
-        <ng-container *ngIf=" this.credit.stubSelect$.value as stub" class="col s4">
+        <ng-container *ngIf="credit.stubSelect$.value as stub" class="col s4">
           <h1>{{stub.prefixIndexCurrent}}</h1>
         </ng-container>
       </form>
@@ -40,8 +40,8 @@
         Moneda :{{invoice_current.currency}}
       </div>
     </div>
-    <ng-container *ngIf=" invoice_current as det">
-      <ng-container *ngFor="let concept of det.details ">
+    <ng-container *ngIf=" invoiceConcept.details_Notes$.value as det">
+      <ng-container *ngFor="let concept of det ">
         <app-invoice-concept [document]="'credit'" [concept]="concept" [tipo_concepto]="conceptNC">
         </app-invoice-concept>
       </ng-container>

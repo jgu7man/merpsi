@@ -3,15 +3,15 @@
     <mat-form-field class="col s12" appearance="outline">
       <mat-label>Talonario</mat-label>
       <mat-select placeholder="Talonario" (selectionChange)="seletedStub($event)" name="stub">
-        <mat-option *ngFor="let stub of stubsList" [value]="stub">
+        <mat-option *ngFor="let stub of debit.stubList$ | async" [value]="stub">
           {{stub.name}}
         </mat-option>
       </mat-select>
     </mat-form-field>
   </div>
   <div class="col s4">
-    <ng-container *ngIf="stubSelect">
-      <h1>{{nroStub}}</h1>
+    <ng-container *ngIf="debit.stubSelect$.value as stub">
+      <h1>{{stub.prefixIndexCurrent}}</h1>
     </ng-container>
   </div>
   <mat-form-field appearance="outline" class="col s4 l3">
@@ -47,15 +47,18 @@
           Moneda :{{invoice_Ref.currency}}
         </div>
       </div>
-      <ng-container *ngFor="let det of debit.details$.value as details">
-        <app-invoice-concept-sales [document]="'debit-note'" [concept]="det" [invoice]="invoice_Ref"
-          (changes)="getChanges($event)">
-        </app-invoice-concept-sales>
+      <ng-container *ngIf=" invoiceConcept.details_Notes$.value as details">
+        <ng-container *ngFor="let det of details">
+          <app-invoice-concept [document]="'debit'" [concept]="det">
+          </app-invoice-concept>
+        </ng-container>
       </ng-container>
       <!-- FOOTER -->
-      <app-footer-invoice>
-      </app-footer-invoice>
+      <app-footer-credito-debito>
+      </app-footer-credito-debito>
     </ng-container>
   </div>
-  <button mat-raised-button color="primary" (click)="save()" >guardar</button>
+  <ng-container *ngIf="this.footer.footer$.value">
+    <button mat-raised-button color="primary" [disabled]="this.footer.footer$.value.total <= 0" (click)="save()" >guardar</button>
+  </ng-container>
 </div>

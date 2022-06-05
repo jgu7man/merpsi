@@ -1,36 +1,43 @@
 import { createDate, FireRef, FireTime } from "src/app/models/firestore.model"
 import { Manager } from "../../admin/managers/manager.model"
-import { InvoiceFooter, ProductInvoiceModel } from "../invoices/invoice.model"
+import { FooterNoteModel, NoteCredit, ProductNoteModel } from "../credit-note/creditNote.model"
+import { Invoice, InvoiceFooter, ProductInvoiceModel } from "../invoices/invoice.model"
 // import { iInvoiceFooter, iProductInvoice } from "../invoices/invoice.model"
 import { Sales, SalesInvoiceModel } from "../sales-invoices/sales-invoice.model"
 
 export class DebitNoteModel {
   date_emition: FireTime = createDate(new Date())
-
+  id: string
+  invoice: NoteDebit.invoice
+  manager: Invoice.manager
+  footer: NoteCredit.footer
+  details: NoteDebit.concept[]
   constructor(
-    public id: string,
-    /** Informacion de la factura */
-    public invoice: Sales.invoice,
-    /**Informacion del Manager  */
-    public manager:  Manager.invoice,
-    /**Array de los conceptos de la Nota de Debito */
-    public details: ProductInvoiceModel[],
-    /**Informacion del footer de la Nota de debito */
-    public footer: InvoiceFooter,
+    invoice: NoteDebit.invoice,
+    id: string,
+    manager: Invoice.manager,
+    details: ProductNoteModel[],
+    footer: FooterNoteModel,
   ) {
-    this.invoice = invoice
     this.id = id
+    this.invoice = invoice
     this.manager = manager
-    this.details = details
-    this.footer = footer 
+    this.details = details.map(details => {
+      return details.getdata()
+    })
+    this.footer = footer.getdata()
   }
 }
 
-const footerEmpty = {
-  subtotal: 0,
-  discount: 0,
-  taxes: [],
-  totalTaxes: 0,
-  shipping: 0,
-  total: 0,
+export declare namespace NoteDebit {
+  interface concept extends Omit<ProductNoteModel, 'getdata'> { }
+  interface footer extends Omit<FooterNoteModel, 'data' | 'getdata' | 'totalInvoice' | 'calcTaxes' > { }
+
+  interface invoice{
+    id: string
+    ref: FireRef<SalesInvoiceModel> | null 
+  
+  }
+
+
 }

@@ -7,7 +7,7 @@ import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
 import { DashboardService } from 'src/app/dashboard/dashboard.service';
 import Swal from 'sweetalert2';
 import { CreditNoteService } from '../../../credit-note/credit-note.service';
-import { CreditNoteModel } from '../../../credit-note/creditNote.model';
+import { CreditNoteModel, ProductNoteModel } from '../../../credit-note/creditNote.model';
 import { DebitNoteService } from '../../../debit-note/debit-note.service';
 import { FooterService } from '../../../invoices/footer-invoice/footer.service';
 import { InvoiceConceptService } from '../../../invoices/invoice-concept/invoice-concept.service';
@@ -46,7 +46,8 @@ export class CreditDebitNoteDialogComponent implements OnInit {
   }
   addProduct(event: MatCheckboxChange, concept: ProductInvoiceModel) {
     if (event.checked) {
-      this.products.push(concept);
+      let product = new ProductNoteModel(concept)
+      this.products.push(product);
     } else {
       this.products= this.products.filter(c => c.product.UPC != concept.product.UPC)
     }
@@ -60,14 +61,20 @@ export class CreditDebitNoteDialogComponent implements OnInit {
         showCancelButton:true
       }).then((result) => {
         if (result.isConfirmed) {
-          if (this.document == 'debit') {
-            this.invoiceConcept.details$.next(this.products)
+          if (this.document.document == 'debit') {
+            this.invoiceConcept.details_Notes$.next(this.products)
             this._router.navigate([`/business/${this.businessRef}/finances/new-debit-notes/${id_invoice}`])
             .then((result) => {
               this._dialogRef.close()
             })    
           } else {
-            this.invoiceConcept.details$.next(this.products)
+            if (this.products.length<=0){
+              this.products = this.document.invoice.details.map((details: Invoice.concept) => {
+                return new ProductNoteModel(details)
+              })
+            }
+            this.invoiceConcept.details_Notes$.next(this.products)
+            console.log(this.products);
             this._router.navigate([`/business/${this.businessRef}/finances/new-credit-notes/${this.concept.value}/${id_invoice}`])
               .then((result) => {
                 this._dialogRef.close()

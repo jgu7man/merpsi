@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
+import { ProductNoteModel } from '../../credit-note/creditNote.model';
 import { FooterService } from '../footer-invoice/footer.service';
 import { FooterCreditoDebitoService } from './footer-credito-debito.service';
 
@@ -22,6 +23,7 @@ export class FooterCreditoDebitoComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    
   }
 
 }

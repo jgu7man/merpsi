@@ -60,6 +60,15 @@ export class InvoiceConceptComponent implements OnInit {
             }
           })
         }
+      }else if ( this.document == 'debit'){
+        if (this.conceptInvoice.details_Notes$.value) {
+          let details = this.conceptInvoice.details_Notes$.value
+          details.map(det => {
+            if (det.product.UPC === this.concept!.product.UPC) {
+              this.formAddProduct.controls.unit_price.setValidators(Validators.min(this.concept!.unit_price))
+            }
+          })
+        }
       }
       this.formAddProduct.valueChanges.pipe(
         distinctUntilChanged((x, y) =>
@@ -69,13 +78,19 @@ export class InvoiceConceptComponent implements OnInit {
         debounceTime(1000),
       ).subscribe(changes => {
         console.log(this.tipo_concepto);
+        // if ( this.tipo_concepto =='disminucion'){
+        //   this._credito.recalculate(changes, this.concept!)
+        //   this.conceptInvoice.details_Credit$.value.map(det => {
+        //     if ( det.product.UPC == this.concept?.product.UPC){
+        //       this.formAddProduct.patchValue({ unit_price: det.unit_price }, { onlySelf: true, emitEvent: false, })
+              
+        //     }
+        //   })
+        // }else{
         
-        if ( this.tipo_concepto =='disminucion'){
-          this._credito.recalculate(changes, this.concept!)
-        }else{
-
           this.conceptInvoice.update(changes, this.concept!, this.document);
-        }
+          
+        //}
       })
 
       this.formAddProduct.patchValue(this.concept)

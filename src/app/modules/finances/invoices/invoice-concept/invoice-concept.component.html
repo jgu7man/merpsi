@@ -11,20 +11,28 @@
           <div class="col s2">
             {{concept.product.description}}
           </div>
-          <ng-container *ngIf="!invoice else seeUnit_Price">
-            <!-- cantidad -->
-            <div class="col s2">
-              <mat-form-field appearance="outline" class="col s12">
-                <mat-label>Cantidad</mat-label>
-                <input matInput type="number" name="cantidad" formControlName="cant">
-                <mat-error *ngIf="formAddProduct.hasError('required', 'cant')">
-                  Este dato es necesario
-                </mat-error>
-                <mat-error *ngIf="formAddProduct.hasError('max', 'cant')">
-                  cantidad no disponible, ingrese un numero menor
-                </mat-error>
-              </mat-form-field>
-            </div>
+          <ng-container *ngIf="!invoice else readonly">
+            <ng-container *ngIf="document == 'debit' else normal">
+              <div class="col s2">
+                {{concept.cant}}
+              </div>
+            </ng-container>
+            <ng-template #normal>
+              <!-- cantidad -->
+              <div class="col s2">
+                <mat-form-field appearance="outline" class="col s12">
+                  <mat-label>Cantidad</mat-label>
+                  <input matInput type="number" name="cantidad" formControlName="cant">
+                  <mat-error *ngIf="formAddProduct.hasError('required', 'cant')">
+                    Este dato es necesario
+                  </mat-error>
+                  <mat-error *ngIf="formAddProduct.hasError('max', 'cant')">
+                    cantidad no disponible, ingrese un numero menor
+                  </mat-error>
+                </mat-form-field>
+              </div>
+            </ng-template>
+
             <!-- precio -->
             <div class="col s2">
               <mat-form-field appearance="outline" class="col s12">
@@ -33,19 +41,22 @@
                 <mat-error *ngIf="formAddProduct.hasError('required', 'unit_price')">
                   Este dato es necesario
                 </mat-error>
+                <mat-error *ngIf="formAddProduct.hasError('min', 'unit_price')">
+                  ingrese un monto mayor a {{concept.unit_price}}
+                </mat-error>
               </mat-form-field>
             </div>
             <!-- total -->
             <div class="col s2">
-              <ng-container *ngIf="document!= 'credit'">
+              <ng-container *ngIf="document!= 'credit' && document != 'debit'">
                 <ng-container *ngFor="let item of conceptInvoice.details$.value">
                   <ng-container *ngIf="item.product.UPC == concept.product.UPC">
                     {{item.amount || 0 | currency}}
                   </ng-container>
                 </ng-container>
               </ng-container>
-              <ng-container *ngIf="document== 'credit'">
-                <ng-container *ngFor="let item of conceptInvoice.details_Credit$.value">
+              <ng-container *ngIf="document== 'credit' || document== 'debit'">
+                <ng-container *ngFor="let item of conceptInvoice.details_Notes$.value">
                   <ng-container *ngIf="item.product.UPC == concept.product.UPC">
                     {{item.amount || 0 | currency}}
                   </ng-container>
@@ -53,12 +64,13 @@
               </ng-container>
             </div>
             <div class="col s2">
-              <button mat-raised-button color="warn" [disabled]="document == 'credit' || document == 'debit'" (click)="deleteConcept(concept)">
+              <button mat-raised-button color="warn" [disabled]="document == 'credit' || document == 'debit'"
+                (click)="deleteConcept(concept)">
                 X
               </button>
             </div>
           </ng-container>
-          <ng-template #seeUnit_Price>
+          <ng-template #readonly>
             <div class="col s2">
               {{concept.cant}}
             </div>
@@ -69,9 +81,6 @@
               {{concept.amount}}
             </div>
           </ng-template>
-        </ng-container>
-        <ng-container *ngIf="concept && document== 'credit'">
-
         </ng-container>
       </form>
     </div>

@@ -4,6 +4,7 @@ import { MatSelectChange } from '@angular/material/select';
 import { ActivatedRoute } from '@angular/router';
 import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
+import { PersonalService } from 'src/app/modules/admin/managers/personal.service';
 import { Product } from 'src/app/modules/inventory/products/products.model';
 import Swal from 'sweetalert2';
 import { FooterCreditoDebitoService } from '../../invoices/footer-credito-debito/footer-credito-debito.service';
@@ -15,18 +16,18 @@ import { SalesInvoiceModel } from '../../sales-invoices/sales-invoice.model';
 import { SalesService } from '../../sales-invoices/sales.service';
 import { iStub, StubModel } from '../../stubs-invoice/stub.model';
 import { StubService } from '../../stubs-invoice/stub.service';
-import { AppliedTaxModel } from '../../taxes/taxes.model';
+import { AppliedTaxModel, TaxModel } from '../../taxes/taxes.model';
 import { TaxesService } from '../../taxes/taxes.service';
 import { CreditNoteService } from '../credit-note.service';
-import { FooterNoteModel, ProductNoteModel } from '../creditNote.model';
+import { CreditNoteModel, FooterNoteModel, ProductNoteModel } from '../creditNote.model';
 
 @Component({
   selector: 'app-form-credit-note',
   templateUrl: './form-credit-note.component.html',
   styleUrls: ['./form-credit-note.component.scss']
 })
-export class FormCreditNoteComponent implements OnInit, OnDestroy{
-  
+export class FormCreditNoteComponent implements OnInit, OnDestroy {
+
 
   businessRef = this._cache.getDataKey('eid')
   invoice_Ref: SalesInvoiceModel | null = null
@@ -54,59 +55,64 @@ export class FormCreditNoteComponent implements OnInit, OnDestroy{
     private _cache: MxCache,
     private _activatedRoute: ActivatedRoute,
     private _alert: MxAlert,
-    public footer_service: FooterService,
+    public footer_service: FooterCreditoDebitoService,
     public footer: FooterCreditoDebitoService,
     private _taxes: TaxesService,
-    public invoiceConcept: InvoiceConceptService
+    public invoiceConcept: InvoiceConceptService,
+    private _manager: PersonalService,
+
   ) {
     this._activatedRoute.params.subscribe(params => {
       this.conceptNC = params.tipo
       this.invoiceId = params.invoiceId
     })
-    this.stub.list$.pipe().subscribe( list => {
+    this.stub.list$.pipe().subscribe(list => {
       list.forEach(d => {
-          if (d.active && d.currentIndex < d.endIndex && d.type === 'credit') {
-            this.stubList.push(d)
-          }
-        })
-        this.credit.stubList$.next(this.stubList)
+        if (d.active && d.currentIndex < d.endIndex && d.type === 'credit') {
+          this.stubList.push(d)
+        }
+      })
+      this.credit.stubList$.next(this.stubList)
     })
   }
   ngOnDestroy(): void {
     this._taxes.leave()
-    this.prefix =''
+    this.prefix = ''
     this.stubSelect = null
     this.stubList = []
   }
 
   async ngOnInit(): Promise<void> {
     try {
-      if ( !this.invoiceId ) throw { message: 'No existe invoiceId' }
+      if (!this.invoiceId) throw { message: 'No existe invoiceId' }
 
       this.invoice_Ref = await this.credit.getInvoice(this.invoiceId)
 
-      if (!this.invoice_Ref) throw { message: 'No Existe la factura relacionada'}
+      if (!this.invoice_Ref) throw { message: 'No Existe la factura relacionada' }
 
       this.creditNoteForm.patchValue({
         concept: this.conceptNC,
         invoiceIdRef: this.invoice_Ref.invoiceId
       })
 
-      let details_note: ProductNoteModel[] = this.invoice_Ref.details.map(det =>{
-        return new ProductNoteModel(det)
-      })
-      console.log(details_note);
-      
-      this.invoiceConcept.details_Credit$.next(details_note)
-      //this._taxes.applidedTaxes = this.invoice_Ref.footer.taxes
-      if ( this.conceptNC == 'anulacion'){
-        const foot = new FooterNoteModel(this.invoice_Ref.footer)
+      let footer_tax = this.invoice_Ref.footer.taxes
+      let taxe: TaxModel[] = footer_tax.map(tax => { return new TaxModel(0, tax.name, tax.rate) })
+      if (this.conceptNC == 'disminucion') {
+        let det = this.invoiceConcept.details_Notes$.value
+        let amount = det.reduce((acc, item) => acc + item.amount, 0)
+        let amount_tax = 0
+        taxe.map(tax => { amount_tax = amount_tax + (new AppliedTaxModel(tax, amount)).amount })
+        amount = amount + amount_tax
+
+        const foot = new FooterNoteModel(this.invoice_Ref.footer, det, amount, taxe)
+        console.log(foot);
+
         this.footer.footer$.next(foot)
-      }else{
-        const foot = new FooterNoteModel(this.invoice_Ref.footer)
+      } else {
+        const foot = new FooterNoteModel(this.invoice_Ref.footer, this.invoiceConcept.details_Notes$.value, null, taxe)
         this.footer.footer$.next(foot)
       }
- 
+
     } catch (error: any) {
       if ('message' in error) {
         this._alert.error(error.message, error)
@@ -120,22 +126,37 @@ export class FormCreditNoteComponent implements OnInit, OnDestroy{
   async save() {
 
     try {
-    //   if (!this.credit.currentNC$.value) throw { message: 'No existe el current de nota de credito'}
-    //   let noteCredit = this.credit.currentNC$.value
-    //   let taxe: any = []
-    //   /* destructuracion de taxes para que no se quede el modelo */
-    //   noteCredit.footer.taxes.forEach(tax => { taxe.push({...tax}) })
-    //   noteCredit.footer.taxes = taxe
-      
-    //     await this.credit.saveCreditNote(this.credit.currentNC$.value)
-    //     /**Se actualiza el index current en el talonario seleccionado */
-    // if (this.stubSelect) {
-    //   this.stubSelect.currentIndex = this.stubSelect.currentIndex + 1
-    //   this.stub.update(this.stubSelect)
-    // }
-    //    console.log(this.credit.currentNC$.value)
-    //     Swal.fire('Guardado')
-    
+      if (!this.credit.stubSelect$.value) throw { message: ' No existe el talonario' }
+      if (!this.footer_service.footer$.value) throw { message: ' No existe el footer' }
+      if (!this.invoice_Ref) throw { message: ' No existe el talonario' }
+      if (!this._manager.current) throw { message: 'No se ha iniciado la sesion' }
+
+
+
+      const manager: Invoice.manager = {
+        id: this._manager.current.uid!,
+        name: this._manager.current.name,
+        ref: this._manager.managerRef
+      }
+      let noteCredit = new CreditNoteModel(
+        this.invoice_Ref.invoiceId,
+        this.credit.stubSelect$.value.prefixIndexCurrent,
+        manager,
+        this.conceptNC,
+        this.invoiceConcept.details_Notes$.value,
+        this.footer_service.footer$.value
+      )
+      console.log(noteCredit);
+
+      await this.credit.saveCreditNote(noteCredit)
+      /**Se actualiza el index current en el talonario seleccionado */
+      if (this.credit.stubSelect$.value) {
+        let stub = this.credit.stubSelect$.value
+        stub.currentIndex = stub.currentIndex + 1
+        this.stub.update(stub)
+      }
+      Swal.fire('Guardado')
+
     } catch (error: any) {
       if ('message' in error) {
         this._alert.error(error.message, error)
@@ -146,20 +167,12 @@ export class FormCreditNoteComponent implements OnInit, OnDestroy{
     }
   }
 
-  // getChanges(event: iProductInvoice) {
-  //   this.credit.recalculate(event, this.conceptNC)
-    
-  // }
 
   selectStub(data: MatSelectChange) {
     this.credit.stubSelect$.next(data.value)
-    if (!this.credit.stubSelect$.value) throw { message: ' No existe el talonario'}
+    if (!this.credit.stubSelect$.value) throw { message: ' No existe el talonario' }
     let stub = this.credit.stubSelect$.value
     stub.prefixIndexCurrent = stub.prefix + '-' + ((stub.currentIndex || 0) + 1)
   }
-
-  // }
-
-  
 
 }

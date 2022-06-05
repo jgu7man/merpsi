@@ -8,6 +8,7 @@ import { PersonalService } from '../../admin/managers/personal.service';
 import { FooterService } from '../invoices/footer-invoice/footer.service';
 import { InvoiceFooter, ProductInvoiceModel } from '../invoices/invoice.model';
 import { SalesInvoiceModel } from '../sales-invoices/sales-invoice.model';
+import { iStub } from '../stubs-invoice/stub.model';
 import { AppliedTaxModel, TaxModel } from '../taxes/taxes.model';
 import { TaxesService } from '../taxes/taxes.service';
 import { DebitNoteModel } from './debit-note.model';
@@ -16,9 +17,8 @@ import { DebitNoteModel } from './debit-note.model';
   providedIn: 'root'
 })
 export class DebitNoteService {
-  
-  details$ = new BehaviorSubject<ProductInvoiceModel[] | null>(null)
-  footer$ = new BehaviorSubject<InvoiceFooter | null>(null)
+  stubSelect$= new BehaviorSubject<iStub | null>(null)
+  stubList$= new BehaviorSubject<iStub[] >([])
   listTaxes: AppliedTaxModel[] = [];
   businessRef = `businesses/${this._dashboard.CRF}`
   
@@ -31,57 +31,6 @@ export class DebitNoteService {
     private _afs: AngularFirestore
   ) { }
 
-  async recalculate(det: ProductInvoiceModel) {
-  try {
-    // if ( !this.details$.value ) throw { message: ' No existe el details '}
-    // if ( !this.footer$.value ) throw { message: ' No existe el footer '}
-
-    // let details = this.details$.value
-    // let foot = this.footer$.value
-    // this.listTaxes = foot.taxes
-    // let subtotal = 0
-    // let total = 0
-
-    // details = details.map(d => {
-    //   let details
-    //   if (d.UPC === det!.UPC) {
-    //     d.amount = det.cant * det.unit_cost
-    //     details = {
-    //       ...det,
-    //       amount: d.amount
-    //     }
-    //     subtotal += d.amount
-    //   } else {
-    //     details = d
-    //     subtotal += d.amount
-    //   }
-    //   return details
-    // })
-    // console.log(details)
-    // this.details$.next(details)
-
-    // foot.subtotal = subtotal
-    // this.listTaxes.forEach(tax => {
-    //   let taxe = new TaxModel(0, tax.name, tax.rate)
-    //   this.taxes.calcTax(taxe, subtotal)
-    // })
-    // foot.taxes = this.taxes.applidedTaxes
-    // foot.totalTaxes = this.taxes.appliedTaxesTotal
-
-    // foot.total = (subtotal + foot.shipping + foot.totalTaxes) - (foot.discount)
-
-    // this.footer$.next(foot)
-    // this.foot.currentfoot$.next(foot)
-  } catch (error: any) {
-    if ('message' in error) {
-      this._alert.error(error.message, error)
-    } else {
-      this._alert.error('mensaje de error', error)
-    }
-    return console.error(error)
-  }
-
-}
   updatedetails(param: keyof ProductInvoiceModel,
     value: ProductInvoiceModel[typeof param]) {
     throw new Error('Method not implemented.');

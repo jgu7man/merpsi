@@ -77,7 +77,7 @@ export class InvoiceConceptSalesComponent implements OnInit {
             })
               
         } else 
-        if ( this.document == 'debit-note' ){
+        if ( this.document == 'debit' ){
           if ( !this.invoice ) throw { message: 'No existe invoice'}
           let d = this.invoice.details       
           d.forEach( det => {

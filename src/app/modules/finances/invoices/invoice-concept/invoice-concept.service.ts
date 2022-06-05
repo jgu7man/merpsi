@@ -15,7 +15,7 @@ import { Invoice, InvoiceFooter, ProductInvoiceModel } from '../invoice.model';
 export class InvoiceConceptService {
 
   details$ = new BehaviorSubject<ProductInvoiceModel[]>([])
-  details_Credit$ = new BehaviorSubject<ProductNoteModel[]>([])
+  details_Notes$ = new BehaviorSubject<ProductNoteModel[]>([])
   details_invoice$ = new BehaviorSubject<Invoice.concept[]>([])
   constructor(
     private _footer: FooterService,
@@ -34,10 +34,9 @@ export class InvoiceConceptService {
     console.log(changes);
     let subtotal = 0
    
-    if ( document == 'credit' ){
-      
-        if (this.details_Credit$.value) {
-          let details = this.details_Credit$.value.map((d) => {
+    if ( document == 'credit' || document == 'debit'){
+        if (this.details_Notes$.value) {
+          let details = this.details_Notes$.value.map((d) => {
             if (d.product.UPC == concept.product.UPC) {
               d.cant = changes.cant
               d.unit_price = changes.unit_price
@@ -45,7 +44,7 @@ export class InvoiceConceptService {
             subtotal += d.amount
             return d
           })
-          this.details_Credit$.next(details)
+          this.details_Notes$.next(details)
         }
         if (!this._footer_note.footer$.value) throw { message: ' No existe el footer_invoice' }
         let foot = this._footer_note.footer$.value
@@ -58,7 +57,10 @@ export class InvoiceConceptService {
         })
         foot.taxes = this._taxes.applidedTaxes
         this._footer_note.footer$.next(foot)
-    }else{
+        console.log(this._footer_note.footer$.value);
+        console.log(this.details_Notes$.value);
+        
+      }else{
       if (this.details$.value) {
         let details = this.details$.value.map((d) => {
           if (d.product.UPC == concept.product.UPC) {

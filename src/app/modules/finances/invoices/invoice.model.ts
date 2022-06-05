@@ -104,7 +104,7 @@ export class ProductInvoiceModel {
       UPC,
       reference,
       description,
-      brand,
+      brand: brand || '',
       measure_unit: measure_unit || 0,
     }
     this.transfer_fee = transfer_fee || null
@@ -200,7 +200,7 @@ export declare namespace Invoice {
     }
   }
 
-  interface footer extends Omit<InvoiceFooter, 'getdata'>{}
+  interface footer extends Omit<InvoiceFooter, 'getdata' | 'data' | "amount_invoice">{}
 
 }
 

@@ -7,13 +7,17 @@ import { skip } from 'rxjs/operators';
 import { Manager } from 'src/app/modules/admin/managers/manager.model';
 import { PersonalService } from 'src/app/modules/admin/managers/personal.service';
 import { CreditNoteService } from '../../credit-note/credit-note.service';
-import { InvoiceFooter, ProductInvoiceModel } from '../../invoices/invoice.model';
+import { FooterNoteModel } from '../../credit-note/creditNote.model';
+import { FooterCreditoDebitoService } from '../../invoices/footer-credito-debito/footer-credito-debito.service';
+import { InvoiceConceptService } from '../../invoices/invoice-concept/invoice-concept.service';
+import { Invoice, InvoiceFooter, ProductInvoiceModel } from '../../invoices/invoice.model';
 // import { InvoiceFooterModel, iProductInvoice } from '../../invoices/invoice.model';
 import { Sales, SalesInvoiceModel } from '../../sales-invoices/sales-invoice.model';
 import { iStub } from '../../stubs-invoice/stub.model';
 import { StubService } from '../../stubs-invoice/stub.service';
+import { AppliedTaxModel, TaxModel } from '../../taxes/taxes.model';
 import { TaxesService } from '../../taxes/taxes.service';
-import { DebitNoteModel } from '../debit-note.model';
+import { DebitNoteModel, NoteDebit } from '../debit-note.model';
 import { DebitNoteService } from '../debit-note.service';
 
 @Component({
@@ -36,7 +40,10 @@ export class CreateDebitNoteComponent implements OnInit, OnDestroy {
     public manager: PersonalService,
     private _alert: MxAlert,
     private _activatedRoute: ActivatedRoute,
-    private _taxes: TaxesService
+    private _taxes: TaxesService,
+    public invoiceConcept: InvoiceConceptService,
+    public footer: FooterCreditoDebitoService,
+
 
   ) { 
     this._activatedRoute.params.subscribe(params => {
@@ -49,6 +56,8 @@ export class CreateDebitNoteComponent implements OnInit, OnDestroy {
           this.stubsList.push( stub );
         }
       })
+      this.debit.stubList$.next(this.stubsList)
+
     })
     console.log(this.stubsList)
 
@@ -62,7 +71,20 @@ export class CreateDebitNoteComponent implements OnInit, OnDestroy {
       if ( !this.invoiceId ) throw { message: 'No existe invoiceId' }
       this.invoice_Ref = await this.debit.getInvoice(this.invoiceId)
       if ( !this.invoice_Ref ) throw { message: 'No se encontro la factura'}
-      this.debit.footer$.next(new InvoiceFooter())
+
+      let footer_tax = this.invoice_Ref.footer.taxes
+      let taxs: TaxModel[] = footer_tax.map(tax => {return new TaxModel(0,tax.name,tax.rate)} )
+      let det = this.invoiceConcept.details_Notes$.value
+      let amount = det.reduce((acc,item) => acc + item.amount,0)
+      let amount_tax = 0
+      taxs.map(tax => {
+        amount_tax = amount_tax + (new AppliedTaxModel(tax, amount)).amount
+      })
+      amount = amount + amount_tax
+      this.footer.footer$.next(new FooterNoteModel(this.invoice_Ref.footer,this.invoiceConcept.details_Notes$.value,amount,taxs))
+      console.log(this.footer.footer$.value);
+      console.log(this.invoiceConcept.details_Notes$.value);
+      
     } catch (error: any) {
       if ('message' in error) {
         this._alert.error(error.message, error)
@@ -74,11 +96,15 @@ export class CreateDebitNoteComponent implements OnInit, OnDestroy {
     
   }
 
-  seletedStub(stub: MatSelectChange){
+  seletedStub(data: MatSelectChange){
     try {
-      this.stubSelect = stub.value
-      if (!this.stubSelect) throw { message: 'No se cargo el talonario'}
-      this.nroStub =  this.stubSelect.prefix + this.index
+      // this.stubSelect = stub.value
+      // if (!this.stubSelect) throw { message: 'No se cargo el talonario'}
+      // this.nroStub =  this.stubSelect.prefix + this.index
+      this.debit.stubSelect$.next(data.value)
+      if (!this.debit.stubSelect$.value) throw { message: ' No existe el talonario' }
+      let stub = this.debit.stubSelect$.value
+      stub.prefixIndexCurrent = stub.prefix  + ((stub.currentIndex || 0) + 1)
     } catch (error: any) {
       if ('message' in error) {
         this._alert.error(error.message, error)
@@ -95,45 +121,52 @@ export class CreateDebitNoteComponent implements OnInit, OnDestroy {
     return this.stubSelect.currentIndex + 1
   }
 
-  getChanges(event: ProductInvoiceModel) {
-    this.debit.recalculate(event)
-    
-  }
 
   async save(){
     try {
-      if ( !this.manager.current) throw { message: 'No se ha iniciado la sesion'}
-      if ( !this.debit.details$.value) throw { message: 'No existe el detalle'}
-      if ( !this.debit.footer$.value) throw { message: 'No existe el footer'}
-      
-      let taxesList: any[] = []
-      this.debit.footer$.value.taxes.forEach(tax => {
-        taxesList.push({...tax})
-      })
-      this.debit.footer$.value.taxes = taxesList
-      this._taxes.applidedTaxes = taxesList
-     // this.debit.footer$.value.taxes = {...this.debit.footer$.value.taxes}
-      let ref =this.manager.managerRef
-      let manager: Manager.invoice = {
-        nombre: this.manager.current.name,
-        ref
-      }
-      let invoice: Sales.invoice= {
-        id: this.invoiceId,
-        ref: this.debit.getInvoiceRef(this.invoiceId)
-      }
-      
-     let debit: DebitNoteModel = new DebitNoteModel(this.nroStub,invoice,manager,this.debit.details$.value,this.debit.footer$.value)
-     console.log(debit);
-     
-     this.debit.saveDebitNote(debit)
-      /* se Actualiza el talonario*/
-     if (this.stubSelect) {
-      this.stubSelect.currentIndex = this.index
-      this.stub.update(this.stubSelect)
-    }
+      if (!this.manager.current) throw { message: 'No se ha iniciado la sesion' }
+      if (!this.invoiceConcept.details_Notes$.value) throw { message: 'No existe el detalle' }
+      if (!this.footer.footer$.value) throw { message: 'No existe el footer' }
+      if (!this.invoice_Ref) throw { message: 'No existe la factura de referencia' }
+      if (!this.debit.stubSelect$.value) throw { message: 'No existe el talonario' }
 
-    this._alert.notify('La Nota de debito ha sido guardado con exito!')
+      if (this.footer.footer$.value.total > 0) {
+        const manager: Invoice.manager = {
+          id: this.manager.current.uid!,
+          name: this.manager.current.name,
+          ref: this.manager.managerRef
+        }
+        const invoice: NoteDebit.invoice = {
+          id: this.invoice_Ref.invoiceId,
+          ref: this.debit.getInvoiceRef(this.invoice_Ref.invoiceId)
+        }
+  
+        console.log(this.footer.footer$.value.getdata());
+        
+        const debit: DebitNoteModel = new DebitNoteModel(
+  
+          invoice,
+          this.debit.stubSelect$.value.prefixIndexCurrent,
+          manager,
+          this.invoiceConcept.details_Notes$.value,
+          this.footer.footer$.value
+        )
+        console.log(debit);
+  
+        this.debit.saveDebitNote(debit)
+        
+  
+        /**Se actualiza el index current en el talonario seleccionado */
+        if (this.debit.stubSelect$.value) {
+          let stub = this.debit.stubSelect$.value
+          stub.currentIndex = stub.currentIndex + 1
+          this.stub.update(stub)
+        }
+  
+      this._alert.notify('La Nota de debito ha sido guardado con exito!')
+      }
+
+      
 
     } catch (error: any) {
       if ('message' in error) {

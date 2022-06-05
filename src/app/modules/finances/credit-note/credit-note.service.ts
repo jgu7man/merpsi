@@ -41,55 +41,54 @@ export class CreditNoteService {
     private _manager: PersonalService
   ) {
   }
-  // async saveCreditNote(creditNote: CreditNoteModel) {
-  //   try {
-  //     /**se guarda la nota de credito */
+  async saveCreditNote(creditNote: CreditNoteModel) {
+    try {
+      /**se guarda la nota de credito */
 
-  //     const creditRef = this._afs.doc<CreditNoteModel>(`${this.businessRef}/credit_note/${creditNote.id}`).ref
-  //     const managerRef = this._manager.managerRef
-  //     const managerData = this._manager.current
-  //     if (!managerData) throw { message: "No se ha iniciado sesion" }
-  //     creditNote.manager = managerData.name
-  //     creditRef.set({ ...creditNote })
-  //     if (creditNote.concept == 'devolucion') {
-  //       /* se  itera los conceptos para aplicar la devolucion */
-  //       creditNote.details.forEach(async det => {
-  //         let productRef = this._afs.doc(`${this.businessRef}/products/${det.UPC}`).ref
-  //         await firebase.firestore().runTransaction(async transaction => {
-  //           let store_Id = det.store
-  //           const storeRef = productRef.collection('stores').doc(store_Id)
-  //           let productStore = (await transaction.get(storeRef)).data()
+      const creditRef = this._afs.doc<CreditNoteModel>(`${this.businessRef}/credit_note/${creditNote.id}`).ref
+      const managerRef = this._manager.managerRef
+      const managerData = this._manager.current
+      creditRef.set({ ...creditNote })
+      if (creditNote.concept == 'devolucion') {
+        /* se  itera los conceptos para aplicar la devolucion */
+        creditNote.details.forEach(async det => {
+          let productRef = this._afs.doc(`${this.businessRef}/products/${det.product.UPC}`).ref
+          await firebase.firestore().runTransaction(async transaction => {
+            let store_Id = det.store
+            if (!store_Id) throw { message: 'no se encuentra la tienda del concepto '}
+            const storeRef = productRef.collection('stores').doc(store_Id)
+            let productStore = (await transaction.get(storeRef)).data()
 
-  //           if (productStore) {
-  //             productStore.stock = productStore.stock + det.cant
-  //           }
-  //           await transaction.set(storeRef, { ...productStore }, { merge: true })
-  //           /**Historial del producto */
-  //           const evento = new ProductEventModel(
-  //             'return',
-  //             managerRef,
-  //             creditRef
-  //           )
-  //           this._afs.collection(`${this.businessRef}/products/${det.UPC}/history`)
-  //             .doc(`${new Date().getTime()}`)
-  //             .set({ ...evento })
-  //         })
-  //       })
-  //     }
-  //   } catch (error: any) {
-  //     if ('message' in error) {
-  //       this._alert.error(error.message, error)
-  //     } else {
-  //       this._alert.error('mensaje de error', error)
-  //     }
-  //     return console.error(error)
-  //   }
-  // }
+            if (productStore) {
+              productStore.stock = productStore.stock + det.cant
+            }
+            await transaction.set(storeRef, { ...productStore }, { merge: true })
+            /**Historial del producto */
+            const evento = new ProductEventModel(
+              'return',
+              managerRef,
+              creditRef
+            )
+            this._afs.collection(`${this.businessRef}/products/${det.product.UPC}/history`)
+              .doc(`${new Date().getTime()}`)
+              .set({ ...evento })
+          })
+        })
+      }
+    } catch (error: any) {
+      if ('message' in error) {
+        this._alert.error(error.message, error)
+      } else {
+        this._alert.error('mensaje de error', error)
+      }
+      return console.error(error)
+    }
+  }
   async recalculate(changes: {cant: number, unit_price: number}  ,det: ProductInvoiceModel | Invoice.concept) {
     try {
-      if (!this.invoiceConcept.details_Credit$.value) throw { message: ' No existe el detalle' }
+      if (!this.invoiceConcept.details_Notes$.value) throw { message: ' No existe el detalle' }
       if (!this._foot.footer$.value) throw { message: ' No existe el footer' }
-      let details = this.invoiceConcept.details_Credit$.value
+      let details = this.invoiceConcept.details_Notes$.value
       let foot = this._foot.footer$.value
       let subtotal = 0
       let total = 0
@@ -125,7 +124,7 @@ export class CreditNoteService {
         }else{
           subtotal += d.amount
         }
-          this.invoiceConcept.details_Credit$.next(details)
+          this.invoiceConcept.details_Notes$.next(details)
         })
         taxe.forEach(t => {
           this._taxes.calcTax(t, subtotal!)
@@ -135,7 +134,7 @@ export class CreditNoteService {
         this._foot.footer$.next(foot)
 
       
-          console.log(this.invoiceConcept.details_Credit$.value);
+          console.log(this.invoiceConcept.details_Notes$.value);
           console.log(this._foot.footer$.value);
       
 
