@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
@@ -19,6 +19,8 @@ import { InvoiceConceptService } from '../../invoices/invoice-concept/invoice-co
 import { PurchaseInvoiceModel } from '../pucharce-invoice.model';
 import { FooterService } from '../../invoices/footer-invoice/footer.service';
 import { PersonalService } from 'src/app/modules/admin/managers/personal.service';
+import Swal from 'sweetalert2';
+import { ProviderService } from 'src/app/modules/inventory/providers/provider.service';
 
 
 @Component({
@@ -26,12 +28,15 @@ import { PersonalService } from 'src/app/modules/admin/managers/personal.service
   templateUrl: './create-invoice.component.html',
   styleUrls: ['./create-invoice.component.scss']
 })
-export class CreateInvoiceComponent implements OnInit {
+export class CreateInvoiceComponent implements OnInit, OnDestroy{
 
   stores$: Observable<iSede[]>
   businessRef = this._cache.getDataKey( 'eid' )
-  
+  @Input() invoice: PurchaseInvoiceModel | null = null
+
   provider: iProvider | null = null
+
+  storeCtrl: FormControl = new FormControl()
   store: iSede | null = null
   invoiceId: string | null = null
   invoiceForm: FormGroup = new FormGroup({
@@ -58,6 +63,7 @@ export class CreateInvoiceComponent implements OnInit {
     private _cache: MxCache,
     private _footer: FooterService,
     private _manager: PersonalService,
+    private providerServ: ProviderService
 
     
   ) {
@@ -67,6 +73,24 @@ export class CreateInvoiceComponent implements OnInit {
     })
     
   }
+
+  clean(){
+    this.conceptInvoice.details$.next([])
+    this.conceptInvoice.details_Notes$.next([])
+    this.conceptInvoice.details_invoice$.next([])
+    this._footer.currentfoot$.next(null)
+    this.providerServ.providerSelect$.next(null)
+    this.storeCtrl.patchValue('')
+    this.invoiceForm.patchValue({
+      action_date: '',
+      invoiceId : '',
+     // payment_method: new FormControl('', [Validators.required]),
+    })
+  }
+  ngOnDestroy(): void {
+    this.clean()
+    
+   }
   
   async ngOnInit() {
     
@@ -119,13 +143,16 @@ export class CreateInvoiceComponent implements OnInit {
   }
 
   async saveInvoice(){
-    console.log(this.invoiceForm.value);
+    try {
+      console.log(this.invoiceForm.value);
     if ( !this.conceptInvoice.details$.value ) throw { message: ' No existe los conceptos'}
     if ( !this._footer.currentfoot$.value ) throw { message: ' No existe el footer'}
     if ( !this._manager.current) throw { message: 'No se ha iniciado la sesion'}
-
-    
-    if (this.invoiceForm.valid && this.store && this.provider && this.conceptInvoice.details$.value.length>0){
+    if ( !this.invoiceForm.valid) throw { message: 'debe llenar todos los campos del formulario'}
+    if ( !this.store ) throw { message: 'debe seleccionar una sede'}
+    if ( !this.provider ) throw { message: 'debe seleccionar un proveedor'}
+    if ( this.conceptInvoice.details$.value.length==0 ) throw { message: 'debe agregar por lo menos un concepto'}
+    if ( this._footer.currentfoot$.value.total<=0 ) throw { message: 'el total de la factura no debe ser igual o menor a cero '}
 
       const manager: Invoice.manager = {
         id: this._manager.current.uid!,
@@ -135,10 +162,17 @@ export class CreateInvoiceComponent implements OnInit {
 
       let {action_date, invoiceId} = this.invoiceForm.value
 
+      const provider: Invoice.provider = {
+        id: this.provider.CRF,
+        name: this.provider.name,
+        ref: null
+        
+      }
+
       const purchase = new PurchaseInvoiceModel(
         invoiceId,
         action_date,
-        this.provider,
+        provider,
         this.store,
         this.conceptInvoice.details$.value,
         this._footer.currentfoot$.value.getdata(),
@@ -151,12 +185,18 @@ export class CreateInvoiceComponent implements OnInit {
 
        await this.purchase.saveInvoice(purchase)
        this._alert.notify('la factura ha sido guardado con exito!')
+       this.clean()
        this.submited.emit()
-    }else{
-      this._alert.message('Debe llenar todos los campos requeridos','text')
-      console.log(this.invoiceForm.controls);
-      
+    } catch (error: any) {
+      if ('message' in error) {
+        this._alert.error(error.message, error)
+        Swal.fire(error.message)
+      } else {
+        this._alert.error('mensaje de error', error)
+      }
+      return console.error(error)
     }
+    
     
   }
 }

@@ -38,7 +38,7 @@
         <!-- SEDE -->
         <mat-form-field appearance="outline" class="col s12 l4">
           <mat-label>Sede</mat-label>
-          <mat-select required placeholder="Sede" name="store" (selectionChange)="onStoreSelected($event)">
+          <mat-select required placeholder="Sede" name="storeCtrl"  [formControl]="storeCtrl" (selectionChange)="onStoreSelected($event)">
             <mat-option *ngFor="let sede of stores$ | async" [value]="sede">
               {{ sede.referencia || "" }}
               <span class="small-text">({{ sede.tipo || "" }})</span>

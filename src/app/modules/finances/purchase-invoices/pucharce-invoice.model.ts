@@ -11,7 +11,7 @@ export class PurchaseInvoiceModel implements InvoiceModel {
   registered_date: firebase.firestore.Timestamp = createDate(new Date())
   invoiceId: string;
   action_date: firebase.firestore.Timestamp;
-  provider: iProvider
+  provider: Invoice.provider
   store: iSede;
   details: Invoice.concept[];
   footer: Invoice.footer;
@@ -22,7 +22,7 @@ export class PurchaseInvoiceModel implements InvoiceModel {
   constructor (
   invoiceId: string,
   action_date: Date,
-  provider:  iProvider,
+  provider:  Invoice.provider,
   store: iSede,
   concepts: ProductInvoiceModel[],
   footer: Invoice.footer,

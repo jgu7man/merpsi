@@ -5,6 +5,9 @@ import { iSede } from '../../admin/stores/sede.model';
 import { SedesService } from '../../admin/stores/sedes.service';
 import { ProviderModel } from '../../inventory/providers/provider.model';
 import { ProviderService } from '../../inventory/providers/provider.service';
+import { FooterService } from '../invoices/footer-invoice/footer.service';
+import { InvoiceConceptService } from '../invoices/invoice-concept/invoice-concept.service';
+import { InvoiceFooter } from '../invoices/invoice.model';
 import { TaxesService } from '../taxes/taxes.service';
 import { PurchaseInvoiceService } from './puchase-invoice.service';
 
@@ -17,23 +20,31 @@ export class PurchaseInvoicesComponent implements OnInit {
 
   providers: ProviderModel[] = [];
   stores: iSede[] = [];
-
+  listPuchases: PurchaseInvoiceModel[] = [];
   
   constructor(
     public purchases: PurchaseInvoiceService,
     private _provider: ProviderService,
     private _stores : SedesService,
-    private _auth: AuthService,
-    private _taxes: TaxesService
+    private _taxes: TaxesService,
+    private conceptInvoice: InvoiceConceptService,
+    private _footer: FooterService,
+    private providerServ: ProviderService
 
 
-  ) { }
+  ) {
+    this.purchases.listPurchases().subscribe( list => { 
+      console.log(list);
+      
+      this.listPuchases = list})
+   }
 
   async ngOnInit(): Promise<void> {
   }
 
   async onCreate() {
     this._taxes.applidedTaxes = []
+    this._footer.currentfoot$.next(new InvoiceFooter())
   }
 
   async listStores() {
@@ -50,6 +61,14 @@ export class PurchaseInvoicesComponent implements OnInit {
     await this._provider.getAll().subscribe(provider => {
       this.providers = provider
     })
+  }
+
+  onClose(){
+    this.conceptInvoice.details$.next([])
+    this.conceptInvoice.details_Notes$.next([])
+    this.conceptInvoice.details_invoice$.next([])
+    this._footer.currentfoot$.next(null)
+    this.providerServ.providerSelect$.next(null)
   }
 
 }

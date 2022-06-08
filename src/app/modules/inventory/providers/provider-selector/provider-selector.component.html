@@ -27,7 +27,7 @@
   </div>
 
   <!-- Proveedor data -->
-  <div class="row" *ngIf="provider">
+  <div class="row" *ngIf="providerService.providerSelect$.value as provider">
     <div class="col s12">
       <b>DATOS DEL PROVEEDOR</b><br>
       {{ provider.name }} <br>

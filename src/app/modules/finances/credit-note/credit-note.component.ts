@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { CreditNoteService } from './credit-note.service';
+import { iCreditNote } from './creditNote.model';
 
 @Component({
   selector: 'app-credit-note',
@@ -7,7 +9,14 @@ import { Component, OnInit } from '@angular/core';
 })
 export class CreditNoteComponent implements OnInit {
 
-  constructor() { }
+  listCredits: iCreditNote[] = []
+  constructor(
+    public credit : CreditNoteService
+  ) {
+    credit.listCredits().subscribe( list => {
+      this.listCredits = list
+    })
+   }
 
   ngOnInit(): void {
   }

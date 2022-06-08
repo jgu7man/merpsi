@@ -41,3 +41,5 @@ export declare namespace NoteDebit {
 
 
 }
+
+export interface iDebitNote extends DebitNoteModel{}

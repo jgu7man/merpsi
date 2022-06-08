@@ -10,6 +10,7 @@ import { Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, skip } from 'rxjs/operators';
 import { PersonalService } from 'src/app/modules/admin/managers/personal.service';
 import { ClientModel } from 'src/app/modules/clients/clients.model';
+import Swal from 'sweetalert2';
 import { FooterService } from '../../invoices/footer-invoice/footer.service';
 import { InvoiceConceptService } from '../../invoices/invoice-concept/invoice-concept.service';
 import { Invoice, ProductInvoiceModel } from '../../invoices/invoice.model';
@@ -188,16 +189,22 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy {
   }
 
 
-  createCredit() {
-    this._dialog.open(CreditDebitNoteDialogComponent, {
-      width: '1200px',
-      height: '400px',
-      data: {document: 'credit',
-            invoice: this.invoice}
-    }).afterClosed().subscribe(concept => {
-      this.concept = concept
-      // this.sales.addConcept(concept)
-    })
+  async createCredit() {
+    let valid = await this.sales.findNoteCredits(this.invoice!)
+    if ( valid ){
+      this._dialog.open(CreditDebitNoteDialogComponent, {
+        width: '1200px',
+        height: '400px',
+        data: {document: 'credit',
+              invoice: this.invoice}
+      }).afterClosed().subscribe(concept => {
+        this.concept = concept
+        // this.sales.addConcept(concept)
+      })
+    }else{
+      Swal.fire('No se puede aplicar mas notas de credito a esta factura')
+    }
+    
   }
   createDebit() {
     try {
@@ -223,6 +230,8 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy {
     this._taxes.leave()
     this.stubForm.patchValue('')
     this.conceptInvoice.details$.next([])
+    this.conceptInvoice.details_invoice$.next([])
+    //this.conceptInvoice.details_Notes$.next([])
     this._footer.currentfoot$.next(null)
 
   }

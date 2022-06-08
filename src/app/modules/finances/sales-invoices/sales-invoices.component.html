@@ -12,8 +12,10 @@
       (onAdd)="onCreate()"
       (onClose)="onClose()"
       >
-      <ng-template #add ><app-create-invoice-sales
-        (submited)="crudPanel.closeAll()"></app-create-invoice-sales>
+      <ng-template #add >
+        <app-create-invoice-sales 
+        (submited)="crudPanel.closeAll()"
+        ></app-create-invoice-sales>
       </ng-template>
 
         <ng-template #select let-invoice="item" >

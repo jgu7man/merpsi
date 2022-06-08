@@ -161,3 +161,7 @@ export class FoooterdecreaseModel {
     return { ...object, total: this.total, taxesAmount: this.taxesAmount, taxes: taxes }
   }
 }
+
+export interface iCreditNote extends CreditNoteModel {
+  
+}

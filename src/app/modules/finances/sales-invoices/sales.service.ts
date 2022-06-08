@@ -11,6 +11,7 @@ import { SalesInvoiceModel } from 'src/app/modules/finances/sales-invoices/sales
 import { AuthService } from 'src/app/services/auth.service';
 import { CurrentProductService } from '../../inventory/product-single/current-product.service';
 import { ProductEventModel, ProductModel, StoreReferenceModel } from '../../inventory/products/products.model';
+import { CreditNoteModel, iCreditNote } from '../credit-note/creditNote.model';
 import { FooterService } from '../invoices/footer-invoice/footer.service';
 import { InvoiceConceptService } from '../invoices/invoice-concept/invoice-concept.service';
 import { Invoice, InvoiceFooter, ProductInvoiceModel } from '../invoices/invoice.model';
@@ -24,14 +25,15 @@ import { TaxesService } from '../taxes/taxes.service';
 })
 export class SalesService {
 
+
   businessRef = this._dashboard.businessRef
   current$ = new BehaviorSubject<SalesInvoiceModel | null>(null)
-  stubsList$ = new BehaviorSubject<iStub [] | null>(null)
+  stubsList$ = new BehaviorSubject<iStub[] | null>(null)
   businessCRF: string = this._cache.getDataKey('eid')!
-  stubList$= new BehaviorSubject<iStub[] >([])
-  stubSelect$= new BehaviorSubject<iStub | null>(null)
+  stubList$ = new BehaviorSubject<iStub[]>([])
+  stubSelect$ = new BehaviorSubject<iStub | null>(null)
   public totales: EventEmitter<InvoiceFooter> = new EventEmitter();
-  
+
   constructor(
     private _afs: AngularFirestore,
     private _cache: MxCache,
@@ -47,45 +49,45 @@ export class SalesService {
   addConcept(concept: ProductModel, stock: number, store: string) {
     if (this.conceptInvoice.details$.value != null) {
       let details: ProductInvoiceModel[] = this.conceptInvoice.details$.value
-      let det = new ProductInvoiceModel(concept,store)
-      det.stock=stock      
+      let det = new ProductInvoiceModel(concept, store)
+      det.stock = stock
       details.push(det)
       this.conceptInvoice.details$.next(details)
     }
   }
 
-  saveInvoice( invoice: SalesInvoiceModel ) {
+  saveInvoice(invoice: SalesInvoiceModel) {
     try {
-    let businessRef = `businesses/${this._dashboard.CRF}`
+      let businessRef = `businesses/${this._dashboard.CRF}`
       const invoiceRef = this._afs.doc<SalesInvoiceModel>(`${businessRef}/sale/${invoice.invoiceId}`).ref
-      invoiceRef.set({...invoice})
+      invoiceRef.set({ ...invoice })
 
       let details: Invoice.concept[] = invoice.details
-      details.forEach(async det =>{
-        let productRef= this._afs.doc(`${businessRef}/products/${det.product.UPC}`).ref
+      details.forEach(async det => {
+        let productRef = this._afs.doc(`${businessRef}/products/${det.product.UPC}`).ref
         await firebase.firestore().runTransaction(async transaction => {
-          if (det.store==null) throw { message: 'No se encuentra la store del producto: ' + det.product.UPC}
+          if (det.store == null) throw { message: 'No se encuentra la store del producto: ' + det.product.UPC }
           let store_Id = det.store
           const storeRef = productRef.collection('stores').doc(store_Id)
           let productStore = (await transaction.get(storeRef)).data()
 
           if (!productStore) {
-          productStore  = new StoreReferenceModel(store_Id,det.product.UPC,det.unit_cost)
+            productStore = new StoreReferenceModel(store_Id, det.product.UPC, det.unit_cost)
           }
           productStore.stock = productStore.stock - det.cant!
 
-          await transaction.set(storeRef,{...productStore},{merge: true})
-          const evento = new  ProductEventModel(
+          await transaction.set(storeRef, { ...productStore }, { merge: true })
+          const evento = new ProductEventModel(
             'sale',
             this._dashboard.managerRef,
             invoiceRef
-            )
-            this._afs.collection(`${businessRef}/products/${det.product.UPC}/history`)
-              .doc(`${new Date().getTime()}`)
-              .set({ ...evento })
-          })
+          )
+          this._afs.collection(`${businessRef}/products/${det.product.UPC}/history`)
+            .doc(`${new Date().getTime()}`)
+            .set({ ...evento })
         })
-      
+      })
+
     } catch (error) {
       // this._alert.error('ha ocurrido un error al crear la factura', error)
       console.error(error);
@@ -93,16 +95,16 @@ export class SalesService {
   }
 
 
-   async getStokProductByStore(product: ProductModel[]) {
-     let stores:StoreReferenceModel[] = []
-     product.forEach( async p =>{
-       let storesResult = await this.getStoreStock(p.UPC)
-       if (storesResult.docs.length > 0){
-         storesResult.docs.forEach(docs =>
-           stores.push(docs.data())
-         )
-       }
-     })
+  async getStokProductByStore(product: ProductModel[]) {
+    let stores: StoreReferenceModel[] = []
+    product.forEach(async p => {
+      let storesResult = await this.getStoreStock(p.UPC)
+      if (storesResult.docs.length > 0) {
+        storesResult.docs.forEach(docs =>
+          stores.push(docs.data())
+        )
+      }
+    })
 
     return stores
   }
@@ -127,9 +129,31 @@ export class SalesService {
         }),
         catchError(error => {
           console.error(error);
-          this._alert.error('No se logró cargar la lista del personal', error);
+          this._alert.error('No se logró cargar la lista del factura de ventas', error);
           return of([]);
         })
       );
+  }
+
+  async findNoteCredits(invoice: SalesInvoiceModel) {
+
+    const notesRef = await this.getnotesRef(invoice.invoiceId)
+    const result = notesRef.docs
+    let notes_result = result.map((doc) => {
+      return doc.data()
+    })
+    let totales = notes_result.reduce((acc, item) => acc + item.footer.total, 0)
+    if (totales >= invoice.footer.total) {
+      return false
+    } else {
+      return true
+    }
+
+    // notesRef.where()
+  }
+
+
+  async getnotesRef(id: string) {
+    return await this._afs.collection<iCreditNote>(`businesses/${this.businessCRF}/credit_notes`).ref.where('invoiceId', '==', id).get()
   }
 }

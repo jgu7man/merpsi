@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { iDebitNote } from './debit-note.model';
+import { DebitNoteService } from './debit-note.service';
 
 @Component({
   selector: 'app-debit-note',
@@ -7,7 +9,14 @@ import { Component, OnInit } from '@angular/core';
 })
 export class DebitNoteComponent implements OnInit {
 
-  constructor() { }
+  listDebits: iDebitNote[] = []
+  constructor(
+    private _debit: DebitNoteService
+  ) {
+    this._debit.listDebits().subscribe( list =>{
+      this.listDebits = list
+    })
+   }
 
   ngOnInit(): void {
   }

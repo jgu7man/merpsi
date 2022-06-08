@@ -156,14 +156,7 @@ export class CreateDebitNoteComponent implements OnInit, OnDestroy {
         this.debit.saveDebitNote(debit)
         
   
-        /**Se actualiza el index current en el talonario seleccionado */
-        if (this.debit.stubSelect$.value) {
-          let stub = this.debit.stubSelect$.value
-          stub.currentIndex = stub.currentIndex + 1
-          this.stub.update(stub)
-        }
-  
-      this._alert.notify('La Nota de debito ha sido guardado con exito!')
+        
       }
 
       

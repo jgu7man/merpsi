@@ -1,0 +1,47 @@
+<div class="row">
+  <ng-container *ngIf="invoice">
+    <div class="col s12 l4">
+      <h3>Nro de Factura: {{invoice.invoiceId}}</h3>
+    </div>
+    <div class="col s12 l4 offset-l4">
+      <h3>Fecha: {{invoice.action_date | mxTimestamp | date: 'dd/MM/yy'}}</h3>
+    </div>
+    <div class="col s12 l4">
+      <h3>Proveedor: {{invoice.provider.name}}</h3>
+    </div>
+    <div class="col s12 l4 offset-l4">
+      <h3>Almacen: {{invoice.store.name}}</h3>
+    </div>
+
+    <div class="col s12">
+      <table>
+        <thead>
+          <tr>
+            <th>Concepto</th>
+            <th>Cant</th>
+            <th>Precio</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of invoice.details">
+            <td>{{item.product.UPC}}-{{item.product.description}}</td>
+            <td>{{item.cant}}</td>
+            <td>{{item.unit_price}}</td>
+            <td>{{item.amount}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="col s12 l8 offset-l8">
+      Subtotal: {{invoice.footer.subtotal}} <br>
+      Descuentos: {{invoice.footer.discount}} <br>
+      Envios: {{invoice.footer.shipping}} <br>
+      <ng-container *ngFor="let tax of invoice.footer.taxes">
+        {{tax.name}} ({{tax.rate}}%) : {{tax.amount}} <br>
+      </ng-container>
+      Total: {{invoice.footer.total}} <br>
+    </div>
+  </ng-container>
+
+</div>

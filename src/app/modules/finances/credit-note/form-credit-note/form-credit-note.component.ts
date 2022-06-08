@@ -1,7 +1,7 @@
 import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatSelectChange } from '@angular/material/select';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import { PersonalService } from 'src/app/modules/admin/managers/personal.service';
@@ -80,6 +80,7 @@ export class FormCreditNoteComponent implements OnInit, OnDestroy {
     this.prefix = ''
     this.stubSelect = null
     this.stubList = []
+    this.credit.stubSelect$.next(null) 
   }
 
   async ngOnInit(): Promise<void> {
@@ -97,6 +98,7 @@ export class FormCreditNoteComponent implements OnInit, OnDestroy {
 
       let footer_tax = this.invoice_Ref.footer.taxes
       let taxe: TaxModel[] = footer_tax.map(tax => { return new TaxModel(0, tax.name, tax.rate) })
+     
       if (this.conceptNC == 'disminucion') {
         let det = this.invoiceConcept.details_Notes$.value
         let amount = det.reduce((acc, item) => acc + item.amount, 0)
@@ -112,6 +114,8 @@ export class FormCreditNoteComponent implements OnInit, OnDestroy {
         const foot = new FooterNoteModel(this.invoice_Ref.footer, this.invoiceConcept.details_Notes$.value, null, taxe)
         this.footer.footer$.next(foot)
       }
+      console.log(this.invoiceConcept.details_Notes$.value);
+      
 
     } catch (error: any) {
       if ('message' in error) {
@@ -131,31 +135,31 @@ export class FormCreditNoteComponent implements OnInit, OnDestroy {
       if (!this.invoice_Ref) throw { message: ' No existe el talonario' }
       if (!this._manager.current) throw { message: 'No se ha iniciado la sesion' }
 
+      if (this.footer_service.footer$.value.total>0){
+        if (this.footer_service.footer$.value.total <= this.invoice_Ref.footer.total ){
+          const manager: Invoice.manager = {
+            id: this._manager.current.uid!,
+            name: this._manager.current.name,
+            ref: this._manager.managerRef
+          }
+          let noteCredit = new CreditNoteModel(
+            this.invoice_Ref.invoiceId,
+            this.credit.stubSelect$.value.prefixIndexCurrent,
+            manager,
+            this.conceptNC,
+            this.invoiceConcept.details_Notes$.value,
+            this.footer_service.footer$.value
+          )    
+          this.credit.saveCreditNote(noteCredit)
+          
 
+        }else{
+          Swal.fire(`El total de la Nota de Credito no puede ser mayor a ${this.invoice_Ref.footer.total}`)
+        }
+      }else{
 
-      const manager: Invoice.manager = {
-        id: this._manager.current.uid!,
-        name: this._manager.current.name,
-        ref: this._manager.managerRef
+        Swal.fire(`El total de la Nota de Credito no puede ser 0.00`)
       }
-      let noteCredit = new CreditNoteModel(
-        this.invoice_Ref.invoiceId,
-        this.credit.stubSelect$.value.prefixIndexCurrent,
-        manager,
-        this.conceptNC,
-        this.invoiceConcept.details_Notes$.value,
-        this.footer_service.footer$.value
-      )
-      console.log(noteCredit);
-
-      await this.credit.saveCreditNote(noteCredit)
-      /**Se actualiza el index current en el talonario seleccionado */
-      if (this.credit.stubSelect$.value) {
-        let stub = this.credit.stubSelect$.value
-        stub.currentIndex = stub.currentIndex + 1
-        this.stub.update(stub)
-      }
-      Swal.fire('Guardado')
 
     } catch (error: any) {
       if ('message' in error) {

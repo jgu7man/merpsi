@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import { Observable } from 'rxjs';
@@ -18,7 +18,7 @@ import { InvoiceConceptService } from './invoice-concept.service';
   templateUrl: './invoice-concept.component.html',
   styleUrls: ['./invoice-concept.component.scss']
 })
-export class InvoiceConceptComponent implements OnInit {
+export class InvoiceConceptComponent implements OnInit, OnDestroy{
 
   @Input() invoice: iSalesInvoice | null = null
   @Input() document: string = ''
@@ -41,13 +41,13 @@ export class InvoiceConceptComponent implements OnInit {
     public conceptInvoice: InvoiceConceptService,
     private _cache: MxCache,
     private _stores: SedesService,
-    private _credito: CreditNoteService
-
-
   ) {
 
     this.stores$ = this._stores.listenAll()
   }
+  ngOnDestroy(): void {
+  }
+  
 
   ngOnInit(): void {
     if (this.concept) {
@@ -70,6 +70,17 @@ export class InvoiceConceptComponent implements OnInit {
           })
         }
       }
+      else if ( this.document == 'credit'){
+        if (this.conceptInvoice.details_Notes$.value) {
+          let details = this.conceptInvoice.details_Notes$.value
+          details.map(det => {
+            if (det.product.UPC === this.concept!.product.UPC) {
+              this.formAddProduct.controls.unit_price.setValidators(Validators.max(this.concept!.unit_price))
+              this.formAddProduct.controls.cant.setValidators(Validators.max(this.concept!.cant!))
+            }
+          })
+        }
+      }
       this.formAddProduct.valueChanges.pipe(
         distinctUntilChanged((x, y) =>
           typeof x != 'object' ? x === y : JSON.stringify(x) === JSON.stringify(y)
@@ -78,19 +89,13 @@ export class InvoiceConceptComponent implements OnInit {
         debounceTime(1000),
       ).subscribe(changes => {
         console.log(this.tipo_concepto);
-        // if ( this.tipo_concepto =='disminucion'){
-        //   this._credito.recalculate(changes, this.concept!)
-        //   this.conceptInvoice.details_Credit$.value.map(det => {
-        //     if ( det.product.UPC == this.concept?.product.UPC){
-        //       this.formAddProduct.patchValue({ unit_price: det.unit_price }, { onlySelf: true, emitEvent: false, })
-              
-        //     }
-        //   })
-        // }else{
+        console.log(this.formAddProduct);
         
+        if( this.formAddProduct.valid){
           this.conceptInvoice.update(changes, this.concept!, this.document);
-          
-        //}
+        }else{
+
+        }
       })
 
       this.formAddProduct.patchValue(this.concept)

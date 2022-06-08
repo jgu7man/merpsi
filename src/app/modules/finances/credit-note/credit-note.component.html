@@ -4,9 +4,10 @@
       <mx-crud-panel
       listName="Nota de Credito"
       [selectTemplate]="select"
+      [list]="listCredits"
       [addTemplate]="add"
       [height_vh]="100"
-      itemSelector="name"
+      itemSelector="id"
       #crudPanel
        >
         <ng-template #add>

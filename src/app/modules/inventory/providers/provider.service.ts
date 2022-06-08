@@ -3,11 +3,12 @@ import { AngularFirestore } from '@angular/fire/firestore';
 import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import { MxTest } from 'libs/@marxa/devkit/test/mx-test.service';
-import { Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import { map,catchError, tap } from 'rxjs/operators';
 import { iBusiness } from 'src/app/models/empresa.model';
 import { FireRef } from 'src/app/models/firestore.model';
 import Swal from 'sweetalert2';
+import { iSede } from '../../admin/stores/sede.model';
 import { iProvider, ProviderModel, QueryProvider } from './provider.model';
 
 
@@ -19,17 +20,14 @@ export class ProviderService {
   businessCRF: string = this._cache.getDataKey('eid')!
   providers: iProvider[] = []
   bussinesProviders: iBusiness[] = [];
+  providerSelect$ = new BehaviorSubject<iProvider | iBusiness | null>(null)
   constructor(
     private _afs: AngularFirestore,
     private _cache: MxCache,
     private _alert: MxAlert,
     private _test: MxTest,
   ) { 
-    // this._test.testOn( this.findProviderByCRF )
-    //   .then( async ( { crf } ) => {
-    //     const provider = await this.findProviderByCRF( crf );
-    //     console.log( provider )
-    //   })
+   // this.providerSelect$.next(null)
   }
 
 

@@ -4,15 +4,23 @@
       <mx-crud-panel
       listName="Facturas de Compras"
       [addTemplate]="add"
+      [list]="listPuchases"
+      [selectTemplate]="select"
       [height_vh]="100"
-      itemSelector="name"
+      itemSelector="invoiceId"
       #crudPanel
       (onAdd)="onCreate()"
+      (onClose)="onClose()"
       >
+
       <ng-template #add >
         <app-create-invoice
         (submited)="crudPanel.closeAll()"
         ></app-create-invoice>
+      </ng-template>
+
+      <ng-template #select let-invoice="item" >
+        <app-select-puchase  [invoice]="invoice"></app-select-puchase>
       </ng-template>
       </mx-crud-panel>
     </div>
