@@ -1,40 +1,41 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
+import { Router } from '@angular/router';
 import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { DashboardService } from 'src/app/dashboard/dashboard.service';
 import { FireRef } from 'src/app/models/firestore.model';
+import Swal from 'sweetalert2';
 import { PersonalService } from '../../admin/managers/personal.service';
 import { FooterService } from '../invoices/footer-invoice/footer.service';
 import { InvoiceFooter, ProductInvoiceModel } from '../invoices/invoice.model';
 import { SalesInvoiceModel } from '../sales-invoices/sales-invoice.model';
 import { iStub } from '../stubs-invoice/stub.model';
+import { StubService } from '../stubs-invoice/stub.service';
 import { AppliedTaxModel, TaxModel } from '../taxes/taxes.model';
 import { TaxesService } from '../taxes/taxes.service';
-import { DebitNoteModel } from './debit-note.model';
+import { DebitNoteModel, iDebitNote } from './debit-note.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DebitNoteService {
-  stubSelect$= new BehaviorSubject<iStub | null>(null)
-  stubList$= new BehaviorSubject<iStub[] >([])
+  stubSelect$ = new BehaviorSubject<iStub | null>(null)
+  stubList$ = new BehaviorSubject<iStub[]>([])
   listTaxes: AppliedTaxModel[] = [];
   businessRef = `businesses/${this._dashboard.CRF}`
-  
-  
+
+
   constructor(
     public taxes: TaxesService,
     public foot: FooterService,
     private _alert: MxAlert,
     private _dashboard: DashboardService,
-    private _afs: AngularFirestore
+    private _afs: AngularFirestore,
+    private stub: StubService,
+    private _router: Router,
   ) { }
-
-  updatedetails(param: keyof ProductInvoiceModel,
-    value: ProductInvoiceModel[typeof param]) {
-    throw new Error('Method not implemented.');
-  }
 
   async getInvoice(invoice_ID: string) {
     let invoiceRef = this.getInvoiceRef(invoice_ID)
@@ -42,21 +43,49 @@ export class DebitNoteService {
     return invoice || null
   }
 
-  getInvoiceRef( invoice_ID: string ):FireRef<SalesInvoiceModel>{
+  getInvoiceRef(invoice_ID: string): FireRef<SalesInvoiceModel> {
     return this._afs.doc<SalesInvoiceModel>(`${this.businessRef}/sale/${invoice_ID}`).ref
   }
 
   saveDebitNote(debit: DebitNoteModel) {
-    
-    const creditRef = this._afs.doc(`${this.businessRef}/debit_note/${debit.id}`).ref
-    let data= { 
+
+    const creditRef = this._afs.doc(`${this.businessRef}/debit_notes/${debit.id}`).ref
+    let data = {
       ...debit,
-      footer: {...debit.footer}
+      footer: { ...debit.footer }
     }
     console.log(data);
-    
+
     creditRef.set(data)
 
+    /**Se actualiza el index current en el talonario seleccionado */
+    if (this.stubSelect$.value) {
+      let stub = this.stubSelect$.value
+      stub.currentIndex = stub.currentIndex + 1
+      this.stub.update(stub)
+    }
+    this._alert.notify('La Nota de debito ha sido guardado con exito!')
+    this._router.navigate([`business/${this._dashboard.CRF}/finances/sales`])
+
+
+  }
+
+  listDebits(): Observable<iDebitNote[]> {
+    return this._afs.collection<iDebitNote>(`${this.businessRef}/debit_notes/`).valueChanges()
+      .pipe(
+        map(result => {
+          const credits: iDebitNote[] = []
+          result.forEach(p => {
+            credits.push(p);
+          })
+          return credits
+        }),
+        catchError(error => {
+          console.error(error);
+          Swal.fire('No se logró cargar la lista de notas de debito', error);
+          return of([]);
+        })
+      )
   }
 
 }
