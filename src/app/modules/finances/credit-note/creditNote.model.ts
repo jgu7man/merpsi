@@ -77,8 +77,8 @@ export class FooterNoteModel {
 
   constructor(
     data?: Invoice.footer,
-    details?: NoteCredit.concept[] | null,
-    public amount_invoice?: number | null,
+    details: NoteCredit.concept[] | null = null,
+    public amount_invoice: number | null = null,
     taxes?: TaxModel[]
 
   ) {

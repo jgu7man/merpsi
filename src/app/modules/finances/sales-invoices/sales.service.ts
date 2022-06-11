@@ -148,8 +148,6 @@ export class SalesService {
     } else {
       return true
     }
-
-    // notesRef.where()
   }
 
 

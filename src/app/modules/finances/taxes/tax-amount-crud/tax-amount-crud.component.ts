@@ -29,8 +29,8 @@ export class TaxAmountCrudComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  selectionChanged( event: MatSelectChange ) {
-    let tax: TaxModel = event.value
+  selectionChanged( event: TaxModel ) {
+    let tax: TaxModel = event
     this.appliedTax = new AppliedTaxModel( tax, this.amount_base );
     this.taxes.applidedTaxes.push( this.appliedTax )
     this.taxCtrl.setValue(null)

@@ -23,9 +23,9 @@
     <mat-select
       placeholder="Placeholder"
       name="tax"
-      (selectionChange)="selectionChanged($event)"
       >
         <mat-option
+        (click)="selectionChanged(item)"
           *ngFor="let item of (taxes.list$ | async)"
           [value]="item">
             {{item.name}}
