@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import { Observable } from 'rxjs';
@@ -7,9 +7,8 @@ import { iSede } from 'src/app/modules/admin/stores/sede.model';
 import { SedesService } from 'src/app/modules/admin/stores/sedes.service';
 import { Invoice, ProductInvoiceModel } from 'src/app/modules/finances/invoices/invoice.model';
 import { ProductModel } from 'src/app/modules/inventory/products/products.model';
-import { CreditNoteService } from '../../credit-note/credit-note.service';
 import { PurchaseInvoiceService } from '../../purchase-invoices/puchase-invoice.service';
-import { iSalesInvoice, SalesInvoiceModel } from '../../sales-invoices/sales-invoice.model';
+import { iSalesInvoice } from '../../sales-invoices/sales-invoice.model';
 import { SalesService } from '../../sales-invoices/sales.service';
 import { InvoiceConceptService } from './invoice-concept.service';
 
@@ -18,7 +17,7 @@ import { InvoiceConceptService } from './invoice-concept.service';
   templateUrl: './invoice-concept.component.html',
   styleUrls: ['./invoice-concept.component.scss']
 })
-export class InvoiceConceptComponent implements OnInit, OnDestroy{
+export class InvoiceConceptComponent implements OnInit, OnDestroy {
 
   @Input() invoice: iSalesInvoice | null = null
   @Input() document: string = ''
@@ -47,10 +46,11 @@ export class InvoiceConceptComponent implements OnInit, OnDestroy{
   }
   ngOnDestroy(): void {
   }
-  
+
 
   ngOnInit(): void {
     if (this.concept) {
+      /* validaciones para los conceptos segun el documento en el que este */
       if (this.document == 'sales') {
         if (this.conceptInvoice.details$.value) {
           let details = this.conceptInvoice.details$.value
@@ -60,7 +60,8 @@ export class InvoiceConceptComponent implements OnInit, OnDestroy{
             }
           })
         }
-      }else if ( this.document == 'debit'){
+      } else 
+      if (this.document == 'debit') {
         if (this.conceptInvoice.details_Notes$.value) {
           let details = this.conceptInvoice.details_Notes$.value
           details.map(det => {
@@ -70,7 +71,8 @@ export class InvoiceConceptComponent implements OnInit, OnDestroy{
           })
         }
       }
-      else if ( this.document == 'credit'){
+      else 
+      if (this.document == 'credit') {
         if (this.conceptInvoice.details_Notes$.value) {
           let details = this.conceptInvoice.details_Notes$.value
           details.map(det => {
@@ -88,39 +90,21 @@ export class InvoiceConceptComponent implements OnInit, OnDestroy{
         skip(1),
         debounceTime(1000),
       ).subscribe(changes => {
-        console.log(this.tipo_concepto);
-        console.log(this.formAddProduct);
-        
-        if( this.formAddProduct.valid){
+        /* Escucha los cambios del formulario de conceptos para realizar los calculos del totales e informar al footer  */
+        if (this.formAddProduct.valid) {
           this.conceptInvoice.update(changes, this.concept!, this.document);
-        }else{
-
-        }
+        } 
       })
 
       this.formAddProduct.patchValue(this.concept)
       this.formAddProduct.markAsPristine()
     }
-    //console.log(this.purchase.current$.value)
 
   }
 
   getValue(product: ProductModel) {
     this.productSelect = product
-    console.log(this.productSelect)
-
-
   }
-
-  getList(product: ProductModel[]) {
-    this.productListEmpty = product.length == 0 ? true : false
-  }
-
-  createProduct() {
-    alert("abrir form de crear producto")
-  }
-
-
 
   deleteConcept(concept: ProductInvoiceModel | Invoice.concept) {
     if (concept) {

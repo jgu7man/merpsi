@@ -1,18 +1,14 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormControl, Validators } from '@angular/forms';
 import { MatSelectChange } from '@angular/material/select';
 import { ActivatedRoute } from '@angular/router';
 import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
-import { skip } from 'rxjs/operators';
-import { Manager } from 'src/app/modules/admin/managers/manager.model';
 import { PersonalService } from 'src/app/modules/admin/managers/personal.service';
-import { CreditNoteService } from '../../credit-note/credit-note.service';
 import { FooterNoteModel } from '../../credit-note/creditNote.model';
 import { FooterCreditoDebitoService } from '../../invoices/footer-credito-debito/footer-credito-debito.service';
 import { InvoiceConceptService } from '../../invoices/invoice-concept/invoice-concept.service';
-import { Invoice, InvoiceFooter, ProductInvoiceModel } from '../../invoices/invoice.model';
-// import { InvoiceFooterModel, iProductInvoice } from '../../invoices/invoice.model';
-import { Sales, SalesInvoiceModel } from '../../sales-invoices/sales-invoice.model';
+import { Invoice } from '../../invoices/invoice.model';
+import { SalesInvoiceModel } from '../../sales-invoices/sales-invoice.model';
 import { iStub } from '../../stubs-invoice/stub.model';
 import { StubService } from '../../stubs-invoice/stub.service';
 import { AppliedTaxModel, TaxModel } from '../../taxes/taxes.model';
@@ -29,31 +25,31 @@ export class CreateDebitNoteComponent implements OnInit, OnDestroy {
 
   stubsList: iStub[] = [];
   stubSelect: iStub | null = null;
-  date_emition: FormControl= new FormControl( '', [ Validators.required ] )
+  date_emition: FormControl = new FormControl('', [Validators.required])
   nroStub: string = '';
   invoiceId: string = '';
   invoice_Ref: SalesInvoiceModel | null = null;
 
   constructor(
     public stub: StubService,
-    public debit:DebitNoteService,
+    public debit: DebitNoteService,
     public manager: PersonalService,
+    public invoiceConcept: InvoiceConceptService,
+    public footer: FooterCreditoDebitoService,
     private _alert: MxAlert,
     private _activatedRoute: ActivatedRoute,
     private _taxes: TaxesService,
-    public invoiceConcept: InvoiceConceptService,
-    public footer: FooterCreditoDebitoService,
 
 
-  ) { 
+  ) {
     this._activatedRoute.params.subscribe(params => {
       this.invoiceId = params.invoiceId
     })
     this.stub.list$.pipe(
-    ).subscribe( stubs => {
+    ).subscribe(stubs => {
       stubs.forEach(stub => {
-        if (stub.active && stub.type == 'debit' && (stub.currentIndex < stub.endIndex)){
-          this.stubsList.push( stub );
+        if (stub.active && stub.type == 'debit' && (stub.currentIndex < stub.endIndex)) {
+          this.stubsList.push(stub);
         }
       })
       this.debit.stubList$.next(this.stubsList)
@@ -68,23 +64,23 @@ export class CreateDebitNoteComponent implements OnInit, OnDestroy {
 
   async ngOnInit(): Promise<void> {
     try {
-      if ( !this.invoiceId ) throw { message: 'No existe invoiceId' }
+      if (!this.invoiceId) throw { message: 'No existe invoiceId' }
       this.invoice_Ref = await this.debit.getInvoice(this.invoiceId)
-      if ( !this.invoice_Ref ) throw { message: 'No se encontro la factura'}
+      if (!this.invoice_Ref) throw { message: 'No se encontro la factura' }
 
       let footer_tax = this.invoice_Ref.footer.taxes
-      let taxs: TaxModel[] = footer_tax.map(tax => {return new TaxModel(0,tax.name,tax.rate)} )
+      let taxs: TaxModel[] = footer_tax.map(tax => { return new TaxModel(0, tax.name, tax.rate) })
       let det = this.invoiceConcept.details_Notes$.value
-      let amount = det.reduce((acc,item) => acc + item.amount,0)
+      let amount = det.reduce((acc, item) => acc + item.amount, 0)
       let amount_tax = 0
       taxs.map(tax => {
         amount_tax = amount_tax + (new AppliedTaxModel(tax, amount)).amount
       })
       amount = amount + amount_tax
-      this.footer.footer$.next(new FooterNoteModel(this.invoice_Ref.footer,this.invoiceConcept.details_Notes$.value,amount,taxs))
+      this.footer.footer$.next(new FooterNoteModel(this.invoice_Ref.footer, this.invoiceConcept.details_Notes$.value, amount, taxs))
       console.log(this.footer.footer$.value);
       console.log(this.invoiceConcept.details_Notes$.value);
-      
+
     } catch (error: any) {
       if ('message' in error) {
         this._alert.error(error.message, error)
@@ -93,18 +89,15 @@ export class CreateDebitNoteComponent implements OnInit, OnDestroy {
       }
       return console.error(error)
     }
-    
+
   }
 
-  seletedStub(data: MatSelectChange){
+  seletedStub(data: MatSelectChange) {
     try {
-      // this.stubSelect = stub.value
-      // if (!this.stubSelect) throw { message: 'No se cargo el talonario'}
-      // this.nroStub =  this.stubSelect.prefix + this.index
       this.debit.stubSelect$.next(data.value)
       if (!this.debit.stubSelect$.value) throw { message: ' No existe el talonario' }
       let stub = this.debit.stubSelect$.value
-      stub.prefixIndexCurrent = stub.prefix  + ((stub.currentIndex || 0) + 1)
+      stub.prefixIndexCurrent = stub.prefix + ((stub.currentIndex || 0) + 1)
     } catch (error: any) {
       if ('message' in error) {
         this._alert.error(error.message, error)
@@ -113,16 +106,11 @@ export class CreateDebitNoteComponent implements OnInit, OnDestroy {
       }
       return console.error(error)
     }
-    
-  }
 
-  get index(){
-    if (!this.stubSelect) throw { message: 'No se cargo el talonario'}
-    return this.stubSelect.currentIndex + 1
   }
 
 
-  async save(){
+  async save() {
     try {
       if (!this.manager.current) throw { message: 'No se ha iniciado la sesion' }
       if (!this.invoiceConcept.details_Notes$.value) throw { message: 'No existe el detalle' }
@@ -140,27 +128,15 @@ export class CreateDebitNoteComponent implements OnInit, OnDestroy {
           id: this.invoice_Ref.invoiceId,
           ref: this.debit.getInvoiceRef(this.invoice_Ref.invoiceId)
         }
-  
-        console.log(this.footer.footer$.value.getdata());
-        
         const debit: DebitNoteModel = new DebitNoteModel(
-  
           invoice,
           this.debit.stubSelect$.value.prefixIndexCurrent,
           manager,
           this.invoiceConcept.details_Notes$.value,
           this.footer.footer$.value
         )
-        console.log(debit);
-  
         this.debit.saveDebitNote(debit)
-        
-  
-        
       }
-
-      
-
     } catch (error: any) {
       if ('message' in error) {
         this._alert.error(error.message, error)
@@ -169,7 +145,7 @@ export class CreateDebitNoteComponent implements OnInit, OnDestroy {
       }
       return console.error(error)
     }
-    
+
   }
 
 }

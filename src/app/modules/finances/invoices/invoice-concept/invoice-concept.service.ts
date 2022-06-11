@@ -1,13 +1,12 @@
 import { Injectable } from '@angular/core';
 import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
 import { BehaviorSubject } from 'rxjs';
-import { CreditNoteService } from '../../credit-note/credit-note.service';
 import { ProductNoteModel } from '../../credit-note/creditNote.model';
 import { TaxModel } from '../../taxes/taxes.model';
 import { TaxesService } from '../../taxes/taxes.service';
 import { FooterCreditoDebitoService } from '../footer-credito-debito/footer-credito-debito.service';
 import { FooterService } from '../footer-invoice/footer.service';
-import { Invoice, InvoiceFooter, ProductInvoiceModel } from '../invoice.model';
+import { Invoice, ProductInvoiceModel } from '../invoice.model';
 
 @Injectable({
   providedIn: 'root'
@@ -22,7 +21,6 @@ export class InvoiceConceptService {
     private _footer_note: FooterCreditoDebitoService,
     private _alert: MxAlert,
     private _taxes: TaxesService,
-   // private _credito: CreditNoteService
   ) { }
 
   /**
@@ -30,37 +28,36 @@ export class InvoiceConceptService {
    * @param changes cambios que llegan desde el formulario (cantidad y precio unitario)
    * @param concept concepto de la fila
    */
-  update(changes: { cant: number, unit_price: number }, concept: ProductInvoiceModel | Invoice.concept, document: string = '',concept_NC: string = '') {
-    console.log(changes);
+  update(changes: { cant: number, unit_price: number }, concept: ProductInvoiceModel | Invoice.concept, document: string = '') {
     let subtotal = 0
-   
-    if ( document == 'credit' || document == 'debit'){
-        if (this.details_Notes$.value) {
-          let details = this.details_Notes$.value.map((d) => {
-            if (d.product.UPC == concept.product.UPC) {
-              d.cant = changes.cant
-              d.unit_price = changes.unit_price
-            }
-            subtotal += d.amount
-            return d
-          })
-          this.details_Notes$.next(details)
-        }
-        if (!this._footer_note.footer$.value) throw { message: ' No existe el footer_invoice' }
-        let foot = this._footer_note.footer$.value
-        /*Se le informa al footer el subtotal de todos los conceptos*/
-        foot.subtotal = subtotal
-        let suma = (foot.subtotal + foot.shipping) - (foot.discount)
-        foot.taxes.map(tax =>{
-          let taxmodel = new TaxModel(0,tax.name, tax.rate)
-          return this._taxes.calcTax(taxmodel,suma)
+
+    if (document == 'credit' || document == 'debit') {
+      if (this.details_Notes$.value) {
+        let details = this.details_Notes$.value.map((d) => {
+          if (d.product.UPC == concept.product.UPC) {
+            d.cant = changes.cant
+            d.unit_price = changes.unit_price
+          }
+          subtotal += d.amount
+          return d
         })
-        foot.taxes = this._taxes.applidedTaxes
-        this._footer_note.footer$.next(foot)
-        console.log(this._footer_note.footer$.value);
-        console.log(this.details_Notes$.value);
-        
-      }else{
+        this.details_Notes$.next(details)
+      }
+      if (!this._footer_note.footer$.value) throw { message: ' No existe el footer_invoice' }
+      let foot = this._footer_note.footer$.value
+      /*Se le informa al footer el subtotal de todos los conceptos*/
+      foot.subtotal = subtotal
+      let suma = (foot.subtotal + foot.shipping) - (foot.discount)
+      foot.taxes.map(tax => {
+        let taxmodel = new TaxModel(0, tax.name, tax.rate)
+        return this._taxes.calcTax(taxmodel, suma)
+      })
+      foot.taxes = this._taxes.applidedTaxes
+      this._footer_note.footer$.next(foot)
+      console.log(this._footer_note.footer$.value);
+      console.log(this.details_Notes$.value);
+
+    } else {
       if (this.details$.value) {
         let details = this.details$.value.map((d) => {
           if (d.product.UPC == concept.product.UPC) {
@@ -79,9 +76,6 @@ export class InvoiceConceptService {
       this._footer.currentfoot$.next(foot)
       console.log(this.details$.value);
     }
-
-
-
   }
 
   get subtotal(): number {

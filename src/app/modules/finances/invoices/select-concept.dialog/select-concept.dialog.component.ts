@@ -14,7 +14,7 @@ import { InvoiceService } from '../invoice-service.service';
 })
 export class SelectConceptDialogComponent implements OnInit {
 
-  businessRef = this._cache.getDataKey( 'eid' )
+  businessRef = this._cache.getDataKey('eid')
   productSelect: ProductModel | null = null;
   productListEmpty: boolean = false;
 
@@ -26,25 +26,25 @@ export class SelectConceptDialogComponent implements OnInit {
     private _dialog: MatDialogRef<SelectConceptDialogComponent>,
     private _dialogProduct: MatDialog,
 
-    
+
   ) { }
 
   ngOnInit(): void {
   }
 
-  
-    getValue(product: ProductModel){
-      this.productSelect = product      
-      this._dialog.close(product)
-    }
 
-  getList(product: ProductModel[]){
-    this.productListEmpty = product.length ==0 ? true : false
+  getValue(product: ProductModel) {
+    this.productSelect = product
+    this._dialog.close(product)
   }
 
-  createProduct(){
+  getList(product: ProductModel[]) {
+    this.productListEmpty = product.length == 0 ? true : false
+  }
+
+  createProduct() {
     this._dialogProduct.open(ProductFormDialog, {
       width: '100% ',
-    } )
+    })
   }
 }

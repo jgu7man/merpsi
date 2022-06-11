@@ -75,6 +75,7 @@ export class CreateInvoiceComponent implements OnInit, OnDestroy{
   }
 
   clean(){
+    this.invoiceId = null
     this.conceptInvoice.details$.next([])
     this.conceptInvoice.details_Notes$.next([])
     this.conceptInvoice.details_invoice$.next([])
@@ -84,7 +85,6 @@ export class CreateInvoiceComponent implements OnInit, OnDestroy{
     this.invoiceForm.patchValue({
       action_date: '',
       invoiceId : '',
-     // payment_method: new FormControl('', [Validators.required]),
     })
   }
   ngOnDestroy(): void {

@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmationService } from 'primeng/api';
@@ -14,7 +14,7 @@ import { ProviderService } from '../provider.service';
   templateUrl: './provider-selector.component.html',
   styleUrls: ['./provider-selector.component.scss']
 })
-export class ProviderSelectorComponent implements OnInit {
+export class ProviderSelectorComponent implements OnInit, OnDestroy{
   public crfCtrl: FormControl = new FormControl()
 
   @ViewChild('crfInput') crfInput!: ElementRef
@@ -25,15 +25,15 @@ export class ProviderSelectorComponent implements OnInit {
     private _confirm: ConfirmationService,
     private _dialog: MatDialog
   ) { }
-
+  
   ngOnInit(): void {
     this.crfCtrl.valueChanges.pipe(
       listenChanges(500),
       filter(value => value && value.length >= 8)
-    ).subscribe(async (crf: any) => {
-      let provider = await this.providerService.findProviderByCRF(crf)
-
-      if (!provider) {
+      ).subscribe(async (crf: any) => {
+        let provider = await this.providerService.findProviderByCRF(crf)
+        
+        if (!provider) {
         let business = await this.providerService.findBusinessByCRF(crf)
         if (business == null) {
           this.crfCtrl.setErrors({ unknown: true })
@@ -44,6 +44,9 @@ export class ProviderSelectorComponent implements OnInit {
         this.alertProviderFound(provider)
       }
     })
+  }
+  ngOnDestroy(): void {
+    this.crfCtrl.patchValue('')
   }
 
 

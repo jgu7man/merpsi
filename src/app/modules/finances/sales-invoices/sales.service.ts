@@ -59,7 +59,7 @@ export class SalesService {
   saveInvoice(invoice: SalesInvoiceModel) {
     try {
       let businessRef = `businesses/${this._dashboard.CRF}`
-      const invoiceRef = this._afs.doc<SalesInvoiceModel>(`${businessRef}/sale/${invoice.invoiceId}`).ref
+      const invoiceRef = this._afs.doc<SalesInvoiceModel>(`${businessRef}/sales/${invoice.invoiceId}`).ref
       invoiceRef.set({ ...invoice })
 
       let details: Invoice.concept[] = invoice.details
@@ -116,7 +116,7 @@ export class SalesService {
   }
 
   listInvoice(): Observable<SalesInvoiceModel[]> {
-    return this._afs.collection<SalesInvoiceModel>(`businesses/${this._dashboard.CRF}/sale`).valueChanges()
+    return this._afs.collection<SalesInvoiceModel>(`businesses/${this._dashboard.CRF}/sales`).valueChanges()
       .pipe(
         map(result => {
           const sales: SalesInvoiceModel[] = [];

@@ -44,7 +44,7 @@ export class DebitNoteService {
   }
 
   getInvoiceRef(invoice_ID: string): FireRef<SalesInvoiceModel> {
-    return this._afs.doc<SalesInvoiceModel>(`${this.businessRef}/sale/${invoice_ID}`).ref
+    return this._afs.doc<SalesInvoiceModel>(`${this.businessRef}/sales/${invoice_ID}`).ref
   }
 
   saveDebitNote(debit: DebitNoteModel) {

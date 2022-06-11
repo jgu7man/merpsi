@@ -1,7 +1,6 @@
 <div class="container">
   <div class="row">
     <div class="col s12 m8">
-      <form class="row" [formGroup]="creditNoteForm">
         <mat-form-field class="col s4" appearance="outline">
           <mat-label>Talonario</mat-label>
           <mat-select placeholder="Placeholder" (selectionChange)="selectStub($event)" name="name">
@@ -14,7 +13,6 @@
         <ng-container *ngIf="credit.stubSelect$.value as stub" class="col s4">
           <h1>{{stub.prefixIndexCurrent}}</h1>
         </ng-container>
-      </form>
     </div>
   </div>
   <ng-container *ngIf="invoice_Ref as invoice_current">

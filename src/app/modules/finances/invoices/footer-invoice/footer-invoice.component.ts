@@ -2,7 +2,6 @@ import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angu
 import { FormControl, FormGroup } from '@angular/forms';
 import { debounceTime, distinctUntilChanged, skip } from 'rxjs/operators';
 import { CreditNoteService } from '../../credit-note/credit-note.service';
-import { PurchaseInvoiceModel } from '../../purchase-invoices/pucharce-invoice.model';
 import { PurchaseInvoiceService } from '../../purchase-invoices/puchase-invoice.service';
 import { SalesInvoiceModel } from '../../sales-invoices/sales-invoice.model';
 import { SalesService } from '../../sales-invoices/sales.service';
@@ -18,8 +17,6 @@ import { FooterService } from './footer.service';
 })
 export class FooterInvoiceComponent implements OnInit, OnDestroy {
 
-
-  // @Input() footerCalc: iInvoiceFooter | null = null
   @Input() invoice: SalesInvoiceModel | null = null
   @Input() document: string | null = null
 
@@ -45,11 +42,11 @@ export class FooterInvoiceComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    
-    if( this.invoice){
+
+    if (this.invoice) {
       this.foot.currentfoot_invoice$.next(this.invoice.footer)
 
-    }else{
+    } else {
       this.foot.currentfoot$.next(new InvoiceFooter())
       this.formFooter.valueChanges.pipe(
         distinctUntilChanged((x, y) =>
@@ -61,20 +58,12 @@ export class FooterInvoiceComponent implements OnInit, OnDestroy {
         this.foot.updateFooter(changes)
       })
     }
-    
-    
-  }
-  readonlyAll() {
-    this.formFooter.controls.discount.disable()
-    this.formFooter.controls.shipping.disable()
-  }
-  updateTaxes(taxes: AppliedTaxModel[]) {
-    
-    
+
+
   }
 
   getTotalTaxes() {
-    if (!this.foot.currentfoot$.value) throw { message: ' No existe el footer'}
+    if (!this.foot.currentfoot$.value) throw { message: ' No existe el footer' }
     let footer = this.foot.currentfoot$.value
     footer.taxes = this.taxes.applidedTaxes
     this.foot.currentfoot$.next(footer)

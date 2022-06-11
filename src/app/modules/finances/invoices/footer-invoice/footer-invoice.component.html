@@ -10,7 +10,7 @@
     <div class="row">
       <div class="col s12 l8 offset-l8">
         <div class="col s4">
-          <mat-form-field appearance="outline" >
+          <mat-form-field appearance="outline">
             <mat-label>descuento</mat-label>
             <input matInput type="number" name="discount" formControlName="discount">
           </mat-form-field>
@@ -20,7 +20,7 @@
     <div class="row">
       <div class="col s12 l8 offset-l8">
         <div class="col s4">
-          <mat-form-field appearance="outline" >
+          <mat-form-field appearance="outline">
             <mat-label>Fletes</mat-label>
             <input matInput type="number" name="shipping" formControlName="shipping">
           </mat-form-field>
@@ -36,9 +36,7 @@
             </ng-container>
           </ng-container>
           <ng-template #taxesCrud>
-            <app-tax-amount-crud
-            [amount_base]="footer.subtotal"
-            (totalTax)="getTotalTaxes()">
+            <app-tax-amount-crud [amount_base]="footer.subtotal" (totalTax)="getTotalTaxes()">
             </app-tax-amount-crud>
           </ng-template>
         </div>
@@ -47,7 +45,7 @@
     <div class="row">
       <div class="col s12 l8 offset-l8">
         <div class="col s4">
-         Total: {{footer.total | number}}
+          Total: {{footer.total | number}}
         </div>
       </div>
     </div>
@@ -74,7 +72,7 @@
     <div class="row">
       <div class="col s12 l8 offset-l8">
         <div class="col s4">
-          Fletes: {{footer.shipping | number}} 
+          Fletes: {{footer.shipping | number}}
         </div>
       </div>
     </div>
@@ -92,7 +90,7 @@
     <div class="row">
       <div class="col s12 l8 offset-l8">
         <div class="col s4">
-         Total: {{footer.total | number}}
+          Total: {{footer.total | number}}
         </div>
       </div>
     </div>
