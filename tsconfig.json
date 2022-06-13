@@ -2,6 +2,12 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
+    "paths": {
+      "@mx-merpsi/clients": [
+        "dist/mx-merpsi/clients/mx-merpsi-clients",
+        "dist/mx-merpsi/clients"
+      ]
+    },
     "baseUrl": "./",
     "outDir": "./dist/out-tsc",
     "forceConsistentCasingInFileNames": true,
