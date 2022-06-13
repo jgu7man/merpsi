@@ -12,11 +12,11 @@
       (onDelete)="onDeleteItem($event)"
        >
         <ng-template #add>
-          <app-set-client (saved)="crudPanel.closeAll()" ></app-set-client>
+          <app-client-form (submited)="crudPanel.closeAll()" ></app-client-form>
         </ng-template>
 
         <ng-template #select let-client="item" >
-          <app-set-client (saved)="crudPanel.closeAll()" [client]="client"></app-set-client>
+          <app-client-form [client]="client" (submited)="crudPanel.closeAll()" ></app-client-form>
         </ng-template>
       </mx-crud-panel>
     </div>

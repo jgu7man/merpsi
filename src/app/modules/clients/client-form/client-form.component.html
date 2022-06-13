@@ -68,7 +68,7 @@
 </mat-card>
 
 <ng-container *ngIf="enableAddress">
-  <app-client-address-form></app-client-address-form>
+  <app-client-address-form [client]="client"></app-client-address-form>
 </ng-container>
 
 <ng-container *ngIf="enableSubmit">

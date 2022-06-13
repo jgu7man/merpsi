@@ -82,7 +82,7 @@ export class ClientsService {
   }
 
   async setClient( ) {
-    if ( !this.current$.value ) throw new Error( 'No hay cliente seleccionado' )
+    // if ( !this.current$.value ) throw new Error( 'No hay cliente seleccionado' )
     if ( !this.registForm$.value ) throw new Error( 'No hay datos para registrar' )
 
     const currentClient = this.current$.value

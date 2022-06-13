@@ -34,13 +34,13 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy {
   concept: ProductInvoiceModel | null = null
   stubList: iStub[] = []
   stubSelect: iStub | null = null
-  closesSub: Subscription
+  // closesSub: Subscription
 
   @Input() invoice: SalesInvoiceModel | null = null
 
   stubForm: FormControl = new FormControl('')
   clientform: FormGroup = new FormGroup({
-    cip: new FormControl('', [Validators.required]),
+    CRF: new FormControl('', [Validators.required]),
     name: new FormControl('', [Validators.required]),
     email: new FormControl('', [Validators.required]),
   })
@@ -66,9 +66,9 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy {
     private _footer: FooterService
 
   ) {
-    this.closesSub = this._crud.onClosed.subscribe(() => {
-      this.stubForm.patchValue('')
-    })
+    // this.closesSub = this._crud.onClosed.subscribe(() => {
+    //   this.stubForm.patchValue('')
+    // })
   }
 
   async ngOnInit() {
@@ -111,9 +111,9 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy {
   getValue(client_: ClientModel) {
     this.client = client_
     this.clientform.patchValue({
-      cip: this.client.CRF,
+      CRF: this.client.CRF,
       name: this.client.name,
-      // email: this.client.email
+      email: this.client.contact ? this.client.contact.email : ''
     })
   }
 

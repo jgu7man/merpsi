@@ -15,17 +15,18 @@ export class ClientFormComponent implements OnInit, OnDestroy {
 
   @Input() enableSubmit: boolean = true;
   @Input() enableAddress: boolean = true;
-  client: ClientModel | null = null;
+  @Input() client: ClientModel | null = null;
+  // client: ClientModel | null = null;
 
   clientForm: Client.form = new FormGroup({
-    name: new FormControl('Maria Mechita', [Validators.required]),
-    cellphone: new FormControl( '3121234567', [
+    name: new FormControl('', [Validators.required]),
+    cellphone: new FormControl( '', [
       Validators.required,
       Validators.minLength( 10 ),
       Validators.maxLength( 10 )
     ] ),
-    email: new FormControl('mariamechita@gmail.com'),
-    CRF: new FormControl('MECH862409HSA'),
+    email: new FormControl(''),
+    CRF: new FormControl(''),
   } ) as Client.form
   private _formSubscription: Subscription
 
@@ -44,7 +45,7 @@ export class ClientFormComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.client = this.clients.current$.value
+   // this.client = this.clients.current$.value
     if (this.client) {
       this.clientForm.patchValue({
         CRF: this.client.CRF,

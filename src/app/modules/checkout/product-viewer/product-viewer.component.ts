@@ -18,10 +18,10 @@ export class ProductViewerComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    if ( this.product )
-      this.saleProduct = new ProductInvoiceModel(
-        this.product, '', 1
-    )
+    // if ( this.product )
+    //   this.saleProduct = new ProductInvoiceModel(
+    //     this.product, '', 1
+    // )
   }
 
   addProduct() {

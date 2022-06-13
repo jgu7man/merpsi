@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { listenChanges } from 'src/app/models/operators-chains.model';
@@ -12,7 +12,7 @@ import { ClientsService } from '../clients.service';
 })
 export class ClientAddressFormComponent implements OnInit, OnDestroy {
 
-  client: ClientModel | null = null
+ @Input() client: ClientModel | null = null
 
   addressForm: FormGroup = new FormGroup( {
     streetName: new FormControl( '' ),
@@ -40,7 +40,7 @@ export class ClientAddressFormComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.client = this._clients.current$.value
+    //this.client = this._clients.current$.value
     if ( this.client ) {
       let address = this.client.address
       if ( address ) this.addressForm.patchValue( address )
