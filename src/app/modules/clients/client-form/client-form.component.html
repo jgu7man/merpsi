@@ -1,0 +1,83 @@
+<mat-card class="mat-elevtation-z0">
+
+  <mat-card-header>
+    <mat-card-title>{{client && client.id ? 'Actualizar' : 'Agregar'}} cliente</mat-card-title>
+  </mat-card-header>
+  <form class="row" [formGroup]="clientForm">
+
+
+
+    <!-- NOMBRE -->
+    <mat-form-field appearance="outline" class="col s12">
+      <mat-label>Nombre del cliente</mat-label>
+      <input
+      matInput
+      type="text"
+      name="name"
+      formControlName="name"
+      required
+      >
+      <mat-error *ngIf="clientForm.hasError('required', 'name')">
+       Nombre del cliente es necesario
+      </mat-error>
+    </mat-form-field>
+
+    <!-- CELULAR -->
+    <mat-form-field appearance="outline" class="col s12">
+      <mat-label>Celular</mat-label>
+      <input
+      matInput
+      type="text"
+      name="cellphone"
+      formControlName="cellphone"
+      >
+      <mat-error *ngIf="clientForm.hasError('minlength', 'cellphone')">
+        El número de celular debe contener al menos 10 dígitos
+      </mat-error>
+      <mat-error *ngIf="clientForm.hasError('maxlength', 'cellphone')">
+        El número de celular no debe tener más de 10 dígitos
+      </mat-error>
+    </mat-form-field>
+
+    <!-- EMAIL -->
+    <mat-form-field appearance="outline" class="col s12">
+      <mat-label>Email</mat-label>
+      <input
+      matInput
+      type="text"
+      name="email"
+      formControlName="email"
+      >
+    </mat-form-field>
+
+    <!-- CRF -->
+    <mat-form-field appearance="outline" class="col s12">
+      <mat-label>CRF</mat-label>
+      <input
+      matInput
+      type="text"
+      name="CRF"
+      formControlName="CRF"
+      >
+    </mat-form-field>
+
+
+  </form>
+
+
+</mat-card>
+
+<ng-container *ngIf="enableAddress">
+  <app-client-address-form></app-client-address-form>
+</ng-container>
+
+<ng-container *ngIf="enableSubmit">
+  <div class="row">
+    <div class="col s12 center">
+      <button mat-raised-button color="primary"
+      [disabled]="!clients.valid$.value"
+      (click)="onSubmit()"
+      >Guardar</button>
+    </div>
+  </div>
+</ng-container>

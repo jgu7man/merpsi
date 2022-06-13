@@ -1,0 +1,140 @@
+<mat-drawer-container id="account-container" [hasBackdrop]="false">
+  <mat-drawer
+  position="start"
+  #clientPanel="matDrawer"
+  id="clientPanel"
+  mode="side"
+  [opened]="true"
+  [disableClose]="true">
+
+      <mat-card class="mat-elevation-z0">
+        <mat-card-title-group>
+          <div>
+            <!-- <button mat-icon-button color="accent">
+                <mat-icon>person_add</mat-icon>
+            </button> -->
+          </div>
+          <mat-card-title>Orden de venta</mat-card-title>
+          <mat-card-subtitle></mat-card-subtitle>
+        </mat-card-title-group>
+
+        <mat-card-content class="client-panel-content">
+
+          <div class="row">
+            <div class="col s12">
+              <app-client-searcher
+              (selected)="client = $event"
+              ></app-client-searcher>
+            </div>
+          </div>
+
+        </mat-card-content>
+
+        <mat-card-actions
+        class="client-panel-actions">
+
+        </mat-card-actions>
+      </mat-card>
+
+      <!-- MAIN FOOTER -->
+      <mat-toolbar color="primary" id="bottom-bar">
+        <mat-toolbar-row>
+          <p class="white-text">Balance: ${{Balance}}</p>
+          <span class="spacer"></span>
+          <button mat-raised-button color="accent">Pagar</button>
+        </mat-toolbar-row>
+
+      </mat-toolbar>
+
+
+  </mat-drawer>
+
+  <mat-drawer-content>
+    <div class="container product-searcher">
+      <mat-card>
+        <mat-card-content id="product-searcher-container">
+          <mat-form-field id="product-searcher-field" appearance="outline" class="col s12" [floatLabel]="'never'">
+            <input
+            matInput
+            type="text"
+            name="producto"
+            [formControl]="productoCtrl"
+            #productInput
+            placeholder="Buscar producto"
+            >
+            <mat-error *ngIf="productoCtrl.hasError('required')">
+            Este dato es necesario
+            </mat-error>
+          </mat-form-field>
+          <span class="spacer"></span>
+          <button mat-raised-button
+          color="primary"
+          (click)="openScanner()">
+            <mat-icon>qr_code_scanner</mat-icon>
+          </button>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- PRODUCTOS -->
+      <mat-card id="product-list-container" >
+        <mat-card-content>
+          <div class="product-item" *ngFor="let productItem of productList; index as i">
+            <div class="row product">
+              <div class="col s8">
+                <div class="description">
+                  <span class="product-reference">
+                    {{ productItem.reference }}
+                  </span>
+                  <span class="product-upc">
+                    {{ productItem.UPC }}
+                  </span>
+                </div>
+              </div>
+              <div class="col s4">
+                <div class="product-cants">
+                  <button mat-icon-button color="primary"
+                  (click)="setUnidades('rest', i)">
+                    <i class="fas fa-minus-circle"></i>
+                  </button>
+                  <span class="count"> {{productItem.cant || 1}} </span>
+                  <button mat-icon-button color="primary"
+                  (click)="setUnidades('sum', i)">
+                      <i class="fas fa-plus-circle"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="row amount">
+              <div class="col s2">
+                <button mat-icon-button color="warn" (click)="deleteProduct(i)">
+                    <i class="fas fa-trash"></i>
+                </button>
+              </div>
+              <div class="col s10">
+                <span class="cant">
+                  ${{ productItem.unit_price * (productItem.cant || 1) }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+    </div>
+
+
+
+
+
+
+
+  </mat-drawer-content>
+
+  <mat-drawer #productPanel="matDrawer" id="productPanel" position="end" mode="over">
+    <app-product-viewer
+    *ngIf="product"
+    [product]="product"
+    (close)="onCloseProductPanel($event)"
+    ></app-product-viewer>
+  </mat-drawer>
+</mat-drawer-container>
