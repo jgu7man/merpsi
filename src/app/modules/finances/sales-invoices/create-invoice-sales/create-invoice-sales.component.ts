@@ -111,7 +111,7 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy {
   getValue(client_: ClientModel) {
     this.client = client_
     this.clientform.patchValue({
-      cip: this.client.cip,
+      cip: this.client.CRF,
       name: this.client.name,
       // email: this.client.email
     })
@@ -140,7 +140,7 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy {
     const client: Invoice.client = {
       id: this.client.id!,
       name: this.client.name!,
-      cip: this.client.cip!
+      cip: this.client.CRF!
     }
     const data = {
       ...this.salesForm.value
