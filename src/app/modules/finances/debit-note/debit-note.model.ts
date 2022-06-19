@@ -3,7 +3,7 @@ import { Manager } from "../../admin/managers/manager.model"
 import { FooterNoteModel, NoteCredit, ProductNoteModel } from "../credit-note/creditNote.model"
 import { Invoice, InvoiceFooter, ProductInvoiceModel } from "../invoices/invoice.model"
 // import { iInvoiceFooter, iProductInvoice } from "../invoices/invoice.model"
-import { Sales, SalesInvoiceModel } from "../sales-invoices/sales-invoice.model"
+import { SalesInvoiceModel } from "../sales-invoices/sales-invoice.model"
 
 export class DebitNoteModel {
   emition_date: FireTime = createDate(new Date())

@@ -14,7 +14,7 @@ export class CreditNoteModel {
     public invoiceId: string,
     public id: string,
     public manager: Invoice.manager,
-    public context: string,
+    public context: NoteCredit.context,
     details: ProductNoteModel[],
     footer: FooterNoteModel,
   ) {
@@ -112,7 +112,7 @@ export class FooterNoteModel {
 export declare namespace NoteCredit {
   interface concept extends Omit<ProductNoteModel, 'getdata'> { }
   interface footer extends Omit<FooterNoteModel, 'data' | 'getdata' | 'amount_invoice' | 'calcTaxes' > { }
-
+  type context = 'disminucion' | 'devolucion' | 'anulacion'
 
 }
 

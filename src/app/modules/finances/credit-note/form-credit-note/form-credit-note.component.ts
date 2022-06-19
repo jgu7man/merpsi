@@ -16,7 +16,7 @@ import { StubService } from '../../stubs-invoice/stub.service';
 import { AppliedTaxModel, TaxModel } from '../../taxes/taxes.model';
 import { TaxesService } from '../../taxes/taxes.service';
 import { CreditNoteService } from '../credit-note.service';
-import { CreditNoteModel, FooterNoteModel } from '../creditNote.model';
+import { CreditNoteModel, FooterNoteModel, NoteCredit } from '../creditNote.model';
 
 @Component({
   selector: 'app-form-credit-note',
@@ -27,7 +27,7 @@ export class FormCreditNoteComponent implements OnInit, OnDestroy {
 
 
   invoice_Ref: SalesInvoiceModel | null = null
-  contextNC: string = ''
+  contextNC?: NoteCredit.context
   invoiceId: string | null = null
 
 
@@ -119,7 +119,8 @@ export class FormCreditNoteComponent implements OnInit, OnDestroy {
       if (!this.credit.stubSelect$.value) throw { message: ' No existe el talonario' }
       if (!this.footer_service.footer$.value) throw { message: ' No existe el footer' }
       if (!this.invoice_Ref) throw { message: ' No existe la factura de referencia' }
-      if (!this._manager.current) throw { message: 'No se ha iniciado la sesion' }
+      if ( !this._manager.current ) throw { message: 'No se ha iniciado la sesion' }
+      if ( !this.contextNC ) throw { message: 'No se ha definido el contexto de la factura' }
 
       if (this.footer_service.footer$.value.total > 0) {
         if (this.footer_service.footer$.value.total <= this.invoice_Ref.footer.total) {
