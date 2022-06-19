@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Observable } from 'rxjs';
-import { ClientModel } from 'src/app/modules/clients/clients.model';
+import { ClientCreationModel } from 'src/app/modules/clients/clients.model';
 import { ClientsService } from './clients.service';
 import { DeleteClientComponent } from './delete-client/delete-client.component';
 
@@ -12,7 +12,7 @@ import { DeleteClientComponent } from './delete-client/delete-client.component';
 })
 export class ClientsComponent implements OnInit {
 
-  clients: ClientModel[] = []
+  clients: ClientCreationModel[] = []
   constructor(
     private _dialog: MatDialog,
     private _client: ClientsService
@@ -26,7 +26,7 @@ export class ClientsComponent implements OnInit {
     
   }
 
-  onDeleteItem(item: ClientModel): void {
+  onDeleteItem(item: ClientCreationModel): void {
     this._dialog.open(DeleteClientComponent)
     .afterClosed().subscribe(confirmation => {
       if (confirmation) {

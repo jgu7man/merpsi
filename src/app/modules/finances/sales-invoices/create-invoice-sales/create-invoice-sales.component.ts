@@ -9,7 +9,7 @@ import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import { Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, skip } from 'rxjs/operators';
 import { PersonalService } from 'src/app/modules/admin/managers/personal.service';
-import { ClientModel } from 'src/app/modules/clients/clients.model';
+import { ClientCreationModel } from 'src/app/modules/clients/clients.model';
 import Swal from 'sweetalert2';
 import { FooterService } from '../../invoices/footer-invoice/footer.service';
 import { InvoiceConceptService } from '../../invoices/invoice-concept/invoice-concept.service';
@@ -30,7 +30,7 @@ import { CreditDebitNoteDialogComponent } from './credit-debit-note.dialog/credi
 export class CreateInvoiceSalesComponent implements OnInit, OnDestroy {
 
   businessRef: string = this._cache.getDataKey('eid')!
-  client: ClientModel | null = null
+  client: ClientCreationModel | null = null
   concept: ProductInvoiceModel | null = null
   stubList: iStub[] = []
   stubSelect: iStub | null = null
@@ -108,7 +108,7 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy {
     console.log(this.salesForm.getRawValue())
   }
 
-  getValue(client_: ClientModel) {
+  getValue(client_: ClientCreationModel) {
     this.client = client_
     this.clientform.patchValue({
       CRF: this.client.CRF,
@@ -121,20 +121,21 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy {
     this._dialog.open(SelectConceptSalesDialogComponent, {
       width: '600px ',
     }).afterClosed().subscribe(concept => {
-      if (concept){
+      if (concept) {
         this.concept = concept
+        // this._footer.recalculateTaxesCurrentFoot(this.conceptInvoice.details$.value)
         console.log(this.concept!.getdata());
 
       }
-      
+
     })
   }
 
   async saveInvoice() {
-    if (!this.client) throw { message: 'No existe el cliente'}
-    if (!this.sales.stubSelect$.value) throw { message: 'No existe el talonario'}
-    if ( !this._manager.current) throw { message: 'No se ha iniciado la sesion'}
-    if ( !this._footer.currentfoot$.value ) throw { message: ' No existe el footer'}
+    if (!this.client) throw { message: 'No existe el cliente' }
+    if (!this.sales.stubSelect$.value) throw { message: 'No existe el talonario' }
+    if (!this._manager.current) throw { message: 'No se ha iniciado la sesion' }
+    if (!this._footer.currentfoot$.value) throw { message: ' No existe el footer' }
 
 
     const client: Invoice.client = {
@@ -166,13 +167,21 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy {
     console.log(invoice)
     await this.sales.saveInvoice(invoice)
 
-    /* Se actualiza el index current en el talonario seleccionado */
-    const stub = this.sales.stubSelect$.value
-    stub.currentIndex = stub.currentIndex + 1
-      this.stub.update(stub)
-    
-    this._alert.notify('la factura ha sido guardado con exito!')
+    this.clean()
     this.submited.emit()
+  }
+  clean() {
+    this._footer.currentfoot$.next(null)
+    this.conceptInvoice.details$.next([])
+    this._taxes.applidedTaxes = []
+    this.sales.stubSelect$.next(null)
+    this.salesForm.patchValue({
+    seller: '',
+    currency: '',
+    payment_method: '',
+    })
+    this.client = null
+
   }
 
   async selectStubInvoice(event: MatSelectChange) {
@@ -181,41 +190,50 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy {
     if (stub != '') {
       this.sales.stubSelect$.next(stub)
       //if (this.sales.current$.value) {
-        this.sales.stubSelect$.value!.prefixIndexCurrent = stub.prefix + '-' + ((stub.currentIndex || 0) + 1)
-        console.log(this.sales.stubSelect$.value!.prefixIndexCurrent);
+      this.sales.stubSelect$.value!.prefixIndexCurrent = stub.prefix + '-' + ((stub.currentIndex || 0) + 1)
+      console.log(this.sales.stubSelect$.value!.prefixIndexCurrent);
 
-     // }
+      // }
     }
   }
 
 
   async createCredit() {
     let valid = await this.sales.findNoteCredits(this.invoice!)
-    if ( valid ){
+    if (valid) {
       this._dialog.open(CreditDebitNoteDialogComponent, {
         width: '1200px',
         height: '400px',
-        data: {document: 'credit',
-              invoice: this.invoice}
+        data: {
+          document: 'credit',
+          invoice: this.invoice
+        }
       }).afterClosed().subscribe(concept => {
         this.concept = concept
         // this.sales.addConcept(concept)
       })
-    }else{
+    } else {
       Swal.fire('No se puede aplicar mas notas de credito a esta factura')
     }
-    
+
   }
   createDebit() {
     try {
-      this._dialog.open(CreditDebitNoteDialogComponent, {
-        width: '1200px',
-        height: '400px',
-        data: {document: 'debit',
-              invoice:this.invoice}
-      }).afterClosed().subscribe(concept => {
-        this.concept = concept
-      })
+      let ncAnulation = this.sales.searchAnnulledCreditNotes(this.invoice!.invoiceId)
+      if (!ncAnulation) {
+        this._dialog.open(CreditDebitNoteDialogComponent, {
+          width: '1200px',
+          height: '400px',
+          data: {
+            document: 'debit',
+            invoice: this.invoice
+          }
+        }).afterClosed().subscribe(concept => {
+          this.concept = concept
+        })
+      } else {
+        Swal.fire('No puedes crear una Nota de Debito porque Existe una Nota de Credito de Anulacion para este Documento')
+      }
     } catch (error: any) {
       if ('message' in error) {
         this._alert.error(error.message, error)

@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, Validators } from '@angular/forms';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
-import { ClientModel } from 'src/app/modules/clients/clients.model';
+import { ClientCreationModel } from 'src/app/modules/clients/clients.model';
 import { ClientsService } from '../clients.service';
 
 @Component({
@@ -13,8 +13,8 @@ import { ClientsService } from '../clients.service';
 export class SetClientComponent implements OnInit {
 
 
-  private _client = new BehaviorSubject<ClientModel | undefined>(undefined);
-  @Input() set client(cli: ClientModel | undefined) { this._client.next(cli); }
+  private _client = new BehaviorSubject<ClientCreationModel | undefined>(undefined);
+  @Input() set client(cli: ClientCreationModel | undefined) { this._client.next(cli); }
   get client() { return this._client.getValue() }
   @Output() saved: EventEmitter<any> = new EventEmitter()
 

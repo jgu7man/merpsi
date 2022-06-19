@@ -2,12 +2,12 @@ import { Subscription } from 'rxjs';
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
-import { Client, ClientModel } from '../clients.model';
+import { Client, ClientCreationModel } from '../clients.model';
 import { ClientsService } from '../clients.service';
 import { listenChanges } from 'src/app/models/operators-chains.model';
 
 @Component({
-  selector: 'app-client-form',
+  selector: 'mx-client-form',
   templateUrl: './client-form.component.html',
   styleUrls: ['./client-form.component.scss']
 })
@@ -15,7 +15,7 @@ export class ClientFormComponent implements OnInit, OnDestroy {
 
   @Input() enableSubmit: boolean = true;
   @Input() enableAddress: boolean = true;
-  @Input() client: ClientModel | null = null;
+  @Input() client: ClientCreationModel | null = null;
   // client: ClientModel | null = null;
 
   clientForm: Client.form = new FormGroup({
@@ -82,9 +82,9 @@ export class ClientFormComponent implements OnInit, OnDestroy {
       <div class="row">
         <div class="col s1"></div>
         <div class="col s10">
-          <app-client-form
+          <mx-client-form
           [enableSubmit]="false"
-          ></app-client-form>
+          ></mx-client-form>
         </div>
         <div class="col s1">
           <button mat-icon-button (click)="dialog.close()">

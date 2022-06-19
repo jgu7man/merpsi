@@ -18,6 +18,7 @@ import { Invoice, InvoiceFooter, ProductInvoiceModel } from '../invoices/invoice
 //import { iInvoiceFooter, iProductInvoice, ProductInvoiceModel } from '../invoices/invoice.model';
 import { PurchaseInvoiceModel } from '../purchase-invoices/pucharce-invoice.model';
 import { iStub } from '../stubs-invoice/stub.model';
+import { StubService } from '../stubs-invoice/stub.service';
 import { TaxesService } from '../taxes/taxes.service';
 
 @Injectable({
@@ -41,7 +42,9 @@ export class SalesService {
     private _dashboard: DashboardService,
     private _alert: MxAlert,
     private foot: FooterService,
-    public conceptInvoice: InvoiceConceptService
+    public conceptInvoice: InvoiceConceptService,
+    public stub: StubService,
+
   ) {
 
   }
@@ -87,6 +90,14 @@ export class SalesService {
             .set({ ...evento })
         })
       })
+
+      /* Se actualiza el index current en el talonario seleccionado */
+    const stub = this.stubSelect$.value
+    if (!stub) throw { message: ' No existe el talonario' }
+    stub.currentIndex = stub.currentIndex + 1
+      this.stub.update(stub)
+    
+    this._alert.notify('la factura ha sido guardado con exito!')
 
     } catch (error) {
       // this._alert.error('ha ocurrido un error al crear la factura', error)
@@ -137,7 +148,7 @@ export class SalesService {
 
   async findNoteCredits(invoice: SalesInvoiceModel) {
 
-    const notesRef = await this.getnotesRef(invoice.invoiceId)
+    const notesRef = await this.getnotesByid(invoice.invoiceId)
     const result = notesRef.docs
     let notes_result = result.map((doc) => {
       return doc.data()
@@ -150,8 +161,26 @@ export class SalesService {
     }
   }
 
+   async searchAnnulledCreditNotes(id: string){
+    const notesRef = await this.getnotesByidAndTypeConcept(id)
+    let notes_result = notesRef.docs.map((doc) => {
+      return doc.data()
+    })
+    if (notes_result.length > 0) {
+      return true
+    }else {
+      return false
+    }
 
-  async getnotesRef(id: string) {
+  }
+
+
+  async getnotesByid(id: string) {
     return await this._afs.collection<iCreditNote>(`businesses/${this.businessCRF}/credit_notes`).ref.where('invoiceId', '==', id).get()
+  }
+  
+   async getnotesByidAndTypeConcept(id: string) {
+    let ref = this._afs.collection<iCreditNote>(`businesses/${this.businessCRF}/credit_notes`).ref
+    return await ref.where('invoiceId', '==', id).where('concept', '==' , 'anulacion').get()
   }
 }

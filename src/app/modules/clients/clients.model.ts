@@ -1,8 +1,10 @@
 import { AbstractControl, FormGroup } from "@angular/forms"
+import firebase from "firebase"
 import { createDate, FireDoc, FireRef, FireTime } from "src/app/models/firestore.model"
+import Swal from "sweetalert2"
 import { ManagerModel } from "../admin/managers/manager.model"
 
-export class ClientModel{
+export class ClientCreationModel{
 
   readonly registered: FireTime = createDate( new Date() )
   readonly id?: string
@@ -14,7 +16,7 @@ export class ClientModel{
   public address?: Client.address
   public managment?: FireRef<ManagerModel>
 
-  public lastAttended!: ClientEventModel
+  public lastAttended!: Client.attended
 
 
   constructor (
@@ -85,12 +87,72 @@ export class ClientModel{
   }
 }
 
+export class ClientReadingModel implements Omit<Client.main, 'id'> {
+  public CRF?: string
+  public name: string
+  registered: firebase.firestore.Timestamp
+  id: string 
+  public contact?: Client.contact | undefined
+  public tags: string[]
+  public address?: Client.address | undefined
+  
+  constructor(
+    value: Client.main,
+    public lastAttended: ClientEventModel
+    ){
+      this.CRF = value.CRF
+      this.name = value.name
+      this.registered = value.registered
+      if (!value.id) throw new Error( 'no existe el id del cliente')
+      this.id = value.id
+      this.contact = value.contact
+      this.tags = value.tags || []
+      this.address = value.address
+    }
+
+    private setLastEvent( {
+      attendedBy,
+      managerRef,
+      attendedNotes,
+      eventRef
+    }: Client.attended ) {
+      this.lastAttended = new ClientEventModel(
+        'created',
+        attendedBy || 'itSelf',
+        managerRef,
+        attendedNotes,
+        eventRef,
+      )
+    }
+  
+    getAddress(separator: string = '\n', includesZipCode: boolean = true): string {
+      if ( !this.address ) return ''
+  
+      let { streetName, streetNumber, neighborhood, city, state, country, zipCode } = this.address
+      return `${ streetName && streetNumber ? `${ streetName || '' }${ `, ${ streetNumber || '' }` }` : ''
+        }${ neighborhood ? `${separator}${ neighborhood }` : ''
+        }${ city ? `${separator}${ city }` : ''
+        }${ state ? `${separator}${ state }` : ''
+        }${ country ? `${ separator }${ country }` : ''
+        }${ includesZipCode && zipCode ? `${separator}${ zipCode }` : '' }`
+    }
+  
+    getValue(attended :Client.attended): Client.main{
+      let lastAttended = this.setLastEvent(attended)
+      let {getValue, getAddress,setLastEvent, ...object } = this
+      return {
+        ...object,
+
+      }
+    }
+}
+
 
 
 export declare namespace Client {
 
   export interface main extends
-    Omit<ClientModel, 'setContact' | 'getAddress'>{ }
+    Omit<ClientCreationModel, 'setContact' | 'getAddress' | 'setLastEvent' | 'getValue'>{ }
 
   export interface address {
     streetName?: string,
@@ -108,10 +170,7 @@ export declare namespace Client {
     facebookId?: string
   }
 
-  export interface attended extends Omit<ClientEventModel,
-    | 'type'
-    | 'date'
-  > {}
+  export interface attended extends ClientEventModel {}
 
   export interface FormData extends contact {
     name: string,

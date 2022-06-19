@@ -4,7 +4,7 @@ import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog } from '@angular/material/dialog';
 import { MatDrawer } from '@angular/material/sidenav';
 import { sumBy } from 'lodash';
-import { ClientModel } from '../../clients/clients.model';
+import { ClientCreationModel } from '../../clients/clients.model';
 import { ProductInvoiceModel } from '../../finances/invoices/invoice.model';
 import { Product } from '../../inventory/products/products.model';
 import { ClientSearcherComponent } from '../client-searcher/client-searcher.component';
@@ -17,7 +17,7 @@ import { ScanProductBottom } from '../scan-product/scan-product.bottom';
 })
 export class CheckoutPanelComponent implements OnInit {
 
-  client?: ClientModel
+  client?: ClientCreationModel
   product?: Product.DataReference
   productoCtrl: FormControl = new FormControl()
   productList: ProductInvoiceModel[] = []
@@ -72,7 +72,7 @@ export class CheckoutPanelComponent implements OnInit {
   }
 
 
-  onCloseClientPanel(cliente: ClientModel) {
+  onCloseClientPanel(cliente: ClientCreationModel) {
     this.client = cliente || this.client
   }
 

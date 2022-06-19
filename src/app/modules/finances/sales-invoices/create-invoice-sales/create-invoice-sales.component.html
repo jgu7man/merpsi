@@ -36,19 +36,13 @@
         (results)="getValue($event)">
       </mx-searcher-list>
     </ng-template>
-    <ng-container *ngIf="clientform.value && !invoice">
-      <form class="row" [formGroup]="clientform">
-        <mat-form-field appearance="outline" class="col s12 l4">
-          <mat-label>CRF</mat-label>
-          <input matInput type="text" name="CRF" formControlName="CRF">
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="col s12 l4">
-          <mat-label>email</mat-label>
-          <input matInput type="text" name="email" formControlName="email">
-        </mat-form-field>
-      </form>
+    <ng-container *ngIf="client && !invoice">
+      <div>
+        <b>CRF:</b> {{client.CRF}} <br>
+        <b>datos de contacto:</b> {{client.contact?.email || client.contact?.cellphone || client.contact?.facebookId}}
+        <!-- <b>direccion:</b> {{client.addres.}} -->
 
-
+      </div>
       <!-- Vendedor -->
       <mat-form-field appearance="outline" class="col s12 l4">
         <mat-label>Vendedor</mat-label>

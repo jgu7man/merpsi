@@ -4,7 +4,7 @@ import { AngularFirestore } from '@angular/fire/firestore';
 import { startWith, map, filter, switchMap, take, tap, distinctUntilKeyChanged, distinctUntilChanged, first } from 'rxjs/operators';
 import { Observable, of, BehaviorSubject, Subscription } from 'rxjs';
 import { FormControl } from '@angular/forms';
-import { ClientModel } from '../../clients/clients.model';
+import { ClientCreationModel } from '../../clients/clients.model';
 import { ClientsService } from '../../clients/clients.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
@@ -19,8 +19,8 @@ export class ClientSearcherComponent implements OnInit {
 
   businessRef = this._cache.getDataKey( 'eid' )
   emptyList: boolean = false;
-  clientSelected?: ClientModel
-  @Output() selected: EventEmitter<ClientModel> = new EventEmitter()
+  clientSelected?: ClientCreationModel
+  @Output() selected: EventEmitter<ClientCreationModel> = new EventEmitter()
 
   constructor(
     private _clients: ClientsService,
@@ -31,12 +31,12 @@ export class ClientSearcherComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  getValue(client: ClientModel){
+  getValue(client: ClientCreationModel){
     this.clientSelected = client
     this.selected.emit( client )
   }
 
-  getList(product: ClientModel[]){
+  getList(product: ClientCreationModel[]){
     this.emptyList = product.length == 0 ? true : false
   }
 

@@ -72,9 +72,8 @@ export class InvoiceConceptService {
       if (!this._footer.currentfoot$.value) throw { message: ' No existe el footer' }
       let foot = this._footer.currentfoot$.value
       /*Se le informa al footer el subtotal de todos los conceptos*/
-      foot.subtotal = subtotal
-      this._footer.currentfoot$.next(foot)
-      console.log(this.details$.value);
+      this._footer.recalculateTaxesCurrentFoot( this.details$.value)
+
     }
   }
 
@@ -94,15 +93,9 @@ export class InvoiceConceptService {
       /* Actualizamos los detalles con la informacion del filtrado */
       this.details$.next(details)
 
-      let foot = this._footer.currentfoot$.value
       /* calculamos nuevamente el subtotal de los conceptos actuales */
-      foot.subtotal = this.subtotal
-      foot.taxes = this.recalculateTaxes
-      console.log(foot.taxes);
-
-      this._footer.currentfoot$.next(foot)
-
-
+      this._footer.recalculateTaxesCurrentFoot(details)
+     
     } catch (error: any) {
       if ('message' in error) {
         this._alert.error(error.message, error)
@@ -113,13 +106,5 @@ export class InvoiceConceptService {
     }
   }
 
-  get recalculateTaxes() {
-    if (!this._footer.currentfoot$.value) throw { message: ' No existe el footer' }
-    let subtotal = this._footer.currentfoot$.value.subtotal
-    let taxes = this._taxes.applidedTaxes
-    taxes.map(tax => {
-      this._taxes.calcTax(tax, subtotal)
-    })
-    return this._taxes.applidedTaxes
-  }
+  
 }

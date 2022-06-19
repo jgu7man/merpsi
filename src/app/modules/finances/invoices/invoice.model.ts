@@ -4,7 +4,7 @@ import { iSede } from "../../admin/stores/sede.model"
 import { iAppliedTax } from "../taxes/taxes.model"
 import { iManager } from "../../admin/managers/manager.model"
 import { iProvider } from "../../inventory/providers/provider.model"
-import { ClientModel } from "../../clients/clients.model"
+import { ClientCreationModel } from "../../clients/clients.model"
 // import { Client } from "../../clients/clients.model"
 
 

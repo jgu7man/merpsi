@@ -2,17 +2,17 @@ import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { listenChanges } from 'src/app/models/operators-chains.model';
-import { Client, ClientModel } from '../clients.model';
+import { Client, ClientCreationModel } from '../clients.model';
 import { ClientsService } from '../clients.service';
 
 @Component({
-  selector: 'app-client-address-form',
+  selector: 'mx-client-address-form',
   templateUrl: './client-address-form.component.html',
   styleUrls: ['./client-address-form.component.scss']
 })
 export class ClientAddressFormComponent implements OnInit, OnDestroy {
 
- @Input() client: ClientModel | null = null
+ @Input() client: ClientCreationModel | null = null
 
   addressForm: FormGroup = new FormGroup( {
     streetName: new FormControl( '' ),

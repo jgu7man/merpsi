@@ -4,7 +4,7 @@ import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
-import { Client, ClientModel } from 'src/app/modules/clients/clients.model';
+import { Client, ClientCreationModel } from 'src/app/modules/clients/clients.model';
 import { FireDoc } from 'src/app/models/firestore.model';
 import Swal from 'sweetalert2';
 
@@ -15,7 +15,7 @@ export class ClientsService {
 
   businessCRF: string = this._cache.getDataKey( 'eid' )!
   path: string = `businesses/${ this.businessCRF }/clients`
-  current$ = new BehaviorSubject<ClientModel | null>(null);
+  current$ = new BehaviorSubject<ClientCreationModel | null>(null);
   registForm$ = new BehaviorSubject<Client.RegistData | null>( null )
   addressForm$ = new BehaviorSubject<Client.address | null>( null )
   valid$ = new BehaviorSubject<boolean>( true )
@@ -27,11 +27,11 @@ export class ClientsService {
   ) { }
 
   get collectionRef() {
-    return this._afs.collection<ClientModel>(this.path)
+    return this._afs.collection<ClientCreationModel>(this.path)
   }
 
   search(prefix: string) {
-    return this._afs.collection<ClientModel>(this.path,
+    return this._afs.collection<ClientCreationModel>(this.path,
       ref => ref
       .where('name', '>=', prefix)
       .where('name', '<=', prefix + '~')
@@ -40,7 +40,7 @@ export class ClientsService {
     )
   }
 
-  getAll(): Observable<ClientModel[]> {
+  getAll(): Observable<ClientCreationModel[]> {
     return this.collectionRef.valueChanges()
       .pipe(
         map(list => {
@@ -55,7 +55,7 @@ export class ClientsService {
       )
   }
 
-  async save(): Promise<ClientModel | null> {
+  async save(): Promise<ClientCreationModel | null> {
     try{
 
       /* Organiza la data de registro */
@@ -63,7 +63,7 @@ export class ClientsService {
 
       const clientRef = this._afs
         .collection( `businesses/${ this.businessCRF }/clients/` )
-        .doc<ClientModel>( client.id ).ref;
+        .doc<ClientCreationModel>( client.id ).ref;
       const id = client.id || clientRef.id;
 
       await clientRef.set( { ...client, id }, { merge: true }  );
@@ -89,7 +89,7 @@ export class ClientsService {
     const { name, email, cellphone, CRF } = this.registForm$.value
     let client
     if ( !currentClient ) {
-      client = new ClientModel(
+      client = new ClientCreationModel(
         {
           name, CRF,
           email: email || '',
@@ -107,7 +107,7 @@ export class ClientsService {
           email: email || '',
           cellphone: cellphone || '',
         }
-      } as ClientModel
+      } as ClientCreationModel
     }
 
     client = this.setAddress( client )
@@ -116,7 +116,7 @@ export class ClientsService {
 
   }
 
-  async setAddress(client: ClientModel) {
+  async setAddress(client: ClientCreationModel) {
     if ( !this.addressForm$.value ) return client
     if ( !client.address ) client.address = {}
 
@@ -132,7 +132,7 @@ export class ClientsService {
     return client
   }
 
-  async delete(client: ClientModel) {
+  async delete(client: ClientCreationModel) {
     try {
       await this._afs.doc(`businesses/${this.businessCRF}/clients/${client.id}`).delete()
       Swal.fire('cliente eliminado')
