@@ -13,13 +13,13 @@ import { creditNoteModel } from '../modules/finances/credit-note/creditNote.mode
 export class TestComponent implements OnInit {
 
   //obj!: creditNoteModel
-  
+
   constructor(
     // public credit: CreditNoteService,
     // public alert: MxAlert,
   ) {
   //   this.obj = {
-  //     date_emition: firebase.firestore.Timestamp.fromDate( new Date() ),
+  //     emition_date: firebase.firestore.Timestamp.fromDate( new Date() ),
   //     invoiceId: 'AB-01',
   //     noteId: 'NC-001',
   //     manager: 'Mariana Barrera',
@@ -48,7 +48,7 @@ export class TestComponent implements OnInit {
    }
 
   ngOnInit(): void {
-  
+
     // this.credit.saveCreditNote(this.obj)
     // this.alert.message("guardado!")
   }

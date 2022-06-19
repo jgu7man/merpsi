@@ -27,7 +27,7 @@ export class FormCreditNoteComponent implements OnInit, OnDestroy {
 
 
   invoice_Ref: SalesInvoiceModel | null = null
-  conceptNC: string = ''
+  contextNC: string = ''
   invoiceId: string | null = null
 
 
@@ -52,7 +52,7 @@ export class FormCreditNoteComponent implements OnInit, OnDestroy {
   ) {
     /* Recibo los parametros que llegan desde la URL */
     this._activatedRoute.params.subscribe(params => {
-      this.conceptNC = params.tipo
+      this.contextNC = params.tipo
       this.invoiceId = params.invoiceId
     })
     /* Se carga la lista de laos Talonarios de NC*/
@@ -84,12 +84,12 @@ export class FormCreditNoteComponent implements OnInit, OnDestroy {
       let footer_tax = this.invoice_Ref.footer.taxes
       let taxe: TaxModel[] = footer_tax.map(tax => { return new TaxModel(0, tax.name, tax.rate) })
 
-      if (this.conceptNC == 'disminucion') {
+      if (this.contextNC == 'disminucion') {
         let det = this.invoiceConcept.details_Notes$.value
         /* se calcula el subtotal de los detalles de la nota de credito */
         let amount = det.reduce((acc, item) => acc + item.amount, 0)
         let amount_tax = 0
-        /* se calcula el monto total de los impuestos y se le suma al subtotal para sacar el total de los conceptos de la factura 
+        /* se calcula el monto total de los impuestos y se le suma al subtotal para sacar el total de los conceptos de la factura
         y poder aplicar la formula de (totalFactura - total de conceptos) = 0  */
         taxe.map(tax => { amount_tax = amount_tax + (new AppliedTaxModel(tax, amount)).amount })
         amount = amount + amount_tax
@@ -132,7 +132,7 @@ export class FormCreditNoteComponent implements OnInit, OnDestroy {
             this.invoice_Ref.invoiceId,
             this.credit.stubSelect$.value.prefixIndexCurrent,
             manager,
-            this.conceptNC,
+            this.contextNC,
             this.invoiceConcept.details_Notes$.value,
             this.footer_service.footer$.value
           )

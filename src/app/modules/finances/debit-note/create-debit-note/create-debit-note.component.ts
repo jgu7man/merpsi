@@ -25,7 +25,7 @@ export class CreateDebitNoteComponent implements OnInit, OnDestroy {
 
   stubsList: iStub[] = [];
   stubSelect: iStub | null = null;
-  date_emition: FormControl = new FormControl('', [Validators.required])
+  emition_date: FormControl = new FormControl('', [Validators.required])
   nroStub: string = '';
   invoiceId: string = '';
   invoice_Ref: SalesInvoiceModel | null = null;

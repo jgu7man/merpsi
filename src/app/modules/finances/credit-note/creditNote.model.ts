@@ -5,26 +5,19 @@ import { SalesInvoiceModel } from "../sales-invoices/sales-invoice.model";
 import { AppliedTaxModel, iAppliedTax, TaxModel } from "../taxes/taxes.model";
 
 export class CreditNoteModel {
-  date_emition: FireTime = createDate(new Date())
-  invoiceId: string
+  emition_date: FireTime = createDate(new Date())
   invoiceRef: FireRef<SalesInvoiceModel> | null = null
-  id: string
-  manager: Invoice.manager
-  concept: string
   footer: Invoice.footer
   details: NoteCredit.concept[]
-  constructor(
-    invoiceId: string,
-    noteId: string,
-    manager: Invoice.manager,
-    concept: string,
+
+  constructor (
+    public invoiceId: string,
+    public id: string,
+    public manager: Invoice.manager,
+    public context: string,
     details: ProductNoteModel[],
     footer: FooterNoteModel,
   ) {
-    this.invoiceId = invoiceId
-    this.id = noteId
-    this.manager = manager
-    this.concept = concept
     this.details = details.map(details => {
       return details.getdata()
     })
@@ -100,7 +93,7 @@ export class FooterNoteModel {
   get total(): number {
     let totalNC = ((this.subtotal + this.shipping) + this.taxesAmount) - this.discount
     if (this.amount_invoice) {
-      totalNC =  this.amount_invoice - totalNC 
+      totalNC =  this.amount_invoice - totalNC
     }
     return Math.abs(totalNC)
   }
@@ -162,6 +155,4 @@ export class FoooterdecreaseModel {
   }
 }
 
-export interface iCreditNote extends CreditNoteModel {
-  
-}
+export interface iCreditNote extends CreditNoteModel {}

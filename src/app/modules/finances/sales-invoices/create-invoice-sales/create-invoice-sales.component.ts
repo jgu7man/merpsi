@@ -99,7 +99,7 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy {
     this.salesForm.controls.seller.disable()
     this.salesForm.controls.date_expiration.disable()
     this.salesForm.controls.currency.disable()
-    this.salesForm.controls.date_emition.disable()
+    this.salesForm.controls.emition_date.disable()
     this.salesForm.controls.payment_method.disable()
 
   }
@@ -168,6 +168,12 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy {
     await this.sales.saveInvoice(invoice)
 
     this.clean()
+    /* Se actualiza el index current en el talonario seleccionado */
+    const stub = this.sales.stubSelect$.value
+    stub.currentIndex = stub.currentIndex + 1
+      this.stub.update(stub)
+
+    this._alert.notify('la factura ha sido guardado con exito!')
     this.submited.emit()
   }
   clean() {

@@ -6,7 +6,7 @@ import { Invoice, InvoiceFooter, ProductInvoiceModel } from "../invoices/invoice
 import { Sales, SalesInvoiceModel } from "../sales-invoices/sales-invoice.model"
 
 export class DebitNoteModel {
-  date_emition: FireTime = createDate(new Date())
+  emition_date: FireTime = createDate(new Date())
   id: string
   invoice: NoteDebit.invoice
   manager: Invoice.manager
@@ -35,8 +35,8 @@ export declare namespace NoteDebit {
 
   interface invoice{
     id: string
-    ref: FireRef<SalesInvoiceModel> | null 
-  
+    ref: FireRef<SalesInvoiceModel> | null
+
   }
 
 

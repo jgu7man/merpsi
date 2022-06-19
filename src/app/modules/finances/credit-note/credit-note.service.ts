@@ -55,7 +55,7 @@ export class CreditNoteService {
       const creditRef = this._afs.doc<CreditNoteModel>(`${this.businessRef}/credit_notes/${creditNote.id}`).ref
       const managerRef = this._manager.managerRef
       creditRef.set({ ...creditNote })
-      if (creditNote.concept == 'devolucion') {
+      if (creditNote.context == 'devolucion') {
         /* se  itera los conceptos para aplicar la devolucion */
         creditNote.details.forEach(async det => {
           let productRef = this._afs.doc(`${this.businessRef}/products/${det.product.UPC}`).ref
