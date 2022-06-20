@@ -227,19 +227,43 @@ export class SalesInvoiceReadingModel implements iSalesInvoice {
    */
   get avalibleConcepts(): ConceptAvailability[] {
     return this.details.map( concept => {
-      let concept_related_documents = this.related_documents
-        .filter( doc => doc.details.find( con => con.product.UPC === concept.product.UPC ) );
-      let concept_instaces = concept_related_documents
-        .map( instance => instance.details.find( con => con.product.UPC === concept.product.UPC )! );
-      let concept_total_amount = concept_instaces
+      let concept_related_debits = this.debit_notes
+        .filter( doc => doc.details.find( con => con.product.UPC === concept.product.UPC ) )
+      let concept_related_credits = this.credit_notes
+        .filter( doc => doc.details.find( con => con.product.UPC === concept.product.UPC ) )
+
+      // let concept_related_documents = this.related_documents
+      //   .filter( doc => doc.details.find( con => con.product.UPC === concept.product.UPC ) );
+
+
+      let debit_concept_instances = concept_related_debits
+        .map( doc => doc.details.find( con => con.product.UPC === concept.product.UPC )! )
+      let credit_concept_instances = concept_related_credits
+        .map( doc => doc.details.find( con => con.product.UPC === concept.product.UPC )! )
+
+      // let concept_instaces = concept_related_documents
+      //   .map( instance => instance.details.find( con => con.product.UPC === concept.product.UPC )! );
+
+
+
+      let debit_concept_total_amount = debit_concept_instances
         .reduce( ( acc, cur ) => { return acc + cur.amount }, 0 )
-      let concecpt_total_cant = concept_instaces
+      let credit_concept_total_amount = credit_concept_instances
+        .reduce( ( acc, cur ) => { return acc + cur.amount }, 0 )
+
+      // let concept_total_amount = concept_instaces
+      //   .reduce( ( acc, cur ) => { return acc + cur.amount }, 0 )
+
+
+
+      let credit_concept_total_cant = credit_concept_instances
+      // let concecpt_total_cant = concept_instaces
         .reduce( ( acc, cur ) => { return acc + ( cur.cant || 1 ) }, 0 )
 
       return {
         concept: concept.product.UPC,
-        cant: (concept.cant || 1 ) - concecpt_total_cant,
-        amount: concept.amount - concept_total_amount
+        cant: (concept.cant || 1 ) - credit_concept_total_cant,
+        amount: concept.amount - credit_concept_total_amount + debit_concept_total_amount
       }
     })
   }
