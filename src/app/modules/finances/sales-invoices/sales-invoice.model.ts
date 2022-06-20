@@ -1,7 +1,9 @@
 import firebase from "firebase/app"
 import { getCacheDataKey } from "libs/@marxa/devkit/cache/mx-cache.operators";
+import { from, zip } from "rxjs";
 import { createDate, FireRef, FireTime } from "src/app/models/firestore.model";
 import { CreditNoteModel, iCreditNote } from "../credit-note/creditNote.model";
+import { iDebitNote } from "../debit-note/debit-note.model";
 import { Invoice, InvoiceModel, ProductInvoiceModel } from '../invoices/invoice.model';
 
 export class SalesInvoiceModel implements InvoiceModel {
@@ -63,7 +65,7 @@ export interface ClientInvoice{
 export declare namespace SaleInvoice {
   export type status =
     | 'current' // factura sin cambios
-    | 'decreased' // factura con descuento
+    | 'modified' // factura con descuentos o aumentos
     | 'refunded' // factura con devolucion
     | 'canceled' // factura anulada
 }
@@ -90,12 +92,21 @@ export class SalesInvoiceReadingModel implements iSalesInvoice {
 
 
   /**
-   * Documentos relacionados con esta factura
-   * - CreditNotes
+   * Lista de las notas de crédito relacionadas con esta factura
    *
+   * @private
    * @type {iCreditNote[]}
    */
-  related_documents: iCreditNote[] = []
+  private credit_notes: iCreditNote[] = []
+
+  /**
+   * Lista de las notas de débito relacionadas con esta factura
+   *
+   * @private
+   * @type {iDebitNote[]}
+   */
+  private debit_notes: iDebitNote[] = []
+
 
 
   /* NOTE - No sé si esto va a funcionar a la hora del compilado.
@@ -129,11 +140,20 @@ export class SalesInvoiceReadingModel implements iSalesInvoice {
   private getRelatedDocuments(id: string) {
     try {
 
-      firebase.firestore().collection( `businesses/${this.CRF}/credit-notes` )
+      firebase.firestore().collection( `businesses/${ this.CRF }/credit_notes` )
         .where( 'invoiceId', '==', id )
         .get().then( snapshot => {
           snapshot.forEach( doc => {
-            this.related_documents.push( doc.data() as iCreditNote )
+            this.credit_notes.push( doc.data() as iCreditNote )
+          })
+        } )
+
+      firebase.firestore()
+        .collection( `businesses/${ this.CRF }/debit_notes` )
+        .where( 'invoiceId', '==', id )
+        .get().then( snapshot => {
+          snapshot.forEach( doc => {
+            this.debit_notes.push( doc.data() as iDebitNote )
           })
         } )
 
@@ -142,6 +162,20 @@ export class SalesInvoiceReadingModel implements iSalesInvoice {
 
     }
   }
+
+  /**
+   * Documentos relacionados con esta factura
+   * - CreditNotes
+   * - DebitNotes
+   *
+   * @type {iCreditNote[]}
+   */
+  get related_documents(): ( iCreditNote | iDebitNote )[] {
+    return [ ...this.credit_notes, ...this.debit_notes ]
+      .sort( ( a, b ) => {
+        return b.emition_date.seconds - a.emition_date.seconds
+      })
+   }
 
 
   /**
@@ -153,11 +187,17 @@ export class SalesInvoiceReadingModel implements iSalesInvoice {
    * @type {number}
    */
   get avalibleAmount(): number {
-    let related_documents_total = this.related_documents
+    let related_credit_total = this.credit_notes
       .reduce( ( acc, cur ) => {
       return acc + cur.footer.total
       }, 0 )
-    return this.footer.total - related_documents_total
+
+    let related_debit_total = this.debit_notes
+      .reduce( ( acc, cur ) => {
+        return acc + cur.footer.total
+      }, 0 )
+
+    return this.footer.total + related_debit_total - related_credit_total
   }
 
   /**
@@ -214,23 +254,41 @@ export class SalesInvoiceReadingModel implements iSalesInvoice {
    */
   get status(): SaleInvoice.status {
     if ( this.related_documents.length < 1 ) return 'current'
+    else if ( this.credit_notes.some( doc => doc.context === 'anulacion' ) ) return 'canceled'
     else {
-      if ( this.related_documents.some( doc => doc.context === 'anulacion' ) ) return 'canceled'
-      else if ( this.related_documents.some( doc => doc.context === 'devolucion' ) ) {
+      // if (this.debit_notes.length > 0 && this.avalibleAmount > 0) return 'refunded'
+      if ( this.credit_notes.some( doc => doc.context === 'devolucion' ) ) {
         if ( this.avalibleCant > 0 ) return 'refunded'
         else return 'canceled'
       }
-      else if ( this.related_documents.some( doc => doc.context === 'disminucion' ) ) {
-        if ( this.avalibleAmount > 0 ) return 'decreased'
+      else {
+        if ( this.avalibleAmount > 0 ) return 'modified'
         else return 'canceled'
       }
-      else return 'current'
     }
+  }
+
+
+  /**
+   * Fecha de emisión de la factura
+   *
+   * @readonly
+   * @type {FireTime}
+   */
+  get lastModified(): FireTime {
+    return this.related_documents[0].emition_date
   }
 
 }
 
 
+/**
+ * Objeto descriptivo de la disponibilidad de un concepto dentro
+ * de una factura consultada.
+ *
+ * @export
+ * @interface ConceptAvailability
+ */
 export interface ConceptAvailability {
   concept: string,
   cant: number,
