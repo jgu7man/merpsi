@@ -2,7 +2,6 @@ import firebase from "firebase/app"
 import { getCacheDataKey } from "libs/@marxa/devkit/cache/mx-cache.operators";
 import { from, zip } from "rxjs";
 import { createDate, FireRef, FireTime } from "src/app/models/firestore.model";
-import { Product } from "../../inventory/products/products.model";
 import { CreditNoteModel, iCreditNote } from "../credit-note/creditNote.model";
 import { iDebitNote } from "../debit-note/debit-note.model";
 import { Invoice, InvoiceModel, ProductInvoiceModel } from '../invoices/invoice.model';
@@ -114,12 +113,11 @@ export class SalesInvoiceReadingModel implements iSalesInvoice {
   Si esto no es posible habrá que meter el CRF al constructor,
   Obtner el dato con MxCache desde el método de consulta de la
   colección de facturas. */
-  
+  private CRF = getCacheDataKey('eid')
+
   constructor (
-    data: iSalesInvoice,
-    public CRF:string 
-    ) {
-    this.CRF = CRF
+    data: iSalesInvoice
+  ) {
     this.details = data.details
     this.invoiceId = data.invoiceId
     this.client = data.client
@@ -150,15 +148,11 @@ export class SalesInvoiceReadingModel implements iSalesInvoice {
           })
         } )
 
-        console.log(`businesses/${ this.CRF }/debit_notes`);
-        
       firebase.firestore()
         .collection( `businesses/${ this.CRF }/debit_notes` )
         .where( 'invoiceId', '==', id )
         .get().then( snapshot => {
           snapshot.forEach( doc => {
-            console.log(doc);
-            
             this.debit_notes.push( doc.data() as iDebitNote )
           })
         } )
@@ -262,18 +256,15 @@ export class SalesInvoiceReadingModel implements iSalesInvoice {
 
 
 
-      let credit_concept_total_cant = credit_concept_instances
-      // let concecpt_total_cant = concept_instaces
+      let credit_concept_refounded_cant = concept_related_credits
+        .filter( con => con.context === 'devolucion' )
+        .map( doc => doc.details.find( con => con.product.UPC === concept.product.UPC )! )
         .reduce( ( acc, cur ) => { return acc + ( cur.cant || 1 ) }, 0 )
         
 
-        // console.log(concept_unit_price[0].unit_price);
-        
       return {
-        concept: concept.product,
-        store: concept.store,
-        cant: (concept.cant || 1 ) - credit_concept_total_cant,
-        unit_price: 0,
+        concept: concept.product.UPC,
+        cant: (concept.cant || 1 ) - credit_concept_refounded_cant,
         amount: concept.amount - credit_concept_total_amount + debit_concept_total_amount
       }
     })
@@ -325,10 +316,8 @@ export class SalesInvoiceReadingModel implements iSalesInvoice {
  * @interface ConceptAvailability
  */
 export interface ConceptAvailability {
-  concept: Product.MainData,
-  store:string | null,
+  concept: string,
   cant: number,
-  unit_price: number,
   amount: number
 }
 
