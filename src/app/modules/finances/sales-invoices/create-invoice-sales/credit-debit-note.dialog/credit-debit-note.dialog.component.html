@@ -31,24 +31,24 @@
       <thead>
         <tr>
           <th>Producto</th>
-          <th>Sede</th>
+          <!-- <th>Sede</th> -->
           <th>Cantidad</th>
           <th>Valor</th>
           <th>seleccion</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let det of invoice.details">```
-          <td>{{det.product.UPC}}-{{det.product.description | uppercase}}</td>
+        <tr *ngFor="let det of productsAvailable">
+          <td>{{det.concept.UPC}}</td>
+          <!-- <td>{{det.store}}</td> -->
           <td>{{det.cant}}</td>
           <td>{{det.unit_price}}</td>
-          <td class>
-            <mat-checkbox (change)="addProduct($event, det)">
+          <td>
+            <mat-checkbox (change)="addProduct($event,det)">
             </mat-checkbox>
           </td>
         </tr>
       </tbody>
     </table>
   </ng-container>
-
   <button mat-raised-button color="primary" (click)="createCDN()">aceptar</button>

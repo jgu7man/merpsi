@@ -1,0 +1,14 @@
+td {
+  display: table-cell;
+  vertical-align: inherit;
+  text-align: center;
+
+}
+ 
+tr{
+  transition: all 0.3s;
+  cursor: pointer;
+  &:hover{
+    background: #ececec;
+  }
+}

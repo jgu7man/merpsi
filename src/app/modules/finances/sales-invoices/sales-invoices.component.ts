@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { SalesInvoiceModel } from 'src/app/modules/finances/sales-invoices/sales-invoice.model';
+import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
+import { SalesInvoiceModel, SalesInvoiceReadingModel } from 'src/app/modules/finances/sales-invoices/sales-invoice.model';
 import { AuthService } from 'src/app/services/auth.service';
 import { iStub } from '../stubs-invoice/stub.model';
 import { StubService } from '../stubs-invoice/stub.service';
 import { TaxesService } from '../taxes/taxes.service';
 import { SalesService } from './sales.service';
+import { map, skip } from 'rxjs/operators'
 
 @Component({
   selector: 'app-sales-invoices',
@@ -13,18 +15,30 @@ import { SalesService } from './sales.service';
 })
 export class SalesInvoicesComponent implements OnInit {
 
-  listInvoice: SalesInvoiceModel[] = []
+  listInvoice: SalesInvoiceReadingModel[] = []
 
 
   constructor(
     public sales: SalesService,
     private _auth: AuthService,
     private _stub: StubService,
-    private _taxes: TaxesService
+    private _taxes: TaxesService,
+    private _cache: MxCache,
     ) 
     {
-    this.sales.listInvoice().subscribe(invoice => this.listInvoice = invoice);
-    console.log(this.listInvoice);
+    this.sales.listInvoice().pipe(
+      map(result => {
+        let invoiceReadingList:SalesInvoiceReadingModel[] = []
+        result.forEach(doc =>{
+         let invoiceReading=  new SalesInvoiceReadingModel(doc,this._cache.getDataKey( 'eid' )! )
+         invoiceReadingList.push(invoiceReading)
+        })
+        return invoiceReadingList
+      })
+    ).subscribe(invoice => {
+        this.listInvoice = invoice
+        console.log(this.listInvoice);
+    });
   }
 
   ngOnInit(): void {

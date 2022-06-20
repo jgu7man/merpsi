@@ -37,14 +37,18 @@ export class ProductNoteModel {
   product: Product.MainData
 
   constructor(
-    data: Invoice.concept,
+    //data?: Invoice.concept,
+    cant: number,
+    unit_price: number,
+    store:string | null,
+    product: Product.MainData,
     public stock: number = 0,
   ) {
-    this.cant = data.cant || 0
-    this.unit_price = data.unit_price
-    this.store = data.store
-    this.stock = data.stock
-    this.product = data.product
+    this.cant =  cant
+    this.unit_price = unit_price
+    this.store = store
+    this.stock = stock
+    this.product = product
   }
 
   /** Resultado de multiplicar cantidad por costo unitario del producto */

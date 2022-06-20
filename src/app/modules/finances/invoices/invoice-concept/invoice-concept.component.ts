@@ -7,6 +7,7 @@ import { iSede } from 'src/app/modules/admin/stores/sede.model';
 import { SedesService } from 'src/app/modules/admin/stores/sedes.service';
 import { Invoice, ProductInvoiceModel } from 'src/app/modules/finances/invoices/invoice.model';
 import { ProductModel } from 'src/app/modules/inventory/products/products.model';
+import { NoteCredit } from '../../credit-note/creditNote.model';
 import { PurchaseInvoiceService } from '../../purchase-invoices/puchase-invoice.service';
 import { iSalesInvoice } from '../../sales-invoices/sales-invoice.model';
 import { SalesService } from '../../sales-invoices/sales.service';
@@ -21,7 +22,7 @@ export class InvoiceConceptComponent implements OnInit, OnDestroy {
 
   @Input() invoice: iSalesInvoice | null = null
   @Input() document: string = ''
-  @Input() tipo_concepto: string = ''
+  @Input() tipo_concepto?: NoteCredit.context
   @Input() concept: ProductInvoiceModel | Invoice.concept | null = null
   businessRef = this._cache.getDataKey('eid')
   productSelect: ProductModel | string = ''

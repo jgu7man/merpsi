@@ -6,14 +6,13 @@ import { Router } from '@angular/router';
 import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
 import { DashboardService } from 'src/app/dashboard/dashboard.service';
 import Swal from 'sweetalert2';
-import { CreditNoteService } from '../../../credit-note/credit-note.service';
-import { CreditNoteModel, ProductNoteModel } from '../../../credit-note/creditNote.model';
-import { DebitNoteService } from '../../../debit-note/debit-note.service';
+import { ProductNoteModel } from '../../../credit-note/creditNote.model';
 import { FooterService } from '../../../invoices/footer-invoice/footer.service';
 import { InvoiceConceptService } from '../../../invoices/invoice-concept/invoice-concept.service';
-import { Invoice, ProductInvoiceModel } from '../../../invoices/invoice.model';
+import { ProductInvoiceModel } from '../../../invoices/invoice.model';
 import { SelectConceptDialogComponent } from '../../../invoices/select-concept.dialog/select-concept.dialog.component';
 import { AppliedTaxModel } from '../../../taxes/taxes.model';
+import { ConceptAvailability } from '../../sales-invoice.model';
 import { SalesService } from '../../sales.service';
 
 @Component({
@@ -25,31 +24,34 @@ export class CreditDebitNoteDialogComponent implements OnInit {
   businessRef = this._dashboard.CRF
   concept: FormControl = new FormControl()
   products: ProductInvoiceModel[] = []
+  productsAvailable: ConceptAvailability[] = []
   taxes: AppliedTaxModel[] = []
   constructor(
+    public sales: SalesService,
+    public footer: FooterService,
     private _dashboard: DashboardService,
     private _dialogRef: MatDialogRef<SelectConceptDialogComponent>,
     private _router: Router,
-    private _credit: CreditNoteService,
-    private _debit: DebitNoteService,
     private _alert: MxAlert,
-    public sales: SalesService,
-    public footer: FooterService,
-    private invoiceConcept: InvoiceConceptService,
+    private _invoiceConcept: InvoiceConceptService,
     @Inject(MAT_DIALOG_DATA) public document: any
   ) { }
 
   ngOnInit(): void {
     
-    console.log(this.document);
+    this.productsAvailable = this.document.invoice.avalibleConcepts.length > 0 ?  this.document.invoice.avalibleConcepts : this.document.invoice.details
     
   }
-  addProduct(event: MatCheckboxChange, concept: ProductInvoiceModel) {
-    if (event.checked) {
-      let product = new ProductNoteModel(concept)
-      this.products.push(product);
-    } else {
-      this.products= this.products.filter(c => c.product.UPC != concept.product.UPC)
+  addProduct(event: MatCheckboxChange, concept: ConceptAvailability) {
+    try {
+      if (event.checked) {
+        let product = new ProductNoteModel(concept.cant,concept.unit_price,concept.store,concept.concept)
+        this.products.push(product);
+      } else {
+        this.products= this.products.filter(c => c.product.UPC != concept.concept.UPC)
+      }
+    } catch (error) {
+      console.error(error)
     }
   }
   createCDN(){
@@ -62,21 +64,21 @@ export class CreditDebitNoteDialogComponent implements OnInit {
       }).then((result) => {
         if (result.isConfirmed) {
           if (this.document.document == 'debit') {
-            this.invoiceConcept.details_Notes$.next(this.products)
+            this._invoiceConcept.details_Notes$.next(this.products)
             this._router.navigate([`/business/${this.businessRef}/finances/new-debit-notes/${id_invoice}`])
-            .then((result) => {
+            .then(() => {
               this._dialogRef.close()
             })    
           } else {
             if (this.products.length<=0){
-              this.products = this.document.invoice.details.map((details: Invoice.concept) => {
-                return new ProductNoteModel(details)
+              this.products = this.document.invoice.avalibleConcepts.map((concept:ConceptAvailability) => {
+                return new ProductNoteModel(concept.cant,concept.unit_price,concept.store,concept.concept)
               })
             }
-            this.invoiceConcept.details_Notes$.next(this.products)
+            this._invoiceConcept.details_Notes$.next(this.products)
             console.log(this.products);
             this._router.navigate([`/business/${this.businessRef}/finances/new-credit-notes/${this.concept.value}/${id_invoice}`])
-              .then((result) => {
+              .then(() => {
                 this._dialogRef.close()
               })
           }

@@ -107,7 +107,9 @@
     <ng-container *ngIf="invoice">
       <button mat-raised-button color="accent" (click)="createCredit()">Crear Nota Credito</button>
       <button mat-raised-button color="primary" (click)="createDebit()">Crear Debito</button>
+      <app-linked-documents [linked_documents]="invoice"></app-linked-documents>
     </ng-container>
 
   </ng-container>
+
 </form>
