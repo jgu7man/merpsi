@@ -265,6 +265,7 @@ export class SalesInvoiceReadingModel implements iSalesInvoice {
       let credit_concept_total_cant = credit_concept_instances
       // let concecpt_total_cant = concept_instaces
         .reduce( ( acc, cur ) => { return acc + ( cur.cant || 1 ) }, 0 )
+        
 
         // console.log(concept_unit_price[0].unit_price);
         
