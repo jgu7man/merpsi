@@ -256,13 +256,14 @@ export class SalesInvoiceReadingModel implements iSalesInvoice {
 
 
 
-      let credit_concept_total_cant = credit_concept_instances
-      // let concecpt_total_cant = concept_instaces
+      let credit_concept_refounded_cant = concept_related_credits
+        .filter( con => con.context === 'devolucion' )
+        .map( doc => doc.details.find( con => con.product.UPC === concept.product.UPC )! )
         .reduce( ( acc, cur ) => { return acc + ( cur.cant || 1 ) }, 0 )
 
       return {
         concept: concept.product.UPC,
-        cant: (concept.cant || 1 ) - credit_concept_total_cant,
+        cant: (concept.cant || 1 ) - credit_concept_refounded_cant,
         amount: concept.amount - credit_concept_total_amount + debit_concept_total_amount
       }
     })
