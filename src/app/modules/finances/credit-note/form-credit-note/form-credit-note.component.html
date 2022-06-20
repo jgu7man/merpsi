@@ -40,10 +40,10 @@
     </div>
     <ng-container *ngIf=" invoiceConcept.details_Notes$.value as det">
       <ng-container *ngFor="let concept of det ">
-        <app-invoice-concept [document]="'credit'" [concept]="concept" [tipo_concepto]="conceptNC">
+        <app-invoice-concept [document]="'credit'" [concept]="concept" [tipo_concepto]="contextNC">
         </app-invoice-concept>
       </ng-container>
-      <app-footer-credito-debito [concept]="conceptNC">
+      <app-footer-credito-debito [concept]="contextNC">
       </app-footer-credito-debito>
     </ng-container>
   </ng-container>

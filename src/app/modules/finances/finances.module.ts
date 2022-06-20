@@ -30,6 +30,7 @@ import { DebitNoteComponent } from './debit-note/debit-note.component';
 import { CreateDebitNoteComponent } from './debit-note/create-debit-note/create-debit-note.component';
 import { FooterCreditoDebitoComponent } from './invoices/footer-credito-debito/footer-credito-debito.component';
 import { SelectPuchaseComponent } from './purchase-invoices/select-puchase/select-puchase.component';
+import { LinkedDocumentsComponent } from './sales-invoices/linked-documents/linked-documents.component';
 
 
 @NgModule({
@@ -59,7 +60,8 @@ import { SelectPuchaseComponent } from './purchase-invoices/select-puchase/selec
     DebitNoteComponent,
     CreateDebitNoteComponent,
     FooterCreditoDebitoComponent,
-    SelectPuchaseComponent
+    SelectPuchaseComponent,
+    LinkedDocumentsComponent
   ],
   imports: [
     CommonModule,

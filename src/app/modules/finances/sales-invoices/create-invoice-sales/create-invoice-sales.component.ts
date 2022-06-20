@@ -2,12 +2,8 @@ import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angu
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSelectChange } from '@angular/material/select';
-import { Router } from '@angular/router';
-import { MxCrudService } from 'libs/@marxa/crud-panel/src/public-api';
 import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
-import { Subscription } from 'rxjs';
-import { debounceTime, distinctUntilChanged, skip } from 'rxjs/operators';
 import { PersonalService } from 'src/app/modules/admin/managers/personal.service';
 import { ClientCreationModel } from 'src/app/modules/clients/clients.model';
 import Swal from 'sweetalert2';
@@ -17,7 +13,7 @@ import { Invoice, ProductInvoiceModel } from '../../invoices/invoice.model';
 import { iStub } from '../../stubs-invoice/stub.model';
 import { StubService } from '../../stubs-invoice/stub.service';
 import { TaxesService } from '../../taxes/taxes.service';
-import { SalesInvoiceModel } from '../sales-invoice.model';
+import { SalesInvoiceModel, SalesInvoiceReadingModel } from '../sales-invoice.model';
 import { SalesService } from '../sales.service';
 import { SelectConceptSalesDialogComponent } from '../select-concept-sales-dialog/select-concept-sales-dialog.component';
 import { CreditDebitNoteDialogComponent } from './credit-debit-note.dialog/credit-debit-note.dialog.component';
@@ -36,7 +32,7 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy {
   stubSelect: iStub | null = null
   // closesSub: Subscription
 
-  @Input() invoice: SalesInvoiceModel | null = null
+  @Input() invoice: SalesInvoiceReadingModel | null = null
 
   stubForm: FormControl = new FormControl('')
   clientform: FormGroup = new FormGroup({
@@ -56,12 +52,11 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy {
   constructor(
     public sales: SalesService,
     public stub: StubService,
+    public conceptInvoice: InvoiceConceptService,
     private _cache: MxCache,
     private _dialog: MatDialog,
     private _alert: MxAlert,
     private _taxes: TaxesService,
-    private _crud: MxCrudService,
-    public conceptInvoice: InvoiceConceptService,
     private _manager: PersonalService,
     private _footer: FooterService
 
@@ -73,10 +68,10 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy {
 
   async ngOnInit() {
     if (this.invoice) {
+      console.log(this.invoice);
+      
       this.clientform.patchValue({
-        // cip: this.invoice.cliente.name,
         name: this.invoice.client.name,
-        // email: this.invoice.cliente.
       })
       this.salesForm.patchValue({
         seller: this.invoice.seller,
@@ -84,7 +79,6 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy {
         payment_method: this.invoice.payment_method,
       })
 
-      //this.readOnlyForm()
       this.conceptInvoice.details_invoice$.next(this.invoice.details)
       this._footer.currentfoot_invoice$.next(this.invoice.footer)
     }
@@ -223,9 +217,10 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy {
     }
 
   }
-  createDebit() {
+  async createDebit() {
     try {
-      let ncAnulation = this.sales.searchAnnulledCreditNotes(this.invoice!.invoiceId)
+      let ncAnulation = await this.sales.searchAnnulledCreditNotes(this.invoice!.invoiceId)
+      console.log(ncAnulation)
       if (!ncAnulation) {
         this._dialog.open(CreditDebitNoteDialogComponent, {
           width: '1200px',

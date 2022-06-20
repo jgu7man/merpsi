@@ -124,12 +124,9 @@ export class CreateDebitNoteComponent implements OnInit, OnDestroy {
           name: this.manager.current.name,
           ref: this.manager.managerRef
         }
-        const invoice: NoteDebit.invoice = {
-          id: this.invoice_Ref.invoiceId,
-          ref: this.debit.getInvoiceRef(this.invoice_Ref.invoiceId)
-        }
+        
         const debit: DebitNoteModel = new DebitNoteModel(
-          invoice,
+          this.invoice_Ref.invoiceId,
           this.debit.stubSelect$.value.prefixIndexCurrent,
           manager,
           this.invoiceConcept.details_Notes$.value,

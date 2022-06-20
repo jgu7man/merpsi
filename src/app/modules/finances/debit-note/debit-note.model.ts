@@ -8,19 +8,17 @@ import { SalesInvoiceModel } from "../sales-invoices/sales-invoice.model"
 export class DebitNoteModel {
   emition_date: FireTime = createDate(new Date())
   id: string
-  invoice: NoteDebit.invoice
   manager: Invoice.manager
   footer: NoteCredit.footer
   details: NoteDebit.concept[]
   constructor(
-    invoice: NoteDebit.invoice,
+    public invoiceId: string,
     id: string,
     manager: Invoice.manager,
     details: ProductNoteModel[],
     footer: FooterNoteModel,
   ) {
     this.id = id
-    this.invoice = invoice
     this.manager = manager
     this.details = details.map(details => {
       return details.getdata()
