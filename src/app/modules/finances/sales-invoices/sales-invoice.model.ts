@@ -2,6 +2,7 @@ import firebase from "firebase/app"
 import { getCacheDataKey } from "libs/@marxa/devkit/cache/mx-cache.operators";
 import { from, zip } from "rxjs";
 import { createDate, FireRef, FireTime } from "src/app/models/firestore.model";
+import { Product } from "../../inventory/products/products.model";
 import { CreditNoteModel, iCreditNote } from "../credit-note/creditNote.model";
 import { iDebitNote } from "../debit-note/debit-note.model";
 import { Invoice, InvoiceModel, ProductInvoiceModel } from '../invoices/invoice.model';
@@ -113,10 +114,11 @@ export class SalesInvoiceReadingModel implements iSalesInvoice {
   Si esto no es posible habrá que meter el CRF al constructor,
   Obtner el dato con MxCache desde el método de consulta de la
   colección de facturas. */
-  private CRF = getCacheDataKey('eid')
+  // private CRF = getCacheDataKey('eid')
 
   constructor (
-    data: iSalesInvoice
+    data: iSalesInvoice,
+    public CRF:string
   ) {
     this.details = data.details
     this.invoiceId = data.invoiceId
@@ -263,8 +265,10 @@ export class SalesInvoiceReadingModel implements iSalesInvoice {
         
 
       return {
-        concept: concept.product.UPC,
+        concept: concept.product,
+        store: concept.store,
         cant: (concept.cant || 1 ) - credit_concept_refounded_cant,
+        unit_price: 0,
         amount: concept.amount - credit_concept_total_amount + debit_concept_total_amount
       }
     })
@@ -316,8 +320,10 @@ export class SalesInvoiceReadingModel implements iSalesInvoice {
  * @interface ConceptAvailability
  */
 export interface ConceptAvailability {
-  concept: string,
+  concept: Product.MainData,
+  store:string | null,
   cant: number,
+  unit_price: number,
   amount: number
 }
 
