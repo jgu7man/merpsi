@@ -118,7 +118,7 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy {
       if (concept) {
         this.concept = concept
         // this._footer.recalculateTaxesCurrentFoot(this.conceptInvoice.details$.value)
-        console.log(this.concept!.getdata());
+        // console.log(this.concept!.getdata());
 
       }
 
@@ -219,9 +219,9 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy {
   }
   async createDebit() {
     try {
-      let ncAnulation = await this.sales.searchAnnulledCreditNotes(this.invoice!.invoiceId)
-      console.log(ncAnulation)
-      if (!ncAnulation) {
+      //let ncAnulation = await this.sales.searchAnnulledCreditNotes(this.invoice!.invoiceId)
+      if ( !this.invoice) throw { message: 'No se encuentra la factura relacionada'}
+      if (this.invoice.avalibleAmount > 0) {
         this._dialog.open(CreditDebitNoteDialogComponent, {
           width: '1200px',
           height: '400px',

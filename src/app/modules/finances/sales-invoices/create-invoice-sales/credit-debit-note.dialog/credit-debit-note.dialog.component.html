@@ -4,7 +4,7 @@
     <label>
       <h2>Selecciona el concepto:</h2>
     </label>
-    <mat-radio-group [formControl]="concept">
+    <mat-radio-group [formControl]="concept" (change)="changeConcept()">
       <mat-radio-button [value]="'anulacion'">
         <h3><b>Nota Crédito por Anulacion de Factura:</b> <br />
           Aplica para registrar la devolución <strong>completa</strong> de mercancia realizada por los clientes
@@ -51,4 +51,4 @@
       </tbody>
     </table>
   </ng-container>
-  <button mat-raised-button color="primary" (click)="createCDN()">aceptar</button>
+  <button mat-raised-button color="primary" [disabled]="products.length === 0 " (click)="createCDN()">aceptar</button>

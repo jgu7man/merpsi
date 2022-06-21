@@ -3,8 +3,8 @@ import { getCacheDataKey } from "libs/@marxa/devkit/cache/mx-cache.operators";
 import { from, zip } from "rxjs";
 import { createDate, FireRef, FireTime } from "src/app/models/firestore.model";
 import { Product } from "../../inventory/products/products.model";
-import { CreditNoteModel, iCreditNote } from "../credit-note/creditNote.model";
-import { iDebitNote } from "../debit-note/debit-note.model";
+import { CreditNoteModel, iCreditNote, NoteCredit } from "../credit-note/creditNote.model";
+import { iDebitNote, NoteDebit } from "../debit-note/debit-note.model";
 import { Invoice, InvoiceModel, ProductInvoiceModel } from '../invoices/invoice.model';
 
 export class SalesInvoiceModel implements InvoiceModel {
@@ -264,13 +264,17 @@ export class SalesInvoiceReadingModel implements iSalesInvoice {
         .reduce( ( acc, cur ) => { return acc + ( cur.cant || 1 ) }, 0 )
         
 
-        let lastDocument = this.related_documents[this.related_documents.length - 1].details.filter( doc => doc.product.UPC === concept.product.UPC )
+        let lastDocument: NoteCredit.concept[] | NoteDebit.concept[] = []
+        if ( this.related_documents.length > 0 ) {
+          lastDocument = this.related_documents[this.related_documents.length - 1]
+          .details.filter( doc => doc.product.UPC === concept.product.UPC )
+        }
 
       return {
         concept: concept.product,
         store: concept.store,
         cant: (concept.cant || 1 ) - credit_concept_refounded_cant,
-        unit_price:lastDocument.length > 0 ? lastDocument[0].unit_price : concept.unit_price,
+        unit_price: lastDocument.length > 0 ? lastDocument[0].unit_price : concept.unit_price,
         amount: concept.amount - credit_concept_total_amount + debit_concept_total_amount
       }
     })

@@ -3,15 +3,19 @@
   <table>
     <thead>
       <tr>
+        <th>fecha</th>
         <th>Documento</th>
         <th>tipo</th>
+        <th>concepto</th>
         <th>total</th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let doc of linked_documents.related_documents">
+        <td>{{doc.emition_date | mxTimestamp | date: 'dd/MM/yy'}}</td>
         <td>{{doc.id}}</td>
         <td>{{doc | isCreditNote}}</td>
+        <td>{{doc | contextCreditNote}}</td>
         <td>{{doc.footer.total | currency}}</td>
       </tr>
     </tbody>

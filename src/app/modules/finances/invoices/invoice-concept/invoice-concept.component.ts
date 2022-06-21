@@ -52,12 +52,14 @@ export class InvoiceConceptComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     if (this.concept) {
       /* validaciones para los conceptos segun el documento en el que este */
-      if (this.document == 'sales') {
+      if (this.document == 'sale') {
+        
         if (this.conceptInvoice.details$.value) {
           let details = this.conceptInvoice.details$.value
           details.map(det => {
             if (det.product.UPC === this.concept!.product.UPC) {
               this.formAddProduct.controls.cant.setValidators(Validators.max(det.stock))
+              console.log(det);
             }
           })
         }

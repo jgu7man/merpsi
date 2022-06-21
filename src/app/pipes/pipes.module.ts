@@ -5,6 +5,7 @@ import { FormRawValuePipe } from './form-raw-value.pipe';
 import { DataPipe } from './data.pipe';
 import { StorePipe } from './store.pipe';
 import { IsCreditNotePipe } from './is-credit-note.pipe';
+import { ContextCreditNotePipe } from './context-credit-note.pipe';
 
 
 
@@ -14,7 +15,8 @@ import { IsCreditNotePipe } from './is-credit-note.pipe';
     FormRawValuePipe,
     DataPipe,
     StorePipe,
-    IsCreditNotePipe
+    IsCreditNotePipe,
+    ContextCreditNotePipe
   ],
   imports: [
     CommonModule
@@ -24,7 +26,8 @@ import { IsCreditNotePipe } from './is-credit-note.pipe';
     FormRawValuePipe,
     DataPipe,
     StorePipe,
-    IsCreditNotePipe
+    IsCreditNotePipe,
+    ContextCreditNotePipe
   ]
 })
 export class PipesModule { }
