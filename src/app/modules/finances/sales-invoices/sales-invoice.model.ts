@@ -264,11 +264,13 @@ export class SalesInvoiceReadingModel implements iSalesInvoice {
         .reduce( ( acc, cur ) => { return acc + ( cur.cant || 1 ) }, 0 )
         
 
+        let lastDocument = this.related_documents[this.related_documents.length - 1].details.filter( doc => doc.product.UPC === concept.product.UPC )
+
       return {
         concept: concept.product,
         store: concept.store,
         cant: (concept.cant || 1 ) - credit_concept_refounded_cant,
-        unit_price: 0,
+        unit_price:lastDocument.length > 0 ? lastDocument[0].unit_price : concept.unit_price,
         amount: concept.amount - credit_concept_total_amount + debit_concept_total_amount
       }
     })

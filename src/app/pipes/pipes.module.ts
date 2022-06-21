@@ -4,6 +4,7 @@ import { AsFormGroupPipe } from './as-form-group.pipe';
 import { FormRawValuePipe } from './form-raw-value.pipe';
 import { DataPipe } from './data.pipe';
 import { StorePipe } from './store.pipe';
+import { IsCreditNotePipe } from './is-credit-note.pipe';
 
 
 
@@ -12,7 +13,8 @@ import { StorePipe } from './store.pipe';
     AsFormGroupPipe,
     FormRawValuePipe,
     DataPipe,
-    StorePipe
+    StorePipe,
+    IsCreditNotePipe
   ],
   imports: [
     CommonModule
@@ -21,7 +23,8 @@ import { StorePipe } from './store.pipe';
     AsFormGroupPipe,
     FormRawValuePipe,
     DataPipe,
-    StorePipe
+    StorePipe,
+    IsCreditNotePipe
   ]
 })
 export class PipesModule { }

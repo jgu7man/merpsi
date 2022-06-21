@@ -1,17 +1,18 @@
 <ng-container *ngIf="linked_documents">
+  <h2>Documentos Relacionados</h2>
   <table>
     <thead>
       <tr>
         <th>Documento</th>
-        <!-- <th>tipo</th> -->
+        <th>tipo</th>
         <th>total</th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let doc of linked_documents.related_documents">
         <td>{{doc.id}}</td>
-        <!-- <td>{{doc.context ? 'Nota de Crédito' : 'Nota de Débito'}}</td> -->
-        <td>{{doc.footer.total}}</td>
+        <td>{{doc | isCreditNote}}</td>
+        <td>{{doc.footer.total | currency}}</td>
       </tr>
     </tbody>
   </table>
