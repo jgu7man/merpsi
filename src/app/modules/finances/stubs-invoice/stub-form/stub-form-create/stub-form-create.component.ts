@@ -11,6 +11,7 @@ import { StubService } from '../../stub.service';
 export class StubFormCreateComponent implements OnInit {
   
   @Input() value?: StubModel
+  currentIndex = 0
 
   @Output() save: EventEmitter<any> = new EventEmitter()
   public stubForm = new FormGroup( {
@@ -32,8 +33,12 @@ export class StubFormCreateComponent implements OnInit {
     if ( this.value ) {
       let {index, ...value} = this.value
       this.stubForm.patchValue( { ...value })
-      this.stubForm.controls.currentIndex.disable()
+      this.stubForm.controls.starIndex.disable()
+      this.stubForm.controls.endIndex.disable()
+      this.stubForm.controls.prefix.disable()
+      this.stubForm.controls.type.disable()
     }
+    this.stubForm.controls.currentIndex.disable()
   }
 
   onSubmit(){

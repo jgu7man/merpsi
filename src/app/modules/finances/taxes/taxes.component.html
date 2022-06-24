@@ -4,7 +4,7 @@ listName="Tipos de impuesto"
 [selectTemplate]="select"
 [addTemplate]="add"
 [list]="list"
-itemSelector="name"
+[itemSelector]="['name']"
 [drawerWidth]="50"
 #crudPanel
 (onDelete)="taxes.delete($event)"

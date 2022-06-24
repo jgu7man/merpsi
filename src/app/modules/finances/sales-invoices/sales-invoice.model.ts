@@ -80,8 +80,8 @@ export declare namespace Sales{
 
 export class SalesInvoiceReadingModel implements iSalesInvoice {
 
-  public action_date: FireTime = createDate( new Date());
-  public registered_date: FireTime = createDate( new Date());
+  public action_date: FireTime 
+  public registered_date: FireTime 
   public details: Invoice.concept[]
   public invoiceId: string
   public client: Invoice.client
@@ -90,6 +90,7 @@ export class SalesInvoiceReadingModel implements iSalesInvoice {
   public payment_method: string
   public manager: Invoice.manager
   public footer: Invoice.footer
+  public action_date_formated: string
 
 
   /**
@@ -128,10 +129,17 @@ export class SalesInvoiceReadingModel implements iSalesInvoice {
     this.payment_method = data.payment_method
     this.manager = data.manager
     this.footer = data.footer
+    this.action_date = data.action_date
+    this.registered_date = data.registered_date
+    this.action_date_formated = this.getAction_date_formated(data.action_date.seconds)
     this.getRelatedDocuments(this.invoiceId)
   }
 
-
+    getAction_date_formated(date: number){
+      let d = new Date( date * 1000)
+      let month = d.getMonth() + 1
+      return d.getDate() + '/' + month + '/' + d.getFullYear()
+    }
   /**
    * Obtiene la lista de los documentos relacionados con
    * la factura, desde la base de datos

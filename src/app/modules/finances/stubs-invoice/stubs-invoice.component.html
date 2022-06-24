@@ -4,7 +4,7 @@ listName="Talonarios de Factura de Venta"
 [addTemplate]="add"
 [list]="list"
 [selectTemplate]="select"
-itemSelector="name"
+[itemSelector]="['name']"
 [drawerWidth]="50"
 #crudPanel
 (onDelete)="stub.delete($event)"

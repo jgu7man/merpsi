@@ -7,7 +7,7 @@
       [list]="listInvoice"
       [selectTemplate]="select"
       [height_vh]="100"
-      itemSelector="invoiceId"
+      [itemSelector]="['invoiceId','status','action_date_formated']"
       #crudPanel
       (onAdd)="onCreate()"
       (onClose)="onClose()"

@@ -5,6 +5,7 @@ import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import { MxLoading } from 'libs/@marxa/devkit/loading/loading.service';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
+import Swal from 'sweetalert2';
 import { iStub, Stub, StubModel } from './stub.model';
 
 @Injectable({
@@ -84,11 +85,15 @@ export class StubService {
     try {
       this._loading.spinner('open')
       const list = this.list$.value
-      list.splice(index, 1)
-      await this.stubRef.update( { list } )
-      
-      this._loading.spinner( 'close' )
-      this._alert.notify( 'Talonario eliminado' )
+      if (list[index].active != true){
+        list.splice(index, 1)
+        await this.stubRef.update( { list } )
+        
+        this._loading.spinner( 'close' )
+        this._alert.notify( 'Talonario eliminado' )
+      }else{
+        Swal.fire('El Talonario no puede ser eliminado porque se encuentra activo')
+      }
       
     } catch ( error: any ) {
       this._loading.spinner('close')

@@ -7,7 +7,7 @@
       [list]="listPuchases"
       [selectTemplate]="select"
       [height_vh]="100"
-      itemSelector="invoiceId"
+      [itemSelector]="['invoiceId']"
       #crudPanel
       (onAdd)="onCreate()"
       (onClose)="onClose()"

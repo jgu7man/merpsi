@@ -7,7 +7,7 @@
       [addTemplate]="add"
       [list]="clients"
       [height_vh]="100"
-      itemSelector="name"
+      [itemSelector]="['name']"
       #crudPanel
       (onDelete)="onDeleteItem($event)"
        >
