@@ -31,6 +31,9 @@ import { CreateDebitNoteComponent } from './debit-note/create-debit-note/create-
 import { FooterCreditoDebitoComponent } from './invoices/footer-credito-debito/footer-credito-debito.component';
 import { SelectPuchaseComponent } from './purchase-invoices/select-puchase/select-puchase.component';
 import { LinkedDocumentsComponent } from './sales-invoices/linked-documents/linked-documents.component';
+import { SelectCreditNoteComponent } from './credit-note/select-credit-note/select-credit-note.component';
+import { SelectDocumentDialogComponent } from './sales-invoices/linked-documents/select-document.dialog/select-document.dialog.component';
+import { SelectDebitNoteComponent } from './debit-note/select-debit-note/select-debit-note.component';
 
 
 @NgModule({
@@ -61,7 +64,10 @@ import { LinkedDocumentsComponent } from './sales-invoices/linked-documents/link
     CreateDebitNoteComponent,
     FooterCreditoDebitoComponent,
     SelectPuchaseComponent,
-    LinkedDocumentsComponent
+    LinkedDocumentsComponent,
+    SelectCreditNoteComponent,
+    SelectDocumentDialogComponent,
+    SelectDebitNoteComponent
   ],
   imports: [
     CommonModule,

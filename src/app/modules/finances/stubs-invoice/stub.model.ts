@@ -18,12 +18,12 @@ export class StubModel{
   
   )
   {
-    this.starIndex = data?.starIndex || 0;
-    this.endIndex = data?.endIndex || 0;
-    this.prefix = data?.prefix || '';
-    this.currentIndex = data?.currentIndex || 0;
-    this.name = data?.name || ''
-    this.active = data?.active || false
+    this.starIndex = data.starIndex || 0;
+    this.endIndex = data.endIndex || 0;
+    this.prefix = data.prefix || '';
+    this.currentIndex = data.currentIndex || 0;
+    this.name = data.name || ''
+    this.active = data.active || false
     this.type = data.type 
     this.prefixIndexCurrent = this.getPrefixIndexCurrent
   }

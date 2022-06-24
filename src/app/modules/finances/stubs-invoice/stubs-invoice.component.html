@@ -11,16 +11,10 @@ listName="Talonarios de Factura de Venta"
 >
 
 <ng-template #add>
-  <mat-card class="mat-elevation-z0">
-    <mat-card-header>
-      <mat-card-title>Crear Talonario para tus facturas de Ventas</mat-card-title>
-      <mat-card-subtitle>Indica la numeración inicial y final.</mat-card-subtitle>
-    </mat-card-header>
-    <mat-card-content>
+
       <app-stub-form-create
       (saved)="crudPanel.closeAll()"></app-stub-form-create>
-    </mat-card-content>
-  </mat-card>
+    
 </ng-template>
 
 <ng-template #select let-stub="item" >
@@ -31,6 +25,7 @@ listName="Talonarios de Factura de Venta"
     </mat-card-header>
     <mat-card-content>
       <app-stub-form-create [value] = "stub"
+      (saved)="crudPanel.closeAll()"
       ></app-stub-form-create>
     </mat-card-content>
   </mat-card>

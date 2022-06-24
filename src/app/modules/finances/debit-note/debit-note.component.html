@@ -16,7 +16,8 @@
           ></app-form-credit-note> -->
         </ng-template>
 
-        <ng-template #select let-client="item" >
+        <ng-template #select let-document="item" >
+          <app-select-debit-note [document]="document"></app-select-debit-note>
         </ng-template>
       </mx-crud-panel>
     </div>

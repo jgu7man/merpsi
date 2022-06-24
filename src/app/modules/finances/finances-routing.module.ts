@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { CreditNoteComponent } from './credit-note/credit-note.component';
 import { FormCreditNoteComponent } from './credit-note/form-credit-note/form-credit-note.component';
+import { SelectCreditNoteComponent } from './credit-note/select-credit-note/select-credit-note.component';
 import { CreateDebitNoteComponent } from './debit-note/create-debit-note/create-debit-note.component';
 import { DebitNoteComponent } from './debit-note/debit-note.component';
 import { FinancesComponent } from './finances.component';
@@ -19,6 +20,7 @@ const routes: Routes = [
   { path: 'credit-notes', component: CreditNoteComponent },
   { path: 'debit-notes', component: DebitNoteComponent },
   { path: 'new-credit-notes/:tipo/:invoiceId', component: FormCreditNoteComponent },
+  { path: 'credit-notes/:id', component: SelectCreditNoteComponent },
   { path: 'new-debit-notes/:invoiceId', component: CreateDebitNoteComponent },
   { path: 'stubs', component: StubsInvoiceComponent },
   { path: 'test', component: TestFinanceComponent },

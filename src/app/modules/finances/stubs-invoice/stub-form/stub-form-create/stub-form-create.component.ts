@@ -9,30 +9,30 @@ import { StubService } from '../../stub.service';
   styleUrls: ['./stub-form-create.component.scss']
 })
 export class StubFormCreateComponent implements OnInit {
-  
+
   @Input() value?: StubModel
   currentIndex = 0
 
-  @Output() save: EventEmitter<any> = new EventEmitter()
-  public stubForm = new FormGroup( {
-    starIndex: new FormControl( '', [ Validators.required ] ),
-    endIndex: new FormControl( '', [ Validators.required ] ),
-    currentIndex: new FormControl( 0),
-    prefix: new FormControl( '' ),
-    name: new FormControl( '' ),
-    active: new FormControl( ''),
-    type: new FormControl( '')
+  @Output() saved: EventEmitter<any> = new EventEmitter()
+  public stubForm = new FormGroup({
+    starIndex: new FormControl('', [Validators.required]),
+    endIndex: new FormControl('', [Validators.required]),
+    currentIndex: new FormControl(0),
+    prefix: new FormControl(''),
+    name: new FormControl(''),
+    active: new FormControl(''),
+    type: new FormControl('')
   })
 
- 
+
   constructor(
     private _stub: StubService,
   ) { }
 
   ngOnInit(): void {
-    if ( this.value ) {
-      let {index, ...value} = this.value
-      this.stubForm.patchValue( { ...value })
+    if (this.value) {
+      let { index, ...value } = this.value
+      this.stubForm.patchValue({ ...value })
       this.stubForm.controls.starIndex.disable()
       this.stubForm.controls.endIndex.disable()
       this.stubForm.controls.prefix.disable()
@@ -41,14 +41,18 @@ export class StubFormCreateComponent implements OnInit {
     this.stubForm.controls.currentIndex.disable()
   }
 
-  onSubmit(){
-    if ( this.value){
-      this._stub.update({...this.stubForm.getRawValue(),
-                            index: this.value.index})
-    }else {
-    this._stub.add(this.stubForm.value)
-
-      this.save.emit()
+  onSubmit() {
+    if (this.value) {
+      this._stub.update({
+        ...this.stubForm.getRawValue(),
+        index: this.value.index
+      })
+      this.saved.emit()
+      console.info('guardado update')
+    } else {
+      this._stub.add(this.stubForm.value)
+      console.info('guardado add')
+      this.saved.emit()
     }
 
   }

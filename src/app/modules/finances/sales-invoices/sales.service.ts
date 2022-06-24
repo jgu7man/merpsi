@@ -89,6 +89,12 @@ export class SalesService {
             .doc(`${new Date().getTime()}`)
             .set({ ...evento })
         })
+
+            /* Se actualiza el index current en el talonario seleccionado */
+            const stub = this.stubSelect$.value
+            if (!stub) throw { message: 'No se ha seleccionado un talonario'}
+            stub.currentIndex = stub.currentIndex + 1
+              this.stub.update(stub)
       })
 
       /* Se actualiza el index current en el talonario seleccionado */

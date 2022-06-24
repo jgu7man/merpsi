@@ -11,7 +11,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let doc of linked_documents.related_documents">
+      <tr *ngFor="let doc of linked_documents.related_documents" (click)="openCreditDebit(doc)">
         <td>{{doc.emition_date | mxTimestamp | date: 'dd/MM/yy'}}</td>
         <td>{{doc.id}}</td>
         <td>{{doc | isCreditNote}}</td>
@@ -20,4 +20,8 @@
       </tr>
     </tbody>
   </table>
+
+  
 </ng-container>
+
+

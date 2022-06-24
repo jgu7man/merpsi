@@ -1,0 +1,7 @@
+<ng-container *ngIf="document.type== 'credit' else debit">
+  <app-select-credit-note [document]="document.document"></app-select-credit-note>
+</ng-container>
+
+<ng-template #debit>
+<app-select-debit-note [document]="document.document"></app-select-debit-note>
+</ng-template>
