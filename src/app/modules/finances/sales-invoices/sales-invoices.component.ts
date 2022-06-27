@@ -27,14 +27,14 @@ export class SalesInvoicesComponent implements OnInit {
     ) 
     {
     this.sales.listInvoice().pipe(
-      map(result => {
-        let invoiceReadingList:SalesInvoiceReadingModel[] = []
-        result.forEach(doc =>{
-         let invoiceReading=  new SalesInvoiceReadingModel(doc,this._cache.getDataKey( 'eid' )! )
-         invoiceReadingList.push(invoiceReading)
-        })
-        return invoiceReadingList
-      })
+      // map(result => {
+      //   let invoiceReadingList:SalesInvoiceReadingModel[] = []
+      //   result.forEach(doc =>{
+      //    let invoiceReading=  new SalesInvoiceReadingModel(doc,this._cache.getDataKey( 'eid' )! )
+      //    invoiceReadingList.push(invoiceReading)
+      //   })
+      //   return invoiceReadingList
+    //  0})
     ).subscribe(invoice => {
         this.listInvoice = invoice
         console.log(this.listInvoice);

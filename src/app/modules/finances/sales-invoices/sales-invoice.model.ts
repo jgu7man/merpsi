@@ -134,7 +134,7 @@ export class SalesInvoiceReadingModel implements iSalesInvoice {
     this.action_date_formated = this.getAction_date_formated(data.action_date.seconds)
     this.getRelatedDocuments(this.invoiceId)
   }
-
+    //!! Provicional, eliminar cuando se actualice el crud panel y pueda colocar pipes
     getAction_date_formated(date: number){
       let d = new Date( date * 1000)
       let month = d.getMonth() + 1
@@ -323,7 +323,7 @@ export class SalesInvoiceReadingModel implements iSalesInvoice {
     return this.related_documents[0].emition_date
   }
 
-}
+} //+5595991742789
 
 
 /**

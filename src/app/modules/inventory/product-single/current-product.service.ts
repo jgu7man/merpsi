@@ -241,7 +241,7 @@ export class CurrentProductService {
    *
    * @returns {*}  {Promise<FireDoc<Product.DataReference>>} Regresa la referencia de firestore del producto recien guardado
    */
-  public async save(): Promise<FireDoc<Product.DataReference>> {
+  public async save( from: string = 'counting'): Promise<FireDoc<Product.DataReference>> {
     this._loading.spinner('open')
     try {
 

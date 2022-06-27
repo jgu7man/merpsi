@@ -7,7 +7,7 @@ import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { DashboardService } from 'src/app/dashboard/dashboard.service';
 import { txn } from 'src/app/models/firestore.model';
-import { SalesInvoiceModel } from 'src/app/modules/finances/sales-invoices/sales-invoice.model';
+import { SalesInvoiceModel, SalesInvoiceReadingModel } from 'src/app/modules/finances/sales-invoices/sales-invoice.model';
 import { AuthService } from 'src/app/services/auth.service';
 import { CurrentProductService } from '../../inventory/product-single/current-product.service';
 import { ProductEventModel, ProductModel, StoreReferenceModel } from '../../inventory/products/products.model';
@@ -132,17 +132,17 @@ export class SalesService {
 
   }
 
-  listInvoice(): Observable<SalesInvoiceModel[]> {
+  listInvoice(): Observable<SalesInvoiceReadingModel[]> {
     return this._afs.collection<SalesInvoiceModel>(`businesses/${this._dashboard.CRF}/sales`).valueChanges()
       .pipe(
         map(result => {
           const sales: SalesInvoiceModel[] = [];
-          result.forEach(s => {
-            sales.push(s);
+          let invoiceReadingList:SalesInvoiceReadingModel[] = []
+          result.map(s => {
+            let invoiceReading=  new SalesInvoiceReadingModel(s,this._cache.getDataKey( 'eid' )! )
+            return invoiceReadingList.push(invoiceReading);
           });
-          console.log(sales);
-
-          return sales;
+          return invoiceReadingList;
         }),
         catchError(error => {
           console.error(error);
