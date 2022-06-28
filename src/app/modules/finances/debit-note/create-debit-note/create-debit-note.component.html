@@ -1,58 +1,70 @@
-<div class="row">
-  <div class="col s4">
-    <mat-form-field class="col s12" appearance="outline">
-      <mat-label>Talonario</mat-label>
-      <mat-select placeholder="Talonario" (selectionChange)="seletedStub($event)" name="stub">
-        <mat-option *ngFor="let stub of debit.stubList$ | async" [value]="stub">
-          {{stub.name}}
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
-  </div>
-  <div class="col s4">
-    <ng-container *ngIf="debit.stubSelect$.value as stub">
-      <h1>{{stub.prefixIndexCurrent}}</h1>
-    </ng-container>
-  </div>
-  <mat-form-field appearance="outline" class="col s4 l3">
-    <mat-label>Fecha de Emision</mat-label>
-    <input matInput [formControl]="emition_date" [matDatepicker]="emition">
-    <mat-datepicker-toggle matSuffix [for]="emition"></mat-datepicker-toggle>
-    <mat-datepicker #emition startView="year"></mat-datepicker>
-  </mat-form-field>
+<ng-container *ngIf="invoice_Ref == null">
+  <mx-searcher-list
+  [label]="'Nro de Factura'"
+  [collection]="'businesses/'+debit.businessCRF+'/sales'"
+  [param]="'invoiceId'"
+  (results)="getValue($event)"
+  >
+  </mx-searcher-list>
+</ng-container>
+
+<ng-container *ngIf="invoice_Ref">
   <div class="row">
-    <ng-container *ngIf="invoice_Ref">
-      <div class="col s3">
-        nro de Factura: {{invoice_Ref.invoiceId}}
-      </div>
-      <div class="row">
-        <div class="col s4">
-          Nombre Cliente: {{invoice_Ref.client.name}}
-        </div>
-      </div>
-      <div class="row">
-        <div class="col s4">
-          Metodo de Pago: {{invoice_Ref.payment_method}}
-        </div>
-        <div class="col s4">
-          Vendedor: {{invoice_Ref.seller}}
-        </div>
-        <div class="col s4">
-          Moneda :{{invoice_Ref.currency}}
-        </div>
-      </div>
-      <ng-container *ngIf=" invoiceConcept.details_Notes$.value as details">
-        <ng-container *ngFor="let det of details">
-          <app-invoice-concept [document]="'debit'" [concept]="det">
-          </app-invoice-concept>
-        </ng-container>
+    <div class="col s4">
+      <mat-form-field class="col s12" appearance="outline">
+        <mat-label>Talonario</mat-label>
+        <mat-select placeholder="Talonario" (selectionChange)="seletedStub($event)" name="stub">
+          <mat-option *ngFor="let stub of debit.stubList$ | async" [value]="stub">
+            {{stub.name}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div class="col s4">
+      <ng-container *ngIf="debit.stubSelect$.value as stub">
+        <h1>{{stub.prefixIndexCurrent}}</h1>
       </ng-container>
-      <!-- FOOTER -->
-      <app-footer-credito-debito>
-      </app-footer-credito-debito>
+    </div>
+    <mat-form-field appearance="outline" class="col s4 l3">
+      <mat-label>Fecha de Emision</mat-label>
+      <input matInput [formControl]="emition_date" [matDatepicker]="emition">
+      <mat-datepicker-toggle matSuffix [for]="emition"></mat-datepicker-toggle>
+      <mat-datepicker #emition startView="year"></mat-datepicker>
+    </mat-form-field>
+    <div class="row">
+      <ng-container *ngIf="invoice_Ref">
+        <div class="col s3">
+          nro de Factura: {{invoice_Ref.invoiceId}}
+        </div>
+        <div class="row">
+          <div class="col s4">
+            Nombre Cliente: {{invoice_Ref.client.name}}
+          </div>
+        </div>
+        <div class="row">
+          <div class="col s4">
+            Metodo de Pago: {{invoice_Ref.payment_method}}
+          </div>
+          <div class="col s4">
+            Vendedor: {{invoice_Ref.seller}}
+          </div>
+          <div class="col s4">
+            Moneda :{{invoice_Ref.currency}}
+          </div>
+        </div>
+        <ng-container *ngIf=" invoiceConcept.details_Notes$.value as details">
+          <ng-container *ngFor="let det of details">
+            <app-invoice-concept [document]="'debit'" [concept]="det">
+            </app-invoice-concept>
+          </ng-container>
+        </ng-container>
+        <!-- FOOTER -->
+        <app-footer-credito-debito>
+        </app-footer-credito-debito>
+      </ng-container>
+    </div>
+    <ng-container *ngIf="this.footer.footer$.value">
+      <button mat-raised-button color="primary" [disabled]="this.footer.footer$.value.total <= 0" (click)="save()" >guardar</button>
     </ng-container>
   </div>
-  <ng-container *ngIf="this.footer.footer$.value">
-    <button mat-raised-button color="primary" [disabled]="this.footer.footer$.value.total <= 0" (click)="save()" >guardar</button>
-  </ng-container>
-</div>
+</ng-container>

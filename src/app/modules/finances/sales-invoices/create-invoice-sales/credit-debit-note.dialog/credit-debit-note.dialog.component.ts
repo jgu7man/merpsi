@@ -89,7 +89,11 @@ export class CreditDebitNoteDialogComponent implements OnInit {
                   this._dialogRef.close()
                 })
             } else if (this.document.origin == 'creation'){
-              this._dialogRef.close()
+              let result = {
+                invoiceId: id_invoice,
+                origin: this.document.origin                
+               }
+               this._dialogRef.close(result)
             }
           } else if (this.document.document == 'credit') {
             if (this.concept.value == 'anulacion' && this.document.invoice.related_documents.length > 0) {

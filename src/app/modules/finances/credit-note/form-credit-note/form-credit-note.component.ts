@@ -36,7 +36,6 @@ export class FormCreditNoteComponent implements OnInit, OnDestroy {
   stubList: iStub[] = []
   stubSelect: iStub | null = null
   prefix: string = ''
-  businessRef = this.dashboard.CRF
   invoice: SalesInvoiceReadingModel | null = null;
   origin: string = '';
   @Output() submited: EventEmitter<any> = new EventEmitter()
@@ -49,17 +48,12 @@ export class FormCreditNoteComponent implements OnInit, OnDestroy {
     public footer_service: FooterCreditoDebitoService,
     public footer: FooterCreditoDebitoService,
     public invoiceConcept: InvoiceConceptService,
-    public dashboard: DashboardService,
     private _activatedRoute: ActivatedRoute,
     private _alert: MxAlert,
     private _taxes: TaxesService,
     private _manager: PersonalService,
     private _dialog: MatDialog,
     private _router: Router,
-
-
-
-
 
   ) {
     /* Recibo los parametros que llegan desde la URL */
@@ -189,8 +183,8 @@ export class FormCreditNoteComponent implements OnInit, OnDestroy {
 
   getValue(invoice: iSalesInvoice){
     try {
-      if (!this.businessRef)  throw { message: 'No Se ha iniciado sesion'}
-      this.invoice = new SalesInvoiceReadingModel(invoice,this.businessRef)
+      // if (!this.credit.businessRef)  throw { message: 'No Se ha iniciado sesion'}
+      this.invoice = new SalesInvoiceReadingModel(invoice,this.credit.businessRef)
       this._dialog.open(
         CreditDebitNoteDialogComponent,{
           width: '1200px',
@@ -211,8 +205,6 @@ export class FormCreditNoteComponent implements OnInit, OnDestroy {
         console.log(this.invoiceId);
         
       })
-
-
     } catch (error: any) {
       if ('message' in error) {
         this._alert.error(error.message, error)

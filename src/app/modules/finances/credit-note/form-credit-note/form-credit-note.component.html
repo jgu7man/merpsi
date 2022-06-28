@@ -1,7 +1,7 @@
 <ng-container *ngIf="!invoice_Ref">
   <mx-searcher-list
   [label]="'Nro de Factura'"
-  [collection]="'businesses/'+businessRef+'/sales'"
+  [collection]="'businesses/'+sales.businessCRF+'/sales'"
   [param]="'invoiceId'"
   (results)="getValue($event)"
   >

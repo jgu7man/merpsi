@@ -24,7 +24,8 @@ export class DebitNoteService {
   stubSelect$ = new BehaviorSubject<iStub | null>(null)
   stubList$ = new BehaviorSubject<iStub[]>([])
   listTaxes: AppliedTaxModel[] = [];
-  businessRef = `businesses/${this._dashboard.CRF}`
+  businessCRF = this._dashboard.CRF
+  businessRef = `businesses/${this.businessCRF}`
 
 
   constructor(
@@ -34,7 +35,6 @@ export class DebitNoteService {
     private _dashboard: DashboardService,
     private _afs: AngularFirestore,
     private stub: StubService,
-    private _router: Router,
   ) { }
 
   async getInvoice(invoice_ID: string) {
@@ -64,8 +64,6 @@ export class DebitNoteService {
       stub.currentIndex = stub.currentIndex + 1
       this.stub.update(stub)
     }
-    this._alert.notify('La Nota de debito ha sido guardado con exito!')
-    this._router.navigate([`business/${this._dashboard.CRF}/finances/sales`])
 
 
   }
