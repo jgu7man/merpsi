@@ -43,7 +43,6 @@ export class CreditNoteService {
     private _foot: FooterCreditoDebitoService,
     private invoiceConcept: InvoiceConceptService,
     private _manager: PersonalService,
-    private _router: Router,
 
 
   ) {
@@ -87,8 +86,7 @@ export class CreditNoteService {
         stub.currentIndex = stub.currentIndex + 1
         this.stub.update(stub)
       }
-      Swal.fire('Guardado')
-      this._router.navigate([`business/${this.businessCRF}/finances/sales`])
+      
 
     } catch (error: any) {
       if ('message' in error) {

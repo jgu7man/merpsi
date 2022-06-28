@@ -12,7 +12,7 @@ import { InvoiceConceptService } from '../../../invoices/invoice-concept/invoice
 import { ProductInvoiceModel } from '../../../invoices/invoice.model';
 import { SelectConceptDialogComponent } from '../../../invoices/select-concept.dialog/select-concept.dialog.component';
 import { AppliedTaxModel } from '../../../taxes/taxes.model';
-import { ConceptAvailability, iSalesInvoice, SalesInvoiceReadingModel } from '../../sales-invoice.model';
+import { ConceptAvailability, SalesInvoiceReadingModel } from '../../sales-invoice.model';
 import { SalesService } from '../../sales.service';
 
 @Component({
@@ -35,16 +35,23 @@ export class CreditDebitNoteDialogComponent implements OnInit {
     private _router: Router,
     private _alert: MxAlert,
     private _invoiceConcept: InvoiceConceptService,
-    @Inject(MAT_DIALOG_DATA) public document: any = null,
+    @Inject(MAT_DIALOG_DATA) public document: {invoice: SalesInvoiceReadingModel, document:string, origin:string},
 
   ) { }
 
   ngOnInit(): void {
     console.log(this.document);
 
+    if (!this.document) throw { message: 'No se encuentra el document'}
     if (this.document.invoice) {
-      this.productsAvailable = this.document.invoice.avalibleConcepts.length > 0 ?
-        this.document.invoice.avalibleConcepts : this.document.invoice.details
+      if ( this.document.invoice.avalibleConcepts.length > 0 ){
+        this.productsAvailable = this.document.invoice.avalibleConcepts
+      } else {
+        this.products = this.document.invoice.details.map(det => {
+          return new ProductNoteModel(det.cant, det.unit_price, det.store, det.product)
+        })
+      }
+    
     }
 
 
@@ -76,12 +83,12 @@ export class CreditDebitNoteDialogComponent implements OnInit {
         if (result.isConfirmed) {
           if (this.document.document == 'debit') {
             this._invoiceConcept.details_Notes$.next(this.products)
-            if (this.document.context != 'new') {
+            if (this.document.origin == 'invoice') {
               this._router.navigate([`/business/${this.businessRef}/finances/new-debit-notes/${id_invoice}`])
                 .then(() => {
                   this._dialogRef.close()
                 })
-            } else {
+            } else if (this.document.origin == 'creation'){
               this._dialogRef.close()
             }
           } else if (this.document.document == 'credit') {
@@ -90,15 +97,16 @@ export class CreditDebitNoteDialogComponent implements OnInit {
               Swal.fire('No es posible aplicar una Nota de Credito por concepto de Anulación para este documento')
             } else {
               this._invoiceConcept.details_Notes$.next(this.products)
-              if (this.document.context != 'new') {
+              if (this.document.origin == 'invoice') {
                 this._router.navigate([`/business/${this.businessRef}/finances/new-credit-notes/${this.concept.value}/${id_invoice}`])
                   .then(() => {
                     this._dialogRef.close()
                   })
-              } else {
+              } else if (this.document.origin == 'creation'){
                 let result = {
                  tipo: this.concept.value,
-                 invoiceId: id_invoice                  
+                 invoiceId: id_invoice,
+                 origin: this.document.origin                
                 }
                 console.log(result);
                 
@@ -123,7 +131,9 @@ export class CreditDebitNoteDialogComponent implements OnInit {
     this.products = []
     if (this.concept.value == 'anulacion') {
       if (this.document.invoice) {
-        this.products = this.document.invoice.details
+        this.products = this.document.invoice.details.map(det => {
+          return new ProductNoteModel(det.cant, det.unit_price, det.store, det.product)
+        })
       } else {
         this.products = []
         if (!this.invoice) throw { message: 'No se ha seleccionado una factura' }

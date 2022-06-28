@@ -1,10 +1,8 @@
 import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSelectChange } from '@angular/material/select';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
-import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import { DashboardService } from 'src/app/dashboard/dashboard.service';
 import { PersonalService } from 'src/app/modules/admin/managers/personal.service';
 import Swal from 'sweetalert2';
@@ -40,6 +38,8 @@ export class FormCreditNoteComponent implements OnInit, OnDestroy {
   prefix: string = ''
   businessRef = this.dashboard.CRF
   invoice: SalesInvoiceReadingModel | null = null;
+  origin: string = '';
+  @Output() submited: EventEmitter<any> = new EventEmitter()
 
 
   constructor(
@@ -55,6 +55,8 @@ export class FormCreditNoteComponent implements OnInit, OnDestroy {
     private _taxes: TaxesService,
     private _manager: PersonalService,
     private _dialog: MatDialog,
+    private _router: Router,
+
 
 
 
@@ -149,7 +151,15 @@ export class FormCreditNoteComponent implements OnInit, OnDestroy {
             this.footer_service.footer$.value
           )
           this.credit.saveCreditNote(noteCredit)
-
+          Swal.fire('Guardado')
+          console.log(this.origin);
+          
+          if( this.origin == 'invoice' ){
+            this._router.navigate([`business/${this.credit.businessCRF}/finances/sales`])
+          
+          } else if (this.origin == 'creation'){
+            this.submited.emit()
+          }
 
         } else {
           Swal.fire(`El total de la Nota de Credito no puede ser mayor a ${this.invoice_Ref.footer.total}`)
@@ -188,11 +198,12 @@ export class FormCreditNoteComponent implements OnInit, OnDestroy {
           data: {
             document: 'credit',
             invoice:  this.invoice,
-            context: 'new'
+            origin: 'creation'
           }
       }).afterClosed().subscribe( data =>{
         this.contextNC = data.tipo
         this.invoiceId = data.invoiceId
+        this.origin = data.origin
         this.invoice_Ref = invoice
         this.setFooter()
 

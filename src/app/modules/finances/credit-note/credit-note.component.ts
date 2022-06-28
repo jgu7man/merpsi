@@ -24,8 +24,6 @@ export class CreditNoteComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  openCreditNote(){
-    
-  }
+ 
 
 }
