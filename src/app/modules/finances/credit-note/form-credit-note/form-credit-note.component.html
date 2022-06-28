@@ -1,51 +1,62 @@
-<div class="container">
-  <div class="row">
-    <div class="col s12 m8">
-        <mat-form-field class="col s4" appearance="outline">
-          <mat-label>Talonario</mat-label>
-          <mat-select placeholder="Placeholder" (selectionChange)="selectStub($event)" name="name">
-            <mat-option *ngFor="let stub of credit.stubList$ | async" [value]="stub">
-              {{stub.name}}
-            </mat-option>
-          </mat-select>
-        </mat-form-field> -->
-        <!-- NRO FACTURA -->
-        <ng-container *ngIf="credit.stubSelect$.value as stub" class="col s4">
-          <h1>{{stub.prefixIndexCurrent}}</h1>
+<ng-container *ngIf="!invoice_Ref">
+  <mx-searcher-list
+  [label]="'Nro de Factura'"
+  [collection]="'businesses/'+businessRef+'/sales'"
+  [param]="'invoiceId'"
+  (results)="getValue($event)"
+  >
+  </mx-searcher-list>
+</ng-container>
+<ng-container *ngIf="invoice_Ref">
+  <div class="container">
+    <div class="row">
+      <div class="col s12 m8">
+          <mat-form-field class="col s4" appearance="outline">
+            <mat-label>Talonario</mat-label>
+            <mat-select placeholder="Placeholder" (selectionChange)="selectStub($event)" name="name">
+              <mat-option *ngFor="let stub of credit.stubList$ | async" [value]="stub">
+                {{stub.name}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field> -->
+          <!-- NRO FACTURA -->
+          <ng-container *ngIf="credit.stubSelect$.value as stub" class="col s4">
+            <h1>{{stub.prefixIndexCurrent}}</h1>
+          </ng-container>
+      </div>
+    </div>
+    <ng-container *ngIf="invoice_Ref as invoice_current">
+      <div class="col s3">
+        nro de Factura: {{invoice_current.invoiceId}}
+      </div>
+      <div class="row">
+        <div class="col s4">
+          Nombre Cliente: {{invoice_current.client.name}}
+        </div>
+        <div class="col s4">
+          identificacion: {{invoice_current.client.cip}}
+        </div>
+      </div>
+      <div class="row">
+        <div class="col s4">
+          Metodo de Pago: {{invoice_current.payment_method}}
+        </div>
+        <div class="col s4">
+          Vendedor: {{invoice_current.seller}}
+        </div>
+        <div class="col s4">
+          Moneda :{{invoice_current.currency}}
+        </div>
+      </div>
+      <ng-container *ngIf=" invoiceConcept.details_Notes$.value as det">
+        <ng-container *ngFor="let concept of det ">
+          <app-invoice-concept [document]="'credit'" [concept]="concept" [tipo_concepto]="contextNC">
+          </app-invoice-concept>
         </ng-container>
-    </div>
-  </div>
-  <ng-container *ngIf="invoice_Ref as invoice_current">
-    <div class="col s3">
-      nro de Factura: {{invoice_current.invoiceId}}
-    </div>
-    <div class="row">
-      <div class="col s4">
-        Nombre Cliente: {{invoice_current.client.name}}
-      </div>
-      <div class="col s4">
-        identificacion: {{invoice_current.client.cip}}
-      </div>
-    </div>
-    <div class="row">
-      <div class="col s4">
-        Metodo de Pago: {{invoice_current.payment_method}}
-      </div>
-      <div class="col s4">
-        Vendedor: {{invoice_current.seller}}
-      </div>
-      <div class="col s4">
-        Moneda :{{invoice_current.currency}}
-      </div>
-    </div>
-    <ng-container *ngIf=" invoiceConcept.details_Notes$.value as det">
-      <ng-container *ngFor="let concept of det ">
-        <app-invoice-concept [document]="'credit'" [concept]="concept" [tipo_concepto]="contextNC">
-        </app-invoice-concept>
+        <app-footer-credito-debito [concept]="contextNC">
+        </app-footer-credito-debito>
       </ng-container>
-      <app-footer-credito-debito [concept]="contextNC">
-      </app-footer-credito-debito>
     </ng-container>
-  </ng-container>
-  <button mat-raised-button color="primary" (click)="save()">Guardar</button>
-</div>
+    <button mat-raised-button color="primary" (click)="save()">Guardar</button>
+  </div>
+</ng-container>

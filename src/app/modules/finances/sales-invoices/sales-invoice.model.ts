@@ -323,7 +323,7 @@ export class SalesInvoiceReadingModel implements iSalesInvoice {
     return this.related_documents[0].emition_date
   }
 
-} //+5595991742789
+}
 
 
 /**

@@ -1,54 +1,54 @@
 
 <div class="row">
-  <ng-container *ngIf="document.document=='credit'">
-    <label>
-      <h2>Selecciona el concepto:</h2>
-    </label>
-    <mat-radio-group [formControl]="concept" (change)="changeConcept()">
-      <mat-radio-button [value]="'anulacion'">
-        <h3><b>Nota Crédito por Anulacion de Factura:</b> <br />
-          Aplica para registrar la devolución <strong>completa</strong> de mercancia realizada por los clientes
-          afectando las existencias de inventarios
-        </h3>
-      </mat-radio-button>
-      <mat-radio-button [value]="'devolucion'">
-        <h3><b>Nota Crédito por Devolución Mercancias clientes:</b> <br />
-          Aplica para registrar la devolución de mercancia realizada por los clientes afectando las existencias de
-          inventarios
-        </h3>
-      </mat-radio-button>
-      <mat-radio-button [value]="'disminucion'">
-        <h3><b>Nota Crédito de Cientes:</b> <br /> Aplica para disminuir el valor a cobrar de una factura de venta por
-          descuentos otorgados o por errores en los precios cobrados. No afecta existencias
-        </h3>
-      </mat-radio-button>
-    </mat-radio-group>
-  </ng-container>
-  <ng-container
-    *ngIf="(document.document=='debit' || (concept.value=='devolucion' || concept.value=='disminucion')) && document.invoice as invoice">
-    <h2>Selecciona los productos a los cuales se le aplicara la nota</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>Producto</th>
-          <!-- <th>Sede</th> -->
-          <th>Cantidad</th>
-          <th>Valor</th>
-          <th>seleccion</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let det of productsAvailable">
-          <td>{{det.concept.UPC}}</td>
-          <!-- <td>{{det.store}}</td> -->
-          <td>{{det.cant}}</td>
-          <td>{{det.unit_price}}</td>
-          <td>
-            <mat-checkbox (change)="addProduct($event,det)">
-            </mat-checkbox>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </ng-container>
+    <ng-container *ngIf="document.document=='credit'">
+      <label>
+        <h2>Selecciona el concepto:</h2>
+      </label>
+      <mat-radio-group [formControl]="concept" (change)="changeConcept()">
+        <mat-radio-button [value]="'anulacion'">
+          <h3><b>Nota Crédito por Anulacion de Factura:</b> <br />
+            Aplica para registrar la devolución <strong>completa</strong> de mercancia realizada por los clientes
+            afectando las existencias de inventarios
+          </h3>
+        </mat-radio-button>
+        <mat-radio-button [value]="'devolucion'">
+          <h3><b>Nota Crédito por Devolución Mercancias clientes:</b> <br />
+            Aplica para registrar la devolución de mercancia realizada por los clientes afectando las existencias de
+            inventarios
+          </h3>
+        </mat-radio-button>
+        <mat-radio-button [value]="'disminucion'">
+          <h3><b>Nota Crédito de Cientes:</b> <br /> Aplica para disminuir el valor a cobrar de una factura de venta por
+            descuentos otorgados o por errores en los precios cobrados. No afecta existencias
+          </h3>
+        </mat-radio-button>
+      </mat-radio-group>
+    </ng-container>
+    <ng-container
+      *ngIf="(document.document=='debit' || (concept.value=='devolucion' || concept.value=='disminucion')) && document.invoice">
+      <h2>Selecciona los productos a los cuales se le aplicara la nota</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <!-- <th>Sede</th> -->
+            <th>Cantidad</th>
+            <th>Valor</th>
+            <th>seleccion</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let det of productsAvailable">
+            <td>{{det.concept.UPC}}</td>
+            <!-- <td>{{det.store}}</td> -->
+            <td>{{det.cant}}</td>
+            <td>{{det.unit_price}}</td>
+            <td>
+              <mat-checkbox (change)="addProduct($event,det)">
+              </mat-checkbox>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </ng-container>
   <button mat-raised-button color="primary" [disabled]="products.length === 0 " (click)="createCDN()">aceptar</button>

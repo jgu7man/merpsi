@@ -17,7 +17,7 @@ export class DashboardService {
 
   /** Consulta en sessionStorage el ID de la empresa en la cuál se está presente */
   get CRF() {
-    const CRF = this._cache.getDataKey( 'eid' )
+    const CRF: string | null = this._cache.getDataKey( 'eid' )
     if ( CRF === undefined ) throw { message: 'No se encuentró el ID de la empresa' }
     return CRF
   }

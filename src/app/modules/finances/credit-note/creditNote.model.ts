@@ -32,7 +32,7 @@ export class ProductNoteModel {
   /** Costo unitario del producto comprado */
   public unit_cost: number = 0
   /** Cantidad de productos comprados */
-  public cant?: number = 0
+  public cant: number = 0
   public store: string | null
   product: Product.MainData
 

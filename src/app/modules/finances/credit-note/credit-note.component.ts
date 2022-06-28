@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { CreditDebitNoteDialogComponent } from '../sales-invoices/create-invoice-sales/credit-debit-note.dialog/credit-debit-note.dialog.component';
 import { CreditNoteService } from './credit-note.service';
 import { iCreditNote } from './creditNote.model';
 
@@ -11,7 +13,8 @@ export class CreditNoteComponent implements OnInit {
 
   listCredits: iCreditNote[] = []
   constructor(
-    public credit : CreditNoteService
+    public credit : CreditNoteService,
+
   ) {
     credit.listCredits().subscribe( list => {
       this.listCredits = list
@@ -19,6 +22,10 @@ export class CreditNoteComponent implements OnInit {
    }
 
   ngOnInit(): void {
+  }
+
+  openCreditNote(){
+    
   }
 
 }
