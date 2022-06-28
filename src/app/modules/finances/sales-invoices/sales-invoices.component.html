@@ -2,6 +2,7 @@
   <div class="row">
     <div class="col s12">.
       <!-- <ng-container *ngIf="sales.listInvoice() | async as list"> -->
+        <mx-sort-options [fields]="['invoiceId','status']" ></mx-sort-options>
         <mx-crud-panel
         listName="Facturas de Ventas"
         [addTemplate]="add"
@@ -23,7 +24,16 @@
             <app-create-invoice-sales  [invoice]="invoice"></app-create-invoice-sales>
           </ng-template>
         </mx-crud-panel>
-      <!-- </ng-container> -->
-    </div>
+        <!-- </ng-container> -->
+        <mx-index-caller
+        prevBtn="Anterior"
+        nextBtn="Siguiente"
+        colorBtn="primary"
+        [centerMessage]="centerMessage"
+        [merge]="false"
+        ></mx-index-caller>
+      </div>
+      <div class="col s12">.
+      </div>
   </div>
 </div>

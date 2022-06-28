@@ -1,6 +1,6 @@
-import { Component, Input, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, Inject } from '@angular/core';
 import { FormBuilder, FormControl, Validators } from '@angular/forms';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MxText } from 'libs/@marxa/devkit/text/mx-text.service';
 import { Subscription } from 'rxjs';
 import { skip } from 'rxjs/operators';
@@ -127,7 +127,7 @@ export class ProductFormComponent implements OnInit, OnDestroy {
 export class ProductFormDialog implements OnInit {
 
   constructor (
-    // @Inject( MAT_DIALOG_DATA ) data: any,
+    @Inject( MAT_DIALOG_DATA ) public data: string,
     public dialog: MatDialogRef<ProductFormDialog>,
     public current: CurrentProductService
   ) { }
@@ -135,7 +135,7 @@ export class ProductFormDialog implements OnInit {
   ngOnInit() { }
 
   onSubmit() {
-    this.current.save()
+    this.current.save(this.data)
       .then((productDoc) => this.dialog.close(productDoc))
       .catch(() => this.dialog.close(false))
   }

@@ -1,6 +1,7 @@
 <div class="container">
   <div class="row">
     <div class="col s12">
+      <mx-sort-options [fields]="['invoiceId']"></mx-sort-options>
       <mx-crud-panel
       listName="Nota de Credito"
       [selectTemplate]="select"
@@ -20,6 +21,13 @@
           <app-select-credit-note [document]="document" ></app-select-credit-note>
         </ng-template>
       </mx-crud-panel>
+      <mx-index-caller
+      prevBtn="Anterior"
+      nextBtn="Siguiente"
+      colorBtn="primary"
+      [centerMessage]="centerMessage"
+      [merge]="false"
+      ></mx-index-caller>
     </div>
   </div>
 </div>

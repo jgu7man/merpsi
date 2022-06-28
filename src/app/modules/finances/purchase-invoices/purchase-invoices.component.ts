@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { mxIndexCenterMessage } from 'libs/@marxa/index/src/lib/mx-index.model';
+import { MxIndex } from 'libs/@marxa/index/src/lib/mx-index.service';
 import { PurchaseInvoiceModel } from 'src/app/modules/finances/purchase-invoices/pucharce-invoice.model';
 import { AuthService } from 'src/app/services/auth.service';
 import { iSede } from '../../admin/stores/sede.model';
@@ -21,7 +23,11 @@ export class PurchaseInvoicesComponent implements OnInit {
   providers: ProviderModel[] = [];
   stores: iSede[] = [];
   listPuchases: PurchaseInvoiceModel[] = [];
-  
+  centerMessage: mxIndexCenterMessage ={
+    showing: 'Mostrando',
+    from: 'del',
+    to: 'al'
+  }
   constructor(
     public purchases: PurchaseInvoiceService,
     private _provider: ProviderService,
@@ -29,14 +35,22 @@ export class PurchaseInvoicesComponent implements OnInit {
     private _taxes: TaxesService,
     private conceptInvoice: InvoiceConceptService,
     private _footer: FooterService,
-    private providerServ: ProviderService
+    private providerServ: ProviderService,
+    private _index: MxIndex
 
 
   ) {
-    this.purchases.listPurchases().subscribe( list => { 
-      console.log(list);
-      
-      this.listPuchases = list})
+    // this.purchases.listPurchases().subscribe( list => { 
+    //   console.log(list);
+    //   this.listPuchases = list})
+    
+    this._index.collection = `/businesses/${this.purchases.businessCRF}/purchases`
+    this._index.field = 'invoiceId'
+    this._index.initIndex(this._index.collection,this._index.field,10)
+    this._index.page$.subscribe(data => {
+      this.listPuchases = data
+    })
+
    }
 
   async ngOnInit(): Promise<void> {

@@ -45,6 +45,7 @@ export class SelectConceptDialogComponent implements OnInit {
   createProduct() {
     this._dialogProduct.open(ProductFormDialog, {
       width: '100% ',
+      data: 'purchase'
     })
   }
 }

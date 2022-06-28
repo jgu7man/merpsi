@@ -252,7 +252,7 @@ export class CurrentProductService {
       const productState = await this.product$.value
       const product = new ProductModel( productState, this._dashboard.managerRef )
       const historyRef = this._productRef.collection( 'history' ).doc( `${ new Date().getTime() }` ).ref
-      product.last_update.eventRef = this._countings.currentRef.ref
+        product.last_update.eventRef = from ===  'counting' ? this._countings.currentRef.ref : undefined
 
       /* Guarda el producto */
       fireBatch.set(this._productRef.ref, {
@@ -270,7 +270,7 @@ export class CurrentProductService {
       })
 
       /* Guarda la actualización del stock */
-      if ( this._countings.current && this._stockUpdate ) {
+      if ( this._countings.current && this._stockUpdate && from == 'counting' ) {
         const {stored, UPC} = this.product$.value!
 
         let events = await this._countings.registUpdateRecord( UPC, {
@@ -290,7 +290,15 @@ export class CurrentProductService {
         )
 
         fireBatch.set( historyRef, { ...counting_event })
-      }
+      } else if ( from == 'purchase'){
+
+        const product_event = new ProductEventModel(
+          'purchase',
+          this._dashboard.managerRef,
+        )
+        fireBatch.set( historyRef, { ...product_event })
+
+      } 
 
 
       /* Asigna un evento */

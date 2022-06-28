@@ -133,7 +133,7 @@ export class SalesService {
   }
 
   listInvoice(): Observable<SalesInvoiceReadingModel[]> {
-    return this._afs.collection<SalesInvoiceModel>(`businesses/${this._dashboard.CRF}/sales`).valueChanges()
+    return this._afs.collection<SalesInvoiceModel>(`businesses/${this.businessCRF}/sales`).valueChanges()
       .pipe(
         map(result => {
           const sales: SalesInvoiceModel[] = [];
