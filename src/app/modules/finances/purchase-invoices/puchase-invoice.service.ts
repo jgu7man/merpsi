@@ -22,6 +22,7 @@ export class PurchaseInvoiceService {
 
   businessCRF: string = this._cache.getDataKey('eid')!
   public totales: EventEmitter<InvoiceFooter> = new EventEmitter();
+  invoiceId: string = ''
 
 
   constructor(
@@ -82,7 +83,7 @@ export class PurchaseInvoiceService {
 
   async findInvoice(invoiceId: string) {
     try {
-
+      this.invoiceId = invoiceId
       const invoiceResult = await this._afs.doc<iPurchaseInvoice>(`businesses/${this.businessCRF}/purchases/${invoiceId}`).ref.get()
       return invoiceResult.exists ? invoiceResult : null
 

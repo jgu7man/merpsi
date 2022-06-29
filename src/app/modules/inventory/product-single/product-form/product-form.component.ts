@@ -5,6 +5,7 @@ import { MxText } from 'libs/@marxa/devkit/text/mx-text.service';
 import { Subscription } from 'rxjs';
 import { skip } from 'rxjs/operators';
 import { listenChanges } from 'src/app/models/operators-chains.model';
+import { PurchaseInvoiceService } from 'src/app/modules/finances/purchase-invoices/puchase-invoice.service';
 import { Product, ProductModel, StoreReferenceModel } from 'src/app/modules/inventory/products/products.model';
 import { ProductCategoriesService } from '../../product-categories/product-categories.service';
 import { ProductCategory } from '../../product-categories/product-category.model';
@@ -129,14 +130,20 @@ export class ProductFormDialog implements OnInit {
   constructor (
     @Inject( MAT_DIALOG_DATA ) public data: string,
     public dialog: MatDialogRef<ProductFormDialog>,
-    public current: CurrentProductService
+    public current: CurrentProductService,
+    private purchase: PurchaseInvoiceService
   ) { }
 
   ngOnInit() { }
 
   onSubmit() {
     this.current.save(this.data)
-      .then((productDoc) => this.dialog.close(productDoc))
+      .then((productDoc) => {
+        if (productDoc.exists && this.data == 'purchase'){
+          this.purchase.addConcept(new ProductModel(productDoc.data()))
+        }
+        this.dialog.close()
+      })
       .catch(() => this.dialog.close(false))
   }
 }

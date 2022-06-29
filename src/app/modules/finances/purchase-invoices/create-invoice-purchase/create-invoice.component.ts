@@ -135,6 +135,9 @@ export class CreateInvoiceComponent implements OnInit, OnDestroy{
     this._dialog.open(SelectConceptDialogComponent, {
       width: '600px ',
     }).afterClosed().subscribe(concept => {
+      console.log('.............');
+      console.log(concept);
+      
       if (concept){
         this.purchase.addConcept(concept)
         this.concept = concept

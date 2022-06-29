@@ -14,6 +14,8 @@ import { ManagerModel } from '../../admin/managers/manager.model';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import { CountingsService } from '../countings/countings.service';
 import { MxBatchEvent } from 'libs/@marxa/batch/batch.model';
+import { iPurchaseInvoice } from '../../finances/purchase-invoices/pucharce-invoice.model';
+import { PurchaseInvoiceService } from '../../finances/purchase-invoices/puchase-invoice.service';
 
 @Injectable({
   providedIn: 'root'
@@ -63,7 +65,8 @@ export class CurrentProductService {
     private _loading: MxLoading,
     private _afs: AngularFirestore,
     private _cache: MxCache,
-    private _countings: CountingsService
+    private _countings: CountingsService,
+    private _purchase: PurchaseInvoiceService,
   ) {
     this.storageSubscription = this._listenStorage()
       .pipe( mergeMap( () => this.storage$
@@ -249,10 +252,13 @@ export class CurrentProductService {
       if ( this.product$.value == null )
         throw { message: 'Se ha perdido el state del producto actual' }
 
-      const productState = await this.product$.value
+      const productState = this.product$.value
       const product = new ProductModel( productState, this._dashboard.managerRef )
       const historyRef = this._productRef.collection( 'history' ).doc( `${ new Date().getTime() }` ).ref
-        product.last_update.eventRef = from ===  'counting' ? this._countings.currentRef.ref : undefined
+        product.last_update.eventRef = from ===  'counting' ? 
+        this._countings.currentRef.ref : 
+        this._afs.collection(`businesses/${this._businessRef}/purchases/`).doc<iPurchaseInvoice>(this._purchase.invoiceId).ref
+        product.last_update.manager = this._dashboard.managerRef
 
       /* Guarda el producto */
       fireBatch.set(this._productRef.ref, {
@@ -294,7 +300,9 @@ export class CurrentProductService {
 
         const product_event = new ProductEventModel(
           'purchase',
-          this._dashboard.managerRef,
+          this._dashboard.managerRef, 
+          this._afs.collection(`businesses/${this._businessRef}/purchases/`).doc<iPurchaseInvoice>(this._purchase.invoiceId).ref
+
         )
         fireBatch.set( historyRef, { ...product_event })
 

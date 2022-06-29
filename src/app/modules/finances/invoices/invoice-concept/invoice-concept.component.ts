@@ -31,7 +31,7 @@ export class InvoiceConceptComponent implements OnInit, OnDestroy {
 
 
   formAddProduct: FormGroup = new FormGroup({
-    cant: new FormControl(0,),
+    cant: new FormControl(1,),
     unit_price: new FormControl(0,),
   })
 
