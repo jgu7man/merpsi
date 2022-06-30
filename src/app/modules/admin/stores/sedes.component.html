@@ -14,7 +14,7 @@
        >
 
         <ng-template #add>
-          <app-set-sede></app-set-sede>
+          <app-set-sede (saved)="crudPanel.closeAll()" ></app-set-sede>
         </ng-template>
 
         <ng-template #select let-sede="item" >

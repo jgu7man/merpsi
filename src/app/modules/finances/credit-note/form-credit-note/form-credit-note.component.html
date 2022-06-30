@@ -1,4 +1,4 @@
-<ng-container *ngIf="!invoice_Ref">
+<ng-container *ngIf="!credit.invoiceRef$.value as invoice_Ref ">
   <mx-searcher-list
   [label]="'Nro de Factura'"
   [collection]="'businesses/'+sales.businessCRF+'/sales'"
@@ -7,7 +7,7 @@
   >
   </mx-searcher-list>
 </ng-container>
-<ng-container *ngIf="invoice_Ref">
+<ng-container *ngIf="credit.invoiceRef$.value as invoice_Ref">
   <div class="container">
     <div class="row">
       <div class="col s12 m8">

@@ -7,6 +7,7 @@ import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import { PersonalService } from 'src/app/modules/admin/managers/personal.service';
 import { ClientCreationModel } from 'src/app/modules/clients/clients.model';
 import Swal from 'sweetalert2';
+import { CreditNoteService } from '../../credit-note/credit-note.service';
 import { FooterService } from '../../invoices/footer-invoice/footer.service';
 import { InvoiceConceptService } from '../../invoices/invoice-concept/invoice-concept.service';
 import { Invoice, ProductInvoiceModel } from '../../invoices/invoice.model';
@@ -58,7 +59,8 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy {
     private _alert: MxAlert,
     private _taxes: TaxesService,
     private _manager: PersonalService,
-    private _footer: FooterService
+    private _footer: FooterService,
+    private _credit: CreditNoteService
 
   ) {
     // this.closesSub = this._crud.onClosed.subscribe(() => {
@@ -194,7 +196,7 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy {
 
 
   async createCredit() {
-    let valid = await this.sales.findNoteCredits(this.invoice!)
+    let valid = await this._credit.findNoteCredits(this.invoice!)
     if (valid) {
       this._dialog.open(CreditDebitNoteDialogComponent, {
         width: '1200px',

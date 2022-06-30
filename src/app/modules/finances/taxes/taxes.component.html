@@ -18,7 +18,7 @@ listName="Tipos de impuesto"
         <mat-card-subtitle>Agrega un tipo de impuesto que después deberás usar en las facturas.</mat-card-subtitle>
       </mat-card-header>
       <mat-card-content>
-        <app-tax-form></app-tax-form>
+        <app-tax-form (submited)="crudPanel.closeAll()"></app-tax-form>
       </mat-card-content>
     </mat-card>
   </ng-template>
@@ -30,7 +30,7 @@ listName="Tipos de impuesto"
         <mat-card-subtitle></mat-card-subtitle>
       </mat-card-header>
       <mat-card-content>
-        <app-tax-form [value]="tax"></app-tax-form>
+        <app-tax-form [value]="tax" (submited)="crudPanel.closeAll()"></app-tax-form>
       </mat-card-content>
     </mat-card>
   </ng-template>

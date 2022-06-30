@@ -82,7 +82,7 @@ export class FormCreditNoteComponent implements OnInit, OnDestroy {
   async ngOnInit(): Promise<void> {
     try {
       if (this.invoiceId){
-        this.invoice_Ref = await this.credit.getInvoice(this.invoiceId)
+        await this.credit.getInvoice(this.invoiceId)
         this.setFooter()
       }
     } catch (error: any) {
@@ -96,10 +96,10 @@ export class FormCreditNoteComponent implements OnInit, OnDestroy {
 
   }
   setFooter(){
-    if (!this.invoice_Ref) throw { message: 'No Existe la factura relacionada' }
+    if (!this.credit.invoiceRef$.value) throw { message: 'No Existe la factura relacionada' }
         
         /* se obtienen los impuestos colocados en la factura para aplicarselos al concepto de la Nota de credito*/
-        let footer_tax = this.invoice_Ref.footer.taxes
+        let footer_tax = this.credit.invoiceRef$.value.footer.taxes
         let taxe: TaxModel[] = footer_tax.map(tax => { return new TaxModel(0, tax.name, tax.rate) })
   
         if (this.contextNC == 'disminucion') {
@@ -113,10 +113,10 @@ export class FormCreditNoteComponent implements OnInit, OnDestroy {
           amount = amount + amount_tax
   
   
-          const foot = new FooterNoteModel(this.invoice_Ref.footer, det, amount, taxe)
+          const foot = new FooterNoteModel(this.credit.invoiceRef$.value.footer, det, amount, taxe)
           this.footer.footer$.next(foot)
         } else {
-          const foot = new FooterNoteModel(this.invoice_Ref.footer, this.invoiceConcept.details_Notes$.value, null, taxe)
+          const foot = new FooterNoteModel(this.credit.invoiceRef$.value.footer, this.invoiceConcept.details_Notes$.value, null, taxe)
           this.footer.footer$.next(foot)
         }
         console.log(this.invoiceConcept.details_Notes$.value);
@@ -125,19 +125,19 @@ export class FormCreditNoteComponent implements OnInit, OnDestroy {
     try {
       if (!this.credit.stubSelect$.value) throw { message: ' No existe el talonario' }
       if (!this.footer_service.footer$.value) throw { message: ' No existe el footer' }
-      if (!this.invoice_Ref) throw { message: ' No existe la factura de referencia' }
+      if (!this.credit.invoiceRef$.value) throw { message: ' No existe la factura de referencia' }
       if ( !this._manager.current ) throw { message: 'No se ha iniciado la sesion' }
       if ( !this.contextNC ) throw { message: 'No se ha definido el contexto de la factura' }
 
       if (this.footer_service.footer$.value.total > 0) {
-        if (this.footer_service.footer$.value.total <= this.invoice_Ref.footer.total) {
+        if (this.footer_service.footer$.value.total <= this.credit.invoiceRef$.value.footer.total) {
           const manager: Invoice.manager = {
             id: this._manager.current.uid!,
             name: this._manager.current.name,
             ref: this._manager.managerRef
           }
           let noteCredit = new CreditNoteModel(
-            this.invoice_Ref.invoiceId,
+            this.credit.invoiceRef$.value.invoiceId,
             this.credit.stubSelect$.value.prefixIndexCurrent,
             manager,
             this.contextNC,
@@ -156,7 +156,7 @@ export class FormCreditNoteComponent implements OnInit, OnDestroy {
           }
 
         } else {
-          Swal.fire(`El total de la Nota de Credito no puede ser mayor a ${this.invoice_Ref.footer.total}`)
+          Swal.fire(`El total de la Nota de Credito no puede ser mayor a ${this.credit.invoiceRef$.value.footer.total}`)
         }
       } else {
 
@@ -181,30 +181,37 @@ export class FormCreditNoteComponent implements OnInit, OnDestroy {
     stub.prefixIndexCurrent = stub.prefix + '-' + ((stub.currentIndex || 0) + 1)
   }
 
-  getValue(invoice: iSalesInvoice){
+  async getValue(invoice: iSalesInvoice){
     try {
       // if (!this.credit.businessRef)  throw { message: 'No Se ha iniciado sesion'}
-      this.invoice = new SalesInvoiceReadingModel(invoice,this.credit.businessRef)
-      this._dialog.open(
-        CreditDebitNoteDialogComponent,{
-          width: '1200px',
-          height: '400px',
-          data: {
-            document: 'credit',
-            invoice:  this.invoice,
-            origin: 'creation'
-          }
-      }).afterClosed().subscribe( data =>{
-        this.contextNC = data.tipo
-        this.invoiceId = data.invoiceId
-        this.origin = data.origin
-        this.invoice_Ref = invoice
-        this.setFooter()
-
-        console.log(this.contextNC);
-        console.log(this.invoiceId);
-        
-      })
+      this.invoice = new SalesInvoiceReadingModel(invoice,this.credit.businessCRF)
+      console.log(this.invoice);
+      
+      let valid = await this.credit.findNoteCredits(this.invoice!)
+      if (valid) {
+        this._dialog.open(
+          CreditDebitNoteDialogComponent,{
+            width: '1200px',
+            height: '400px',
+            data: {
+              document: 'credit',
+              invoice:  this.invoice,
+              origin: 'creation'
+            }
+        }).afterClosed().subscribe( data =>{
+          this.contextNC = data.tipo
+          this.invoiceId = data.invoiceId
+          this.origin = data.origin
+          this.credit.invoiceRef$.next(invoice)
+          this.setFooter()
+  
+          console.log(this.contextNC);
+          console.log(this.invoiceId);
+          
+        })
+      } else {
+        Swal.fire('No se puede aplicar mas notas de credito a esta factura')
+      }
     } catch (error: any) {
       if ('message' in error) {
         this._alert.error(error.message, error)

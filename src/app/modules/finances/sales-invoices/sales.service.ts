@@ -152,20 +152,7 @@ export class SalesService {
       );
   }
 
-  async findNoteCredits(invoice: SalesInvoiceModel) {
-
-    const notesRef = await this.getnotesByid(invoice.invoiceId)
-    const result = notesRef.docs
-    let notes_result = result.map((doc) => {
-      return doc.data()
-    })
-    let totales = notes_result.reduce((acc, item) => acc + item.footer.total, 0)
-    if (totales >= invoice.footer.total) {
-      return false
-    } else {
-      return true
-    }
-  }
+  
 
    async searchAnnulledCreditNotes(id: string){
     const notesRef = await this.getnotesByidAndTypeConcept(id)

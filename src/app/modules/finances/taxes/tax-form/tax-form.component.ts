@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Tax, TaxModel } from '../taxes.model';
 import { TaxesService } from '../taxes.service';
@@ -11,6 +11,7 @@ import { TaxesService } from '../taxes.service';
 export class TaxFormComponent implements OnInit {
 
   @Input() value?: TaxModel
+  @Output() submited: EventEmitter<any> = new EventEmitter()
 
   public taxForm: Tax.form = new FormGroup( {
     name: new FormControl( '', [ Validators.required ] ),
@@ -37,6 +38,17 @@ export class TaxFormComponent implements OnInit {
       } );
     else
       this._taxes.add( this.taxForm.value );
+    this.submited.emit()
+    this.clean();
+  }
+
+  clean(){
+    this.taxForm.patchValue({
+    name: '',
+    rate: '',
+    description: ''
+    })
+    this.taxForm.markAsPristine()
   }
 
 }

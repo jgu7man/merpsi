@@ -6,6 +6,7 @@ import { AdminService } from 'src/app/modules/admin/admin.service';
 import { iManagerRegist } from 'src/app/modules/admin/managers/manager.model';
 import { AuthService } from 'src/app/services/auth.service';
 import { BusinessService } from 'src/app/services/business.service';
+import Swal from 'sweetalert2';
 import { iRegistFormChanges } from '../../../../components/generic-regist-form/generic-regist-form.model';
 
 @Component({
@@ -69,7 +70,8 @@ export class RegistComponent implements OnInit {
 
   /** Llamado al servicio de registro de empresa y manager */
   async onSubmit() {
-    await this._auth.regist(this.registForm.value,this.register!)
+     this._auth.regist(this.registForm.value,this.register!)
+     Swal.fire('Felicidades!! la empresa ha sido registrada con Exito!!')
   }
 
   /** Funcion para validar CRF en el imput con onblur

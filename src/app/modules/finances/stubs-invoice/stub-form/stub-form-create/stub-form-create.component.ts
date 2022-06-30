@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { StubModel } from '../../stub.model';
 import { StubService } from '../../stub.service';
@@ -8,7 +8,7 @@ import { StubService } from '../../stub.service';
   templateUrl: './stub-form-create.component.html',
   styleUrls: ['./stub-form-create.component.scss']
 })
-export class StubFormCreateComponent implements OnInit {
+export class StubFormCreateComponent implements OnInit, OnDestroy {
 
   @Input() value?: StubModel
   currentIndex = 0
@@ -54,7 +54,23 @@ export class StubFormCreateComponent implements OnInit {
       console.info('guardado add')
       this.saved.emit()
     }
+    this.clean()
 
+  }
+  clean() {
+    this.stubForm.patchValue({
+      starIndex: '',
+      endIndex: '',
+      currentIndex: '',
+      prefix: '',
+      name: '',
+      active: '',
+      type: ''
+       })
+  }
+
+  ngOnDestroy(): void {
+   this.clean()
   }
 
 }

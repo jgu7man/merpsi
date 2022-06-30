@@ -9,6 +9,7 @@
       [addTemplate]="add"
       [height_vh]="100"
       [itemSelector]="['id']"
+      (onAdd)="create()"
       #crudPanel
        >
         <ng-template #add>

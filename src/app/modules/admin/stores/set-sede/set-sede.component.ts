@@ -53,8 +53,14 @@ export class SetSedeComponent implements OnInit, OnDestroy{
 
   async onSubmit() {
     this.sede = {...this.sede, ...this.sedeForm.getRawValue()}
-    await this._sedes.save(this.sede)
+    this._sedes.save(this.sede)
+    this.clean()
+    this.saved.emit()
+  }
+
+  clean(){
     this.sedeForm.patchValue({
+      name: '',
       referencia: '',
       tipo: '',
       direccion: '',
@@ -62,11 +68,11 @@ export class SetSedeComponent implements OnInit, OnDestroy{
       depto: '',
       linkmap: '',
     })
-    this.saved.emit()
   }
 
   ngOnDestroy() {
     this.dataSubscription.unsubscribe()
+    this.clean()
   }
 
 }

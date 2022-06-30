@@ -8,7 +8,7 @@ import { DashboardService } from 'src/app/dashboard/dashboard.service';
 import { PersonalService } from '../../admin/managers/personal.service';
 import { ProductEventModel } from '../../inventory/products/products.model';
 import { FooterService } from '../invoices/footer-invoice/footer.service';
-import { SalesInvoiceModel } from '../sales-invoices/sales-invoice.model';
+import { SalesInvoiceModel, SalesInvoiceReadingModel } from '../sales-invoices/sales-invoice.model';
 import { TaxesService } from '../taxes/taxes.service';
 import { CreditNoteModel, iCreditNote, NoteCredit, ProductNoteModel } from './creditNote.model';
 import { AppliedTaxModel, TaxModel } from '../taxes/taxes.model'
@@ -31,6 +31,7 @@ export class CreditNoteService {
   taxes: AppliedTaxModel[] = [];
   stubList$ = new BehaviorSubject<iStub[]>([])
   stubSelect$ = new BehaviorSubject<iStub | null>(null)
+  invoiceRef$ = new BehaviorSubject<SalesInvoiceModel | null>(null)
 
 
   constructor(
@@ -102,7 +103,9 @@ export class CreditNoteService {
   async getInvoice(invoice_ID: string) {
     let invoiceRef = this._afs.doc<SalesInvoiceModel>(`${this.businessRef}/sales/${invoice_ID}`).ref
     let invoice = (await (invoiceRef.get())).data()
-    return invoice || null
+    if (invoice){
+      this.invoiceRef$.next(invoice)
+    }
   }
 
   listCredits(): Observable<iCreditNote[]> {
@@ -121,5 +124,26 @@ export class CreditNoteService {
           return of([]);
         })
       )
+  }
+
+  async findNoteCredits(invoice: SalesInvoiceReadingModel) {
+    console.log(invoice);
+    
+    if (invoice.avalibleAmount == 0){
+      return false
+    } else {
+      return true
+    }
+    // const notesRef = await this.getnotesByid(invoice.invoiceId)
+    // const result = notesRef.docs
+    // let notes_result = result.map((doc) => {
+    //   return doc.data()
+    // })
+    // let totales = notes_result.reduce((acc, item) => acc + item.footer.total, 0)
+    // if (totales >= invoice.footer.total) {
+    //   return false
+    // } else {
+    //   return true
+    // }
   }
 }

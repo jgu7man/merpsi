@@ -118,7 +118,7 @@ export class AuthService {
         .set({...manager})
 
       /* Paso 4: Redirección a el dashboard */
-      this._router.navigate(['d'])
+      this._router.navigate([`business/${business.CRF}`])
 
 
 

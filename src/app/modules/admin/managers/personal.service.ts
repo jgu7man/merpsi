@@ -81,8 +81,7 @@ export class PersonalService {
       Swal.fire('Usuario agregado')
 
       /** enviamos correo de notificacion para el manager */
-      await this.sendInvitationEmail(user.email,user.CRF)
-
+      this.sendInvitationEmail(user.email,user.CRF)
       console.log(user)
       
       return

@@ -149,7 +149,9 @@ export class SalesInvoiceReadingModel implements iSalesInvoice {
    */
   private getRelatedDocuments(id: string) {
     try {
-
+      console.log(`businesses/${ this.CRF }/credit_notes`);
+      console.log(`businesses/${ this.CRF }/debit_notes`);
+      
       firebase.firestore().collection( `businesses/${ this.CRF }/credit_notes` )
         .where( 'invoiceId', '==', id )
         .get().then( snapshot => {

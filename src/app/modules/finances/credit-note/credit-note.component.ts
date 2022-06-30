@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { mxIndexCenterMessage } from 'libs/@marxa/index/src/lib/mx-index.model';
 import { MxIndex } from 'libs/@marxa/index/src/lib/mx-index.service';
+import { FooterCreditoDebitoService } from '../invoices/footer-credito-debito/footer-credito-debito.service';
+import { FooterService } from '../invoices/footer-invoice/footer.service';
+import { InvoiceConceptService } from '../invoices/invoice-concept/invoice-concept.service';
 import { CreditDebitNoteDialogComponent } from '../sales-invoices/create-invoice-sales/credit-debit-note.dialog/credit-debit-note.dialog.component';
 import { CreditNoteService } from './credit-note.service';
 import { iCreditNote } from './creditNote.model';
@@ -20,7 +23,10 @@ export class CreditNoteComponent implements OnInit {
   listCredits: iCreditNote[] = []
   constructor(
     public credit : CreditNoteService,
-    private _index: MxIndex
+    private _index: MxIndex,
+    private _invoiceConcept: InvoiceConceptService,
+    private _footer: FooterCreditoDebitoService,
+
 
   ) {
     // credit.listCredits().subscribe( list => {
@@ -36,6 +42,13 @@ export class CreditNoteComponent implements OnInit {
    }
 
   ngOnInit(): void {
+  }
+
+  create(){
+  this._invoiceConcept.details_Notes$.next([])
+  this._footer.footer$.next(null)
+  this.credit.invoiceRef$.next(null)
+
   }
 
  

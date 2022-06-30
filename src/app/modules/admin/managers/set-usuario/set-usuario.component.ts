@@ -44,9 +44,9 @@ export class SetUsuarioComponent implements OnInit {
 
   async onSubmit() {
     if (this.isNew) {
-      await this._personal.add(this.usuario)
+      await  this._personal.add(this.usuario)
     } else {
-      await this._personal.update(this.usuario)
+       this._personal.update(this.usuario)
     }
     this.submited.emit()
   }
