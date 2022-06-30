@@ -145,10 +145,13 @@ export class CreateDebitNoteComponent implements OnInit, OnDestroy {
         )
         this.debit.saveDebitNote(debit)
         this._alert.notify('La Nota de debito ha sido guardado con exito!')
-        if (this.origin == 'invoice'){
-          this._router.navigate([`business/${this.debit.businessRef}/finances/sales`])
-        } else if ( this.origin == 'creation'){
+
+        if ( this.origin == 'creation'){
+          console.log('salgo a credito');
           this.submited.emit()
+        }else{
+          console.log('salgoa ventas');
+          this._router.navigate([`business/${this.debit.businessCRF}/finances/sales`])
         }
     
       }

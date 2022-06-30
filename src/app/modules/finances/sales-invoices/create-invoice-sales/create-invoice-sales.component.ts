@@ -225,7 +225,8 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy {
           height: '400px',
           data: {
             document: 'debit',
-            invoice: this.invoice
+            invoice: this.invoice,
+            origin: 'invoice'
           }
         }).afterClosed().subscribe(concept => {
           this.concept = concept
