@@ -4,16 +4,22 @@
 @import 'libs/@marxa/devkit/styles/material.scss';
 @import 'libs/@marxa/devkit/styles/responsive.scss';
 @import 'libs/@marxa/devkit/styles/text.scss';
+@import 'assets/design/merpsi-palette.scss';
 @import 'primeng/resources/primeng.min.css';
 @import 'primeng/resources/themes/md-light-indigo/theme.css';
 @import url('https://fonts.googleapis.com/css2?family=Maven+Pro:wght@400;600;700&family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,900;1,300;1,400&display=swap');
+@import url(https://fonts.googleapis.com/css?family=Public+Sans:100,200,300,regular,500,600,700,800,900,100italic,200italic,300italic,italic,500italic,600italic,700italic,800italic,900italic);
+@import url(https://fonts.googleapis.com/css?family=Ubuntu:300,300italic,regular,italic,500,500italic,700,700italic);
+@import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:regular,italic,700,700italic);
+@import url(https://fonts.googleapis.com/css?family=Cabin:regular,500,600,700,italic,500italic,600italic,700italic);
+@import url(https://fonts.googleapis.com/css?family=Vollkorn:regular,500,600,700,800,900,italic,500italic,600italic,700italic,800italic,900italic);
 
 
-$merpsi-primary: mat.define-palette(mat.$indigo-palette);
-$merpsi-accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);
+$merpsi-primary: mat.define-palette($mp-turqueza, 500, 100, 700, 50);
+$merpsi-accent: mat.define-palette($mp-arena, 500, 200, 800);
 $merpsi-warn: mat.define-palette(mat.$red-palette);
 $merpsi-typography: mat.define-typography-config(
-  $font-family: "Maven Pro"
+  $font-family: "Cabin"
 );
 
 $merpsi-theme: mat.define-light-theme((

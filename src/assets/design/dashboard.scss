@@ -1,0 +1,6 @@
+@import './merpsi-palette.scss';
+
+$sidenav-bg: map-get($map: $mp-turqueza, $key: 50);
+$sidenav-bgdark: map-get($map: $mp-turqueza, $key: 100);
+$sidenav-hover: map-get($map: $mp-turqueza, $key: 200);
+$sidenav-text: map-get($map: $mp-turqueza, $key: 900);

@@ -1,0 +1,31 @@
+@use 'sass:map';
+@import './merpsi-palette.scss';
+
+/* MX CRUD PANEL */
+$global-crud-panels-width: 80%;
+$global-crud-max-height: 100vh;
+$global-crud-separate-margin: 0;
+
+$global-crud-table-bg: map-get($map: $mp-turqueza, $key: 50);
+$global-crud-table-item-spacing: 3px;
+
+$global-crud-table-frame: (
+  padding-top: 0em,
+  padding-bottom: 2em,
+  padding-horizontal: 1em,
+  margin-vertical: 1em,
+  margin-horizontal: 0em,
+  border-radius:1em
+);
+
+@mixin export-table-frame {
+  padding:
+    map.get($global-crud-table-frame, padding-top)
+    map.get($global-crud-table-frame, padding-horizontal)
+    map.get($global-crud-table-frame, padding-bottom);
+  margin:
+    map.get($global-crud-table-frame, margin-vertical)
+    map.get($global-crud-table-frame, margin-horizontal);
+  border-radius:
+    map.get($global-crud-table-frame, border-radius);
+}
