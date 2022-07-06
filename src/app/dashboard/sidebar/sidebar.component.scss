@@ -1,42 +1,54 @@
+@import '/src/assets/design/dashboard.scss';
+
+
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
 #sidenav-menu {
   margin: 0;
   border: none;
-  height: 90vh;
+  height: -webkit-fill-available;
   overflow-y: auto;
   position: relative;
   width: 100%;
-  background: hsla(207, 100%, 18%, 1);
+  background: $sidenav-bg;
   box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.3);
   z-index: 1;
   padding: 0 !important;
   a.collection-item {
-      padding: 1em 4em;
-      color: #fff;
-      background: hsla(207, 100%, 18%, 1);
-      border-bottom: 1px solid hsla(207, 100%, 15%, 1);
+      padding: .75em 2em;
+      color: $sidenav-text;
+      background: $sidenav-bgdark;
+      border-bottom: $sidenav-bg;
       cursor: pointer;
+      transition: all 0.3s;
   }
   .collection .collection-item.active {
-      background-color: #155a90 !important;
+      background-color: $sidenav-bgdark !important;
+      transition: all 0.3s;
   }
   .collection a.collection-item:not(.active):hover {
-      background: hsla(207, 100%, 26%, 1);
+      background: $sidenav-hover;
   }
   .collection {
       border-radius: 0;
       display: flex;
-      flex-direction: column;  
+      flex-direction: column;
   }
   ::ng-deep {
     .mat-accordion .mat-expansion-panel:first-of-type,
     .mat-accordion .mat-expansion-panel:last-of-type,
     .mat-expansion-panel {
-        background-color: hsla(207, 100%, 23%, 1);
+        background-color: $sidenav-bg;
         border-radius: none !important;
         margin: 0 !important;
-        color: #fff;
+        color: $sidenav-text;
+        transition: all 0.3s;
         mat-panel-title {
-          color: #fff;
+          color: $sidenav-text;
           width:100%;
           .fas {
             margin-right: 1em;
@@ -47,11 +59,15 @@
       padding: 0;
     }
     .mat-expansion-indicator::after {
-        color: #fff;
+        color: $sidenav-text;
     }
     .mat-expansion-panel:not(.mat-expanded) .mat-expansion-panel-header:not([aria-disabled='true']):hover {
-        background: rgba(0, 0, 0, 0.1) !important;
+      background: $sidenav-hover !important;
     }
+  }
+  mat-accordion {
+    margin-bottom: 2em !important;
+    display: block;
   }
   @media (max-width: 768px) {
     width: 100%
@@ -65,14 +81,28 @@
 #main-menu .collection {
   display: flex !important;
   flex-direction: column;
+  .collection-item {
+    transition: all 0.3s;
+    background: $sidenav-bgdark
+  }
 }
 
 
 #admin-logo {
-  background: #005daa;
+  background: $sidenav-bg;
   width: 100%;
-  height: 10vh;
+  height: 7vh;
   position: relative;
+  display: flex;
+  justify-content: space-between;
+  h1 {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    padding: 0.5em;
+    font-family: 'Ubuntu';
+    font-weight: bold;
+  }
   img {
     width:100%;
     position: relative;
@@ -95,9 +125,11 @@
 
 .version {
   bottom: 0;
-  position: absolute;
-  color: white;
+  position: relative;
+  color: $sidenav-text;;
   font-size: medium;
+  display: flex;
+  align-items: flex-end;
   ::ng-deep mx-version-notifier small {
     font-size: 75%;
   }
@@ -108,6 +140,6 @@ mat-icon {
   margin-right: 10px !important;
 }
 
-a { 
+a {
   text-decoration: none !important;
 }

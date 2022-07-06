@@ -8,21 +8,23 @@
         [addTemplate]="add"
         [list]="listInvoice"
         [selectTemplate]="select"
-        [height_vh]="100"
+        [height_vh]="82"
         [itemSelector]="['invoiceId','status','action_date_formated']"
         #crudPanel
+        [addConfig]="{'label': 'Crear Factura'}"
         (onAdd)="onCreate()"
         (onClose)="onClose()"
         >
-        <ng-template #add >
-          <app-create-invoice-sales 
-          (submited)="crudPanel.closeAll()"
-          ></app-create-invoice-sales>
-        </ng-template>
-  
+          <ng-template #add >
+            <app-create-invoice-sales
+            (submited)="crudPanel.closeAll()"
+            ></app-create-invoice-sales>
+          </ng-template>
+
           <ng-template #select let-invoice="item" >
             <app-create-invoice-sales  [invoice]="invoice"></app-create-invoice-sales>
           </ng-template>
+
         </mx-crud-panel>
         <!-- </ng-container> -->
         <mx-index-caller
@@ -32,8 +34,6 @@
         [centerMessage]="centerMessage"
         [merge]="false"
         ></mx-index-caller>
-      </div>
-      <div class="col s12">.
       </div>
   </div>
 </div>

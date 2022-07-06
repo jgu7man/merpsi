@@ -1,5 +1,12 @@
 <div class="collection-item" id="admin-logo">
   <!-- <img src="/assets/img/lasmotos-logotipo-h-trans-neg.webp" alt="" /> -->
+  <h1 [routerLink]="[ '/business', eid ]" >MERPSI</h1>
+
+  <div class="version">
+    <small>Version:</small>
+    <mx-version-notifier></mx-version-notifier>
+  </div>
+
   <button mat-icon-button *ngIf="!responsive.large" (click)="closePanel.emit()">
     <i class="fas fa-times white-text"></i>
   </button>
@@ -22,10 +29,26 @@
         </a>
 
         <!-- USER LINK -->
-        <a *ngIf="user" class="collection-item" [routerLink]="[ 'profile' ]">
+        <a *ngIf="user"
+        class="collection-item"
+        [matMenuTriggerFor]="accountMenu">
           <mat-icon class="material-icons-outlined">account_circle</mat-icon>
           {{user.name}}
         </a>
+
+        <mat-menu #accountMenu="matMenu">
+          <button mat-menu-item [routerLink]="[ 'profile' ]">
+            <mat-icon class="material-icons-outlined">manage_accounts</mat-icon>
+            Configuración de cuenta
+          </button>
+
+          <button mat-menu-item (click)="signOut()">
+            <mat-icon class="material-icons-outlined">exit_to_app</mat-icon>
+            Cerrar sessión
+          </button>
+
+      </mat-menu>
+
 
         <!-- PAGE LINK -->
         <!-- <ng-container *ngIf="isLocalhost; else prod">
@@ -38,256 +61,43 @@
           <a class="collection-item" [routerLink]="[ '/site' ]">Ir a página</a>
         </ng-template> -->
 
-        <!-- LOGOUT LINK -->
-        <a class="collection-item" (click)="signOut()">
-          <mat-icon class="material-icons-outlined">exit_to_app</mat-icon>
-          Cerrar sessión
-        </a>
+
       </div>
     </li>
 
     <mat-accordion >
 
-      <mat-expansion-panel [expanded]="onActive('checkout')">
-        <mat-expansion-panel-header>
-          <mat-panel-title>
-            <mat-icon>point_of_sale</mat-icon>
-            Punto de venta
-          </mat-panel-title>
-        </mat-expansion-panel-header>
+      <ng-container *ngFor="let module of (modules$ | async)">
 
-        <div class="collection">
-          <a
-            class="collection-item"
-            [routerLink]="['checkout/panel']"
-            routerLinkActive="active"
-            >Panel</a
-          >
-        </div>
-      </mat-expansion-panel>
+        <mat-expansion-panel
+        class="mat-elevation-z0"
+        *ngIf="adminPermissions"
+        [expanded]="onActive(module.keyword || '')">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              <mat-icon>{{module.icon}}</mat-icon>
+              {{module.displayName || 'route'}}
+            </mat-panel-title>
+          </mat-expansion-panel-header>
 
-      <!-- PÁGINA -->
-      <!-- <mat-expansion-panel *ngIf="user.rol == 'administrador'" [expanded]="onActive('website')">
-        <mat-expansion-panel-header>
-          <mat-panel-title>
-            <i class="fas fa-desktop"></i>
-            Página
-          </mat-panel-title>
-        </mat-expansion-panel-header>
-
-        <div class="collection">
-          <a
-            class="collection-item"
-            [routerLink]="['/dashboard/website/hero']"
-            routerLinkActive="active"
-            >Hero</a
-          >
-          <a
-            class="collection-item"
-            [routerLink]="['/dashboard/website/blog']"
-            routerLinkActive="active"
-            >Blog</a
-          >
-          <a
-            class="collection-item"
-            [routerLink]="['/panel/contenido/landingpages']"
-            routerLinkActive="active"
-            >Landingpages</a
-          >
-          <a
-            class="collection-item"
-            [routerLink]="['/dashboard/website/catalogo']"
-            routerLinkActive="active"
-            >Catalogo</a
-          >
-        </div>
-      </mat-expansion-panel> -->
-
-
-
-      <!-- INVENTORY -->
-      <mat-expansion-panel [expanded]="onActive('inventory')"
-      *ngIf="user.rol == 'administrador' || user.rol == 'propietario'">
-        <mat-expansion-panel-header>
-          <mat-panel-title>
-            <mat-icon class="material-icons-round">inventory</mat-icon>
-            Inventario
-          </mat-panel-title>
-        </mat-expansion-panel-header>
-        <div class="collection">
-
-          <a
-            class="collection-item"
-            [routerLink]="['inventory/products']"
-            routerLinkActive="active"
-            >Productos</a
-          >
-          <!-- <a
-            class="collection-item"
-            [routerLink]="['inventory/store-db']"
-            routerLinkActive="active"
-            >Base de datos</a
-          > -->
-          <a class="collection-item"
-            [routerLink]="['inventory/providers']"
-            routerLinkActive="active"
-            >Proveedores</a
-          >
-          <a *ngIf="user.rol == 'administrador'"
-            class="collection-item"
-            [routerLink]="['inventory/countings']"
-            routerLinkActive="active"
-            >Arqueo</a
-          >
-        </div>
-      </mat-expansion-panel>
-
-
-      <!-- FINANZAS -->
-      <mat-expansion-panel *ngIf="user.rol == 'administrador' || user.rol == 'propietario'" [expanded]="onActive('finances')">
-        <mat-expansion-panel-header>
-          <mat-panel-title>
-            <mat-icon>currency_exchange</mat-icon>
-            Finanzas
-          </mat-panel-title>
-        </mat-expansion-panel-header>
           <div class="collection">
-            <a
-              class="collection-item"
-              [routerLink]="['finances/outlet']"
-              routerLinkActive="active"
-              >Punto de venta</a
-            >
-            <a
-              class="collection-item"
-              [routerLink]="['finances/sales']"
-              routerLinkActive="active"
-              >Facturas de venta</a
-            >
 
-            <a
-              class="collection-item"
-              [routerLink]="['finances/purchases']"
-              routerLinkActive="active"
-              >Facturas de compra</a
-            >
-            <a
-              class="collection-item"
-              [routerLink]="['finances/accouting']"
-              routerLinkActive="active"
-              >Contabilidad</a
-            >
-            <a
-              class="collection-item"
-              [routerLink]="['finances/reports']"
-              routerLinkActive="active"
-              >Reportes</a
-            >
-            <a
-              class="collection-item"
-              [routerLink]="['finances/predict']"
-              routerLinkActive="active"
-              >Analizador de ventas</a
-            >
-            <a
-              class="collection-item"
-              [routerLink]="['finances/taxes']"
-              routerLinkActive="active"
-              >Impuestos</a
-            >
-            <a class="collection-item"
-            [routerLink]="['finances/credit-notes']"
-            routerLinkActive="active">
-            Notas de Crédito</a>
-            <a class="collection-item"
-            [routerLink]="['finances/debit-notes']"
-            routerLinkActive="active">
-            Notas de Débito</a>
-            <a
-              class="collection-item"
-              [routerLink]="['finances/stubs']"
-              routerLinkActive="active"
-              >Talonarios</a
-            >
+            <ng-container *ngFor="let item of module.items">
+              <a *ngIf="adminPermissions"
+                class="collection-item"
+                [routerLink]="[item.route]"
+                routerLinkActive="active"
+                >{{item.displayName}}</a
+              >
+            </ng-container>
+
           </div>
-      </mat-expansion-panel>
+        </mat-expansion-panel>
 
-      <!-- CLIENTES -->
-      <mat-expansion-panel [expanded]="onActive('clients')">
-        <mat-expansion-panel-header>
-          <mat-panel-title>
-            <mat-icon>group</mat-icon>
-            Clientes
-          </mat-panel-title>
-        </mat-expansion-panel-header>
-        <div class="collection">
-          <a
-            class="collection-item"
-            [routerLink]="['clientes/list']"
-            routerLinkActive="active"
-            >Lista</a
-          >
-          <!-- <a
-            class="collection-item"
-            [routerLink]="['/panel/citas']"
-            routerLinkActive="active"
-            >Citas</a
-          > -->
-          <!-- <a *ngIf="user.rol == 'administrador'"
-            class="collection-item"
-            [routerLink]="['/panel/messenger']"
-            routerLinkActive="active"
-            >Configuración</a
-          > -->
-        </div>
-      </mat-expansion-panel>
-
-      <!-- ADMINISTRACIÓN -->
-      <mat-expansion-panel [expanded]="onActive('admin')"
-      *ngIf="user.rol == 'administrador' || user.rol == 'propietario'">
-        <mat-expansion-panel-header>
-          <mat-panel-title>
-            <mat-icon>store</mat-icon>
-            Empresa
-          </mat-panel-title>
-        </mat-expansion-panel-header>
-        <div class="collection">
-          <!-- <a
-            class="collection-item"
-            [routerLink]="['/dashboard/admin/notificaciones']"
-            routerLinkActive="active"
-            >Notificaciones</a
-          > -->
-          <a class="collection-item"
-            [routerLink]="['admin/personal']"
-            routerLinkActive="active"
-            >Personal</a
-          >
-          <a class="collection-item"
-            [routerLink]="['admin/sedes']"
-            routerLinkActive="active"
-            >Sedes</a
-          >
-          <a
-            class="collection-item"
-            [routerLink]="['admin/notificaciones']"
-            routerLinkActive="active"
-            >Configuración</a
-          >
-          <!-- <a
-            class="collection-item"
-            [routerLink]="['/dashboard/admin/almacenamiento']"
-            routerLinkActive="active"
-            >Almacenamiento</a
-          > -->
-        </div>
-      </mat-expansion-panel>
-
+      </ng-container>
 
     </mat-accordion>
-  <div class="version">
-    <small>Version:</small>
-    <mx-version-notifier></mx-version-notifier>
-  </div>
+
+
 </ul>
 
