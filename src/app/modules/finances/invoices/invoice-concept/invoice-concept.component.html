@@ -1,25 +1,20 @@
 <div class="row">
   <form [formGroup]="formAddProduct">
     <ng-container *ngIf="concept">
-
       <!-- UPC -->
       <div class="col s2">
         {{concept.product.UPC}}
       </div>
-
       <!-- DESCRIPTION -->
       <div class="col s3">
         {{concept.product.description}}
       </div>
-
       <!-- NOTE En casos tan condicionales, es más limpio crear un get para dicha condición-->
       <!-- <ng-container *ngIf="!invoice else readonly"> -->
-
         <!-- Cantidad -->
         <div class="col s2">
-
           <!-- NOTE En casos tan condicionales, es más limpio crear un get para dicha condición-->
-          <ng-container *ngIf="!allowEditCant; else editCant">
+          <ng-container *ngIf="allowEditCant; else editCant">
             {{concept.cant}}
           </ng-container>
           <ng-template #editCant>

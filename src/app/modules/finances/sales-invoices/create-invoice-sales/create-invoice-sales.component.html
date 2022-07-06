@@ -2,207 +2,171 @@
   <form class="row" [formGroup]="salesForm">
 
     <div class="col s12 l7">
-
       <!-- CURRENT BILL -->
       <!-- <ng-container *ngIf=""> -->
-        <mat-card>
+      <mat-card>
+        <!-- INVOICE HEAD -->
+        <div class="row">
+          <ng-container *ngIf="invoice else newInvoice">
+            <!-- Invoice details -->
+            <div class="col s12 l6">
+              <b>Factura Nro: </b><br>
+              <p>
+                {{ invoice?.invoiceId || ''}}
+              </p>
+              <p>
+                <b>vendedor:</b> {{invoice?.seller || ''}} <br>
+                <b>Moneda:</b> {{invoice?.currency || ''}} <br>
+                <b>Metodo de Pago:</b> {{invoice?.payment_method || ''}} <br>
+              </p>
+            </div>
 
-          <!-- INVOICE HEAD -->
-          <div class="row">
-            <ng-container *ngIf="(sales.stubSelect$.value || invoice) else newInvoice">
+            <!-- cliente -->
+            <div class="col s12 l6" *ngIf="client as client">
+              <b>Cliente:</b> {{client.name}}
+              <!-- <b>identificacion:</b> {{invoice.client.cip}} <br> -->
+              <!-- <b>datos de contacto:</b> {{client.contact?.email || client.contact?.cellphone}} -->
+            </div>
+          </ng-container>
 
-              <!-- Invoice details -->
-              <div class="col s12 l6">
-                <b>Factura Nro: </b><br>
-                <p>
-                  <span *ngIf="sales.stubSelect$.value!">
-                    {{sales.stubSelect$.value.prefixIndexCurrent}}/
-                  </span>
-                  {{ invoice?.invoiceId || ''}}
-                </p>
-                <p>
-                  <b>vendedor:</b> {{invoice?.seller || ''}} <br>
-                  <b>Moneda:</b> {{invoice?.currency || ''}} <br>
-                  <b>Metodo de Pago:</b> {{invoice?.payment_method || ''}} <br>
-                </p>
+          <!-- NEW BILL -->
+          <ng-template #newInvoice>
+            <!-- TALONARIO -->
+            <mat-form-field appearance="outline" class="col s12 l4">
+              <mat-label>Talonario</mat-label>
+              <mat-select placeholder="Placeholder" name="stub" (selectionChange)="selectStubInvoice($event)"
+                [formControl]="stubForm">
+                <mat-option *ngFor="let item of sales.stubList$.value" [value]="item">
+                  {{item.name}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            <span *ngIf="sales.stubSelect$.value!">
+              {{sales.stubSelect$.value.prefixIndexCurrent}}
+            </span>
+            <!-- CRF SELECTOR -->
+            <div class="col s12">
+              <mx-searcher-list [collection]="'businesses/' + businessRef + '/clients'" [param]="'name'"
+                [label]="'clientes'" (results)="getValue($event)"></mx-searcher-list>
+            </div>
+            <ng-container *ngIf="client && !invoice">
+              <!-- datos del cliente -->
+              <div>
+                <b>CRF:</b> {{client.CRF}} <br>
+                <b>datos de contacto:</b> {{client.contact?.email || client.contact?.cellphone}}
+                <!-- <b>direccion:</b> {{client.addres.}} -->
               </div>
 
-              <!-- cliente -->
-              <div class="col s12 l6" *ngIf="client as client">
-                <b>Cliente:</b> {{client.name}}
-                <!-- <b>identificacion:</b> {{invoice.client.cip}} <br> -->
-                <!-- <b>datos de contacto:</b> {{client.contact?.email || client.contact?.cellphone}} -->
-              </div>
-            </ng-container>
-
-            <!-- NEW BILL -->
-            <ng-template #newInvoice>
-
-              <!-- TALONARIO -->
+              <!-- Vendedor -->
               <mat-form-field appearance="outline" class="col s12 l4">
-                <mat-label>Talonario</mat-label>
-                <mat-select placeholder="Placeholder" name="stub" (selectionChange)="selectStubInvoice($event)"
-                  [formControl]="stubForm">
-                  <mat-option *ngFor="let item of sales.stubList$.value" [value]="item">
-                    {{item.name}}
-                  </mat-option>
-                </mat-select>
+                <mat-label>Vendedor</mat-label>
+                <input matInput type="text" name="seller" formControlName="seller">
+                <mat-error *ngIf="salesForm.hasError('required', 'seller')">
+                  Este dato es necesario
+                </mat-error>
               </mat-form-field>
 
-              <div class="col s12">
-                <mx-searcher-list
-                [collection]="'businesses/' + businessRef + '/clients'"
-                [param]="'name'"
-                [label]="'clientes'"
-                (results)="getValue($event)"
-                ></mx-searcher-list>
-              </div>
+              <!-- Moneda -->
+              <mat-form-field appearance="outline" class="col s12 l4 offset-l4">
+                <mat-label>Moneda</mat-label>
+                <mat-select formControlName="currency" [FormControl]="">
+                  <mat-option value="USD">USD</mat-option>
+                  <mat-option value="COP">COP</mat-option>
+                </mat-select>
+                <mat-error *ngIf="salesForm.hasError('required', 'coin')">
+                  Este dato es necesario
+                </mat-error>
+              </mat-form-field>
 
-              <!-- CRF SELECTOR -->
-              <ng-container *ngIf="client && !invoice">
-                <div>
-                  <b>CRF:</b> {{client.CRF}} <br>
-                  <b>datos de contacto:</b> {{client.contact?.email || client.contact?.cellphone}}
-                  <!-- <b>direccion:</b> {{client.addres.}} -->
-                </div>
+              <!-- metodos de pago -->
+              <mat-form-field appearance="outline" class="col s12">
+                <mat-label>Formas de Pago</mat-label>
+                <mat-select formControlName="payment_method">
+                  <mat-option value="Efectivo">Efectivo</mat-option>
+                  <mat-option value="Tarjeta de Crédito">Tarjeta de Crédito</mat-option>
+                  <mat-option value="Tarjeta de Débito">Tarjeta de Débito</mat-option>
+                  <mat-option value="Crédito">Crédito</mat-option>
+                </mat-select>
+                <mat-error *ngIf="salesForm.hasError('required', 'payment_method')">
+                  Este dato es necesario
+                </mat-error>
+              </mat-form-field>
+            </ng-container>
 
-                <!-- Vendedor -->
-                <mat-form-field appearance="outline" class="col s12 l4">
-                  <mat-label>Vendedor</mat-label>
-                  <input matInput type="text" name="seller" formControlName="seller">
-                  <mat-error *ngIf="salesForm.hasError('required', 'seller')">
-                    Este dato es necesario
-                  </mat-error>
-                </mat-form-field>
+          </ng-template>
 
-                <!-- Moneda -->
-                <mat-form-field appearance="outline" class="col s12 l4 offset-l4">
-                  <mat-label>Moneda</mat-label>
-                  <mat-select formControlName="currency" [FormControl]="">
-                    <mat-option value="USD">USD</mat-option>
-                    <mat-option value="COP">COP</mat-option>
-                  </mat-select>
-                  <mat-error *ngIf="salesForm.hasError('required', 'coin')">
-                    Este dato es necesario
-                  </mat-error>
-                </mat-form-field>
+        </div>
 
-                <!-- metodos de pago -->
-                <mat-form-field appearance="outline" class="col s12">
-                  <mat-label>Formas de Pago</mat-label>
-                  <mat-select formControlName="payment_method">
-                    <mat-option value="Efectivo">Efectivo</mat-option>
-                    <mat-option value="Tarjeta de Crédito">Tarjeta de Crédito</mat-option>
-                    <mat-option value="Tarjeta de Débito">Tarjeta de Débito</mat-option>
-                    <mat-option value="Crédito">Crédito</mat-option>
-                  </mat-select>
-                  <mat-error *ngIf="salesForm.hasError('required', 'payment_method')">
-                    Este dato es necesario
-                  </mat-error>
-                </mat-form-field>
-              </ng-container>
-
-            </ng-template>
-
-          </div>
-
-        </mat-card>
+      </mat-card>
       <!-- </ng-container> -->
-
-
       <!-- DETAILS -->
-        <mat-card>
-          <div class="row">
-            <button
-            *ngIf="!invoice"
-            mat-raised-button
-            color="accent"
-            (click)="addConcept()"
-            >Agregar Concepto
-            </button>
-
-            <div id="invoice-details-container">
-              <ng-container *ngIf="!invoice else seeInvoice">
-                <ng-container *ngIf="conceptInvoice.details$ | async as details">
-
-                  <!-- TABLE HEADER -->
-                  <div class="row">
-                    <div class="col s2">UPC</div>
-                    <div class="col s4">Descripción</div>
-                    <div class="col s2">Cantidad</div>
-                    <div class="col s2">Precio</div>
-                    <div class="col s2">Total</div>
-                  </div>
-
-
-                  <ng-container *ngFor="let concept of details ">
-                    <app-invoice-concept
-                    [document]="'sale'"
-                    [concept]="concept"
-                    [invoice]="invoice">
-                    </app-invoice-concept>
-                  </ng-container>
+      <mat-card>
+        <div class="row">
+          <button *ngIf="!invoice" mat-raised-button color="accent" (click)="addConcept()">Agregar Concepto
+          </button>
+          <div id="invoice-details-container">
+            <ng-container *ngIf="!invoice else seeInvoice">
+              <ng-container *ngIf="conceptInvoice.details$ | async as details">
+                <!-- TABLE HEADER -->
+                <div class="row">
+                  <div class="col s2">UPC</div>
+                  <div class="col s4">Descripción</div>
+                  <div class="col s2">Cantidad</div>
+                  <div class="col s2">Precio</div>
+                  <div class="col s2">Total</div>
+                </div>
+                <ng-container *ngFor="let concept of details ">
+                  <app-invoice-concept [document]="'sale'" [concept]="concept" [invoice]="invoice">
+                  </app-invoice-concept>
                 </ng-container>
               </ng-container>
+            </ng-container>
 
-              <ng-template #seeInvoice>
-                <ng-container *ngIf="conceptInvoice.details_invoice$ | async as details">
-                  <ng-container *ngFor="let concept of details ">
-                    <app-invoice-concept
-                    [document]="'sale'"
-                    [concept]="concept"
-                    [invoice]="invoice">
-                    </app-invoice-concept>
-                  </ng-container>
+            <ng-template #seeInvoice>
+              <ng-container *ngIf="conceptInvoice.details_invoice$ | async as details">
+                <ng-container *ngFor="let concept of details ">
+                  <app-invoice-concept [document]="'sale'" [concept]="concept" [invoice]="invoice">
+                  </app-invoice-concept>
                 </ng-container>
-              </ng-template>
-            </div>
-
-            <div id="invoice-footer-container">
-              <!-- <ng-container *ngIf="sales.details.length > 0"> -->
-              <app-footer-invoice
-              [document]="'sale'"
-              [invoice]="invoice">
-              </app-footer-invoice>
-              <!-- </ng-container> -->
-            </div>
+              </ng-container>
+            </ng-template>
           </div>
-        </mat-card>
+
+          <div id="invoice-footer-container">
+            <!-- <ng-container *ngIf="sales.details.length > 0"> -->
+            <app-footer-invoice [document]="'sale'" [invoice]="invoice">
+            </app-footer-invoice>
+            <!-- </ng-container> -->
+          </div>
+        </div>
+      </mat-card>
 
     </div>
 
     <div class="col s12 l5">
+      <ng-container *ngIf="!invoice">
+        <p>
+          <button mat-raised-button color="primary"
+            [disabled]="((salesForm.invalid || clientform.invalid) && conceptInvoice.details$.value.length <= 0) || invoice != null"
+            (click)="saveInvoice()">
+            Guardar
+          </button>
+        </p>
+      </ng-container>
       <ng-container *ngIf="invoice">
         <mat-card>
+
           <p>
-            <button mat-raised-button color="primary"
-              [disabled]="((salesForm.invalid || clientform.invalid) && conceptInvoice.details$.value.length <= 0) || invoice != null"
-              (click)="saveInvoice()">
-              Guardar
-            </button>
+            <button mat-raised-button color="accent" (click)="createCredit()">Crear Nota Credito</button>
           </p>
 
           <p>
-            <button
-            mat-raised-button
-            color="accent"
-            (click)="createCredit()"
-            >Crear Nota Credito</button>
-          </p>
-
-          <p>
-            <button
-            mat-raised-button
-            color="primary"
-            (click)="createDebit()"
-            >Crear Debito</button>
+            <button mat-raised-button color="primary" (click)="createDebit()">Crear Debito</button>
           </p>
         </mat-card>
 
         <mat-card>
-          <app-linked-documents
-          [linked_documents]="invoice"
-          ></app-linked-documents>
+          <app-linked-documents [linked_documents]="invoice"></app-linked-documents>
         </mat-card>
 
       </ng-container>

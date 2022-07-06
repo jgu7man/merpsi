@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
 import { BehaviorSubject } from 'rxjs';
-import { ProductNoteModel } from '../../credit-note/creditNote.model';
+import { iProductNote } from '../../credit-note/creditNote.model';
 import { TaxModel } from '../../taxes/taxes.model';
 import { TaxesService } from '../../taxes/taxes.service';
 import { FooterCreditoDebitoService } from '../footer-credito-debito/footer-credito-debito.service';
@@ -14,7 +14,7 @@ import { Invoice, ProductInvoiceModel } from '../invoice.model';
 export class InvoiceConceptService {
 
   details$ = new BehaviorSubject<ProductInvoiceModel[]>([])
-  details_Notes$ = new BehaviorSubject<ProductNoteModel[]>([])
+  details_Notes$ = new BehaviorSubject<iProductNote[]>([])
   details_invoice$ = new BehaviorSubject<Invoice.concept[]>([])
   constructor(
     private _footer: FooterService,

@@ -1,4 +1,5 @@
-<ng-container *ngIf="foot.currentfoot$.value as footer else seeInvoice">
+<ng-container *ngIf="!invoice else seeInvoice">
+  <ng-container *ngIf="(foot.currentfoot$ | async ) as footer ">
   <form [formGroup]="formFooter">
     <div class="row">
       <div class="col s12 l8 offset-l8">
@@ -20,12 +21,12 @@
     <div class="row">
       <div class="col s12 l8 offset-l8">
         <div class="col s4">
-          <mat-form-field appearance="outline">
-            <mat-label>Fletes</mat-label>
-            <input matInput type="number" name="shipping" formControlName="shipping">
-          </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Fletes</mat-label>
+              <input matInput type="number" name="shipping" formControlName="shipping">
+            </mat-form-field>
+          </div>
         </div>
-      </div>
     </div>
     <div class="row">
       <div class="col s12 l8 offset-l8">
@@ -50,10 +51,15 @@
       </div>
     </div>
   </form>
+  </ng-container>
+  <ng-template #elseTemplate >
+  
+  </ng-template>
+  
 </ng-container>
 
 <ng-template #seeInvoice>
-  <ng-container *ngIf="foot.currentfoot_invoice$.value as footer">
+  <ng-container *ngIf="(foot.currentfoot_invoice$ | async) as footer">
     <div class="row">
       <div class="col s12 l8 offset-l8">
         <div class="col s4">

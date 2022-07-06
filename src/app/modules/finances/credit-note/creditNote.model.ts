@@ -35,6 +35,7 @@ export class ProductNoteModel {
   public cant: number = 0
   public store: string | null
   product: Product.MainData
+  transfer_fee?: Invoice.concept.transfer | null
 
   constructor(
     //data?: Invoice.concept,
@@ -49,6 +50,7 @@ export class ProductNoteModel {
     this.store = store
     this.stock = stock
     this.product = product
+    this.transfer_fee = null
   }
 
   /** Resultado de multiplicar cantidad por costo unitario del producto */
@@ -159,4 +161,6 @@ export class FoooterdecreaseModel {
   }
 }
 
-export interface iCreditNote extends CreditNoteModel {}
+export interface iCreditNote extends Omit<CreditNoteModel,'getData'> {}
+
+export interface iProductNote extends Omit<ProductNoteModel,'getData'> {}

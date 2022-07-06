@@ -36,16 +36,18 @@ export class FooterInvoiceComponent implements OnInit, OnDestroy {
     public foot: FooterService
 
   ) {
+    
   }
   ngOnDestroy(): void {
     this.foot.currentfoot$.next(null)
   }
 
   ngOnInit(): void {
-
+    console.log( this.foot.currentfoot$.value);
     if (this.invoice) {
       this.foot.currentfoot_invoice$.next(this.invoice.footer)
-
+      console.log( this.foot.currentfoot_invoice$.value);
+      
     } else {
       this.foot.currentfoot$.next(new InvoiceFooter())
       this.formFooter.valueChanges.pipe(

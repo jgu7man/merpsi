@@ -7,6 +7,7 @@ import { iSede } from 'src/app/modules/admin/stores/sede.model';
 import { SedesService } from 'src/app/modules/admin/stores/sedes.service';
 import { Invoice, ProductInvoiceModel } from 'src/app/modules/finances/invoices/invoice.model';
 import { ProductModel } from 'src/app/modules/inventory/products/products.model';
+
 import { NoteCredit } from '../../credit-note/creditNote.model';
 import { PurchaseInvoiceService } from '../../purchase-invoices/puchase-invoice.service';
 import { iSalesInvoice } from '../../sales-invoices/sales-invoice.model';
@@ -56,7 +57,6 @@ export class InvoiceConceptComponent implements OnInit, OnDestroy {
     if ( this.concept ) {
       /* validaciones para los conceptos segun el documento en el que este */
       if ( this.document == 'sale' ) {
-
         if ( this.conceptInvoice.details$.value ) {
           let details = this.conceptInvoice.details$.value
           details.map( det => {
@@ -97,7 +97,7 @@ export class InvoiceConceptComponent implements OnInit, OnDestroy {
         debounceTime( 1000 ),
       ).subscribe( changes => {
         /* Escucha los cambios del formulario de conceptos para realizar los calculos del totales e informar al footer  */
-        if ( this.formAddProduct.valid ) {
+        if ( this.formAddProduct.valid ) {          
           this.conceptInvoice.update( changes, this.concept!, this.document );
         }
       } )
@@ -109,6 +109,8 @@ export class InvoiceConceptComponent implements OnInit, OnDestroy {
   }
 
   get allowEditCant() {
+    console.log(this.invoice);
+    
     if ( !this.invoice ) return false
     else if ( this.document == 'debit' ) return false
     else {
@@ -120,18 +122,21 @@ export class InvoiceConceptComponent implements OnInit, OnDestroy {
   }
 
   get allowEditPrice() {
-    if ( !this.invoice ) return false
+    if ( this.invoice ) return false
     else if ( this.document == 'credit' ) return false
     else {
-      if ( this.tipo_concepto != 'disminucion' ) return false
+      if ( this.tipo_concepto && this.tipo_concepto != 'disminucion' ) return false
     }
     return true
   }
 
   get itemAmount() {
-    let details = !this.isRelatedDocument
-      ? this.conceptInvoice.details$.value
-      : this.conceptInvoice.details_Notes$.value;
+      let details = !this.invoice ? 
+      this.conceptInvoice.details$.value : 
+      !this.isRelatedDocument
+        ? this.conceptInvoice.details_invoice$.value
+        : this.conceptInvoice.details_Notes$.value;
+    
     let concept = details.find( det => det.product.UPC === this.concept?.product.UPC );
 
     let amoumt = concept?.amount || 0
