@@ -44,14 +44,12 @@ export class CreditDebitNoteDialogComponent implements OnInit {
 
     if (!this.document) throw { message: 'No se encuentra el document'}
     if (this.document.invoice) {
-      if ( this.document.invoice.avalibleConcepts.length > 0 ){
-        this.productsAvailable = this.document.invoice.avalibleConcepts
-      } else {
+    
+     if (this.document.invoice.avalibleConcepts.length == 0 ){
         this.products = this.document.invoice.details.map(det => {
           return new ProductNoteModel(det.cant, det.unit_price, det.store, det.product)
         })
       }
-    
     }
 
 

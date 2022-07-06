@@ -122,7 +122,8 @@ export class SalesService {
         )
       }
     })
-
+    console.log(stores);
+    
     return stores
   }
   getStoreStock(UPC: string) {

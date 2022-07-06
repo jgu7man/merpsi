@@ -96,6 +96,7 @@ export class ProductInvoiceModel {
     store: string | null,
     public stock: number = 0,
     public transfer_fee?: Invoice.concept.transfer | null,
+    unit_price?: number,
   ) {
     this.store = store || null
     this.stock = stock || 0
@@ -108,6 +109,7 @@ export class ProductInvoiceModel {
       measure_unit: measure_unit || 0,
     }
     this.transfer_fee = transfer_fee || null
+    this.unit_price = unit_price || 0
   }
 
 
