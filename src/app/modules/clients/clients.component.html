@@ -8,6 +8,8 @@
       [list]="clients"
       [height_vh]="100"
       [itemSelector]="['name']"
+      [addConfig]="{'label': 'Crear'}"
+
       #crudPanel
       (onDelete)="onDeleteItem($event)"
        >

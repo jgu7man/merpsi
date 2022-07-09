@@ -11,6 +11,8 @@
       [itemSelector]="['name']"
       #crudPanel
       (onDelete)="onDeleteItem($event)"
+      [addConfig]="{'label': 'Crear'}"
+
       [columns]="columns"
        >
 

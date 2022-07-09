@@ -9,6 +9,7 @@
       [selectTemplate]="select"
       [height_vh]="100"
       [itemSelector]="['invoiceId']"
+      [addConfig]="{'label': 'Crear Factura'}"
       #crudPanel
       (onAdd)="onCreate()"
       (onClose)="onClose()"

@@ -9,6 +9,7 @@ import { SalesService } from './sales.service';
 import { MxIndex } from 'libs/@marxa/index/src/lib/mx-index.service';
 import { Subscription } from 'rxjs';
 import { mxIndexCenterMessage } from 'libs/@marxa/index/src/public-api';
+import { FooterService } from '../invoices/footer-invoice/footer.service';
 
 @Component({
   selector: 'app-sales-invoices',
@@ -31,7 +32,8 @@ export class SalesInvoicesComponent implements OnInit, OnDestroy {
     private _stub: StubService,
     private _taxes: TaxesService,
     private _cache: MxCache,
-    private _index: MxIndex
+    private _index: MxIndex,
+    private _footer: FooterService
 
     ) 
     {
@@ -86,6 +88,9 @@ export class SalesInvoicesComponent implements OnInit, OnDestroy {
     this.sales.stubList$.next([])
     this.sales.stubSelect$.next(null)
     this._taxes.leave()
+    this._footer.currentfoot$.next(null)
+    this._footer.currentfoot_invoice$.next(null)
+
 
   }
 

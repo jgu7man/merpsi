@@ -109,8 +109,6 @@ export class InvoiceConceptComponent implements OnInit, OnDestroy {
   }
 
   get allowEditCant() {
-    console.log(this.invoice);
-    
     if ( !this.invoice ) return false
     else if ( this.document == 'debit' ) return false
     else {

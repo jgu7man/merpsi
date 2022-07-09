@@ -9,6 +9,8 @@ listName="Tipos de impuesto"
 #crudPanel
 (onDelete)="taxes.delete($event)"
 [columns]="columns"
+[addConfig]="{'label': 'Crear'}"
+
 >
 
   <ng-template #add>

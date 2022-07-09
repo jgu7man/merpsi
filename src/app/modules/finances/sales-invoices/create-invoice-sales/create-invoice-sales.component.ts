@@ -80,6 +80,7 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy {
         currency: this.invoice.currency,
         payment_method: this.invoice.payment_method,
       })
+
       this.conceptInvoice.details_invoice$.next(this.invoice.details)
       this._footer.currentfoot_invoice$.next(this.invoice.footer)
     }
