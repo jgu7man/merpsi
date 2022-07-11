@@ -7,10 +7,10 @@ import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
 import { DashboardService } from 'src/app/dashboard/dashboard.service';
 import Swal from 'sweetalert2';
 import { ProductNoteModel } from '../../../credit-note/creditNote.model';
-import { FooterService } from '../../../invoices/footer-invoice/footer.service';
-import { InvoiceConceptService } from '../../../invoices/invoice-concept/invoice-concept.service';
-import { ProductInvoiceModel } from '../../../invoices/invoice.model';
-import { SelectConceptDialogComponent } from '../../../invoices/select-concept.dialog/select-concept.dialog.component';
+import { FooterService } from '../../../shared/footer-invoice/footer.service';
+import { DetailsConceptService } from '../../../shared/invoice-details/invoice-details.service';
+import { ProductInvoiceModel } from '../../../shared/invoice.model';
+import { SelectConceptDialogComponent } from '../../../shared/select-concept.dialog/select-concept.dialog.component';
 import { AppliedTaxModel } from '../../../taxes/taxes.model';
 import { ConceptAvailability, SalesInvoiceReadingModel } from '../../sales-invoice.model';
 import { SalesService } from '../../sales.service';
@@ -34,7 +34,7 @@ export class CreditDebitNoteDialogComponent implements OnInit {
     private _dialogRef: MatDialogRef<SelectConceptDialogComponent>,
     private _router: Router,
     private _alert: MxAlert,
-    private _invoiceConcept: InvoiceConceptService,
+    private _invoiceConcept: DetailsConceptService,
     @Inject(MAT_DIALOG_DATA) public document: {invoice: SalesInvoiceReadingModel, document:string, origin:string},
 
   ) { }

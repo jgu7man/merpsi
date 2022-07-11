@@ -3,12 +3,10 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSelectChange } from '@angular/material/select';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
-import { DashboardService } from 'src/app/dashboard/dashboard.service';
 import { PersonalService } from 'src/app/modules/admin/managers/personal.service';
 import Swal from 'sweetalert2';
-import { FooterCreditoDebitoService } from '../../invoices/footer-credito-debito/footer-credito-debito.service';
-import { InvoiceConceptService } from '../../invoices/invoice-concept/invoice-concept.service';
-import { Invoice } from '../../invoices/invoice.model';
+import { FooterCreditoDebitoService } from '../../shared/footer-note/footer-notes.service';
+import { DetailsConceptService } from '../../shared/invoice-details/invoice-details.service';
 import { CreditDebitNoteDialogComponent } from '../../sales-invoices/create-invoice-sales/credit-debit-note.dialog/credit-debit-note.dialog.component';
 import { iSalesInvoice, SalesInvoiceModel, SalesInvoiceReadingModel } from '../../sales-invoices/sales-invoice.model';
 import { SalesService } from '../../sales-invoices/sales.service';
@@ -18,6 +16,7 @@ import { AppliedTaxModel, TaxModel } from '../../taxes/taxes.model';
 import { TaxesService } from '../../taxes/taxes.service';
 import { CreditNoteService } from '../credit-note.service';
 import { CreditNoteModel, FooterNoteModel, NoteCredit } from '../creditNote.model';
+import { Invoice } from '../../shared/invoice.model';
 
 @Component({
   selector: 'app-form-credit-note',
@@ -47,7 +46,7 @@ export class FormCreditNoteComponent implements OnInit, OnDestroy {
     public stub: StubService,
     public footer_service: FooterCreditoDebitoService,
     public footer: FooterCreditoDebitoService,
-    public invoiceConcept: InvoiceConceptService,
+    public invoiceConcept: DetailsConceptService,
     private _activatedRoute: ActivatedRoute,
     private _alert: MxAlert,
     private _taxes: TaxesService,
@@ -100,7 +99,7 @@ export class FormCreditNoteComponent implements OnInit, OnDestroy {
         
         /* se obtienen los impuestos colocados en la factura para aplicarselos al concepto de la Nota de credito*/
         let footer_tax = this.credit.invoiceRef$.value.footer.taxes
-        let taxe: TaxModel[] = footer_tax.map(tax => { return new TaxModel(0, tax.name, tax.rate) })
+        let taxe: TaxModel[] = footer_tax.map((tax: { name: string; rate: number; }) => { return new TaxModel(0, tax.name, tax.rate) })
   
         if (this.contextNC == 'disminucion') {
           let det = this.invoiceConcept.details_Notes$.value

@@ -5,21 +5,21 @@ import { Observable } from 'rxjs';
 import { debounceTime, distinctUntilChanged, skip } from 'rxjs/operators';
 import { iSede } from 'src/app/modules/admin/stores/sede.model';
 import { SedesService } from 'src/app/modules/admin/stores/sedes.service';
-import { Invoice, ProductInvoiceModel } from 'src/app/modules/finances/invoices/invoice.model';
 import { ProductModel } from 'src/app/modules/inventory/products/products.model';
 
 import { NoteCredit } from '../../credit-note/creditNote.model';
 import { PurchaseInvoiceService } from '../../purchase-invoices/puchase-invoice.service';
 import { iSalesInvoice } from '../../sales-invoices/sales-invoice.model';
 import { SalesService } from '../../sales-invoices/sales.service';
-import { InvoiceConceptService } from './invoice-concept.service';
+import { Invoice, ProductInvoiceModel } from '../invoice.model';
+import { DetailsConceptService } from './invoice-details.service';
 
 @Component( {
-  selector: 'app-invoice-concept',
-  templateUrl: './invoice-concept.component.html',
-  styleUrls: [ './invoice-concept.component.scss' ]
+  selector: 'app-invoice-details',
+  templateUrl: './invoice-details.component.html',
+  styleUrls: [ './invoice-details.component.scss' ]
 } )
-export class InvoiceConceptComponent implements OnInit, OnDestroy {
+export class InvoiceDetailsComponent implements OnInit, OnDestroy {
 
   @Input() invoice: iSalesInvoice | null = null
 
@@ -42,7 +42,7 @@ export class InvoiceConceptComponent implements OnInit, OnDestroy {
   constructor (
     public sales: SalesService,
     public purchase: PurchaseInvoiceService,
-    public conceptInvoice: InvoiceConceptService,
+    public conceptInvoice: DetailsConceptService,
     private _cache: MxCache,
     private _stores: SedesService,
   ) {

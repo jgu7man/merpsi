@@ -6,9 +6,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
 import { PersonalService } from 'src/app/modules/admin/managers/personal.service';
 import { FooterNoteModel } from '../../credit-note/creditNote.model';
-import { FooterCreditoDebitoService } from '../../invoices/footer-credito-debito/footer-credito-debito.service';
-import { InvoiceConceptService } from '../../invoices/invoice-concept/invoice-concept.service';
-import { Invoice } from '../../invoices/invoice.model';
+import { FooterCreditoDebitoService } from '../../shared/footer-note/footer-notes.service';
+import { DetailsConceptService } from '../../shared/invoice-details/invoice-details.service';
 import { CreditDebitNoteDialogComponent } from '../../sales-invoices/create-invoice-sales/credit-debit-note.dialog/credit-debit-note.dialog.component';
 import { iSalesInvoice, SalesInvoiceModel, SalesInvoiceReadingModel } from '../../sales-invoices/sales-invoice.model';
 import { iStub } from '../../stubs-invoice/stub.model';
@@ -17,6 +16,7 @@ import { AppliedTaxModel, TaxModel } from '../../taxes/taxes.model';
 import { TaxesService } from '../../taxes/taxes.service';
 import { DebitNoteModel, NoteDebit } from '../debit-note.model';
 import { DebitNoteService } from '../debit-note.service';
+import { Invoice } from '../../shared/invoice.model';
 
 @Component({
   selector: 'app-create-debit-note',
@@ -39,7 +39,7 @@ export class CreateDebitNoteComponent implements OnInit, OnDestroy {
     public stub: StubService,
     public debit: DebitNoteService,
     public manager: PersonalService,
-    public invoiceConcept: InvoiceConceptService,
+    public invoiceConcept: DetailsConceptService,
     public footer: FooterCreditoDebitoService,
     private _alert: MxAlert,
     private _activatedRoute: ActivatedRoute,

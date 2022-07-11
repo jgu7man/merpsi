@@ -1,19 +1,16 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
-import { Router } from '@angular/router';
 import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { DashboardService } from 'src/app/dashboard/dashboard.service';
 import { FireRef } from 'src/app/models/firestore.model';
 import Swal from 'sweetalert2';
-import { PersonalService } from '../../admin/managers/personal.service';
-import { FooterService } from '../invoices/footer-invoice/footer.service';
-import { InvoiceFooter, ProductInvoiceModel } from '../invoices/invoice.model';
+import { FooterService } from '../shared/footer-invoice/footer.service';
 import { SalesInvoiceModel } from '../sales-invoices/sales-invoice.model';
 import { iStub } from '../stubs-invoice/stub.model';
 import { StubService } from '../stubs-invoice/stub.service';
-import { AppliedTaxModel, TaxModel } from '../taxes/taxes.model';
+import { AppliedTaxModel } from '../taxes/taxes.model';
 import { TaxesService } from '../taxes/taxes.service';
 import { DebitNoteModel, iDebitNote } from './debit-note.model';
 

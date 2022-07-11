@@ -1,7 +1,7 @@
-import { createDate, FireDoc, FireRef, FireTime } from "src/app/models/firestore.model";
+import { createDate, FireRef, FireTime } from "src/app/models/firestore.model";
 import { Product } from "../../inventory/products/products.model";
-import { Invoice, InvoiceFooter } from "../invoices/invoice.model";
 import { SalesInvoiceModel } from "../sales-invoices/sales-invoice.model";
+import { Invoice } from "../shared/invoice.model";
 import { AppliedTaxModel, iAppliedTax, TaxModel } from "../taxes/taxes.model";
 
 export class CreditNoteModel {

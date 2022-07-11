@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { FooterCreditoDebitoService } from './footer-credito-debito.service';
+import { FooterCreditoDebitoService } from './footer-notes.service';
 
 describe('FooterCreditoDebitoService', () => {
   let service: FooterCreditoDebitoService;

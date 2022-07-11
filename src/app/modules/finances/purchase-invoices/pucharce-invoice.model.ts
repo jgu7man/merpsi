@@ -2,7 +2,7 @@ import firebase from "firebase/app";
 import { FireTime, createDate } from "../../../models/firestore.model";
 import { iSede } from "../../admin/stores/sede.model";
 import { iProvider } from "../../inventory/providers/provider.model";
-import { Invoice, InvoiceModel, ProductInvoiceModel } from "../invoices/invoice.model";
+import { Invoice, InvoiceModel, ProductInvoiceModel } from "../shared/invoice.model";
 
 
 /** Modelo para crear una factura de compra */

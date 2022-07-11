@@ -1,11 +1,9 @@
 import firebase from "firebase/app"
-import { getCacheDataKey } from "libs/@marxa/devkit/cache/mx-cache.operators";
-import { from, zip } from "rxjs";
 import { createDate, FireRef, FireTime } from "src/app/models/firestore.model";
 import { Product } from "../../inventory/products/products.model";
-import { CreditNoteModel, iCreditNote, NoteCredit } from "../credit-note/creditNote.model";
+import { iCreditNote, NoteCredit } from "../credit-note/creditNote.model";
 import { iDebitNote, NoteDebit } from "../debit-note/debit-note.model";
-import { Invoice, InvoiceModel, ProductInvoiceModel } from '../invoices/invoice.model';
+import { Invoice, InvoiceModel, ProductInvoiceModel } from "../shared/invoice.model";
 
 export class SalesInvoiceModel implements InvoiceModel {
   public action_date: FireTime = createDate( new Date());

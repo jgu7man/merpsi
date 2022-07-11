@@ -6,17 +6,12 @@ import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { DashboardService } from 'src/app/dashboard/dashboard.service';
-import { txn } from 'src/app/models/firestore.model';
 import { SalesInvoiceModel, SalesInvoiceReadingModel } from 'src/app/modules/finances/sales-invoices/sales-invoice.model';
-import { AuthService } from 'src/app/services/auth.service';
-import { CurrentProductService } from '../../inventory/product-single/current-product.service';
 import { ProductEventModel, ProductModel, StoreReferenceModel } from '../../inventory/products/products.model';
-import { CreditNoteModel, iCreditNote } from '../credit-note/creditNote.model';
-import { FooterService } from '../invoices/footer-invoice/footer.service';
-import { InvoiceConceptService } from '../invoices/invoice-concept/invoice-concept.service';
-import { Invoice, InvoiceFooter, ProductInvoiceModel } from '../invoices/invoice.model';
-//import { iInvoiceFooter, iProductInvoice, ProductInvoiceModel } from '../invoices/invoice.model';
-import { PurchaseInvoiceModel } from '../purchase-invoices/pucharce-invoice.model';
+import { iCreditNote } from '../credit-note/creditNote.model';
+import { FooterService } from '../shared/footer-invoice/footer.service';
+import { DetailsConceptService } from '../shared/invoice-details/invoice-details.service';
+import { Invoice, InvoiceFooter, ProductInvoiceModel } from '../shared/invoice.model';
 import { iStub } from '../stubs-invoice/stub.model';
 import { StubService } from '../stubs-invoice/stub.service';
 import { TaxesService } from '../taxes/taxes.service';
@@ -42,7 +37,7 @@ export class SalesService {
     private _dashboard: DashboardService,
     private _alert: MxAlert,
     private foot: FooterService,
-    public conceptInvoice: InvoiceConceptService,
+    public conceptInvoice: DetailsConceptService,
     public stub: StubService,
 
   ) {
@@ -128,7 +123,6 @@ export class SalesService {
   }
   getStoreStock(UPC: string) {
     let storeP = this._afs.collection<StoreReferenceModel>(`businesses/${this.businessCRF}/products/${UPC}/stores`).ref.get()
-    // console.log(storeP)
     return storeP
 
   }

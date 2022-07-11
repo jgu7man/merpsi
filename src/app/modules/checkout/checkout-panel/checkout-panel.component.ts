@@ -5,8 +5,8 @@ import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dial
 import { MatDrawer } from '@angular/material/sidenav';
 import { sumBy } from 'lodash';
 import { ClientCreationModel } from '../../clients/clients.model';
-import { ProductInvoiceModel } from '../../finances/invoices/invoice.model';
 import { SalesService } from '../../finances/sales-invoices/sales.service';
+import { ProductInvoiceModel } from '../../finances/shared/invoice.model';
 import { Product, ProductModel, StoreReferenceModel } from '../../inventory/products/products.model';
 import { CheckoutService } from '../checkout.service';
 import { ClientSearcherComponent } from '../client-searcher/client-searcher.component';

@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { FooterCreditoDebitoComponent } from './footer-credito-debito.component';
+import { FooterCreditoDebitoComponent } from './footer-notes.component';
 
 describe('FooterCreditoDebitoComponent', () => {
   let component: FooterCreditoDebitoComponent;

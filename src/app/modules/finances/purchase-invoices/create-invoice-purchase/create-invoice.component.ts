@@ -7,21 +7,21 @@ import { Product } from 'src/app/modules/inventory/products/products.model';
 import firebase from "firebase/app";
 import { FireDoc } from 'src/app/models/firestore.model';
 import { MatSelectChange } from '@angular/material/select';
-import { Invoice, ProductInvoiceModel } from 'src/app/modules/finances/invoices/invoice.model';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
-import { SelectConceptDialogComponent } from '../../invoices/select-concept.dialog/select-concept.dialog.component';
+import { SelectConceptDialogComponent } from '../../shared/select-concept.dialog/select-concept.dialog.component';
 import { InventoryProductsService } from 'src/app/modules/inventory/products/products.service';
 import { iSede } from '../../../admin/stores/sede.model';
 import { SedesService } from '../../../admin/stores/sedes.service';
 import { PurchaseInvoiceService } from '../puchase-invoice.service';
 import { iProvider } from 'src/app/modules/inventory/providers/provider.model';
-import { InvoiceConceptService } from '../../invoices/invoice-concept/invoice-concept.service';
+import { DetailsConceptService } from '../../shared/invoice-details/invoice-details.service';
 import { PurchaseInvoiceModel } from '../pucharce-invoice.model';
-import { FooterService } from '../../invoices/footer-invoice/footer.service';
+import { FooterService } from '../../shared/footer-invoice/footer.service';
 import { PersonalService } from 'src/app/modules/admin/managers/personal.service';
 import Swal from 'sweetalert2';
 import { ProviderService } from 'src/app/modules/inventory/providers/provider.service';
 import { TaxesService } from '../../taxes/taxes.service';
+import { Invoice, ProductInvoiceModel } from '../../shared/invoice.model';
 
 
 @Component({
@@ -56,7 +56,7 @@ export class CreateInvoiceComponent implements OnInit, OnDestroy{
   
   constructor(
     public purchase: PurchaseInvoiceService,
-    public conceptInvoice: InvoiceConceptService,
+    public conceptInvoice: DetailsConceptService,
     private _stores: SedesService,
     private _alert: MxAlert,
     private _dialog: MatDialog,

@@ -6,12 +6,12 @@ import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import Swal from 'sweetalert2';
 import { DashboardService } from 'src/app/dashboard/dashboard.service';
 import { ProductEventModel, ProductModel, StoreReferenceModel } from '../../inventory/products/products.model';
-import { Invoice, InvoiceFooter, ProductInvoiceModel } from '../invoices/invoice.model';
 import { TaxesService } from '../taxes/taxes.service';
 import firebase from 'firebase/app'
-import { FooterService } from '../invoices/footer-invoice/footer.service';
-import { InvoiceConceptService } from '../invoices/invoice-concept/invoice-concept.service';
+import { FooterService } from '../shared/footer-invoice/footer.service';
+import { DetailsConceptService } from '../shared/invoice-details/invoice-details.service';
 import { catchError, map } from 'rxjs/operators';
+import { Invoice, InvoiceFooter, ProductInvoiceModel } from '../shared/invoice.model';
 
 
 
@@ -31,7 +31,7 @@ export class PurchaseInvoiceService {
     private _cache: MxCache,
     private _dashboard: DashboardService,
     public footer: FooterService,
-    public conceptInvoice: InvoiceConceptService
+    public conceptInvoice: DetailsConceptService
   ) {
   }
 

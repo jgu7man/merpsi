@@ -2,12 +2,12 @@ import { Component, Input, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { NoteCredit, ProductNoteModel } from '../../credit-note/creditNote.model';
 import { FooterService } from '../footer-invoice/footer.service';
-import { FooterCreditoDebitoService } from './footer-credito-debito.service';
+import { FooterCreditoDebitoService } from './footer-notes.service';
 
 @Component({
-  selector: 'app-footer-credito-debito',
-  templateUrl: './footer-credito-debito.component.html',
-  styleUrls: ['./footer-credito-debito.component.scss']
+  selector: 'app-footer-notes',
+  templateUrl: './footer-notes.component.html',
+  styleUrls: ['./footer-notes.component.scss']
 })
 export class FooterCreditoDebitoComponent implements OnInit {
 

@@ -1,4 +1,4 @@
-import { EventEmitter, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
 import firebase from 'firebase/app';
 import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
@@ -7,18 +7,15 @@ import { BehaviorSubject, Observable, of } from 'rxjs';
 import { DashboardService } from 'src/app/dashboard/dashboard.service';
 import { PersonalService } from '../../admin/managers/personal.service';
 import { ProductEventModel } from '../../inventory/products/products.model';
-import { FooterService } from '../invoices/footer-invoice/footer.service';
 import { SalesInvoiceModel, SalesInvoiceReadingModel } from '../sales-invoices/sales-invoice.model';
 import { TaxesService } from '../taxes/taxes.service';
-import { CreditNoteModel, iCreditNote, NoteCredit, ProductNoteModel } from './creditNote.model';
-import { AppliedTaxModel, TaxModel } from '../taxes/taxes.model'
-import { Invoice, InvoiceFooter, ProductInvoiceModel } from '../invoices/invoice.model';
+import { CreditNoteModel, iCreditNote } from './creditNote.model';
+import { AppliedTaxModel } from '../taxes/taxes.model'
 import { iStub } from '../stubs-invoice/stub.model';
-import { FooterCreditoDebitoService } from '../invoices/footer-credito-debito/footer-credito-debito.service';
-import { InvoiceConceptService } from '../invoices/invoice-concept/invoice-concept.service';
+import { FooterCreditoDebitoService } from '../shared/footer-note/footer-notes.service';
+import { DetailsConceptService } from '../shared/invoice-details/invoice-details.service';
 import { StubService } from '../stubs-invoice/stub.service';
 import Swal from 'sweetalert2';
-import { Router } from '@angular/router';
 import { catchError, map } from 'rxjs/operators';
 
 @Injectable({
@@ -40,9 +37,6 @@ export class CreditNoteService {
     private _afs: AngularFirestore,
     private _cache: MxCache,
     private _dashboard: DashboardService,
-    private _taxes: TaxesService,
-    private _foot: FooterCreditoDebitoService,
-    private invoiceConcept: InvoiceConceptService,
     private _manager: PersonalService,
 
 

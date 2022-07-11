@@ -8,9 +8,9 @@ import { PersonalService } from 'src/app/modules/admin/managers/personal.service
 import { ClientCreationModel } from 'src/app/modules/clients/clients.model';
 import Swal from 'sweetalert2';
 import { CreditNoteService } from '../../credit-note/credit-note.service';
-import { FooterService } from '../../invoices/footer-invoice/footer.service';
-import { InvoiceConceptService } from '../../invoices/invoice-concept/invoice-concept.service';
-import { Invoice, ProductInvoiceModel } from '../../invoices/invoice.model';
+import { FooterService } from '../../shared/footer-invoice/footer.service';
+import { DetailsConceptService } from '../../shared/invoice-details/invoice-details.service';
+import { Invoice, ProductInvoiceModel } from '../../shared/invoice.model';
 import { iStub } from '../../stubs-invoice/stub.model';
 import { StubService } from '../../stubs-invoice/stub.service';
 import { TaxesService } from '../../taxes/taxes.service';
@@ -53,7 +53,7 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy {
   constructor(
     public sales: SalesService,
     public stub: StubService,
-    public conceptInvoice: InvoiceConceptService,
+    public conceptInvoice: DetailsConceptService,
     private _cache: MxCache,
     private _dialog: MatDialog,
     private _alert: MxAlert,

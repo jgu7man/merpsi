@@ -1,11 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 import { mxIndexCenterMessage } from 'libs/@marxa/index/src/lib/mx-index.model';
 import { MxIndex } from 'libs/@marxa/index/src/lib/mx-index.service';
-import { FooterCreditoDebitoService } from '../invoices/footer-credito-debito/footer-credito-debito.service';
-import { FooterService } from '../invoices/footer-invoice/footer.service';
-import { InvoiceConceptService } from '../invoices/invoice-concept/invoice-concept.service';
-import { CreditDebitNoteDialogComponent } from '../sales-invoices/create-invoice-sales/credit-debit-note.dialog/credit-debit-note.dialog.component';
+import { FooterCreditoDebitoService } from '../shared/footer-note/footer-notes.service';
+import { DetailsConceptService } from '../shared/invoice-details/invoice-details.service';
 import { CreditNoteService } from './credit-note.service';
 import { iCreditNote } from './creditNote.model';
 
@@ -24,7 +21,7 @@ export class CreditNoteComponent implements OnInit {
   constructor(
     public credit : CreditNoteService,
     private _index: MxIndex,
-    private _invoiceConcept: InvoiceConceptService,
+    private _invoiceConcept: DetailsConceptService,
     private _footer: FooterCreditoDebitoService,
 
 

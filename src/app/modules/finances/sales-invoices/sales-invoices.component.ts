@@ -9,7 +9,7 @@ import { SalesService } from './sales.service';
 import { MxIndex } from 'libs/@marxa/index/src/lib/mx-index.service';
 import { Subscription } from 'rxjs';
 import { mxIndexCenterMessage } from 'libs/@marxa/index/src/public-api';
-import { FooterService } from '../invoices/footer-invoice/footer.service';
+import { FooterService } from '../shared/footer-invoice/footer.service';
 
 @Component({
   selector: 'app-sales-invoices',

@@ -6,10 +6,9 @@ import { Observable } from 'rxjs';
 import { debounceTime, distinctUntilChanged, skip } from 'rxjs/operators';
 import { iSede } from 'src/app/modules/admin/stores/sede.model';
 import { SedesService } from 'src/app/modules/admin/stores/sedes.service';
-// import { iProduct  Invoice } from 'src/app/modules/finances/invoices/invoice.model';
 import { ProductModel } from 'src/app/modules/inventory/products/products.model';
-import { ProductInvoiceModel } from '../../invoices/invoice.model';
 import { PurchaseInvoiceService } from '../../purchase-invoices/puchase-invoice.service';
+import { ProductInvoiceModel } from '../../shared/invoice.model';
 import { SalesInvoiceModel } from '../sales-invoice.model';
 import { SalesService } from '../sales.service';
 

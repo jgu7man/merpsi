@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { ProductInvoiceModel } from '../../finances/invoices/invoice.model';
+import { ProductInvoiceModel } from '../../finances/shared/invoice.model';
 import { Product } from '../../inventory/products/products.model';
 
 

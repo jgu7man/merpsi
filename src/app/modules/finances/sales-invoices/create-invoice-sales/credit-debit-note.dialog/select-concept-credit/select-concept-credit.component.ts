@@ -1,7 +1,7 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { ProductInvoiceModel } from 'src/app/modules/finances/invoices/invoice.model';
+import { ProductInvoiceModel } from 'src/app/modules/finances/shared/invoice.model';
 import Swal from 'sweetalert2';
 import { SalesInvoiceModel } from '../../../sales-invoice.model';
 

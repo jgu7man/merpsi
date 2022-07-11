@@ -7,9 +7,9 @@ import { iSede } from '../../admin/stores/sede.model';
 import { SedesService } from '../../admin/stores/sedes.service';
 import { ProviderModel } from '../../inventory/providers/provider.model';
 import { ProviderService } from '../../inventory/providers/provider.service';
-import { FooterService } from '../invoices/footer-invoice/footer.service';
-import { InvoiceConceptService } from '../invoices/invoice-concept/invoice-concept.service';
-import { InvoiceFooter } from '../invoices/invoice.model';
+import { FooterService } from '../shared/footer-invoice/footer.service';
+import { DetailsConceptService } from '../shared/invoice-details/invoice-details.service';
+import { InvoiceFooter } from '../shared/invoice.model';
 import { TaxesService } from '../taxes/taxes.service';
 import { PurchaseInvoiceService } from './puchase-invoice.service';
 
@@ -33,7 +33,7 @@ export class PurchaseInvoicesComponent implements OnInit {
     private _provider: ProviderService,
     private _stores : SedesService,
     private _taxes: TaxesService,
-    private conceptInvoice: InvoiceConceptService,
+    private conceptInvoice: DetailsConceptService,
     private _footer: FooterService,
     private providerServ: ProviderService,
     private _index: MxIndex

@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
 import { BehaviorSubject } from 'rxjs';
 import { TaxesService } from '../../taxes/taxes.service';
-import { InvoiceConceptService } from '../invoice-concept/invoice-concept.service';
 import { Invoice, InvoiceFooter, ProductInvoiceModel } from '../invoice.model';
 
 @Injectable({
@@ -60,30 +59,5 @@ export class FooterService {
       foot.taxes = this.recalculateTaxes
       this.currentfoot$.next(foot)
   }
-  // updateCurrent(
-  //   param: keyof InvoiceFooter,
-  //   value: InvoiceFooter[typeof param]
-  // ) {
-  //   if (this.currentfoot$.value !== null) {
-  //     this.currentfoot$.next({
-  //       ...this.currentfoot$.value.data,
-  //       [param]: value
-  //     })
-  //   }
-  // }
-  // getTotalTaxes() {
-  //   try {
-  //     if (!this.currentfoot$.value) throw { message: "no existe el footer" }
-  //     let footer = this.currentfoot$.value
-  //     footer.total = (footer.subtotal + this._taxes.appliedTaxesTotal + footer.shipping) - footer.discount
-  //     footer.taxes = this._taxes.applidedTaxes
-  //   } catch (error: any) {
-  //     if ('message' in error) {
-  //       this._alert.error(error.message, error)
-  //     } else {
-  //       this._alert.error('mensaje de error', error)
-  //     }
-  //     return console.error(error)
-  //   }
-  // }
+  
 }
