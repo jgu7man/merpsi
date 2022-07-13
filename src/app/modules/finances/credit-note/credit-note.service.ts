@@ -7,28 +7,35 @@ import { BehaviorSubject, Observable, of } from 'rxjs';
 import { DashboardService } from 'src/app/dashboard/dashboard.service';
 import { PersonalService } from '../../admin/managers/personal.service';
 import { ProductEventModel } from '../../inventory/products/products.model';
-import { SalesInvoiceModel, SalesInvoiceReadingModel } from '../sales-invoices/sales-invoice.model';
-import { TaxesService } from '../taxes/taxes.service';
-import { CreditNoteModel, iCreditNote } from './creditNote.model';
-import { AppliedTaxModel } from '../taxes/taxes.model'
+import { iSalesInvoice, SalesInvoiceModel, SalesInvoiceReadingModel } from '../sales-invoices/sales-invoice.model';
+import { CreditNoteModel, FooterNoteModel, iCreditNote, NoteCredit } from './creditNote.model';
+import { AppliedTaxModel, TaxModel } from '../taxes/taxes.model'
 import { iStub } from '../stubs-invoice/stub.model';
 import { FooterCreditoDebitoService } from '../shared/footer-note/footer-notes.service';
 import { DetailsConceptService } from '../shared/invoice-details/invoice-details.service';
 import { StubService } from '../stubs-invoice/stub.service';
 import Swal from 'sweetalert2';
 import { catchError, map } from 'rxjs/operators';
+import { Invoice } from '../shared/invoice.model';
+import { Router } from '@angular/router';
+import { MatSelectChange } from '@angular/material/select';
+import { MatDialog } from '@angular/material/dialog';
+import { CreditDebitNoteDialogComponent } from '../sales-invoices/create-invoice-sales/credit-debit-note.dialog/credit-debit-note.dialog.component';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CreditNoteService {
-
+  
   businessCRF: string = this._cache.getDataKey('eid')!
   businessRef = `businesses/${this._dashboard.CRF}`
   taxes: AppliedTaxModel[] = [];
   stubList$ = new BehaviorSubject<iStub[]>([])
   stubSelect$ = new BehaviorSubject<iStub | null>(null)
   invoiceRef$ = new BehaviorSubject<SalesInvoiceModel | null>(null)
+  contextNC?: NoteCredit.context
+  invoiceId: string | null = null
+  origin: string | null = null
 
 
   constructor(
@@ -38,12 +45,37 @@ export class CreditNoteService {
     private _cache: MxCache,
     private _dashboard: DashboardService,
     private _manager: PersonalService,
+    private invoiceConcept: DetailsConceptService,
+    private footer: FooterCreditoDebitoService,
+    private _router: Router,
+    private _dialog: MatDialog,
 
 
   ) {
   }
-  async saveCreditNote(creditNote: CreditNoteModel) {
+  async saveCreditNote() {
     try {
+      if (!this.stubSelect$.value) throw { message: ' No existe el talonario' }
+      if (!this.footer.footer$.value) throw { message: ' No existe el footer' }
+      if (!this.invoiceRef$.value) throw { message: ' No existe la factura de referencia' }
+      if ( !this._manager.current ) throw { message: 'No se ha iniciado la sesion' }
+      if ( !this.contextNC ) throw { message: 'No se ha definido el contexto de la factura' }
+
+      if (this.footer.footer$.value.total > 0) {
+        if (this.footer.footer$.value.total <= this.invoiceRef$.value.footer.total) {
+          const manager: Invoice.manager = {
+            id: this._manager.current.uid!,
+            name: this._manager.current.name,
+            ref: this._manager.managerRef
+          }
+          let creditNote = new CreditNoteModel(
+            this.invoiceRef$.value.invoiceId,
+            this.stubSelect$.value.prefixIndexCurrent,
+            manager,
+            this.contextNC,
+            this.invoiceConcept.details_Notes$.value,
+            this.footer.footer$.value
+          )
       /**se guarda la nota de credito */
 
       const creditRef = this._afs.doc<CreditNoteModel>(`${this.businessRef}/credit_notes/${creditNote.id}`).ref
@@ -82,6 +114,19 @@ export class CreditNoteService {
         this.stub.update(stub)
       }
       
+      Swal.fire('Guardado')          
+          if( origin == 'invoice' ){
+            this._router.navigate([`business/${this.businessCRF}/finances/sales`])
+          
+          } 
+
+        } else {
+          Swal.fire(`El total de la Nota de Credito no puede ser mayor a ${this.invoiceRef$.value.footer.total}`)
+        }
+      } else {
+
+        Swal.fire(`El total de la Nota de Credito no puede ser 0.00`)
+      }
 
     } catch (error: any) {
       if ('message' in error) {
@@ -121,23 +166,103 @@ export class CreditNoteService {
   }
 
   async findNoteCredits(invoice: SalesInvoiceReadingModel) {
-    console.log(invoice);
-    
-    if (invoice.avalibleAmount == 0){
+    if (invoice.avalibleAmount == 0) {
       return false
     } else {
       return true
     }
-    // const notesRef = await this.getnotesByid(invoice.invoiceId)
-    // const result = notesRef.docs
-    // let notes_result = result.map((doc) => {
-    //   return doc.data()
-    // })
-    // let totales = notes_result.reduce((acc, item) => acc + item.footer.total, 0)
-    // if (totales >= invoice.footer.total) {
-    //   return false
-    // } else {
-    //   return true
-    // }
   }
+
+  get nroStub(){
+      return this.stubSelect$.value ? this.stubSelect$.value.prefixIndexCurrent : ''
+  }
+
+  setFooter(contextNC: string) {
+    try {
+      if (!this.invoiceRef$.value) throw { message: 'No Existe la factura relacionada' }
+
+      /* se obtienen los impuestos colocados en la factura para aplicarselos al concepto de la Nota de credito*/
+      let footer_tax = this.invoiceRef$.value.footer.taxes
+      let taxe: TaxModel[] = footer_tax.map((tax: { name: string; rate: number; }) => { return new TaxModel(0, tax.name, tax.rate) })
+
+      if (contextNC == 'disminucion') {
+        let det = this.invoiceConcept.details_Notes$.value
+        /* se calcula el subtotal de los detalles de la nota de credito */
+        let amount = det.reduce((acc, item) => acc + item.amount, 0)
+        let amount_tax = 0
+        /* se calcula el monto total de los impuestos y se le suma al subtotal para sacar el total de los conceptos de la factura
+        y poder aplicar la formula de (totalFactura - total de conceptos) = 0  */
+        taxe.map(tax => { amount_tax = amount_tax + (new AppliedTaxModel(tax, amount)).amount })
+        amount = amount + amount_tax
+
+
+        const foot = new FooterNoteModel(this.invoiceRef$.value.footer, det, amount, taxe)
+        this.footer.footer$.next(foot)
+      } else {
+        const foot = new FooterNoteModel(this.invoiceRef$.value.footer, this.invoiceConcept.details_Notes$.value, null, taxe)
+        this.footer.footer$.next(foot)
+      }
+    } catch (error: any) {
+      if ('message' in error) {
+        this._alert.error(error.message, error)
+      } else {
+        this._alert.error('mensaje de error', error)
+      }
+      return console.error(error)
+    }
+  }
+
+  selectStub(data: MatSelectChange) {
+    try {
+      this.stubSelect$.next(data.value)
+    if (!this.stubSelect$.value) throw { message: ' No existe el talonario' }
+    let stub = this.stubSelect$.value
+    stub.prefixIndexCurrent = stub.prefix + '-' + ((stub.currentIndex || 0) + 1)
+    } catch (error: any) {
+      if ('message' in error) {
+        this._alert.error(error.message, error)
+      } else {
+        this._alert.error('mensaje de error', error)
+      }
+      return console.error(error)
+    }
+  }
+
+
+  async getValue(invoice: iSalesInvoice) {
+    try {
+      const invoice_reading = new SalesInvoiceReadingModel(invoice, this.businessCRF)
+
+      let valid = await this.findNoteCredits(invoice_reading!)
+      if (valid) {
+        this._dialog.open(
+          CreditDebitNoteDialogComponent, {
+          width: '1200px',
+          height: '400px',
+          data: {
+            document: 'credit',
+            invoice: invoice_reading,
+            origin: 'creation'
+          }
+        }).afterClosed().subscribe(data => {
+          this.contextNC = data.tipo
+          this.invoiceId = data.invoiceId
+          this.origin = data.origin
+          this.invoiceRef$.next(invoice)
+          this.setFooter(data.tipo)
+
+        })
+      } else {
+        Swal.fire('No se puede aplicar mas notas de credito a esta factura')
+      }
+    } catch (error: any) {
+      if ('message' in error) {
+        this._alert.error(error.message, error)
+      } else {
+        this._alert.error('mensaje de error', error)
+      }
+      return console.error(error)
+    }
+  }
+
 }

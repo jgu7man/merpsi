@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { mxIndexCenterMessage } from 'libs/@marxa/index/src/lib/mx-index.model';
 import { MxIndex } from 'libs/@marxa/index/src/lib/mx-index.service';
 import { PurchaseInvoiceModel } from 'src/app/modules/finances/purchase-invoices/pucharce-invoice.model';
-import { AuthService } from 'src/app/services/auth.service';
 import { iSede } from '../../admin/stores/sede.model';
 import { SedesService } from '../../admin/stores/sedes.service';
 import { ProviderModel } from '../../inventory/providers/provider.model';

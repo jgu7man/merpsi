@@ -16,12 +16,12 @@ import { PurchaseInvoiceService } from '../puchase-invoice.service';
 import { iProvider } from 'src/app/modules/inventory/providers/provider.model';
 import { DetailsConceptService } from '../../shared/invoice-details/invoice-details.service';
 import { PurchaseInvoiceModel } from '../pucharce-invoice.model';
-import { FooterService } from '../../shared/footer-invoice/footer.service';
-import { PersonalService } from 'src/app/modules/admin/managers/personal.service';
 import Swal from 'sweetalert2';
 import { ProviderService } from 'src/app/modules/inventory/providers/provider.service';
 import { TaxesService } from '../../taxes/taxes.service';
-import { Invoice, ProductInvoiceModel } from '../../shared/invoice.model';
+import { ProductInvoiceModel } from '../../shared/invoice.model';
+import { FooterService } from '../../shared/footer-invoice/footer.service';
+
 
 
 @Component({
@@ -35,15 +35,12 @@ export class CreateInvoiceComponent implements OnInit, OnDestroy{
   businessRef = this._cache.getDataKey( 'eid' )
   @Input() invoice: PurchaseInvoiceModel | null = null
 
-  provider: iProvider | null = null
 
   storeCtrl: FormControl = new FormControl()
-  store: iSede | null = null
   invoiceId: string | null = null
   invoiceForm: FormGroup = new FormGroup({
     action_date: new FormControl('', [Validators.required]),
     invoiceId : new FormControl('', [Validators.required]),
-   // payment_method: new FormControl('', [Validators.required]),
   })
 
   productList: ProductInvoiceModel[] = []
@@ -63,7 +60,6 @@ export class CreateInvoiceComponent implements OnInit, OnDestroy{
     private _products: InventoryProductsService,
     private _cache: MxCache,
     private _footer: FooterService,
-    private _manager: PersonalService,
     private providerServ: ProviderService,
     private _taxes: TaxesService
 
@@ -100,11 +96,11 @@ export class CreateInvoiceComponent implements OnInit, OnDestroy{
   }
 
   onStoreSelected( event: MatSelectChange ) {
-    this.store = event.value
+    this.purchase.store = event.value
   }
 
   setProvider( provider: iProvider ) {
-    this.provider = provider;
+    this.purchase.provider = provider;
   }
 
 /**
@@ -122,8 +118,14 @@ export class CreateInvoiceComponent implements OnInit, OnDestroy{
 
   }
 
-
-  async findInvoice( invoiceId: string ){
+/**
+ *Funcion que se encarga validar que el numero de factura 
+ * que se esta ingresando no exista en base de datos
+ * @param {string} invoiceId
+ * @memberof CreateInvoiceComponent
+ */
+async findInvoice( invoiceId: string ){
+  // validacion del numero de caracteres 
     if (invoiceId.length>5){
       const validation = await this.purchase.findInvoice( invoiceId )
       if (validation) {
@@ -137,10 +139,7 @@ export class CreateInvoiceComponent implements OnInit, OnDestroy{
   addConcept() {
     this._dialog.open(SelectConceptDialogComponent, {
       width: '600px ',
-    }).afterClosed().subscribe(concept => {
-      console.log('.............');
-      console.log(concept);
-      
+    }).afterClosed().subscribe(concept => {      
       if (concept){
         this.purchase.addConcept(concept)
         this.concept = concept
@@ -150,46 +149,7 @@ export class CreateInvoiceComponent implements OnInit, OnDestroy{
 
   async saveInvoice(){
     try {
-      console.log(this.invoiceForm.value);
-    if ( !this.conceptInvoice.details$.value ) throw { message: ' No existe los conceptos'}
-    if ( !this._footer.currentfoot$.value ) throw { message: ' No existe el footer'}
-    if ( !this._manager.current) throw { message: 'No se ha iniciado la sesion'}
-    if ( !this.invoiceForm.valid) throw { message: 'debe llenar todos los campos del formulario'}
-    if ( !this.store ) throw { message: 'debe seleccionar una sede'}
-    if ( !this.provider ) throw { message: 'debe seleccionar un proveedor'}
-    if ( this.conceptInvoice.details$.value.length==0 ) throw { message: 'debe agregar por lo menos un concepto'}
-    if ( this._footer.currentfoot$.value.total<=0 ) throw { message: 'el total de la factura no debe ser igual o menor a cero '}
-
-      const manager: Invoice.manager = {
-        id: this._manager.current.uid!,
-        name: this._manager.current.name,
-        ref: this._manager.managerRef
-      }
-
-      let {action_date, invoiceId} = this.invoiceForm.value
-
-      const provider: Invoice.provider = {
-        id: this.provider.CRF,
-        name: this.provider.name,
-        ref: null
-        
-      }
-
-      const purchase = new PurchaseInvoiceModel(
-        invoiceId,
-        action_date,
-        provider,
-        this.store,
-        this.conceptInvoice.details$.value,
-        this._footer.currentfoot$.value.getdata(),
-        '',
-        '',
-        manager
-      )
-
-      console.log(purchase)
-
-       await this.purchase.saveInvoice(purchase)
+       await this.purchase.saveInvoice(this.invoiceForm)
        this._alert.notify('la factura ha sido guardado con exito!')
        this.clean()
        this.submited.emit()

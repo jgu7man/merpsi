@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
 import { BehaviorSubject } from 'rxjs';
 import { TaxesService } from '../../taxes/taxes.service';
-import { Invoice, InvoiceFooter, ProductInvoiceModel } from '../invoice.model';
+import { InvoiceFooter, Invoice, ProductInvoiceModel } from '../invoice.model';
 
 @Injectable({
   providedIn: 'root'

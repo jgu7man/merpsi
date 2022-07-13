@@ -133,14 +133,19 @@ export class ProductInvoiceModel {
 
 /** Modelo de consulta de balances de factura */
 export class InvoiceFooter {
-  /** Suma de los montos de los productos */
-  subtotal: number = 0;
+  constructor(
+    /** Suma de los montos de los productos */
+  public subtotal: number = 0,
   /** Descuento aplicado a la compra en moneda */
-  discount: number = 0;
-  /** Lista de impuestos aplicados a la compra */
-  taxes: iAppliedTax[] = [];
+  public discount: number = 0,
   /** Costo generado por envío */
-  shipping: number = 0;
+  public shipping: number = 0,
+  /** Lista de impuestos aplicados a la compra */
+  public taxes: iAppliedTax[] = [],
+  ){
+
+  }
+  
   /** Total acumulado de los impuestos aplicados */
   get taxesAmount(): number {
     return this.taxes.reduce((total, tax) => total + tax.amount, 0)

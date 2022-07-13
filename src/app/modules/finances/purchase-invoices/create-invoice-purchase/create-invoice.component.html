@@ -28,12 +28,10 @@
 
   <div class="row">
     <ng-container *ngIf="invoiceId != null">
-
       <!-- PROVIDER -->
       <div class="col s12 l4">
         <app-provider-selector (result)="setProvider($event)"></app-provider-selector>
       </div>
-
       <!-- SEDE -->
       <mat-form-field appearance="outline" class="col s12 l4">
         <mat-label>Sede</mat-label>
@@ -45,21 +43,18 @@
           </mat-option>
         </mat-select>
       </mat-form-field>
-
     </ng-container>
   </div>
-
   <div class="row">
     <div class="col s12">
-      <button mat-raised-button color="accent" [disabled]="(store == null || provider == null)" (click)="addConcept()">
+      <!-- boton de guardar -->
+      <button mat-raised-button color="accent" [disabled]="(purchase.store == null || purchase.provider == null)" (click)="addConcept()">
         Agregar Concepto
       </button>
-
-      <ng-container *ngIf="store && provider">
+      <ng-container *ngIf="purchase.store && purchase.provider">
         <ng-container *ngIf="conceptInvoice.details$.value">
           <ng-container *ngFor="let concept of conceptInvoice.details$.value ">
-            <app-invoice-concept [concept]="concept">
-            </app-invoice-concept>
+            <app-invoice-detail></app-invoice-detail>
           </ng-container>
         </ng-container>
       </ng-container>
@@ -71,7 +66,7 @@
       <app-footer-invoice></app-footer-invoice>
     </div>
   </div>
-  {{store != null || provider != null}}
-  <button mat-raised-button color="primary" [disabled]="(store == null || provider == null)"
+  {{purchase.store != null || purchase.provider != null}}
+  <button mat-raised-button color="primary" [disabled]="(purchase.store == null || purchase.provider == null)"
     (click)="saveInvoice()">Guardar</button>
 </form>

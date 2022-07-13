@@ -1,15 +1,17 @@
 import { EventEmitter, Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
+import { MatCheckboxChange } from '@angular/material/checkbox';
+import { Router } from '@angular/router';
 import firebase from 'firebase/app'
 import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { DashboardService } from 'src/app/dashboard/dashboard.service';
-import { SalesInvoiceModel, SalesInvoiceReadingModel } from 'src/app/modules/finances/sales-invoices/sales-invoice.model';
+import { ConceptAvailability, SalesInvoiceModel, SalesInvoiceReadingModel } from 'src/app/modules/finances/sales-invoices/sales-invoice.model';
+import Swal from 'sweetalert2';
 import { ProductEventModel, ProductModel, StoreReferenceModel } from '../../inventory/products/products.model';
-import { iCreditNote } from '../credit-note/creditNote.model';
-import { FooterService } from '../shared/footer-invoice/footer.service';
+import { iCreditNote, ProductNoteModel } from '../credit-note/creditNote.model';
 import { DetailsConceptService } from '../shared/invoice-details/invoice-details.service';
 import { Invoice, InvoiceFooter, ProductInvoiceModel } from '../shared/invoice.model';
 import { iStub } from '../stubs-invoice/stub.model';
@@ -20,25 +22,28 @@ import { TaxesService } from '../taxes/taxes.service';
   providedIn: 'root'
 })
 export class SalesService {
-
-
+  
+  
   businessRef = this._dashboard.businessRef
   current$ = new BehaviorSubject<SalesInvoiceModel | null>(null)
   stubsList$ = new BehaviorSubject<iStub[] | null>(null)
   businessCRF: string = this._cache.getDataKey('eid')!
   stubList$ = new BehaviorSubject<iStub[]>([])
   stubSelect$ = new BehaviorSubject<iStub | null>(null)
+  products: ProductInvoiceModel[] = []
+
   public totales: EventEmitter<InvoiceFooter> = new EventEmitter();
 
   constructor(
-    private _afs: AngularFirestore,
-    private _cache: MxCache,
     public _taxes: TaxesService,
-    private _dashboard: DashboardService,
-    private _alert: MxAlert,
-    private foot: FooterService,
     public conceptInvoice: DetailsConceptService,
     public stub: StubService,
+    private _afs: AngularFirestore,
+    private _cache: MxCache,
+    private _dashboard: DashboardService,
+    private _alert: MxAlert,
+    private _router: Router,
+
 
   ) {
 
@@ -56,6 +61,7 @@ export class SalesService {
 
   saveInvoice(invoice: SalesInvoiceModel) {
     try {
+
       let businessRef = `businesses/${this._dashboard.CRF}`
       const invoiceRef = this._afs.doc<SalesInvoiceModel>(`${businessRef}/sales/${invoice.invoiceId}`).ref
       invoiceRef.set({ ...invoice })
@@ -171,4 +177,19 @@ export class SalesService {
     let ref = this._afs.collection<iCreditNote>(`businesses/${this.businessCRF}/credit_notes`).ref
     return await ref.where('invoiceId', '==', id).where('concept', '==' , 'anulacion').get()
   }
+
+  
+  addProduct(event: MatCheckboxChange, concept: ConceptAvailability) {
+    try {
+      if (event.checked) {
+        let product = new ProductNoteModel(concept.cant, concept.unit_price, concept.store, concept.concept)
+        this.products.push(product);
+      } else {
+        this.products = this.products.filter(c => c.product.UPC != concept.concept.UPC)
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
 }

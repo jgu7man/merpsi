@@ -5,7 +5,6 @@ import { CreditNoteService } from '../../credit-note/credit-note.service';
 import { PurchaseInvoiceService } from '../../purchase-invoices/puchase-invoice.service';
 import { SalesInvoiceModel } from '../../sales-invoices/sales-invoice.model';
 import { SalesService } from '../../sales-invoices/sales.service';
-import { AppliedTaxModel } from '../../taxes/taxes.model';
 import { TaxesService } from '../../taxes/taxes.service';
 import { InvoiceFooter } from '../invoice.model';
 import { FooterService } from './footer.service';
@@ -45,7 +44,8 @@ export class FooterInvoiceComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     console.log( this.foot.currentfoot$.value);
     if (this.invoice) {
-      this.foot.currentfoot_invoice$.next(this.invoice.footer)
+      let {subtotal, discount, shipping, taxes } = this.invoice.footer
+      this.foot.currentfoot$.next(new InvoiceFooter(subtotal, discount, shipping, taxes))
       console.log( this.foot.currentfoot_invoice$.value);
       
     } else {

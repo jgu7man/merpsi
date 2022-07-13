@@ -1,17 +1,21 @@
 import { EventEmitter, Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { iPurchaseInvoice, PurchaseInvoiceModel } from 'src/app/modules/finances/purchase-invoices/pucharce-invoice.model';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import Swal from 'sweetalert2';
 import { DashboardService } from 'src/app/dashboard/dashboard.service';
 import { ProductEventModel, ProductModel, StoreReferenceModel } from '../../inventory/products/products.model';
 import { TaxesService } from '../taxes/taxes.service';
 import firebase from 'firebase/app'
-import { FooterService } from '../shared/footer-invoice/footer.service';
 import { DetailsConceptService } from '../shared/invoice-details/invoice-details.service';
 import { catchError, map } from 'rxjs/operators';
 import { Invoice, InvoiceFooter, ProductInvoiceModel } from '../shared/invoice.model';
+import { PersonalService } from '../../admin/managers/personal.service';
+import { FormGroup } from '@angular/forms';
+import { iProvider } from '../../inventory/providers/provider.model';
+import { iSede } from '../../admin/stores/sede.model';
+import { FooterService } from '../shared/footer-invoice/footer.service';
 
 
 
@@ -23,6 +27,8 @@ export class PurchaseInvoiceService {
   businessCRF: string = this._cache.getDataKey('eid')!
   public totales: EventEmitter<InvoiceFooter> = new EventEmitter();
   invoiceId: string = ''
+  provider: iProvider | null = null
+  store: iSede | null = null
 
 
   constructor(
@@ -31,7 +37,10 @@ export class PurchaseInvoiceService {
     private _cache: MxCache,
     private _dashboard: DashboardService,
     public footer: FooterService,
-    public conceptInvoice: DetailsConceptService
+    public conceptInvoice: DetailsConceptService,
+    private _footer: FooterService,
+    private _manager: PersonalService,
+
   ) {
   }
 
@@ -61,7 +70,6 @@ export class PurchaseInvoiceService {
         ...details
       })
       this.calcFooter()
-      //this.totales.emit(foot)
     }
   }
 
@@ -76,8 +84,6 @@ export class PurchaseInvoiceService {
     let foot = this.footer.currentfoot$.value
     foot.subtotal = subtotal
     this.footer.currentfoot$.next(foot)
-    //foot.total = (subtotal + foot.shipping + this._taxes.appliedTaxesTotal) - (foot.discount)
-    //this.updateCurrent('footer', foot)
     return foot
   }
 
@@ -126,21 +132,51 @@ export class PurchaseInvoiceService {
     }
     )
     this.conceptInvoice.details$.next(details)
-    //await this.updateCurrent('details', details)
     if (!this.footer.currentfoot$.value) throw { message: ' No existe el footer' }
     let foot = this.footer.currentfoot$.value
     foot.subtotal = subtotal
     this.footer.currentfoot$.next(foot)
-    //foot.total = (subtotal + foot.shipping) - (foot.discount)
-    //this.updateCurrent('footer', foot)
-
-    //this.totales.emit(foot)
-  }
+    }
 
 
 
-  async saveInvoice(invoice: PurchaseInvoiceModel) {
+  async saveInvoice(invoiceForm: FormGroup) {
     try {
+      if (!this.conceptInvoice.details$.value) throw { message: ' No existe los conceptos' }
+      if (!this._footer.currentfoot$.value) throw { message: ' No existe el footer' }
+      if (!this._manager.current) throw { message: 'No se ha iniciado la sesion' }
+      if (!invoiceForm.valid) throw { message: 'debe llenar todos los campos del formulario' }
+      if (!this.store) throw { message: 'debe seleccionar una sede' }
+      if (!this.provider) throw { message: 'debe seleccionar un proveedor' }
+      if (this.conceptInvoice.details$.value.length == 0) throw { message: 'debe agregar por lo menos un concepto' }
+      if (this._footer.currentfoot$.value.total <= 0) throw { message: 'el total de la factura no debe ser igual o menor a cero ' }
+
+      const manager: Invoice.manager = {
+        id: this._manager.current.uid!,
+        name: this._manager.current.name,
+        ref: this._manager.managerRef
+      }
+
+      let { action_date, invoiceId } = invoiceForm.value
+
+      const provider: Invoice.provider = {
+        id: this.provider.CRF,
+        name: this.provider.name,
+        ref: null
+
+      }
+
+      const invoice = new PurchaseInvoiceModel(
+        invoiceId,
+        action_date,
+        provider,
+        this.store,
+        this.conceptInvoice.details$.value,
+        this._footer.currentfoot$.value.getdata(),
+        '',
+        '',
+        manager
+      )
       let businessRef = `businesses/${this._dashboard.CRF}`
       const invoiceRef = this._afs.doc<PurchaseInvoiceModel>(`${businessRef}/purchases/${invoice.invoiceId}`).ref
       invoiceRef.set({ ...invoice })
@@ -176,5 +212,3 @@ export class PurchaseInvoiceService {
     }
   }
 }
-
-// type PropType<TObj, TProp extends keyof TObj> = TObj[TProp]

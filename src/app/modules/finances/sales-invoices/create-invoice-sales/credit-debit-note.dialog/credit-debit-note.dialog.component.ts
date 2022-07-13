@@ -1,6 +1,5 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { MatCheckboxChange } from '@angular/material/checkbox';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
@@ -40,40 +39,25 @@ export class CreditDebitNoteDialogComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    console.log(this.document);
-
-    if (!this.document) throw { message: 'No se encuentra el document'}
+    if (!this.document) throw { message: 'No se encuentra el document' }
     if (this.document.invoice) {
-    
-     if (this.document.invoice.avalibleConcepts.length > 0 ){
 
-      this.productsAvailable = this.document.invoice.avalibleConcepts
-    } else {
-      this.products = this.document.invoice.details.map(det => {
-        return new ProductNoteModel(det.cant, det.unit_price, det.store, det.product)
-      })
-
-    }
-    }
-
-
-  }
-  addProduct(event: MatCheckboxChange, concept: ConceptAvailability) {
-    try {
-      if (event.checked) {
-        let product = new ProductNoteModel(concept.cant, concept.unit_price, concept.store, concept.concept)
-        this.products.push(product);
+      if (this.document.invoice.avalibleConcepts.length > 0) {
+        this.productsAvailable = this.document.invoice.avalibleConcepts
       } else {
-        this.products = this.products.filter(c => c.product.UPC != concept.concept.UPC)
-      }
-      console.log((this.products.length === 0) || (this.concept.value != 'anulacion'));
-      console.log(this.concept.value);
-      console.log(this.products);
+        this.sales.products = this.document.invoice.details.map(det => {
+          return new ProductNoteModel(det.cant, det.unit_price, det.store, det.product)
+        })
 
-    } catch (error) {
-      console.error(error)
+      }
     }
+
+
   }
+  get typeDocument(): boolean {
+    return ((this.document.document=='debit' || (this.concept.value=='devolucion' || this.concept.value=='disminucion')) && this.document.invoice !=null)
+  }
+  
   createCDN() {
     try {
       const id_invoice = this.document.invoice.invoiceId

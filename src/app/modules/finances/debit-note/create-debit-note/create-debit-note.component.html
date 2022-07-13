@@ -1,19 +1,19 @@
-<ng-container *ngIf="invoice_Ref == null">
+  <ng-template #selectInvoice>
   <mx-searcher-list
   [label]="'Nro de Factura'"
   [collection]="'businesses/'+debit.businessCRF+'/sales'"
   [param]="'invoiceId'"
-  (results)="getValue($event)"
+  (results)="debit.getValue($event)"
   >
-  </mx-searcher-list>
-</ng-container>
+</mx-searcher-list>
+</ng-template>
 
-<ng-container *ngIf="invoice_Ref">
+<ng-container *ngIf="debit.invoice_Ref else selectInvoice">
   <div class="row">
     <div class="col s4">
       <mat-form-field class="col s12" appearance="outline">
         <mat-label>Talonario</mat-label>
-        <mat-select placeholder="Talonario" (selectionChange)="seletedStub($event)" name="stub">
+        <mat-select placeholder="Talonario" (selectionChange)="debit.seletedStub($event)" name="stub">
           <mat-option *ngFor="let stub of debit.stubList$ | async" [value]="stub">
             {{stub.name}}
           </mat-option>
@@ -21,9 +21,7 @@
       </mat-form-field>
     </div>
     <div class="col s4">
-      <ng-container *ngIf="debit.stubSelect$.value as stub">
-        <h1>{{stub.prefixIndexCurrent}}</h1>
-      </ng-container>
+        <h1>{{debit.nroInvoice}}</h1>
     </div>
     <mat-form-field appearance="outline" class="col s4 l3">
       <mat-label>Fecha de Emision</mat-label>
@@ -32,30 +30,30 @@
       <mat-datepicker #emition startView="year"></mat-datepicker>
     </mat-form-field>
     <div class="row">
-      <ng-container *ngIf="invoice_Ref">
+      <ng-container *ngIf="debit.invoice_Ref as invoice">
         <div class="col s3">
-          nro de Factura: {{invoice_Ref.invoiceId}}
+          nro de Factura: {{invoice.invoiceId}}
         </div>
         <div class="row">
           <div class="col s4">
-            Nombre Cliente: {{invoice_Ref.client.name}}
+            Nombre Cliente: {{invoice.client.name}}
           </div>
         </div>
         <div class="row">
           <div class="col s4">
-            Metodo de Pago: {{invoice_Ref.payment_method}}
+            Metodo de Pago: {{invoice.payment_method}}
           </div>
           <div class="col s4">
-            Vendedor: {{invoice_Ref.seller}}
+            Vendedor: {{invoice.seller}}
           </div>
           <div class="col s4">
-            Moneda :{{invoice_Ref.currency}}
+            Moneda :{{invoice.currency}}
           </div>
         </div>
         <ng-container *ngIf=" invoiceConcept.details_Notes$.value as details">
           <ng-container *ngFor="let det of details">
-            <app-invoice-concept [document]="'debit'" [concept]="det">
-            </app-invoice-concept>
+            <app-invoice-details [document]="'debit'" [concept]="det">
+            </app-invoice-details>
           </ng-container>
         </ng-container>
         <!-- FOOTER -->

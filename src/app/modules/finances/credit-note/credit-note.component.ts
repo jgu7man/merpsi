@@ -26,10 +26,6 @@ export class CreditNoteComponent implements OnInit {
 
 
   ) {
-    // credit.listCredits().subscribe( list => {
-    //   this.listCredits = list
-    // })
-
     this._index.collection = `/businesses/${this.credit.businessCRF}/credit_notes`
     this._index.field = 'id'
     this._index.initIndex(this._index.collection, this._index.field, 10)

@@ -1,28 +1,27 @@
-<ng-container *ngIf="!credit.invoiceRef$.value as invoice_Ref ">
+
+<ng-template #selectInvoice>
   <mx-searcher-list
-  [label]="'Nro de Factura'"
-  [collection]="'businesses/'+sales.businessCRF+'/sales'"
-  [param]="'invoiceId'"
-  (results)="getValue($event)"
-  >
-  </mx-searcher-list>
-</ng-container>
-<ng-container *ngIf="credit.invoiceRef$.value as invoice_Ref">
+    [label]="'Nro de Factura'"
+    [collection]="'businesses/'+sales.businessCRF+'/sales'"
+    [param]="'invoiceId'"
+    (results)="credit.getValue($event)"
+    >
+    </mx-searcher-list>
+</ng-template>
+<ng-container *ngIf="credit.invoiceRef$.value as invoice_Ref else selectInvoice">
   <div class="container">
     <div class="row">
       <div class="col s12 m8">
           <mat-form-field class="col s4" appearance="outline">
             <mat-label>Talonario</mat-label>
-            <mat-select placeholder="Placeholder" (selectionChange)="selectStub($event)" name="name">
+            <mat-select placeholder="Placeholder" (selectionChange)="credit.selectStub($event)" name="name">
               <mat-option *ngFor="let stub of credit.stubList$ | async" [value]="stub">
                 {{stub.name}}
               </mat-option>
             </mat-select>
           </mat-form-field> -->
           <!-- NRO FACTURA -->
-          <ng-container *ngIf="credit.stubSelect$.value as stub" class="col s4">
-            <h1>{{stub.prefixIndexCurrent}}</h1>
-          </ng-container>
+            <h1>{{credit.nroStub}}</h1>
       </div>
     </div>
     <ng-container *ngIf="invoice_Ref as invoice_current">
@@ -50,10 +49,10 @@
       </div>
       <ng-container *ngIf=" invoiceConcept.details_Notes$.value as det">
         <ng-container *ngFor="let concept of det ">
-          <app-invoice-concept [document]="'credit'" [concept]="concept" [tipo_concepto]="contextNC">
-          </app-invoice-concept>
+          <app-invoice-details [document]="'credit'" [concept]="concept" [tipo_concepto]="credit.contextNC">
+          </app-invoice-details>
         </ng-container>
-        <app-footer-credito-debito [concept]="contextNC">
+        <app-footer-credito-debito [concept]="credit.contextNC">
         </app-footer-credito-debito>
       </ng-container>
     </ng-container>

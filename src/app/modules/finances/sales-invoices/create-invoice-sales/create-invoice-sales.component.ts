@@ -63,15 +63,10 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy {
     private _credit: CreditNoteService
 
   ) {
-    // this.closesSub = this._crud.onClosed.subscribe(() => {
-    //   this.stubForm.patchValue('')
-    // })
   }
 
   async ngOnInit() {
     if (this.invoice) {
-      console.log(this.invoice);
-      
       this.clientform.patchValue({
         name: this.invoice.client.name,
       })
@@ -80,28 +75,9 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy {
         currency: this.invoice.currency,
         payment_method: this.invoice.payment_method,
       })
-
       this.conceptInvoice.details_invoice$.next(this.invoice.details)
       this._footer.currentfoot_invoice$.next(this.invoice.footer)
     }
-  }
-  readOnlyForm() {
-
-    this.clientform.controls.cip.disable()
-    this.clientform.controls.name.disable()
-    this.clientform.controls.email.disable()
-
-    this.salesForm.controls.client.disable()
-    this.salesForm.controls.seller.disable()
-    this.salesForm.controls.date_expiration.disable()
-    this.salesForm.controls.currency.disable()
-    this.salesForm.controls.emition_date.disable()
-    this.salesForm.controls.payment_method.disable()
-
-  }
-
-  onSubmit() {
-    console.log(this.salesForm.getRawValue())
   }
 
   getValue(client_: ClientCreationModel) {
@@ -119,12 +95,12 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy {
     }).afterClosed().subscribe(concept => {
       if (concept) {
         this.concept = concept
-        // this._footer.recalculateTaxesCurrentFoot(this.conceptInvoice.details$.value)
-        // console.log(this.concept!.getdata());
-
       }
-
     })
+  }
+
+  get validationButtons(): boolean { 
+    return ((this.salesForm.invalid || this.clientform.invalid) && (this.conceptInvoice.details$.value.length <= 0 || this.invoice != null))
   }
 
   async saveInvoice() {
@@ -160,8 +136,7 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy {
       this._footer.currentfoot$.value.getdata()
     )
 
-    console.log(invoice)
-    await this.sales.saveInvoice(invoice)
+     this.sales.saveInvoice(invoice)
 
     this.clean()
     this._alert.notify('la factura ha sido guardado con exito!')
@@ -186,11 +161,8 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy {
     let stub = event.value
     if (stub != '') {
       this.sales.stubSelect$.next(stub)
-      //if (this.sales.current$.value) {
       this.sales.stubSelect$.value!.prefixIndexCurrent = stub.prefix + '-' + ((stub.currentIndex || 0) + 1)
       console.log(this.sales.stubSelect$.value!.prefixIndexCurrent);
-
-      // }
     }
   }
 
@@ -208,7 +180,6 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy {
         }
       }).afterClosed().subscribe(concept => {
         this.concept = concept
-        // this.sales.addConcept(concept)
       })
     } else {
       Swal.fire('No se puede aplicar mas notas de credito a esta factura')
@@ -217,9 +188,8 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy {
   }
   async createDebit() {
     try {
-      //let ncAnulation = await this.sales.searchAnnulledCreditNotes(this.invoice!.invoiceId)
       if ( !this.invoice) throw { message: 'No se encuentra la factura relacionada'}
-      if (this.invoice.avalibleAmount > 0) {
+      if ( this.invoice.avalibleAmount > 0 ) {
         this._dialog.open(CreditDebitNoteDialogComponent, {
           width: '1200px',
           height: '400px',
@@ -249,7 +219,6 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy {
     this.stubForm.patchValue('')
     this.conceptInvoice.details$.next([])
     this.conceptInvoice.details_invoice$.next([])
-    //this.conceptInvoice.details_Notes$.next([])
     this._footer.currentfoot$.next(null)
 
   }

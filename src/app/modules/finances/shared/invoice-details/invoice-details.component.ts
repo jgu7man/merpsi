@@ -22,17 +22,13 @@ import { DetailsConceptService } from './invoice-details.service';
 export class InvoiceDetailsComponent implements OnInit, OnDestroy {
 
   @Input() invoice: iSalesInvoice | null = null
-
-  // NOTE Los tipados de propiedades que funcionan como flag, es preferible limitar su valor con el tipado de sus posibles valores nada más
   @Input() document?: 'sale' | 'credit' | 'debit'
-  // @Input() document: string = ''
   @Input() tipo_concepto?: NoteCredit.context
   @Input() concept: ProductInvoiceModel | Invoice.concept | null = null
   businessRef = this._cache.getDataKey( 'eid' )
   productSelect: ProductModel | string = ''
   productListEmpty = false
   stores$: Observable<iSede[]>
-
 
   formAddProduct: FormGroup = new FormGroup( {
     cant: new FormControl( 1, ),
@@ -53,42 +49,44 @@ export class InvoiceDetailsComponent implements OnInit, OnDestroy {
   }
 
 
-  ngOnInit(): void {
+  ngOnInit(): void {    
     if ( this.concept ) {
       /* validaciones para los conceptos segun el documento en el que este */
-      if ( this.document == 'sale' ) {
-        if ( this.conceptInvoice.details$.value ) {
-          let details = this.conceptInvoice.details$.value
-          details.map( det => {
-            if ( det.product.UPC === this.concept!.product.UPC ) {
-              this.formAddProduct.controls.cant.setValidators( Validators.max( det.stock ) )
-              console.log( det );
-            }
-          } )
-        }
-      } else
-        if ( this.document == 'debit' ) {
-          if ( this.conceptInvoice.details_Notes$.value ) {
-            let details = this.conceptInvoice.details_Notes$.value
-            details.map( det => {
-              if ( det.product.UPC === this.concept!.product.UPC ) {
-                this.formAddProduct.controls.unit_price.setValidators( Validators.min( this.concept!.unit_price ) )
+      switch (this.document) {
+        case 'sale':
+          if (this.conceptInvoice.details$.value) {
+            let details = this.conceptInvoice.details$.value
+            details.map(det => {
+              if (det.product.UPC === this.concept!.product.UPC) {
+                this.formAddProduct.controls.cant.setValidators(Validators.max(det.stock))
               }
-            } )
+            })
           }
-        }
-        else
-          if ( this.document == 'credit' ) {
-            if ( this.conceptInvoice.details_Notes$.value ) {
-              let details = this.conceptInvoice.details_Notes$.value
-              details.map( det => {
-                if ( det.product.UPC === this.concept!.product.UPC ) {
-                  this.formAddProduct.controls.unit_price.setValidators( Validators.max( this.concept!.unit_price ) )
-                  this.formAddProduct.controls.cant.setValidators( Validators.max( this.concept!.cant! ) )
-                }
-              } )
-            }
+          break;
+        case 'debit':
+          if (this.conceptInvoice.details_Notes$.value) {
+            let details = this.conceptInvoice.details_Notes$.value
+            details.map(det => {
+              if (det.product.UPC === this.concept!.product.UPC) {
+                this.formAddProduct.controls.unit_price.setValidators(Validators.min(this.concept!.unit_price))
+              }
+            })
           }
+          break
+
+        case 'credit':
+          if (this.conceptInvoice.details_Notes$.value) {
+            let details = this.conceptInvoice.details_Notes$.value
+            details.map(det => {
+              if (det.product.UPC === this.concept!.product.UPC) {
+                this.formAddProduct.controls.unit_price.setValidators(Validators.max(this.concept!.unit_price))
+                this.formAddProduct.controls.cant.setValidators(Validators.max(this.concept!.cant!))
+              }
+            })
+          }
+          break
+      }
+
       this.formAddProduct.valueChanges.pipe(
         distinctUntilChanged( ( x, y ) =>
           typeof x != 'object' ? x === y : JSON.stringify( x ) === JSON.stringify( y )
