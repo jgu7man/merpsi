@@ -42,12 +42,8 @@ export class FooterInvoiceComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    console.log( this.foot.currentfoot$.value);
     if (this.invoice) {
-      let {subtotal, discount, shipping, taxes } = this.invoice.footer
-      this.foot.currentfoot$.next(new InvoiceFooter(subtotal, discount, shipping, taxes))
-      console.log( this.foot.currentfoot_invoice$.value);
-      
+      this.foot.makeFooter(this.invoice.footer)  
     } else {
       this.foot.currentfoot$.next(new InvoiceFooter())
       this.formFooter.valueChanges.pipe(
@@ -64,12 +60,6 @@ export class FooterInvoiceComponent implements OnInit, OnDestroy {
 
   }
 
-  getTotalTaxes() {
-    if (!this.foot.currentfoot$.value) throw { message: ' No existe el footer' }
-    let footer = this.foot.currentfoot$.value
-    footer.taxes = this.taxes.applidedTaxes
-    this.foot.currentfoot$.next(footer)
-    console.log(this.foot.currentfoot$.value);
-  }
+
 
 }

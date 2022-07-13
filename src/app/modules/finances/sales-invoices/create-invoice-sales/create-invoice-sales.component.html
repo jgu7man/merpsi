@@ -46,7 +46,7 @@
             <!-- CRF SELECTOR -->
             <div class="col s12">
               <mx-searcher-list [collection]="'businesses/' + businessRef + '/clients'" [param]="'name'"
-                [label]="'clientes'" (results)="getValue($event)"></mx-searcher-list>
+                [label]="'clientes'" (results)="sales.getValue($event)"></mx-searcher-list>
             </div>
             <ng-container *ngIf="client && !invoice">
               <!-- datos del cliente -->

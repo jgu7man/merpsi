@@ -9,9 +9,11 @@ import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { DashboardService } from 'src/app/dashboard/dashboard.service';
 import { ConceptAvailability, SalesInvoiceModel, SalesInvoiceReadingModel } from 'src/app/modules/finances/sales-invoices/sales-invoice.model';
-import Swal from 'sweetalert2';
+import { PersonalService } from '../../admin/managers/personal.service';
+import { ClientCreationModel } from '../../clients/clients.model';
 import { ProductEventModel, ProductModel, StoreReferenceModel } from '../../inventory/products/products.model';
 import { iCreditNote, ProductNoteModel } from '../credit-note/creditNote.model';
+import { FooterService } from '../shared/footer-invoice/footer.service';
 import { DetailsConceptService } from '../shared/invoice-details/invoice-details.service';
 import { Invoice, InvoiceFooter, ProductInvoiceModel } from '../shared/invoice.model';
 import { iStub } from '../stubs-invoice/stub.model';
@@ -31,8 +33,10 @@ export class SalesService {
   stubList$ = new BehaviorSubject<iStub[]>([])
   stubSelect$ = new BehaviorSubject<iStub | null>(null)
   products: ProductInvoiceModel[] = []
+  infoAditional: Invoice.additionalInfo | null = null
 
   public totales: EventEmitter<InvoiceFooter> = new EventEmitter();
+  client: ClientCreationModel | null = null;
 
   constructor(
     public _taxes: TaxesService,
@@ -43,6 +47,9 @@ export class SalesService {
     private _dashboard: DashboardService,
     private _alert: MxAlert,
     private _router: Router,
+    private _manager: PersonalService,
+    private _footer: FooterService,
+
 
 
   ) {
@@ -59,9 +66,41 @@ export class SalesService {
     }
   }
 
-  saveInvoice(invoice: SalesInvoiceModel) {
-    try {
+  getValue(client_: ClientCreationModel) {
+    this.client = client_
+  }
 
+  saveInvoice() {
+    try {
+    if (!this.infoAditional) throw { message: 'No se obtiene la Información Adicional' }
+    if (!this.client) throw { message: 'No existe el cliente' }
+    if (!this.stubSelect$.value) throw { message: 'No existe el talonario' }
+    if (!this._manager.current) throw { message: 'No se ha iniciado la sesion' }
+    if (!this._footer.currentfoot$.value) throw { message: ' No existe el footer' }
+
+
+    const client: Invoice.client = {
+      id: this.client.id!,
+      name: this.client.name!,
+      cip: this.client.CRF!
+    }
+
+    const manager: Invoice.manager = {
+      id: this._manager.current.uid!,
+      name: this._manager.current.name,
+      ref: this._manager.managerRef
+    }
+
+    const invoice = new SalesInvoiceModel(
+      this.stubSelect$.value.prefixIndexCurrent,
+      client,
+      this.infoAditional.seller,
+      this.infoAditional.currency,
+      this.infoAditional.payment_method,
+      manager,
+      this.conceptInvoice.details$.value,
+      this._footer.currentfoot$.value.getdata()
+    )
       let businessRef = `businesses/${this._dashboard.CRF}`
       const invoiceRef = this._afs.doc<SalesInvoiceModel>(`${businessRef}/sales/${invoice.invoiceId}`).ref
       invoiceRef.set({ ...invoice })

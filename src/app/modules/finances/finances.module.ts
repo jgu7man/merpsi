@@ -26,7 +26,6 @@ import { StubsInvoiceComponent } from './stubs-invoice/stubs-invoice.component';
 import { TaxAmountCrudComponent } from './taxes/tax-amount-crud/tax-amount-crud.component';
 import { TaxFormComponent } from './taxes/tax-form/tax-form.component';
 import { TaxesComponent } from './taxes/taxes.component';
-import { TestFinanceComponent } from './test-finance/test-finance.component';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { CreateInvoiceComponent } from './purchase-invoices/create-invoice-purchase/create-invoice.component';
 import { PurchaseInvoicesComponent } from './purchase-invoices/purchase-invoices.component';
@@ -52,7 +51,6 @@ import { SelectDocumentDialogComponent } from './sales-invoices/linked-documents
     StubFormCreateComponent,
     CreditNoteComponent,
     FormCreditNoteComponent,
-    TestFinanceComponent,
     CreditDebitNoteDialogComponent,
     DebitNoteComponent,
     CreateDebitNoteComponent,

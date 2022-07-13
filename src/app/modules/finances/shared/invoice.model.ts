@@ -198,6 +198,12 @@ export declare namespace Invoice {
     //ref: FireRef<ClientModel>
   }
 
+  interface additionalInfo {
+    seller: string,
+    currency: string,
+    payment_method: string
+  }
+
   interface concept extends Omit<ProductInvoiceModel, 'getdata'> { }
 
   namespace concept {

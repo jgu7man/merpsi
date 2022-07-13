@@ -46,7 +46,7 @@
             </ng-container>
           </ng-container>
           <ng-template #taxesCrud>
-            <app-tax-amount-crud [amount_base]="footer.subtotal" (totalTax)="getTotalTaxes()">
+            <app-tax-amount-crud [amount_base]="footer.subtotal" (totalTax)="foot.getTotalTaxes()">
             </app-tax-amount-crud>
           </ng-template>
         </div>

@@ -45,9 +45,6 @@ export class SelectConceptDialogComponent implements OnInit {
       width: '100% ',
       data: 'purchase'
     }).afterClosed().subscribe(product => {
-      console.log('select-concept');
-      console.log(product);
-      
       this._dialog.close(product)
     })
   }

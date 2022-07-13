@@ -8,6 +8,7 @@ import { InvoiceFooter, Invoice, ProductInvoiceModel } from '../invoice.model';
   providedIn: 'root'
 })
 export class FooterService {
+ 
   currentfoot$ = new BehaviorSubject<InvoiceFooter | null>(null)
   currentfoot_invoice$ = new BehaviorSubject<Invoice.footer | null>(null)
   
@@ -58,6 +59,16 @@ export class FooterService {
     foot.subtotal = this.getsubtotal(details)
       foot.taxes = this.recalculateTaxes
       this.currentfoot$.next(foot)
+  }
+  makeFooter(footer: Invoice.footer) {
+    let {subtotal, discount, shipping, taxes } = footer
+      this.currentfoot$.next(new InvoiceFooter(subtotal, discount, shipping, taxes))
+  }
+  getTotalTaxes() {
+    if (!this.currentfoot$.value) throw { message: ' No existe el footer' }
+    let footer = this.currentfoot$.value
+    footer.taxes = this._taxes.applidedTaxes
+    this.currentfoot$.next(footer)
   }
   
 }

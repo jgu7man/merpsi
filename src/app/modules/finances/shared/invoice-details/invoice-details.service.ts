@@ -16,6 +16,7 @@ export class DetailsConceptService {
   details$ = new BehaviorSubject<ProductInvoiceModel[]>([])
   details_Notes$ = new BehaviorSubject<iProductNote[]>([])
   details_invoice$ = new BehaviorSubject<Invoice.concept[]>([])
+  
   constructor(
     private _footer: FooterService,
     private _footer_note: FooterCreditoDebitoService,
@@ -54,9 +55,6 @@ export class DetailsConceptService {
       })
       foot.taxes = this._taxes.applidedTaxes
       this._footer_note.footer$.next(foot)
-      console.log(this._footer_note.footer$.value);
-      console.log(this.details_Notes$.value);
-
     } else {
       if (this.details$.value) {
         let details = this.details$.value.map((d) => {

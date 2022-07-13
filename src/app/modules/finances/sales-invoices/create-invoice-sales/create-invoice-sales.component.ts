@@ -42,7 +42,7 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy {
     email: new FormControl('', [Validators.required]),
   })
 
-  salesForm: FormGroup = new FormGroup({
+    salesForm: FormGroup = new FormGroup({
     seller: new FormControl('', [Validators.required]),
     currency: new FormControl('', [Validators.required]),
     payment_method: new FormControl(''),
@@ -58,7 +58,6 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy {
     private _dialog: MatDialog,
     private _alert: MxAlert,
     private _taxes: TaxesService,
-    private _manager: PersonalService,
     private _footer: FooterService,
     private _credit: CreditNoteService
 
@@ -80,14 +79,7 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy {
     }
   }
 
-  getValue(client_: ClientCreationModel) {
-    this.client = client_
-    this.clientform.patchValue({
-      CRF: this.client.CRF,
-      name: this.client.name,
-      email: this.client.contact ? this.client.contact.email : ''
-    })
-  }
+
 
   addConcept() {
     this._dialog.open(SelectConceptSalesDialogComponent, {
@@ -104,40 +96,8 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy {
   }
 
   async saveInvoice() {
-    if (!this.client) throw { message: 'No existe el cliente' }
-    if (!this.sales.stubSelect$.value) throw { message: 'No existe el talonario' }
-    if (!this._manager.current) throw { message: 'No se ha iniciado la sesion' }
-    if (!this._footer.currentfoot$.value) throw { message: ' No existe el footer' }
-
-
-    const client: Invoice.client = {
-      id: this.client.id!,
-      name: this.client.name!,
-      cip: this.client.CRF!
-    }
-    const data = {
-      ...this.salesForm.value
-    }
-
-    const manager: Invoice.manager = {
-      id: this._manager.current.uid!,
-      name: this._manager.current.name,
-      ref: this._manager.managerRef
-    }
-
-    const invoice = new SalesInvoiceModel(
-      this.sales.stubSelect$.value.prefixIndexCurrent,
-      client,
-      data.seller,
-      data.currency,
-      data.payment_method,
-      manager,
-      this.conceptInvoice.details$.value,
-      this._footer.currentfoot$.value.getdata()
-    )
-
-     this.sales.saveInvoice(invoice)
-
+    this.sales.infoAditional = this.salesForm.value
+    this.sales.saveInvoice()
     this.clean()
     this._alert.notify('la factura ha sido guardado con exito!')
     this.submited.emit()

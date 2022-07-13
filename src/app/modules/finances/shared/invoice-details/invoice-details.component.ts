@@ -52,40 +52,26 @@ export class InvoiceDetailsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {    
     if ( this.concept ) {
       /* validaciones para los conceptos segun el documento en el que este */
-      switch (this.document) {
-        case 'sale':
-          if (this.conceptInvoice.details$.value) {
-            let details = this.conceptInvoice.details$.value
-            details.map(det => {
-              if (det.product.UPC === this.concept!.product.UPC) {
-                this.formAddProduct.controls.cant.setValidators(Validators.max(det.stock))
-              }
-            })
+      let details = this.document == 'sale' ? this.conceptInvoice.details$.value : 
+                    this.conceptInvoice.details_Notes$.value
+      let control = this.formAddProduct.controls
+      details.map(det =>{
+        if (det.product.UPC === this.concept!.product.UPC) {
+          switch (this.document){
+            case 'sale':
+              control.cant.setValidators(Validators.max(det.stock))
+            break;
+            case 'debit':
+              control.unit_price.setValidators(Validators.min(this.concept!.unit_price))
+            break;
+            case 'credit':
+              control.unit_price.setValidators(Validators.max(this.concept!.unit_price))
+              control.cant.setValidators(Validators.max(this.concept!.cant!))
+            break;
           }
-          break;
-        case 'debit':
-          if (this.conceptInvoice.details_Notes$.value) {
-            let details = this.conceptInvoice.details_Notes$.value
-            details.map(det => {
-              if (det.product.UPC === this.concept!.product.UPC) {
-                this.formAddProduct.controls.unit_price.setValidators(Validators.min(this.concept!.unit_price))
-              }
-            })
-          }
-          break
 
-        case 'credit':
-          if (this.conceptInvoice.details_Notes$.value) {
-            let details = this.conceptInvoice.details_Notes$.value
-            details.map(det => {
-              if (det.product.UPC === this.concept!.product.UPC) {
-                this.formAddProduct.controls.unit_price.setValidators(Validators.max(this.concept!.unit_price))
-                this.formAddProduct.controls.cant.setValidators(Validators.max(this.concept!.cant!))
-              }
-            })
-          }
-          break
-      }
+        }
+      })
 
       this.formAddProduct.valueChanges.pipe(
         distinctUntilChanged( ( x, y ) =>
