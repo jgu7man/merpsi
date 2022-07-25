@@ -1,34 +1,33 @@
 import firebase from 'firebase/app'
-import { FireRef } from 'src/app/models/firestore.model'
 
-export interface iUsuario {
+export interface iUser {
   email: string,
-  nombre: string,
-  apellido: string,
-  rol: ROL,
-  sede?: string,
+  name: string,
+  lastName: string,
+  role: ROL,
+  store?: string,
   password?: string,
 }
 
-export class UsuarioModel {
+export class UserModel {
 
   public registered!: Date | firebase.firestore.Timestamp
   public email!: string
-  public nombre!: string
-  public apellido!: string
-  public rol!: ROL
+  public name!: string
+  public lastName!: string
+  public role!: ROL
   public uid!: string
   public lastAccess!: Date | firebase.firestore.Timestamp
-  public sede?: string
+  public store?: string
   public photoURL?: string
   public displayName?: string
   public password?: string
 
   constructor(
-    userData: Partial<UsuarioModel>
+    userData: Partial<UserModel>
   ) {
     Object.assign(this, userData);
-    this.displayName = this.displayName || `${this.nombre} ${this.apellido || ''}`
+    this.displayName = this.displayName || `${this.name} ${this.lastName || ''}`
     this.lastAccess = userData.lastAccess || new Date()
   }
 }

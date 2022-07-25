@@ -5,13 +5,22 @@ import { FooterNoteModel, NoteCredit, ProductNoteModel } from "../credit-note/cr
 import { SalesInvoiceModel } from "../sales-invoices/sales-invoice.model"
 import { Invoice } from "../shared/invoice.model"
 
+/**
+ *Modelo para crear una Nota de Debito
+ *
+ * @export
+ * @class DebitNoteModel
+ */
 export class DebitNoteModel {
+  /* Fecha de emision*/
   emition_date: FireTime = createDate(new Date())
+  /* Numero de Documnto (segun talonario) */
   id: string
   manager: Invoice.manager
   footer: NoteCredit.footer
   details: NoteDebit.concept[]
   constructor(
+    /* referencia de la factura asociada */
     public invoiceId: string,
     id: string,
     manager: Invoice.manager,
@@ -28,16 +37,9 @@ export class DebitNoteModel {
 }
 
 export declare namespace NoteDebit {
+  // conceptos a los cuales se aplicara la nota de debito
   interface concept extends Omit<ProductNoteModel, 'getdata'> { }
   interface footer extends Omit<FooterNoteModel, 'data' | 'getdata' | 'totalInvoice' | 'calcTaxes' > { }
-
-  interface invoice{
-    id: string
-    ref: FireRef<SalesInvoiceModel> | null
-
-  }
-
-
 }
 
 export interface iDebitNote extends DebitNoteModel{}

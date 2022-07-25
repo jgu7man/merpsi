@@ -10,7 +10,7 @@ import { iManager, ManagerModel } from './manager.model';
 import { EmailService } from '../../../services/email.service';
 import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
-import { UsuarioModel } from './personal.model';
+import { UserModel } from './personal.model';
 import { AuthService } from 'src/app/services/auth.service';
 import { DashboardService } from 'src/app/dashboard/dashboard.service';
 
@@ -93,7 +93,7 @@ export class PersonalService {
     }
   }
 
-  async create(user: UsuarioModel) {
+  async create(user: UserModel) {
     try {
       let {email, password} = user
       let created = await this._afAuth.createUserWithEmailAndPassword(email, password as string)
@@ -123,7 +123,7 @@ export class PersonalService {
     }
   }
 
-  async revoke(user: UsuarioModel) {
+  async revoke(user: UserModel) {
     try {
       this._afs.collection('admins').doc(user.uid).update({ rol: 'revoke' })
       this._alert.notify('Se revocaron los accesos')

@@ -1,7 +1,6 @@
 import { AbstractControl, FormGroup } from "@angular/forms"
 import firebase from "firebase"
-import { createDate, FireDoc, FireRef, FireTime } from "src/app/models/firestore.model"
-import Swal from "sweetalert2"
+import { createDate, FireRef, FireTime } from "src/app/models/firestore.model"
 import { ManagerModel } from "../admin/managers/manager.model"
 
 export class ClientCreationModel{

@@ -39,10 +39,6 @@ export class PurchaseInvoicesComponent implements OnInit {
 
 
   ) {
-    // this.purchases.listPurchases().subscribe( list => { 
-    //   console.log(list);
-    //   this.listPuchases = list})
-    
     this._index.collection = `/businesses/${this.purchases.businessCRF}/purchases`
     this._index.field = 'invoiceId'
     this._index.initIndex(this._index.collection,this._index.field,10)

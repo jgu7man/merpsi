@@ -82,7 +82,7 @@ export class SalesService {
     const client: Invoice.client = {
       id: this.client.id!,
       name: this.client.name!,
-      cip: this.client.CRF!
+      CRF: this.client.CRF!
     }
 
     const manager: Invoice.manager = {

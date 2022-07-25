@@ -1,4 +1,4 @@
-import { BusinessModel, iBusiness, TAXPAYER_TYPE } from "../../../models/empresa.model";
+import { iBusiness, TAXPAYER_TYPE } from "../../../models/empresa.model";
 import firebase from 'firebase/app'
 import { FireRef } from "../../../models/firestore.model";
 

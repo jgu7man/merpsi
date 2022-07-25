@@ -5,6 +5,13 @@ import { iCreditNote, NoteCredit } from "../credit-note/creditNote.model";
 import { iDebitNote, NoteDebit } from "../debit-note/debit-note.model";
 import { Invoice, InvoiceModel, ProductInvoiceModel } from "../shared/invoice.model";
 
+/**
+ *Modelo para factura de Ventas
+ *
+ * @export
+ * @class SalesInvoiceModel
+ * @implements {InvoiceModel}
+ */
 export class SalesInvoiceModel implements InvoiceModel {
   public action_date: FireTime = createDate( new Date());
   public registered_date: FireTime = createDate( new Date());
@@ -35,31 +42,33 @@ export class SalesInvoiceModel implements InvoiceModel {
 
 
 }
+
+/* interfaz para lectura de factura de venta cuando viene de Base de Datos */
 export interface iSalesInvoice extends SalesInvoiceModel { }
 
 
-export interface iFacturaDatos {
-  fecha: Date | firebase.firestore.Timestamp,
-  doc_externo: string,
-  proveedor: string,
-  sede: string,
-  forma_pago: string,
-  concepto: string,
-  comprador: string,
-  cantidades: number,
-  subtotal: number,
-  descuento: number,
-  iva: number,
-  total: number,
-}
+// export interface iFacturaDatos {
+//   fecha: Date | firebase.firestore.Timestamp,
+//   doc_externo: string,
+//   proveedor: string,
+//   sede: string,
+//   forma_pago: string,
+//   concepto: string,
+//   comprador: string,
+//   cantidades: number,
+//   subtotal: number,
+//   descuento: number,
+//   iva: number,
+//   total: number,
+// }
 
-export interface iProductSales extends ProductInvoiceModel {}
+// export interface iProductSales extends ProductInvoiceModel {}
 
-export interface ClientInvoice{
-  cip: '',
-  name: '',
-  email: '',
-}
+// export interface ClientInvoice{
+//   cip: '',
+//   name: '',
+//   email: '',
+// }
 
 export declare namespace SaleInvoice {
   export type status =
@@ -106,14 +115,6 @@ export class SalesInvoiceReadingModel implements iSalesInvoice {
    * @type {iDebitNote[]}
    */
   private debit_notes: iDebitNote[] = []
-
-
-
-  /* NOTE - No sé si esto va a funcionar a la hora del compilado.
-  Si esto no es posible habrá que meter el CRF al constructor,
-  Obtner el dato con MxCache desde el método de consulta de la
-  colección de facturas. */
-  // private CRF = getCacheDataKey('eid')
 
   constructor (
     data: iSalesInvoice,

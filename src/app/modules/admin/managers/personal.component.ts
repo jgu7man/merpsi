@@ -6,7 +6,7 @@ import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import { MxCrudPanelColumns } from 'libs/@marxa/crud-panel/src/lib/mx-crud-panel.model';
 import { ManagerModel } from './manager.model';
 import { PersonalService } from './personal.service';
-import { UsuarioModel } from './personal.model';
+import { UserModel } from './personal.model';
 
 @Component({
   templateUrl: './personal.component.html',
@@ -38,7 +38,7 @@ export class PersonalComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
   }
 
-  onDeleteItem(item: UsuarioModel) {
+  onDeleteItem(item: UserModel) {
     this._dialog.open(DeleteUsuarioDialog)
       .afterClosed().subscribe(confirmation => {
         if (confirmation) {

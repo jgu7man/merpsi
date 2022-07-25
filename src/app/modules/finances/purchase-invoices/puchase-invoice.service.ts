@@ -160,7 +160,7 @@ export class PurchaseInvoiceService {
       let { action_date, invoiceId } = invoiceForm.value
 
       const provider: Invoice.provider = {
-        id: this.provider.CRF,
+        CRF: this.provider.CRF,
         name: this.provider.name,
         ref: null
 

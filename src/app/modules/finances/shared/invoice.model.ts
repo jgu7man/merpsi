@@ -4,62 +4,15 @@ import { iSede } from "../../admin/stores/sede.model"
 import { iAppliedTax } from "../taxes/taxes.model"
 import { iManager } from "../../admin/managers/manager.model"
 import { iProvider } from "../../inventory/providers/provider.model"
-import { ClientCreationModel } from "../../clients/clients.model"
-// import { Client } from "../../clients/clients.model"
 
 
-// export class InvoiceModel {
-//   /** folio de la factura */
-//   public invoice_ID: string = ''
-//   /** fecha de la factura */
-//   public document_date: FireTime = createDate( new Date() )
-//   /** fecha de registro */
-//   public readonly registered_date: FireTime = createDate( new Date() )
-//   /** Sede donde se registrará la factura.
-//    *
-//    * *❗ Opcional en la creación, Requerida en la base de datos.*
-//   */
-//   public store?: Invoice.store
-//   /** Lista de conceptos que incluirá la factura
-//    *
-//    * ❗ Opcional en la creación, Requerida en la base de datos.*
-//   */
-//   public details?: Invoice.concept[];
-//   /** Cálculos de totales de la factura
-//    *
-//    * ❗ Opcional en la creación, Requerida en la base de datos.*
-//   */
-//   public footer?: Invoice.footer
-//   /** metodos de pagos */
-//   public payment_method: string = ''
-
-//   constructor (
-//     /** Manager que registró la factura */
-//     public manager: Invoice.manager
-//   ) {
-//     this.invoice_ID = ''
-//     this.document_date = createDate( new Date() )
-//     this.details = []
-//     this.footer = new InvoiceFooter()
-//     this.payment_method = ''
-//   }
-
-//   get data(): Invoice.doc{
-//     if ( !this.details ) throw new Error( 'No se encontraron conceptos' )
-//     if ( !this.store ) throw new Error( 'No se encontró la sede' )
-//     if ( !this.footer ) throw new Error( 'No se encontraron totales' )
-
-//     return {
-//       ...this,
-//       details: this.details,
-//       store: this.store,
-//       footer: this.footer,
-//     }
-//   }
-
-
-// }
-
+/**
+ *Esta Interfaz se usa en el modelo de sales-invoice y purchase-invoice. 
+Son los datos en común que comparten ambos modelos. Es mas que todo informativo
+ *
+ * @export
+ * @interface InvoiceModel
+ */
 export interface InvoiceModel {
   /** folio de la factura */
   invoiceId: string
@@ -79,7 +32,13 @@ export interface InvoiceModel {
   manager: Invoice.manager
 }
 
-
+/**
+ *Modelo para crear un concepto que sera usado en cualquiera 
+  de los documentos (Factura de: Compra y Venta, Notas de Credito y Debito)
+ *
+ * @export
+ * @class ProductInvoiceModel
+ */
 export class ProductInvoiceModel {
   /** Precio unitaio de venta */
   public unit_price: number = 0
@@ -119,6 +78,7 @@ export class ProductInvoiceModel {
     return this.unit_price * (this.cant || 1)
   }
 
+  /** Extracción del modelo */
   getdata(): Invoice.concept {
     delete this.transfer_fee
     let { getdata: concept, ...object } = this
@@ -131,7 +91,7 @@ export class ProductInvoiceModel {
 }
 
 
-/** Modelo de consulta de balances de factura */
+/** Modelo que genera los totales generales de los documentos */
 export class InvoiceFooter {
   constructor(
     /** Suma de los montos de los productos */
@@ -189,12 +149,14 @@ export declare namespace Invoice {
     ref: FireRef<iSede> | null // !!! FIX
   }
 
-  interface provider extends propertyRef {
+  interface provider {
+    name: string
+    CRF: string
     ref: FireRef<iProvider> | null // !!! FIX
   }
 
   interface client extends propertyRef {
-    cip: string
+    CRF: string
     //ref: FireRef<ClientModel>
   }
 
