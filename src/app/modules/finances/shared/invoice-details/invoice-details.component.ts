@@ -133,10 +133,4 @@ export class InvoiceDetailsComponent implements OnInit, OnDestroy {
     this.productSelect = product
   }
 
-  deleteConcept(concept: ProductInvoiceModel | Invoice.concept) {
-    if (concept) {
-      this.conceptInvoice.delete(concept)
-    }
-  }
-
 }

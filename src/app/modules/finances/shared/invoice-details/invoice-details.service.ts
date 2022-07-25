@@ -33,7 +33,8 @@ export class DetailsConceptService {
     let subtotal = 0
 
     if (document == 'credit' || document == 'debit') {
-      if (this.details_Notes$.value) {
+      if (!this._footer_note.footer$.value) throw { message: ' No existe el footer_invoice' }
+      if (!this.details_Notes$.value)  throw { message: ' No existe el detalle de notas de credit/debit' }
         let details = this.details_Notes$.value.map((d) => {
           if (d.product.UPC == concept.product.UPC) {
             d.cant = changes.cant
@@ -43,8 +44,7 @@ export class DetailsConceptService {
           return d
         })
         this.details_Notes$.next(details)
-      }
-      if (!this._footer_note.footer$.value) throw { message: ' No existe el footer_invoice' }
+      
       let foot = this._footer_note.footer$.value
       /*Se le informa al footer el subtotal de todos los conceptos*/
       foot.subtotal = subtotal
