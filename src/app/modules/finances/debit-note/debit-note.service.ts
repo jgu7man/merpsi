@@ -22,6 +22,7 @@ import { Router } from '@angular/router';
 import { CreditDebitNoteDialogComponent } from '../sales-invoices/create-invoice-sales/credit-debit-note.dialog/credit-debit-note.dialog.component';
 import { MatSelectChange } from '@angular/material/select';
 import { FooterService } from '../shared/footer-invoice/footer.service';
+import { DatabasePathsService } from 'src/app/services/database-paths.service';
 
 @Injectable({
   providedIn: 'root'
@@ -39,16 +40,16 @@ export class DebitNoteService {
   constructor(
     public taxes: TaxesService,
     public foot: FooterService,
+    public footer: FooterCreditoDebitoService,
+    public manager: PersonalService,
+    public invoiceConcept: DetailsConceptService,
     private _alert: MxAlert,
     private _dashboard: DashboardService,
     private _afs: AngularFirestore,
-    private stub: StubService,
-    public invoiceConcept: DetailsConceptService,
-    public footer: FooterCreditoDebitoService,
-    public manager: PersonalService,
+    private _stub: StubService,
     private _dialog: MatDialog,
     private _router: Router,
-
+    private _path: DatabasePathsService
 
 
   ) { }
@@ -60,7 +61,7 @@ export class DebitNoteService {
   }
 
   getInvoiceRef(invoice_ID: string): FireRef<SalesInvoiceModel> {
-    return this._afs.doc<SalesInvoiceModel>(`${this.businessRef}/sales/${invoice_ID}`).ref
+    return this._afs.doc<SalesInvoiceModel>(`${this._path.salesRef}/${invoice_ID}`).ref
   }
 
   seletedStub(data: MatSelectChange) {
@@ -102,7 +103,7 @@ export class DebitNoteService {
         this.invoiceConcept.details_Notes$.value,
         this.footer.footer$.value
       )
-      const creditRef = this._afs.doc(`${this.businessRef}/debit_notes/${debit.id}`).ref
+      const creditRef = this._afs.doc(`${this._path.debitNoteRef}/${debit.id}`).ref
       let data = {
         ...debit,
         footer: { ...debit.footer }
@@ -113,7 +114,7 @@ export class DebitNoteService {
       if (this.stubSelect$.value) {
         let stub = this.stubSelect$.value
         stub.currentIndex = stub.currentIndex + 1
-        this.stub.update(stub)
+        this._stub.update(stub)
       }
 
       this._alert.notify('La Nota de debito ha sido guardado con exito!')
@@ -133,7 +134,7 @@ export class DebitNoteService {
   }
 
   listDebits(): Observable<iDebitNote[]> {
-    return this._afs.collection<iDebitNote>(`${this.businessRef}/debit_notes/`).valueChanges()
+    return this._afs.collection<iDebitNote>(`${this._path.debitNoteRef}/`).valueChanges()
       .pipe(
         map(result => {
           const credits: iDebitNote[] = []

@@ -1,12 +1,11 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
-import { Observable, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
-import { formatUPC, Product, ProductModel, StoreReferenceModel } from 'src/app/modules/inventory/products/products.model';
+import { map } from 'rxjs/operators';
+import { Product, ProductModel } from 'src/app/modules/inventory/products/products.model';
 import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import { MxText } from 'libs/@marxa/devkit/text/mx-text.service';
-import firebase from "firebase/app";
+import { DatabasePathsService } from 'src/app/services/database-paths.service';
 
 @Injectable({
   providedIn: 'root'
@@ -20,6 +19,7 @@ export class InventoryProductsService {
     private _cache: MxCache,
     private _alert: MxAlert,
     private _text: MxText,
+    private _path: DatabasePathsService
   ) {
     // this.updateAlmacenes()
   }
@@ -31,13 +31,8 @@ export class InventoryProductsService {
     return CRF
   }
 
-  /** Crea la referencia a firestore para la empresa en la cuál se está presente */
-  get businessRef() {
-    return this._afs.doc(`businesses/${this.CRF}`)
-  }
-
   get productsRef() {
-    return this.businessRef.collection<Product.DataReference>( 'products' )
+    return this._afs.collection<Product.DataReference>( this._path.productsRef )
   }
 
   /**

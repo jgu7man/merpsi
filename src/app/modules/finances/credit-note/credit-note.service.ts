@@ -21,6 +21,7 @@ import { Router } from '@angular/router';
 import { MatSelectChange } from '@angular/material/select';
 import { MatDialog } from '@angular/material/dialog';
 import { CreditDebitNoteDialogComponent } from '../sales-invoices/create-invoice-sales/credit-debit-note.dialog/credit-debit-note.dialog.component';
+import { DatabasePathsService } from 'src/app/services/database-paths.service';
 
 @Injectable({
   providedIn: 'root'
@@ -45,24 +46,23 @@ export class CreditNoteService {
     private _cache: MxCache,
     private _dashboard: DashboardService,
     private _manager: PersonalService,
-    private invoiceConcept: DetailsConceptService,
-    private footer: FooterCreditoDebitoService,
+    private _invoiceConcept: DetailsConceptService,
+    private _footer: FooterCreditoDebitoService,
     private _router: Router,
     private _dialog: MatDialog,
-
-
+    private _path: DatabasePathsService
   ) {
   }
   async saveCreditNote() {
     try {
-      if (!this.stubSelect$.value) throw { message: ' No existe el talonario' }
-      if (!this.footer.footer$.value) throw { message: ' No existe el footer' }
-      if (!this.invoiceRef$.value) throw { message: ' No existe la factura de referencia' }
+      if ( !this.stubSelect$.value ) throw { message: ' No existe el talonario' }
+      if ( !this._footer.footer$.value ) throw { message: ' No existe el footer' }
+      if ( !this.invoiceRef$.value ) throw { message: ' No existe la factura de referencia' }
       if ( !this._manager.current ) throw { message: 'No se ha iniciado la sesion' }
       if ( !this.contextNC ) throw { message: 'No se ha definido el contexto de la factura' }
 
-      if (this.footer.footer$.value.total > 0) {
-        if (this.footer.footer$.value.total <= this.invoiceRef$.value.footer.total) {
+      if (this._footer.footer$.value.total > 0) {
+        if (this._footer.footer$.value.total <= this.invoiceRef$.value.footer.total) {
           const manager: Invoice.manager = {
             id: this._manager.current.uid!,
             name: this._manager.current.name,
@@ -73,18 +73,18 @@ export class CreditNoteService {
             this.stubSelect$.value.prefixIndexCurrent,
             manager,
             this.contextNC,
-            this.invoiceConcept.details_Notes$.value,
-            this.footer.footer$.value
+            this._invoiceConcept.details_Notes$.value,
+            this._footer.footer$.value
           )
       /**se guarda la nota de credito */
 
-      const creditRef = this._afs.doc<CreditNoteModel>(`${this.businessRef}/credit_notes/${creditNote.id}`).ref
+      const creditRef = this._afs.doc<CreditNoteModel>(`${this._path.creditNoteRef}/${creditNote.id}`).ref
       const managerRef = this._manager.managerRef
       creditRef.set({ ...creditNote })
       if (creditNote.context == 'devolucion') {
         /* se  itera los conceptos para aplicar la devolucion */
         creditNote.details.forEach(async det => {
-          let productRef = this._afs.doc(`${this.businessRef}/products/${det.product.UPC}`).ref
+          let productRef = this._afs.doc(`${this._path.productsRef}/${det.product.UPC}`).ref
           await firebase.firestore().runTransaction(async transaction => {
             let store_Id = det.store
             if (!store_Id) throw { message: 'no se encuentra la tienda del concepto ' }
@@ -101,7 +101,7 @@ export class CreditNoteService {
               managerRef,
               creditRef
             )
-            this._afs.collection(`${this.businessRef}/products/${det.product.UPC}/history`)
+            this._afs.collection(`${this._path.productsRef}/${det.product.UPC}/history`)
               .doc(`${new Date().getTime()}`)
               .set({ ...evento })
           })
@@ -140,7 +140,7 @@ export class CreditNoteService {
 
 
   async getInvoice(invoice_ID: string) {
-    let invoiceRef = this._afs.doc<SalesInvoiceModel>(`${this.businessRef}/sales/${invoice_ID}`).ref
+    let invoiceRef = this._afs.doc<SalesInvoiceModel>(`${this._path.salesRef}/${invoice_ID}`).ref
     let invoice = (await (invoiceRef.get())).data()
     if (invoice){
       this.invoiceRef$.next(invoice)
@@ -148,7 +148,7 @@ export class CreditNoteService {
   }
 
   listCredits(): Observable<iCreditNote[]> {
-    return this._afs.collection<iCreditNote>(`businesses/${this.businessCRF}/credit_notes/`).valueChanges()
+    return this._afs.collection<iCreditNote>(`${this._path.creditNoteRef}/`).valueChanges()
       .pipe(
         map(result => {
           const credits: iCreditNote[] = []
@@ -186,7 +186,7 @@ export class CreditNoteService {
       let taxe: TaxModel[] = footer_tax.map((tax: { name: string; rate: number; }) => { return new TaxModel(0, tax.name, tax.rate) })
 
       if (contextNC == 'disminucion') {
-        let det = this.invoiceConcept.details_Notes$.value
+        let det = this._invoiceConcept.details_Notes$.value
         /* se calcula el subtotal de los detalles de la nota de credito */
         let amount = det.reduce((acc, item) => acc + item.amount, 0)
         let amount_tax = 0
@@ -197,10 +197,10 @@ export class CreditNoteService {
 
 
         const foot = new FooterNoteModel(this.invoiceRef$.value.footer, det, amount, taxe)
-        this.footer.footer$.next(foot)
+        this._footer.footer$.next(foot)
       } else {
-        const foot = new FooterNoteModel(this.invoiceRef$.value.footer, this.invoiceConcept.details_Notes$.value, null, taxe)
-        this.footer.footer$.next(foot)
+        const foot = new FooterNoteModel(this.invoiceRef$.value.footer, this._invoiceConcept.details_Notes$.value, null, taxe)
+        this._footer.footer$.next(foot)
       }
     } catch (error: any) {
       if ('message' in error) {

@@ -1,20 +1,20 @@
 import firebase from 'firebase/app';
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
-import { catchError, first, map, mergeMap, pluck, take, tap } from 'rxjs/operators';
+import { catchError, map, take } from 'rxjs/operators';
 import { MxStorage } from '@marxa/storage';
 import { ProductCountingModel, UpdateRecord, DeleteRecord, iProductCountingUpdate } from './product-counting.model';
 import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
 import { MxLoading } from 'libs/@marxa/devkit/loading/loading.service';
 import { MxText } from 'libs/@marxa/devkit/text/mx-text.service';
 import { BatchService } from 'libs/@marxa/batch/batch.service';
-import { InventoryProductsService } from '../products/products.service';
-import { formatUPC, Product, ProductEventModel, ProductModel, StoreReference, StoreReferenceModel } from '../products/products.model';
-import { BehaviorSubject, concat, forkJoin, Observable, race, zip } from 'rxjs';
+import { formatUPC, Product, ProductEventModel, StoreReference, StoreReferenceModel } from '../products/products.model';
+import { BehaviorSubject, Observable, zip } from 'rxjs';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
-import { fireBatch, FireRef } from 'src/app/models/firestore.model';
+import { fireBatch } from 'src/app/models/firestore.model';
 import { MxBatchEvent } from 'libs/@marxa/batch/batch.model';
 import { DashboardService } from 'src/app/dashboard/dashboard.service';
+import { DatabasePathsService } from 'src/app/services/database-paths.service';
 
 @Injectable({ providedIn: 'root' })
 export class CountingsService {
@@ -23,7 +23,7 @@ export class CountingsService {
   get mode_on() { return this.current ? true : false; }
   list$ = new BehaviorSubject<ProductCountingModel[]>( [] )
   businessCRF: string = this._cache.getDataKey( 'eid' )!
-  path: string = `businesses/${ this.businessCRF }/product_countings`
+  path: string = this._path.productCountingsRef
   private batch = fireBatch
 
   constructor (
@@ -34,7 +34,8 @@ export class CountingsService {
     private _text: MxText,
     private _cache: MxCache,
     private _batch: BatchService,
-    private _dashboard: DashboardService
+    private _dashboard: DashboardService,
+    private _path: DatabasePathsService
   ) {
     /* Mantiene actualizado el estado único de arqueo en esta sesión */
     // this.getCurrent().subscribe( current => this.current$ = current )
@@ -169,7 +170,7 @@ export class CountingsService {
       try {
 
         /* Se crea y se registra el cambio */
-        const productPath = `businesses/${this.businessCRF}/products/${UPC}`
+        const productPath = `${this._path.productsRef}/${UPC}`
         const productRef = this._afs.doc<Product.DataReference>(productPath).ref
 
         const record: UpdateRecord = new UpdateRecord( productRef, state, NEW )
@@ -223,7 +224,7 @@ export class CountingsService {
     try {
       if ( !this.current ) throw { message: 'No se ha inicializado ningún arqueo.' }
 
-      let productRef = this._afs.collection<StoreReferenceModel>(`${this.businessCRF}/products/${UPC}/store`)
+      let productRef = this._afs.collection<StoreReferenceModel>(`${this._path.productsRef}/${UPC}/store`)
       const stores = await productRef.valueChanges().pipe( take( 1 ) ).toPromise()
 
       this._loading.asyncForEach( stores, store => {
@@ -250,7 +251,7 @@ export class CountingsService {
 
         /* Registra el producto a eliminar */
         const productRef = this._afs.doc
-          <Product.DataReference>( `${ this.businessCRF }/products/${ UPC }` ).ref
+          <Product.DataReference>( `${this._path.productsRef}/${ UPC }` ).ref
         const record:DeleteRecord = new DeleteRecord( productRef, store )
         const { missings, moneyDiffs } = record
 
@@ -542,7 +543,7 @@ export class CountingsService {
   async finalize() {
     try {
       if ( this.current ) {
-        const productsPath = `businesses/${this.businessCRF}/products`
+        const productsPath = this._path.productsRef
         const productsRef = this._afs.collection<Product.DataReference>(productsPath).ref
         const countingRef = this.currentRef.ref
         const updatesCol = await this.updatesRef.ref.get()

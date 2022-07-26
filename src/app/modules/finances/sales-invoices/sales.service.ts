@@ -9,6 +9,7 @@ import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { DashboardService } from 'src/app/dashboard/dashboard.service';
 import { ConceptAvailability, SalesInvoiceModel, SalesInvoiceReadingModel } from 'src/app/modules/finances/sales-invoices/sales-invoice.model';
+import { DatabasePathsService } from 'src/app/services/database-paths.service';
 import { PersonalService } from '../../admin/managers/personal.service';
 import { ClientCreationModel } from '../../clients/clients.model';
 import { ProductEventModel, ProductModel, StoreReferenceModel } from '../../inventory/products/products.model';
@@ -39,17 +40,16 @@ export class SalesService {
   client: ClientCreationModel | null = null;
 
   constructor(
-    public _taxes: TaxesService,
+    public taxes: TaxesService,
     public conceptInvoice: DetailsConceptService,
     public stub: StubService,
     private _afs: AngularFirestore,
     private _cache: MxCache,
     private _dashboard: DashboardService,
     private _alert: MxAlert,
-    private _router: Router,
     private _manager: PersonalService,
     private _footer: FooterService,
-
+    private _path: DatabasePathsService
 
 
   ) {
@@ -101,13 +101,12 @@ export class SalesService {
       this.conceptInvoice.details$.value,
       this._footer.currentfoot$.value.getdata()
     )
-      let businessRef = `businesses/${this._dashboard.CRF}`
-      const invoiceRef = this._afs.doc<SalesInvoiceModel>(`${businessRef}/sales/${invoice.invoiceId}`).ref
+      const invoiceRef = this._afs.doc<SalesInvoiceModel>(`${this._path.salesRef}/${invoice.invoiceId}`).ref
       invoiceRef.set({ ...invoice })
 
       let details: Invoice.concept[] = invoice.details
       details.forEach(async det => {
-        let productRef = this._afs.doc(`${businessRef}/products/${det.product.UPC}`).ref
+        let productRef = this._afs.doc(`${this._path.productsRef}/${det.product.UPC}`).ref
         await firebase.firestore().runTransaction(async transaction => {
           if (det.store == null) throw { message: 'No se encuentra la store del producto: ' + det.product.UPC }
           let store_Id = det.store
@@ -125,7 +124,7 @@ export class SalesService {
             this._dashboard.managerRef,
             invoiceRef
           )
-          this._afs.collection(`${businessRef}/products/${det.product.UPC}/history`)
+          this._afs.collection(`${this._path.productsRef}/${det.product.UPC}/history`)
             .doc(`${new Date().getTime()}`)
             .set({ ...evento })
         })
@@ -167,13 +166,13 @@ export class SalesService {
     return stores
   }
   getStoreStock(UPC: string) {
-    let storeP = this._afs.collection<StoreReferenceModel>(`businesses/${this.businessCRF}/products/${UPC}/stores`).ref.get()
+    let storeP = this._afs.collection<StoreReferenceModel>(`${this._path.productsRef}/${UPC}/stores`).ref.get()
     return storeP
 
   }
 
   listInvoice(): Observable<SalesInvoiceReadingModel[]> {
-    return this._afs.collection<SalesInvoiceModel>(`businesses/${this.businessCRF}/sales`).valueChanges()
+    return this._afs.collection<SalesInvoiceModel>(`${this._path.salesRef}`).valueChanges()
       .pipe(
         map(result => {
           const sales: SalesInvoiceModel[] = [];
@@ -209,11 +208,11 @@ export class SalesService {
 
 
   async getnotesByid(id: string) {
-    return await this._afs.collection<iCreditNote>(`businesses/${this.businessCRF}/credit_notes`).ref.where('invoiceId', '==', id).get()
+    return await this._afs.collection<iCreditNote>(`${this._path.creditNoteRef}`).ref.where('invoiceId', '==', id).get()
   }
   
    async getnotesByidAndTypeConcept(id: string) {
-    let ref = this._afs.collection<iCreditNote>(`businesses/${this.businessCRF}/credit_notes`).ref
+    let ref = this._afs.collection<iCreditNote>(`${this._path.creditNoteRef}`).ref
     return await ref.where('invoiceId', '==', id).where('concept', '==' , 'anulacion').get()
   }
 

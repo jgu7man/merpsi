@@ -7,6 +7,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { Client, ClientCreationModel } from 'src/app/modules/clients/clients.model';
 import { FireDoc } from 'src/app/models/firestore.model';
 import Swal from 'sweetalert2';
+import { DatabasePathsService } from 'src/app/services/database-paths.service';
 
 @Injectable({
   providedIn: 'root'
@@ -24,14 +25,15 @@ export class ClientsService {
     private _afs: AngularFirestore,
     private _cache: MxCache,
     private _alert: MxAlert,
+    private _path: DatabasePathsService
   ) { }
 
   get collectionRef() {
-    return this._afs.collection<ClientCreationModel>(this.path)
+    return this._afs.collection<ClientCreationModel>(this._path.clientRef)
   }
 
   search(prefix: string) {
-    return this._afs.collection<ClientCreationModel>(this.path,
+    return this._afs.collection<ClientCreationModel>(this._path.clientRef,
       ref => ref
       .where('name', '>=', prefix)
       .where('name', '<=', prefix + '~')
@@ -62,7 +64,7 @@ export class ClientsService {
       const client = await this.setClient()
 
       const clientRef = this._afs
-        .collection( `businesses/${ this.businessCRF }/clients/` )
+        .collection( this._path.clientRef )
         .doc<ClientCreationModel>( client.id ).ref;
       const id = client.id || clientRef.id;
 
@@ -134,7 +136,7 @@ export class ClientsService {
 
   async delete(client: ClientCreationModel) {
     try {
-      await this._afs.doc(`businesses/${this.businessCRF}/clients/${client.id}`).delete()
+      await this._afs.doc(`${this._path.clientRef}/${client.id}`).delete()
       Swal.fire('cliente eliminado')
       return
     } catch (error) {

@@ -7,8 +7,8 @@ import { BehaviorSubject, Observable, of } from 'rxjs';
 import { map,catchError, tap } from 'rxjs/operators';
 import { iBusiness } from 'src/app/models/empresa.model';
 import { FireRef } from 'src/app/models/firestore.model';
+import { DatabasePathsService } from 'src/app/services/database-paths.service';
 import Swal from 'sweetalert2';
-import { iSede } from '../../admin/stores/sede.model';
 import { iProvider, ProviderModel, QueryProvider } from './provider.model';
 
 
@@ -25,7 +25,7 @@ export class ProviderService {
     private _afs: AngularFirestore,
     private _cache: MxCache,
     private _alert: MxAlert,
-    private _test: MxTest,
+    private _path: DatabasePathsService
   ) { 
    // this.providerSelect$.next(null)
   }
@@ -38,7 +38,7 @@ export class ProviderService {
    * @memberof ProviderService
    */
   getAll(): Observable<ProviderModel[]> {
-    return this._afs.collection<ProviderModel>(`businesses/${this.businessCRF}/providers`).valueChanges()
+    return this._afs.collection<ProviderModel>(`${this._path.providersRef}`).valueChanges()
       .pipe(
         map(list => {
           const providers: ProviderModel[] = []
@@ -66,7 +66,7 @@ export class ProviderService {
    */
   async create(provider: ProviderModel, documentRef: FireRef<iBusiness> | null){
     try{
-      const providerRef =  this._afs.collection<ProviderModel>(`businesses/${this.businessCRF}/providers`)
+      const providerRef =  this._afs.collection<ProviderModel>(`${this._path.providersRef}`)
       .doc(provider.CRF).ref
       
       await providerRef.set({...provider,
@@ -95,7 +95,7 @@ export class ProviderService {
    */
   async delete(provider: ProviderModel){
     try{
-      await this._afs.doc<ProviderModel>(`businesses/${this.businessCRF}/providers/${provider.CRF}`).delete()
+      await this._afs.doc<ProviderModel>(`${this._path.providersRef}/${provider.CRF}`).delete()
       Swal.fire('El proveedor ha sido eliminado')
     }catch(error){
       Swal.fire( {
@@ -111,7 +111,7 @@ export class ProviderService {
   async onSearch(criteria: string,prefix: string){
     try{
       if(criteria == 'name'){
-        await this._afs.collection<iProvider>(`businesses/${this.businessCRF}/providers`, ref => ref
+        await this._afs.collection<iProvider>(`${this._path.providersRef}`, ref => ref
         .where ('name', '==' , prefix)).valueChanges().pipe(
           tap(list =>{ this.providers = list })
         )
@@ -131,7 +131,7 @@ export class ProviderService {
     try {
       let providerResult = await this._afs
         .collection<QueryProvider>
-        ( `businesses/${ this.businessCRF }/providers` ).ref
+        ( `${this._path.providersRef}` ).ref
         .where( 'CRF', '==', crf )
         .get()
       let providerDoc = providerResult.docs.length > 0 ? providerResult.docs[0] : null

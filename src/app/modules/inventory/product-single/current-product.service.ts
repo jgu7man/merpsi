@@ -1,21 +1,18 @@
-import firebase from 'firebase/app';
 import { Injectable } from '@angular/core';
 import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
-import { MxText } from 'libs/@marxa/devkit/text/mx-text.service';
 import { BehaviorSubject, Observable, of, Subject, Subscription, zip,  } from 'rxjs';
 import { catchError, map, mergeMap, switchMap, tap } from 'rxjs/operators';
 import { DashboardService } from 'src/app/dashboard/dashboard.service';
-import { fireBatch, FireDoc, txn } from 'src/app/models/firestore.model';
+import { fireBatch, FireDoc } from 'src/app/models/firestore.model';
 import { Product, ProductEventModel, ProductModel, StoreReference, StoreReferenceModel } from 'src/app/modules/inventory/products/products.model';
 import { MxLoading } from 'libs/@marxa/devkit/loading/loading.service';
-import { AuthService } from 'src/app/services/auth.service';
 import { AngularFirestore } from '@angular/fire/firestore';
-import { ManagerModel } from '../../admin/managers/manager.model';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import { CountingsService } from '../countings/countings.service';
 import { MxBatchEvent } from 'libs/@marxa/batch/batch.model';
 import { iPurchaseInvoice } from '../../finances/purchase-invoices/pucharce-invoice.model';
 import { PurchaseInvoiceService } from '../../finances/purchase-invoices/puchase-invoice.service';
+import { DatabasePathsService } from 'src/app/services/database-paths.service';
 
 @Injectable({
   providedIn: 'root'
@@ -56,7 +53,6 @@ export class CurrentProductService {
   private _stockUpdate?: StoreReference.stateUpdate
 
 
-  private storageSubscription: Subscription
 
 
   constructor (
@@ -67,10 +63,8 @@ export class CurrentProductService {
     private _cache: MxCache,
     private _countings: CountingsService,
     private _purchase: PurchaseInvoiceService,
+    private _path: DatabasePathsService
   ) {
-    this.storageSubscription = this._listenStorage()
-      .pipe( mergeMap( () => this.storage$
-      ) ).subscribe()
   }
 
   public leave() {
@@ -115,7 +109,7 @@ export class CurrentProductService {
   private get _productRef() {
     let UPC = this.product$.value?.UPC || ''
     if (!UPC) throw {message: 'No se ha seleccionado un producto'}
-    return this._afs.doc<Product.DataReference>(`businesses/${this._businessRef}/products/${UPC}`)
+    return this._afs.doc<Product.DataReference>(`${this._path.productsRef}/${UPC}`)
   }
 
   private get _storesRef() {
@@ -257,7 +251,7 @@ export class CurrentProductService {
       const historyRef = this._productRef.collection( 'history' ).doc( `${ new Date().getTime() }` ).ref
         product.last_update.eventRef = from ===  'counting' ? 
         this._countings.currentRef.ref : 
-        this._afs.collection(`businesses/${this._businessRef}/purchases/`).doc<iPurchaseInvoice>(this._purchase.invoiceId).ref
+        this._afs.collection(`${this._path.purchasesRef}`).doc<iPurchaseInvoice>(this._purchase.invoiceId).ref
         product.last_update.manager = this._dashboard.managerRef
 
       /* Guarda el producto */
@@ -301,7 +295,7 @@ export class CurrentProductService {
         const product_event = new ProductEventModel(
           'purchase',
           this._dashboard.managerRef, 
-          this._afs.collection(`businesses/${this._businessRef}/purchases/`).doc<iPurchaseInvoice>(this._purchase.invoiceId).ref
+          this._afs.collection(`${this._path.purchasesRef}/`).doc<iPurchaseInvoice>(this._purchase.invoiceId).ref
 
         )
         fireBatch.set( historyRef, { ...product_event })

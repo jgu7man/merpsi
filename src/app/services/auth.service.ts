@@ -9,9 +9,7 @@ import { iManager, iManagerLogin, iManagerRegist, ManagerModel } from '../module
 import { BusinessService } from './business.service';
 import firebase from 'firebase/app'
 import { BehaviorSubject, Observable, of } from 'rxjs';
-import { MxLoading } from 'libs/@marxa/devkit/loading/loading.service';
-import { MxTest } from 'libs/@marxa/devkit/test/mx-test.service';
-import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
+import { DatabasePathsService } from './database-paths.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -21,23 +19,15 @@ export class AuthService {
   /** Estado actualizado de los cambios del usuario autenticado */
   userState$ = new BehaviorSubject<iManager | null>( null )
 
-  private _CRF = this._cache.getDataKey( 'eid' )
 
   constructor (
     private _afAuth: AngularFireAuth,
     private _afs: AngularFirestore,
     private _router: Router,
     private _business: BusinessService,
-    private _loading: MxLoading,
-    private _test: MxTest,
-    private _cache: MxCache,
+    private _path: DatabasePathsService
   ) {
-    // this._test.testOn( this.regist )
-    //   .then( async ( {business, regist} ) => {
-    //     console.log( await this.regist(business, regist))
-    //   } )
-    //   .catch( console.error )
-
+    
     this.authVerification()
   }
 
@@ -211,7 +201,7 @@ export class AuthService {
           return ref ? documento : manager
         } else  return null
       } ),
-        catchError( ( error, user ) => {
+        catchError( ( error ) => {
           console.log( error )
           Swal.fire({
             icon: 'error',
@@ -238,7 +228,7 @@ export class AuthService {
       let {email,password} = register
 
       /* Se busca en base de datos la informacion con la cual se hizo la invitacion */
-      let managerRef =  this._afs.doc<ManagerModel>( `businesses/${CRF_}/managers/${email}`).ref
+      let managerRef =  this._afs.doc<ManagerModel>( `${this._path.managerRef}/${email}`).ref
       let managerDoc = await managerRef.get()
       console.log( managerDoc.exists, managerDoc.data() )
 
@@ -260,7 +250,7 @@ export class AuthService {
         let {rol,sede} = managerDoc.data() as ManagerModel;
 
         /* Se guarda la informacion del manager pero ahora con el uid como referencia  */
-        await this._afs.collection(`businesses/${CRF_}/managers/`).doc(credentials.user.uid).set({
+        await this._afs.collection(`${this._path.managerRef}/`).doc(credentials.user.uid).set({
           CRF:CRF_,
           email: register.email,
           lastAccess: new Date(),

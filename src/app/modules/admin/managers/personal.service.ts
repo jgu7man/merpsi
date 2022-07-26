@@ -13,6 +13,7 @@ import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import { UserModel } from './personal.model';
 import { AuthService } from 'src/app/services/auth.service';
 import { DashboardService } from 'src/app/dashboard/dashboard.service';
+import { DatabasePathsService } from 'src/app/services/database-paths.service';
 
 @Injectable({
   providedIn: 'root'
@@ -29,11 +30,12 @@ export class PersonalService {
     private _router: Router,
     private _mails: EmailService,
     private _auth: AuthService,
-    private _dashboard: DashboardService
+    private _dashboard: DashboardService,
+    private _path: DatabasePathsService
   ) { }
 
   getAll(): Observable<ManagerModel[]> {
-    return this._afs.collection<ManagerModel>(`businesses/${this.businessCRF}/managers`).valueChanges()
+    return this._afs.collection<ManagerModel>(this._path.managerRef).valueChanges()
       .pipe(
         map(list => {
           const users: ManagerModel[] = []
@@ -54,7 +56,7 @@ export class PersonalService {
     try {
       
       let uid_email = user.uid ? user.uid : user.email
-      await this._afs.collection<ManagerModel>(`businesses/${this.businessCRF}/managers`).doc(uid_email)
+      await this._afs.collection<ManagerModel>(this._path.managerRef).doc(uid_email)
         .update({ ...user })
       Swal.fire('Usuario actualizado')
       return
@@ -75,7 +77,7 @@ export class PersonalService {
     try {
       
       user.CRF = this.businessCRF
-      await this._afs.collection<ManagerModel>(`businesses/${this.businessCRF}/managers`)
+      await this._afs.collection<ManagerModel>(this._path.managerRef)
           .doc(user.email)
           .set({ ...user })
       Swal.fire('Usuario agregado')

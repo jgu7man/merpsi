@@ -6,7 +6,8 @@ import { MxLoading } from 'libs/@marxa/devkit/loading/loading.service';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { BusinessModel } from 'src/app/models/empresa.model';
-import { AppliedTaxModel, GlobalTax, iAppliedTax, Tax, TaxModel } from './taxes.model';
+import { DatabasePathsService } from 'src/app/services/database-paths.service';
+import { AppliedTaxModel, GlobalTax, Tax, TaxModel } from './taxes.model';
 
 @Injectable({
   providedIn: 'root'
@@ -17,21 +18,20 @@ export class TaxesService {
   businessCRF: string = this._cache.getDataKey( 'eid' )!
   applidedTaxes: AppliedTaxModel[] = []
 
-  private _listSubscription: Subscription
 
   constructor (
     private _afs: AngularFirestore,
     private _cache: MxCache,
     private _loading: MxLoading,
-    private _alert: MxAlert
+    private _alert: MxAlert,
+    private _path: DatabasePathsService
   ) { 
-    this._listSubscription = this.listenList().subscribe()
   }
 
   get ref() {
     try {
       if ( !this.businessCRF ) throw { message: 'No se pudo encontrar el id de la empresa' }
-      const path: string = `businesses/${this.businessCRF}/config/taxes`
+      const path: string = `${this._path.taxesRef}`
       return this._afs.doc<Tax.list>(path)
     } catch ( error ) {
       throw error
@@ -118,12 +118,12 @@ export class TaxesService {
     try {
 
       /* Obtenemos la lista actual de impuestos */
-      const globalTaxesRef = this._afs.doc< { list: GlobalTax[] } >( `_admin/taxes` ).ref
+      const globalTaxesRef = this._afs.doc< { list: GlobalTax[] } >( this._path.taxesGlobalRef ).ref
       const listDoc = await globalTaxesRef.get()
       const list = listDoc.data()?.list || []
 
       /* Obtenermos el país de la empresa */
-      const businessDoc = await this._afs.doc<BusinessModel>( `businesses/${ this.businessCRF }` ).ref.get()
+      const businessDoc = await this._afs.doc<BusinessModel>( `${ this._path.businessCRF }` ).ref.get()
       const country = businessDoc.get('country') || ''
 
       const nameMatch = list.some( t => t.name === name )

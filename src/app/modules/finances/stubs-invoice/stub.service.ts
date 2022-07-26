@@ -5,6 +5,7 @@ import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import { MxLoading } from 'libs/@marxa/devkit/loading/loading.service';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
+import { DatabasePathsService } from 'src/app/services/database-paths.service';
 import Swal from 'sweetalert2';
 import { iStub, Stub, StubModel } from './stub.model';
 
@@ -20,15 +21,15 @@ export class StubService {
     private _afs: AngularFirestore,
     private _cache: MxCache,
     private _loading: MxLoading,
-    private _alert: MxAlert
+    private _alert: MxAlert,
+    private _path: DatabasePathsService
 
   ) {
    }
 
   get stubRef() {
     try {
-      if (!this.businessCRF) throw { message: 'No se pudo encontrar el id de la empresa' }
-      return this._afs.doc<Stub.list>(`businesses/${this.businessCRF}/config/stubs`)
+      return this._afs.doc<Stub.list>(`${this._path.stubRef}`)
     } catch (error) {
       throw error
     }

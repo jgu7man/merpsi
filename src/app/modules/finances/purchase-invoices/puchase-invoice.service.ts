@@ -16,6 +16,7 @@ import { FormGroup } from '@angular/forms';
 import { iProvider } from '../../inventory/providers/provider.model';
 import { iSede } from '../../admin/stores/sede.model';
 import { FooterService } from '../shared/footer-invoice/footer.service';
+import { DatabasePathsService } from 'src/app/services/database-paths.service';
 
 
 
@@ -40,12 +41,12 @@ export class PurchaseInvoiceService {
     public conceptInvoice: DetailsConceptService,
     private _footer: FooterService,
     private _manager: PersonalService,
-
+    private _path: DatabasePathsService
   ) {
   }
 
   listPurchases(): Observable<PurchaseInvoiceModel[]> {
-    return this._afs.collection<PurchaseInvoiceModel>(`businesses/${this.businessCRF}/purchases/`).valueChanges()
+    return this._afs.collection<PurchaseInvoiceModel>(`${this._path.purchasesRef}/`).valueChanges()
       .pipe(
         map(result => {
           const purchases: PurchaseInvoiceModel[] = []
@@ -90,7 +91,7 @@ export class PurchaseInvoiceService {
   async findInvoice(invoiceId: string) {
     try {
       this.invoiceId = invoiceId
-      const invoiceResult = await this._afs.doc<iPurchaseInvoice>(`businesses/${this.businessCRF}/purchases/${invoiceId}`).ref.get()
+      const invoiceResult = await this._afs.doc<iPurchaseInvoice>(`${this._path.purchasesRef}/${invoiceId}`).ref.get()
       return invoiceResult.exists ? invoiceResult : null
 
     } catch (error: any) {
@@ -177,13 +178,12 @@ export class PurchaseInvoiceService {
         '',
         manager
       )
-      let businessRef = `businesses/${this._dashboard.CRF}`
-      const invoiceRef = this._afs.doc<PurchaseInvoiceModel>(`${businessRef}/purchases/${invoice.invoiceId}`).ref
+      const invoiceRef = this._afs.doc<PurchaseInvoiceModel>(`${this._path.purchasesRef}/${invoice.invoiceId}`).ref
       invoiceRef.set({ ...invoice })
 
       let details: Invoice.concept[] = invoice.details
       details.forEach(async det => {
-        let productRef = this._afs.doc(`${businessRef}/products/${det.product.UPC}`).ref
+        let productRef = this._afs.doc(`${this._path.productsRef}/${det.product.UPC}`).ref
         await firebase.firestore().runTransaction(async transaction => {
           let store_Id = invoice.store.id
           const storeRef = productRef.collection('stores').doc(store_Id)
@@ -200,7 +200,7 @@ export class PurchaseInvoiceService {
             this._dashboard.managerRef,
             invoiceRef
           )
-          this._afs.collection(`${businessRef}/products/${det.product.UPC}/history`)
+          this._afs.collection(`${this._path.purchasesRef}/${det.product.UPC}/history`)
             .doc(`${new Date().getTime()}`)
             .set({ ...evento })
         })

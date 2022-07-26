@@ -5,6 +5,7 @@ import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import { MxLoading } from 'libs/@marxa/devkit/loading/loading.service';
 import { BehaviorSubject } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
+import { DatabasePathsService } from 'src/app/services/database-paths.service';
 import { ProductCategory } from './product-category.model';
 
 @Injectable({
@@ -19,7 +20,8 @@ export class ProductCategoriesService {
     private _afs: AngularFirestore,
     private _cache: MxCache,
     private _loading: MxLoading,
-    private _alert: MxAlert
+    private _alert: MxAlert,
+    private _path: DatabasePathsService
   ) { 
     this.listenList().subscribe()
   }
@@ -27,7 +29,7 @@ export class ProductCategoriesService {
   get ref() {
     try {
       if ( !this.businessCRF ) throw { message: 'No se pudo encontrar el id de la empresa' }
-      const path: string = `businesses/${this.businessCRF}/config/product_categories`
+      const path: string = this._path.productCategoriesRef
       return this._afs.doc<ProductCategory.list>(path)
     } catch ( error ) {
       throw error

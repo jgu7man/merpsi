@@ -10,8 +10,7 @@ import { ProviderModel } from '../modules/inventory/providers/provider.model';
 export class BusinessService {
 
   constructor(
-    private _afs: AngularFirestore,
-  ) { }
+    private _afs: AngularFirestore  ) { }
 
 
   /**
