@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { StubModel } from '../../stub.model';
-import { StubService } from '../../stub.service';
+import { StubModel } from '../../../shared/stubs/stub.model';
+import { StubService } from '../stub.service';
 
 @Component({
   selector: 'app-stub-form-create',

@@ -1,10 +1,8 @@
-import { AppliedTaxModel, TaxModel } from 'src/app/modules/finances/taxes/taxes.model';
-import { Component, OnInit, ChangeDetectionStrategy, Input, EventEmitter, Output } from '@angular/core';
-import { TaxesService } from 'src/app/modules/finances/taxes/taxes.service';
-import { FormControl } from '@angular/forms';
-import { MatSelectChange } from '@angular/material/select';
-import { PurchaseInvoiceService } from '../../purchase-invoices/puchase-invoice.service';
-import { SalesService } from '../../sales-invoices/sales.service';
+import { Component, OnInit, ChangeDetectionStrategy, Input, EventEmitter, Output } from '@angular/core';import { FormControl } from '@angular/forms';
+import { PurchaseInvoiceService } from '../../../purchase-invoices/puchase-invoice.service';
+import { SalesService } from '../../../sales-invoices/sales.service';
+import { AppliedTaxModel, TaxModel } from '../taxes.model';
+import { TaxesService } from '../taxes.service';
 
 @Component({
   selector: 'app-tax-amount-crud',

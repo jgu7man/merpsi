@@ -5,8 +5,8 @@ import { CreditNoteService } from '../../credit-note/credit-note.service';
 import { PurchaseInvoiceService } from '../../purchase-invoices/puchase-invoice.service';
 import { SalesInvoiceModel } from '../../sales-invoices/sales-invoice.model';
 import { SalesService } from '../../sales-invoices/sales.service';
-import { TaxesService } from '../../taxes/taxes.service';
 import { InvoiceFooter } from '../invoice.model';
+import { TaxesService } from '../taxes/taxes.service';
 import { FooterService } from './footer.service';
 
 @Component({

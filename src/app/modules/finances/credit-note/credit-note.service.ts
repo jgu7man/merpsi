@@ -9,11 +9,9 @@ import { PersonalService } from '../../admin/managers/personal.service';
 import { ProductEventModel } from '../../inventory/products/products.model';
 import { iSalesInvoice, SalesInvoiceModel, SalesInvoiceReadingModel } from '../sales-invoices/sales-invoice.model';
 import { CreditNoteModel, FooterNoteModel, iCreditNote, NoteCredit } from './creditNote.model';
-import { AppliedTaxModel, TaxModel } from '../taxes/taxes.model'
-import { iStub } from '../stubs-invoice/stub.model';
+import { iStub } from '../shared/stubs/stub.model';
 import { FooterCreditoDebitoService } from '../shared/footer-note/footer-notes.service';
 import { DetailsConceptService } from '../shared/invoice-details/invoice-details.service';
-import { StubService } from '../stubs-invoice/stub.service';
 import Swal from 'sweetalert2';
 import { catchError, map } from 'rxjs/operators';
 import { Invoice } from '../shared/invoice.model';
@@ -22,6 +20,8 @@ import { MatSelectChange } from '@angular/material/select';
 import { MatDialog } from '@angular/material/dialog';
 import { CreditDebitNoteDialogComponent } from '../sales-invoices/create-invoice-sales/credit-debit-note.dialog/credit-debit-note.dialog.component';
 import { DatabasePathsService } from 'src/app/services/database-paths.service';
+import { StubService } from '../shared/stubs/stub.service';
+import { AppliedTaxModel, TaxModel } from '../shared/taxes/taxes.model';
 
 @Injectable({
   providedIn: 'root'

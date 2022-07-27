@@ -4,10 +4,10 @@ import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
 import { FooterCreditoDebitoService } from '../../shared/footer-note/footer-notes.service';
 import { DetailsConceptService } from '../../shared/invoice-details/invoice-details.service';
 import { SalesService } from '../../sales-invoices/sales.service';
-import { iStub } from '../../stubs-invoice/stub.model';
-import { StubService } from '../../stubs-invoice/stub.service';
-import { TaxesService } from '../../taxes/taxes.service';
+import { iStub } from '../../shared/stubs/stub.model';
 import { CreditNoteService } from '../credit-note.service';
+import { StubService } from '../../shared/stubs/stub.service';
+import { TaxesService } from '../../shared/taxes/taxes.service';
 
 @Component({
   selector: 'app-form-credit-note',

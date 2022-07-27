@@ -1,7 +1,6 @@
 import { EventEmitter, Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { MatCheckboxChange } from '@angular/material/checkbox';
-import { Router } from '@angular/router';
 import firebase from 'firebase/app'
 import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
 import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
@@ -17,9 +16,9 @@ import { iCreditNote, ProductNoteModel } from '../credit-note/creditNote.model';
 import { FooterService } from '../shared/footer-invoice/footer.service';
 import { DetailsConceptService } from '../shared/invoice-details/invoice-details.service';
 import { Invoice, InvoiceFooter, ProductInvoiceModel } from '../shared/invoice.model';
-import { iStub } from '../stubs-invoice/stub.model';
-import { StubService } from '../stubs-invoice/stub.service';
-import { TaxesService } from '../taxes/taxes.service';
+import { iStub } from '../shared/stubs/stub.model';
+import { StubService } from '../shared/stubs/stub.service';
+import { TaxesService } from '../shared/taxes/taxes.service';
 
 @Injectable({
   providedIn: 'root'

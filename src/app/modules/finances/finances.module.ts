@@ -21,15 +21,15 @@ import { FooterInvoiceComponent } from './shared/footer-invoice/footer-invoice.c
 import { FooterCreditoDebitoComponent } from './shared/footer-note/footer-notes.component';
 import { InvoiceDetailsComponent } from './shared/invoice-details/invoice-details.component';
 import { SelectConceptDialogComponent } from './shared/select-concept.dialog/select-concept.dialog.component';
-import { StubFormCreateComponent } from './stubs-invoice/stub-form/stub-form-create/stub-form-create.component';
-import { StubsInvoiceComponent } from './stubs-invoice/stubs-invoice.component';
-import { TaxAmountCrudComponent } from './taxes/tax-amount-crud/tax-amount-crud.component';
-import { TaxFormComponent } from './taxes/tax-form/tax-form.component';
-import { TaxesComponent } from './taxes/taxes.component';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { CreateInvoiceComponent } from './purchase-invoices/create-invoice-purchase/create-invoice.component';
 import { PurchaseInvoicesComponent } from './purchase-invoices/purchase-invoices.component';
 import { SelectDocumentDialogComponent } from './sales-invoices/linked-documents/select-document.dialog/select-document.dialog.component';
+import { StubFormCreateComponent } from './shared/stubs/stub-form-create/stub-form-create.component';
+import { StubsInvoiceComponent } from './shared/stubs/stubs-invoice.component';
+import { TaxAmountCrudComponent } from './shared/taxes/tax-amount-crud/tax-amount-crud.component';
+import { TaxesComponent } from './shared/taxes/taxes.component';
+import { TaxFormComponent } from './shared/taxes/tax-form/tax-form.component';
 
 
 

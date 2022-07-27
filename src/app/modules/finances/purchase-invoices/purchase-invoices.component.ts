@@ -9,7 +9,7 @@ import { ProviderService } from '../../inventory/providers/provider.service';
 import { FooterService } from '../shared/footer-invoice/footer.service';
 import { DetailsConceptService } from '../shared/invoice-details/invoice-details.service';
 import { InvoiceFooter } from '../shared/invoice.model';
-import { TaxesService } from '../taxes/taxes.service';
+import { TaxesService } from '../shared/taxes/taxes.service';
 import { PurchaseInvoiceService } from './puchase-invoice.service';
 
 @Component({

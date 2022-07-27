@@ -7,10 +7,7 @@ import { DashboardService } from 'src/app/dashboard/dashboard.service';
 import { FireRef } from 'src/app/models/firestore.model';
 import Swal from 'sweetalert2';
 import { iSalesInvoice, SalesInvoiceModel, SalesInvoiceReadingModel } from '../sales-invoices/sales-invoice.model';
-import { iStub } from '../stubs-invoice/stub.model';
-import { StubService } from '../stubs-invoice/stub.service';
-import { AppliedTaxModel, TaxModel } from '../taxes/taxes.model';
-import { TaxesService } from '../taxes/taxes.service';
+import { iStub } from '../shared/stubs/stub.model';
 import { DebitNoteModel, iDebitNote } from './debit-note.model';
 import { FooterNoteModel } from '../credit-note/creditNote.model';
 import { DetailsConceptService } from '../shared/invoice-details/invoice-details.service';
@@ -23,6 +20,9 @@ import { CreditDebitNoteDialogComponent } from '../sales-invoices/create-invoice
 import { MatSelectChange } from '@angular/material/select';
 import { FooterService } from '../shared/footer-invoice/footer.service';
 import { DatabasePathsService } from 'src/app/services/database-paths.service';
+import { StubService } from '../shared/stubs/stub.service';
+import { AppliedTaxModel, TaxModel } from '../shared/taxes/taxes.model';
+import { TaxesService } from '../shared/taxes/taxes.service';
 
 @Injectable({
   providedIn: 'root'

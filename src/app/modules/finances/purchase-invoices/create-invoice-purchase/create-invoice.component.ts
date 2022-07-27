@@ -18,9 +18,9 @@ import { DetailsConceptService } from '../../shared/invoice-details/invoice-deta
 import { PurchaseInvoiceModel } from '../pucharce-invoice.model';
 import Swal from 'sweetalert2';
 import { ProviderService } from 'src/app/modules/inventory/providers/provider.service';
-import { TaxesService } from '../../taxes/taxes.service';
 import { ProductInvoiceModel } from '../../shared/invoice.model';
 import { FooterService } from '../../shared/footer-invoice/footer.service';
+import { TaxesService } from '../../shared/taxes/taxes.service';
 
 
 
