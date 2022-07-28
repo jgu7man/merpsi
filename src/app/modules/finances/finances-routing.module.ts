@@ -8,8 +8,8 @@ import { DebitNoteComponent } from './debit-note/debit-note.component';
 import { FinancesComponent } from './finances.component';
 import { PurchaseInvoicesComponent } from './purchase-invoices/purchase-invoices.component';
 import { SalesInvoicesComponent } from './sales-invoices/sales-invoices.component';
-import { StubsInvoiceComponent } from './stubs-invoice/stubs-invoice.component';
-import { TaxesComponent } from './taxes/taxes.component';
+import { StubsInvoiceComponent } from './shared/stubs/stubs-invoice.component';
+import { TaxesComponent } from './shared/taxes/taxes.component';
 
 const routes: Routes = [
   { path: '', component: FinancesComponent },

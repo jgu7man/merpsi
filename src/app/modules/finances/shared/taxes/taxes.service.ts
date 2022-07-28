@@ -25,7 +25,8 @@ export class TaxesService {
     private _loading: MxLoading,
     private _alert: MxAlert,
     private _path: DatabasePathsService
-  ) { 
+  ) {
+    this.listenList().subscribe() 
   }
 
   get ref() {

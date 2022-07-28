@@ -11,14 +11,12 @@
 <ng-container *ngIf="debit.invoice_Ref else selectInvoice">
   <div class="row">
     <div class="col s4">
-      <mat-form-field class="col s12" appearance="outline">
-        <mat-label>Talonario</mat-label>
-        <mat-select placeholder="Talonario" (selectionChange)="debit.seletedStub($event)" name="stub">
-          <mat-option *ngFor="let stub of debit.stubList$ | async" [value]="stub">
-            {{stub.name}}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
+
+      <!-- TALONARIO -->
+      <app-stub-selector
+      [type]="'debit'"
+      (onSelect)="selected($event)"
+      ></app-stub-selector>
     </div>
     <div class="col s4">
         <h1>{{debit.nroInvoice}}</h1>

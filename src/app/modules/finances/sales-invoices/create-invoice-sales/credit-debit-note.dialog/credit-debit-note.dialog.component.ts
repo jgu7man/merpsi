@@ -10,7 +10,7 @@ import { FooterService } from '../../../shared/footer-invoice/footer.service';
 import { DetailsConceptService } from '../../../shared/invoice-details/invoice-details.service';
 import { ProductInvoiceModel } from '../../../shared/invoice.model';
 import { SelectConceptDialogComponent } from '../../../shared/select-concept.dialog/select-concept.dialog.component';
-import { AppliedTaxModel } from '../../../taxes/taxes.model';
+import { AppliedTaxModel } from '../../../shared/taxes/taxes.model';
 import { ConceptAvailability, SalesInvoiceReadingModel } from '../../sales-invoice.model';
 import { SalesService } from '../../sales.service';
 

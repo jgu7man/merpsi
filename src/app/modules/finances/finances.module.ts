@@ -30,6 +30,7 @@ import { StubsInvoiceComponent } from './shared/stubs/stubs-invoice.component';
 import { TaxAmountCrudComponent } from './shared/taxes/tax-amount-crud/tax-amount-crud.component';
 import { TaxesComponent } from './shared/taxes/taxes.component';
 import { TaxFormComponent } from './shared/taxes/tax-form/tax-form.component';
+import { StubSelectorComponent } from './shared/stubs/stub-selector/stub-selector.component';
 
 
 
@@ -61,7 +62,8 @@ import { TaxFormComponent } from './shared/taxes/tax-form/tax-form.component';
     SelectDebitNoteComponent,
     CreateInvoiceComponent,
     PurchaseInvoicesComponent,
-    SelectDocumentDialogComponent
+    SelectDocumentDialogComponent,
+    StubSelectorComponent
   ],
   imports: [
     CommonModule,

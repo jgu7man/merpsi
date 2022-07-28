@@ -1,9 +1,9 @@
 import { FireTime, FireRef } from "../../../models/firestore.model"
 import { Product } from "../../inventory/products/products.model"
 import { iSede } from "../../admin/stores/sede.model"
-import { iAppliedTax } from "../taxes/taxes.model"
 import { iManager } from "../../admin/managers/manager.model"
 import { iProvider } from "../../inventory/providers/provider.model"
+import { iAppliedTax } from "./taxes/taxes.model"
 
 
 /**

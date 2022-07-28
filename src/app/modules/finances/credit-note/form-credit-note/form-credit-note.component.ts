@@ -16,6 +16,7 @@ import { TaxesService } from '../../shared/taxes/taxes.service';
 })
 export class FormCreditNoteComponent implements OnInit, OnDestroy {
   stubList: iStub[] = []
+  nroStub: string = ''
   @Output() submited: EventEmitter<any> = new EventEmitter()
 
 
@@ -80,6 +81,10 @@ export class FormCreditNoteComponent implements OnInit, OnDestroy {
     if (this.credit.origin == 'creation'){
       this.submited.emit()
     }
+  }
+
+  selected(stub: iStub) {
+    this.nroStub = stub.prefixIndexCurrent
   }
 
 

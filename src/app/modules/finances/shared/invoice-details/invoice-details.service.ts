@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
 import { BehaviorSubject } from 'rxjs';
-import { TaxModel } from '../../taxes/taxes.model';
-import { TaxesService } from '../../taxes/taxes.service';
 import { FooterCreditoDebitoService } from '../footer-note/footer-notes.service';
 import { FooterService } from '../footer-invoice/footer.service';
 import { iProductNote } from '../../credit-note/creditNote.model';
 import { Invoice, ProductInvoiceModel } from '../invoice.model';
+import { TaxesService } from '../taxes/taxes.service';
+import { TaxModel } from '../taxes/taxes.model';
 
 @Injectable({
   providedIn: 'root'

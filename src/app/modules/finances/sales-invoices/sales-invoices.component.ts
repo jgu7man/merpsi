@@ -71,16 +71,7 @@ export class SalesInvoicesComponent implements OnInit, OnDestroy {
    // this.sales.current$.next(new SalesInvoiceModel());
     let user = this._auth.userState$.value
     if (!user) throw { message: 'No se ha iniciado sesión' }
-    this._stub.list$.pipe(
-      ).subscribe( list => {
-        let stubList: iStub[] = []
-        list.forEach(d => {
-            if (d.active && d.currentIndex < d.endIndex && d.type === 'sale') {
-              stubList.push(d)
-            }
-          })
-          this.sales.stubList$.next(stubList)
-      }) 
+    
 
   }
 

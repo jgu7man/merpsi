@@ -48,6 +48,7 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy {
 
   })
   @Output() submited: EventEmitter<any> = new EventEmitter()
+  nroStub: string ='';
 
   constructor(
     public sales: SalesService,
@@ -171,6 +172,11 @@ export class CreateInvoiceSalesComponent implements OnInit, OnDestroy {
       }
       return console.error(error)
     }
+  }
+
+  selected(stub: iStub) {
+    this.nroStub = stub.prefixIndexCurrent
+    this.sales.stubSelect$.next(stub)
   }
 
   ngOnDestroy(): void {

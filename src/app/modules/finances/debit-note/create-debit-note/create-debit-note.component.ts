@@ -60,10 +60,6 @@ export class CreateDebitNoteComponent implements OnInit, OnDestroy {
       }
   }
   
-
-  
-
-
   async save() {      
     this.debit.saveDebitNote()
     if ( this.debit.origin == 'creacion' ){
@@ -71,6 +67,8 @@ export class CreateDebitNoteComponent implements OnInit, OnDestroy {
     }
   }
 
-  
+  selected(stub: iStub) {
+    this.nroStub = stub.prefixIndexCurrent
+  }
 
 }

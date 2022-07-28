@@ -1,0 +1,9 @@
+<mat-form-field class="col s4" appearance="outline">
+  <mat-label>Talonario</mat-label>
+  <mat-select placeholder="Placeholder" (selectionChange)="selectStub($event)" name="name">
+    <mat-option *ngFor="let stub of (stub.stubList$| async)" [value]="stub">
+      {{stub.name}}
+    </mat-option>
+  </mat-select>
+  
+</mat-form-field> -->

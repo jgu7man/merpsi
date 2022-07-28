@@ -6,7 +6,6 @@ import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import Swal from 'sweetalert2';
 import { DashboardService } from 'src/app/dashboard/dashboard.service';
 import { ProductEventModel, ProductModel, StoreReferenceModel } from '../../inventory/products/products.model';
-import { TaxesService } from '../taxes/taxes.service';
 import firebase from 'firebase/app'
 import { DetailsConceptService } from '../shared/invoice-details/invoice-details.service';
 import { catchError, map } from 'rxjs/operators';
@@ -17,6 +16,7 @@ import { iProvider } from '../../inventory/providers/provider.model';
 import { iSede } from '../../admin/stores/sede.model';
 import { FooterService } from '../shared/footer-invoice/footer.service';
 import { DatabasePathsService } from 'src/app/services/database-paths.service';
+import { TaxesService } from '../shared/taxes/taxes.service';
 
 
 

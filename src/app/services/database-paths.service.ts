@@ -8,8 +8,8 @@ export class DatabasePathsService {
 
 
   CRF: string = this._cache.getDataKey( 'eid' )!
-
-
+  
+  
   constructor(
     private _cache: MxCache,
   ) { }
@@ -33,7 +33,7 @@ export class DatabasePathsService {
     get clientRef(){
       return `${this.businessCRF}/clients`
     }
-
+    
     get creditNoteRef(){
       return `${this.businessCRF}/credit_notes`
     }
@@ -45,7 +45,7 @@ export class DatabasePathsService {
     get salesRef(){
       return `${this.businessCRF}/sales`
     }
-
+    
     get debitNoteRef(){
       return `${this.businessCRF}/debit_notes`
     }
@@ -55,17 +55,17 @@ export class DatabasePathsService {
     }
 
     get configRef(){
-      return `${this.businessCRF}/config/`
+      return `${this.businessCRF}/config`
     }
-
+    
     get providersRef(){
       return `${this.businessCRF}/providers`
     }
-
+    
     get stubRef(){
       return `${this.configRef}/stubs`
     }
-
+    
     get productCategoriesRef(){
       return `${this.configRef}/product_categories`
     }
@@ -73,10 +73,15 @@ export class DatabasePathsService {
     get taxesRef(){
       return `${this.configRef}/taxes`
     }
+    
+    get mesureUnitsRef(){
+      return `${this.configRef}/mesure_units`
+    }
+
 
     get productCountingsRef() { 
       return `${this.businessCRF}/product_countings`
     }
 
-  
+    
 }

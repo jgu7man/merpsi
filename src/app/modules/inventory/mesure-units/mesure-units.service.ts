@@ -6,6 +6,7 @@ import { MxLoading } from 'libs/@marxa/devkit/loading/loading.service';
 import { BehaviorSubject } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { MesureUnit, MesureUnitModel } from 'src/app/modules/inventory/mesure-units/mesure-unit.model';
+import { DatabasePathsService } from 'src/app/services/database-paths.service';
 
 @Injectable({
   providedIn: 'root'
@@ -19,7 +20,9 @@ export class MesureUnitsService {
     private _afs: AngularFirestore,
     private _cache: MxCache,
     private _loading: MxLoading,
-    private _alert: MxAlert
+    private _alert: MxAlert,
+    private _path: DatabasePathsService
+
   ) { 
     this.listenList().subscribe()
   }
@@ -27,7 +30,8 @@ export class MesureUnitsService {
   get ref() {
     try {
       if ( !this.businessCRF ) throw { message: 'No se pudo encontrar el id de la empresa' }
-      const path: string = `businesses/${this.businessCRF}/config/mesure_units`
+      // const path: string = `businesses/${this.businessCRF}/config/mesure_units`
+      const path: string = this._path.mesureUnitsRef
       return this._afs.doc<MesureUnit.list>(path)
     } catch ( error ) {
       throw error

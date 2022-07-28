@@ -12,16 +12,14 @@
   <div class="container">
     <div class="row">
       <div class="col s12 m8">
-          <mat-form-field class="col s4" appearance="outline">
-            <mat-label>Talonario</mat-label>
-            <mat-select placeholder="Placeholder" (selectionChange)="credit.selectStub($event)" name="name">
-              <mat-option *ngFor="let stub of credit.stubList$ | async" [value]="stub">
-                {{stub.name}}
-              </mat-option>
-            </mat-select>
-          </mat-form-field> -->
+
+        <!-- Talonarios -->
+          <app-stub-selector 
+          (onSelect)="selected($event)"
+          [type]="'credit'">
+          </app-stub-selector>
           <!-- NRO FACTURA -->
-            <h1>{{credit.nroStub}}</h1>
+            <h1>{{nroStub}}</h1>
       </div>
     </div>
     <ng-container *ngIf="invoice_Ref as invoice_current">

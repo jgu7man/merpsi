@@ -2,7 +2,7 @@ import { createDate, FireRef, FireTime } from "src/app/models/firestore.model";
 import { Product } from "../../inventory/products/products.model";
 import { SalesInvoiceModel } from "../sales-invoices/sales-invoice.model";
 import { Invoice } from "../shared/invoice.model";
-import { AppliedTaxModel, iAppliedTax, TaxModel } from "../taxes/taxes.model";
+import { AppliedTaxModel, iAppliedTax, TaxModel } from "../shared/taxes/taxes.model";
 
 /**
  *Modelo Para crear una nota de credito Nota de Credito 

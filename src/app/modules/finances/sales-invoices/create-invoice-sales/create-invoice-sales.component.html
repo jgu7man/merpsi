@@ -11,12 +11,12 @@
             <div class="col s12 l6">
               <b>Factura Nro: </b><br>
               <p>
-                {{ invoice?.invoiceId || ''}}
+                {{ invoice.invoiceId}}
               </p>
               <p>
-                <b>vendedor:</b> {{invoice?.seller || ''}} <br>
-                <b>Moneda:</b> {{invoice?.currency || ''}} <br>
-                <b>Metodo de Pago:</b> {{invoice?.payment_method || ''}} <br>
+                <b>vendedor:</b> {{invoice.seller || ''}} <br>
+                <b>Moneda:</b> {{invoice.currency || ''}} <br>
+                <b>Metodo de Pago:</b> {{invoice.payment_method || ''}} <br>
               </p>
             </div>
 
@@ -31,28 +31,20 @@
           <!-- NEW BILL -->
           <ng-template #newInvoice>
             <!-- TALONARIO -->
-            <mat-form-field appearance="outline" class="col s12 l4">
-              <mat-label>Talonario</mat-label>
-              <mat-select placeholder="Placeholder" name="stub" (selectionChange)="selectStubInvoice($event)"
-                [formControl]="stubForm">
-                <mat-option *ngFor="let item of sales.stubList$.value" [value]="item">
-                  {{item.name}}
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
-            <span *ngIf="sales.stubSelect$.value!">
-              {{sales.stubSelect$.value.prefixIndexCurrent}}
+            <app-stub-selector (onSelect)="selected($event)" [type]="'sale'"></app-stub-selector>
+            <span>
+              {{nroStub}}
             </span>
             <!-- CRF SELECTOR -->
             <div class="col s12">
               <mx-searcher-list [collection]="'businesses/' + businessRef + '/clients'" [param]="'name'"
                 [label]="'clientes'" (results)="sales.getValue($event)"></mx-searcher-list>
             </div>
-            <ng-container *ngIf="client && !invoice">
+            <ng-container *ngIf="sales.client && !invoice">
               <!-- datos del cliente -->
               <div>
-                <b>CRF:</b> {{client.CRF}} <br>
-                <b>datos de contacto:</b> {{client.contact?.email || client.contact?.cellphone}}
+                <b>CRF:</b> {{sales.client.CRF}} <br>
+                <b>datos de contacto:</b> {{sales.client.contact?.email || sales.client.contact?.cellphone}}
                 <!-- <b>direccion:</b> {{client.addres.}} -->
               </div>
 
