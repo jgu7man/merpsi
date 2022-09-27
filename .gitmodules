@@ -9,3 +9,6 @@
 [submodule "libs/@marxa/devkit"]
 	path = libs/@marxa/devkit
 	url = https://github.com/Marxa-Digital/mx-devkit
+[submodule "libs/@marxa/auth"]
+	path = libs/@marxa/auth
+	url = https://github.com/Marxa-Digital/mx-auth
