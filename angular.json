@@ -148,6 +148,68 @@
           }
         }
       }
+    },
+    "@marxa/crud-panel": {
+      "projectType": "library",
+      "root": "libs/@marxa/crud-panel",
+      "sourceRoot": "libs/@marxa/crud-panel/src",
+      "prefix": "mx",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "project": "libs/@marxa/crud-panel/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "libs/@marxa/crud-panel/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "libs/@marxa/crud-panel/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "libs/@marxa/crud-panel/src/test.ts",
+            "tsConfig": "libs/@marxa/crud-panel/tsconfig.spec.json",
+            "karmaConfig": "libs/@marxa/crud-panel/karma.conf.js"
+          }
+        }
+      }
+    },
+    "@marxa/devkit": {
+      "projectType": "library",
+      "root": "libs/@marxa/devkit",
+      "sourceRoot": "libs/@marxa/devkit/src",
+      "prefix": "mx",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "project": "libs/@marxa/devkit/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "libs/@marxa/devkit/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "libs/@marxa/devkit/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "libs/@marxa/devkit/src/test.ts",
+            "tsConfig": "libs/@marxa/devkit/tsconfig.spec.json",
+            "karmaConfig": "libs/@marxa/devkit/karma.conf.js"
+          }
+        }
+      }
     }
   },
   "defaultProject": "merpsi"

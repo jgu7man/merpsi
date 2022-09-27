@@ -6,6 +6,10 @@
       "@mx-merpsi/clients": [
         "dist/mx-merpsi/clients/mx-merpsi-clients",
         "dist/mx-merpsi/clients"
+      ],
+      "@marxa/devkit": [
+        "dist/@marxa/devkit",
+        "dist/@marxa"
       ]
     },
     "baseUrl": "./",
@@ -25,7 +29,8 @@
     "lib": [
       "es2018",
       "dom"
-    ]
+    ],
+
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
