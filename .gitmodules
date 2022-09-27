@@ -6,3 +6,6 @@
 	path = libs/@marxa/crud-panel
 	url = https://github.com/jgu7man/mx-crud-panel
 	branch = from-merpsi
+[submodule "libs/@marxa/devkit"]
+	path = libs/@marxa/devkit
+	url = https://github.com/Marxa-Digital/mx-devkit
