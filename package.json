@@ -4,8 +4,10 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
+    "lib-build": "ng build \"@marxa/%LIB%\" && npm run lib-install",
     "lib-install": "npm i \"./dist/marxa/%LIB%\" --legacy-peer-deps",
-    "lib-uninstall": "npm i @marxa/%LIB% --legacy-peer-deps",
+    "lib-uninstall": "npm uninstall @marxa/%LIB% --legacy-peer-deps",
+    "lib-update": "npm run lib-uninstall && npm run lib-uninstall",
     "build": "ng build",
     "test": "ng test"
   },
@@ -22,8 +24,10 @@
     "@angular/platform-browser": "~12.2.0",
     "@angular/platform-browser-dynamic": "~12.2.0",
     "@angular/router": "~12.2.0",
-    "@marxa/auth": "0.0.8",
+    "@marxa/auth": "file:dist/marxa/auth",
+    "@marxa/crud-panel": "file:dist/marxa/crud-panel",
     "@marxa/devkit": "file:dist/marxa/devkit",
+    "@marxa/index": "file:dist/marxa/index",
     "@marxa/search": "0.0.2",
     "@marxa/storage": "0.0.21",
     "@sweetalert2/theme-material-ui": "^5.0.10",
