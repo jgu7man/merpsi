@@ -1,10 +1,10 @@
 [submodule "libs/@marxa/index"]
 	path = libs/@marxa/index
-	url = https://github.com/jgu7man/mx-index
+	url = https://github.com/Marxa-Digital/mx-index
 	branch = from-merpsi
 [submodule "libs/@marxa/crud-panel"]
 	path = libs/@marxa/crud-panel
-	url = https://github.com/jgu7man/mx-crud-panel
+	url = https://github.com/Marxa-Digital/mx-crud-panel
 	branch = from-merpsi
 [submodule "libs/@marxa/devkit"]
 	path = libs/@marxa/devkit
