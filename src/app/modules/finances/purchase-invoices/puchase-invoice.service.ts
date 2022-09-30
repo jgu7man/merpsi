@@ -2,7 +2,7 @@ import { EventEmitter, Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { iPurchaseInvoice, PurchaseInvoiceModel } from 'src/app/modules/finances/purchase-invoices/pucharce-invoice.model';
 import { Observable, of } from 'rxjs';
-import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
+import { MxCache } from '@marxa/devkit';
 import Swal from 'sweetalert2';
 import { DashboardService } from 'src/app/dashboard/dashboard.service';
 import { ProductEventModel, ProductModel, StoreReferenceModel } from '../../inventory/products/products.model';

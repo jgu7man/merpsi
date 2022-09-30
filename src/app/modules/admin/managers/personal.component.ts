@@ -1,9 +1,9 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { DeleteUsuarioDialog } from './delete-usuario/delete-usuario.dialog';
-import { MxIndex } from 'libs/@marxa/index/src/public-api';
-import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
-import { MxCrudPanelColumns } from 'libs/@marxa/crud-panel/src/lib/mx-crud-panel.model';
+import { MxIndex } from '@marxa/index';
+import { MxCache } from '@marxa/devkit';
+import { MxCrudPanelColumns } from '@marxa/crud-panel';
 import { ManagerModel } from './manager.model';
 import { PersonalService } from './personal.service';
 import { UserModel } from './personal.model';

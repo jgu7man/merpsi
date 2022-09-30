@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
+import { MxCache } from '@marxa/devkit';
 import { BehaviorSubject } from 'rxjs';
 import { SalesService } from '../finances/sales-invoices/sales.service';
 import { ProductInvoiceModel } from '../finances/shared/invoice.model';

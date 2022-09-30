@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
-import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
+import {MxCache } from '@marxa/devkit'
+
 import Swal from 'sweetalert2';
 import { ProviderModel } from './provider.model';
 import { ProviderService } from './provider.service';

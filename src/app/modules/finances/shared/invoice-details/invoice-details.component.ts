@@ -1,6 +1,7 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
+import {MxCache } from '@marxa/devkit'
+
 import { Observable } from 'rxjs';
 import { debounceTime, distinctUntilChanged, skip } from 'rxjs/operators';
 import { iSede } from 'src/app/modules/admin/stores/sede.model';

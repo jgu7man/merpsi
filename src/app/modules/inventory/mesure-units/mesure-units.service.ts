@@ -1,8 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
-import { MxAlert } from 'libs/@marxa/devkit/alert/alert.service';
-import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
-import { MxLoading } from 'libs/@marxa/devkit/loading/loading.service';
+import { MxAlert,MxCache,MxLoading } from '@marxa/devkit';
 import { BehaviorSubject } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { MesureUnit, MesureUnitModel } from 'src/app/modules/inventory/mesure-units/mesure-unit.model';

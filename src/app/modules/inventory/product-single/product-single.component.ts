@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
+import { MxAlert, MxCache } from '@marxa/devkit';
 import { MenuItem } from 'primeng/api';
 import { CountingsService } from '../countings/countings.service';
 import { CurrentProductService } from './current-product.service';

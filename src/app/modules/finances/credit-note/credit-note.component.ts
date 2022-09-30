@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { mxIndexCenterMessage } from 'libs/@marxa/index/src/lib/mx-index.model';
-import { MxIndex } from 'libs/@marxa/index/src/lib/mx-index.service';
+import { MxIndex, mxIndexCenterMessage } from '@marxa/index';
 import { FooterCreditoDebitoService } from '../shared/footer-note/footer-notes.service';
 import { DetailsConceptService } from '../shared/invoice-details/invoice-details.service';
 import { CreditNoteService } from './credit-note.service';

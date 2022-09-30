@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
+import { MxAlert, MxCache } from '@marxa/devkit';
 import { BehaviorSubject } from 'rxjs';
 import { FooterCreditoDebitoService } from '../footer-note/footer-notes.service';
 import { FooterService } from '../footer-invoice/footer.service';

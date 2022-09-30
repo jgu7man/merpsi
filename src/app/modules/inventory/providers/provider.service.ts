@@ -1,8 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
-import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
-import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
-import { MxTest } from 'libs/@marxa/devkit/test/mx-test.service';
+import { MxAlert, MxCache } from '@marxa/devkit';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { map,catchError, tap } from 'rxjs/operators';
 import { iBusiness } from 'src/app/models/empresa.model';

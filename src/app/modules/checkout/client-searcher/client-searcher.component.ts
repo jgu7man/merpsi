@@ -1,14 +1,10 @@
-import { Component, OnInit, EventEmitter, Output, Input, OnDestroy } from '@angular/core';
-import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
-import { AngularFirestore } from '@angular/fire/firestore';
-import { startWith, map, filter, switchMap, take, tap, distinctUntilKeyChanged, distinctUntilChanged, first } from 'rxjs/operators';
-import { Observable, of, BehaviorSubject, Subscription } from 'rxjs';
-import { FormControl } from '@angular/forms';
+import { Component, OnInit, EventEmitter, Output } from '@angular/core';
+import { first } from 'rxjs/operators';
 import { ClientCreationModel } from '../../clients/clients.model';
 import { ClientsService } from '../../clients/clients.service';
 import { MatDialog } from '@angular/material/dialog';
-import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
-import { ClientFormComponent, ClientFormDialog } from '../../clients/client-form/client-form.component';
+import { MxCache } from '@marxa/devkit';
+import { ClientFormDialog } from '../../clients/client-form/client-form.component';
 
 @Component({
   selector: 'app-client-searcher',

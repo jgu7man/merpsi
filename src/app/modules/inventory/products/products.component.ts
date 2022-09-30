@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { MxLoading } from 'libs/@marxa/devkit/loading/loading.service';
+import { MxLoading } from '@marxa/devkit';
 import { first } from 'rxjs/operators';
 
 @Component({

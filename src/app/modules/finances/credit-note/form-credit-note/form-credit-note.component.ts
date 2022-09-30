@@ -1,6 +1,6 @@
 import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
+import { MxAlert } from '@marxa/devkit';
 import { FooterCreditoDebitoService } from '../../shared/footer-note/footer-notes.service';
 import { DetailsConceptService } from '../../shared/invoice-details/invoice-details.service';
 import { SalesService } from '../../sales-invoices/sales.service';

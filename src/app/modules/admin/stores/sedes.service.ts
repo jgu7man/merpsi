@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
-import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
+import { MxCache } from '@marxa/devkit';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { FireDoc } from 'src/app/models/firestore.model';

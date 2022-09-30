@@ -1,11 +1,9 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { MatDialog } from '@angular/material/dialog';
 import { MatDrawer } from '@angular/material/sidenav';
 import { ActivatedRoute, Router } from '@angular/router';
-import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
-import { MxLoading } from 'libs/@marxa/devkit/loading/loading.service';
-import { MxIndex } from 'libs/@marxa/index/src/public-api';
+import { MxCache, MxLoading } from '@marxa/devkit';
+import { MxIndex } from '@marxa/index';
 import { Subscription } from 'rxjs';
 import { CurrentProductService } from '../../product-single/current-product.service';
 import { Product } from '../products.model';

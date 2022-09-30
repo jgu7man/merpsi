@@ -6,9 +6,8 @@ import { MxScannerModule } from 'libs/@marxa/scanner/mx-scanner.module';
 // import { MxSliderModule } from "@marxa/slider";
 // import { MxSocialShareModule } from "@marxa/social-share";
 import { MxStorageModule } from '@marxa/storage';
-import { MxCrudPanelModule } from 'libs/@marxa/crud-panel/src/public-api';
-import { MxDevkitModule } from 'libs/@marxa/devkit/marxa-devkit.module';
-import { MxIndexModule } from 'libs/@marxa/index/src/public-api';
+import { MxCrudPanelModule } from '@marxa/crud-panel';
+import { MxIndexModule } from '@marxa/index';
 
 
 @NgModule({
@@ -17,8 +16,7 @@ import { MxIndexModule } from 'libs/@marxa/index/src/public-api';
     MxCrudPanelModule,
     MxIndexModule,
     MxStorageModule,
-    MxScannerModule,
-    MxDevkitModule
+    MxScannerModule
   ]
 })
 export class MarxaModule {}

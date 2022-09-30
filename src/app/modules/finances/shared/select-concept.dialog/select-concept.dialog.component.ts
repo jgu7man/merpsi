@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
+import {MxCache } from '@marxa/devkit'
+
 import { ProductFormDialog } from 'src/app/modules/inventory/product-single/product-form/product-form.component';
 import { ProductModel } from 'src/app/modules/inventory/products/products.model';
 import { PurchaseInvoiceService } from '../../purchase-invoices/puchase-invoice.service';

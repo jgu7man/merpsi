@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { MxIndex } from 'libs/@marxa/index/src/lib/mx-index.service';
-import { mxIndexCenterMessage } from 'libs/@marxa/index/src/public-api';
+import { MxIndex, mxIndexCenterMessage } from '@marxa/index';
 import { iDebitNote } from './debit-note.model';
 import { DebitNoteService } from './debit-note.service';
 

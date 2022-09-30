@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
+import {MxCache } from '@marxa/devkit'
+
 import { ProductModel, StoreReferenceModel } from 'src/app/modules/inventory/products/products.model';
 import { SelectConceptDialogComponent } from '../../shared/select-concept.dialog/select-concept.dialog.component';
 import { SalesService } from '../sales.service';

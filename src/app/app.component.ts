@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
-import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
+import { MxCache } from '@marxa/devkit';
 
 @Component({
   selector: 'app-root',

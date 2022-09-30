@@ -6,8 +6,7 @@ import { mergeMap } from 'rxjs/operators';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { Output } from '@angular/core';
 import { AuthService } from 'src/app/services/auth.service';
-import { MxResponsive } from 'libs/@marxa/devkit/responsive/mx-responsive.service';
-import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
+import { MxResponsive, MxCache } from '@marxa/devkit';
 import { PersonalService } from 'src/app/modules/admin/managers/personal.service';
 import { Sidenav } from '../sidenav.model';
 

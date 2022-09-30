@@ -1,13 +1,11 @@
 import { Injectable } from '@angular/core';
-import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
-import { BehaviorSubject, Observable, of, Subject, Subscription, zip,  } from 'rxjs';
-import { catchError, map, mergeMap, switchMap, tap } from 'rxjs/operators';
+import { MxAlert, MxCache, MxLoading } from '@marxa/devkit';
+import { BehaviorSubject, Observable, of, Subject, zip,  } from 'rxjs';
+import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { DashboardService } from 'src/app/dashboard/dashboard.service';
 import { fireBatch, FireDoc } from 'src/app/models/firestore.model';
 import { Product, ProductEventModel, ProductModel, StoreReference, StoreReferenceModel } from 'src/app/modules/inventory/products/products.model';
-import { MxLoading } from 'libs/@marxa/devkit/loading/loading.service';
 import { AngularFirestore } from '@angular/fire/firestore';
-import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import { CountingsService } from '../countings/countings.service';
 import { MxBatchEvent } from 'libs/@marxa/batch/batch.model';
 import { iPurchaseInvoice } from '../../finances/purchase-invoices/pucharce-invoice.model';

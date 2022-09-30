@@ -8,7 +8,8 @@ import { BusinessService } from 'src/app/services/business.service';
 import Swal from 'sweetalert2';
 import firebase from 'firebase/app'
 import { iBusiness } from 'src/app/models/empresa.model';
-import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
+import {MxCache } from '@marxa/devkit'
+
 import { AdminService } from 'src/app/modules/admin/admin.service';
 import { iProvider, ProviderModel } from '../provider.model';
 import { ProviderService } from '../provider.service';

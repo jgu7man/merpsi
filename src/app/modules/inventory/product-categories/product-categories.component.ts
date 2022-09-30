@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatDrawer } from '@angular/material/sidenav';
-import { MxCrudPanelColumns } from 'libs/@marxa/crud-panel/src/lib/mx-crud-panel.model';
+import { MxCrudPanelColumns } from '@marxa/crud-panel';
 import { TreeNode } from 'primeng/api';
 import { ProductCategoriesService } from './product-categories.service';
 import { ProductCategory } from './product-category.model';

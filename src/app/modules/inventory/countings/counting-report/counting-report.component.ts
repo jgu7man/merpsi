@@ -1,9 +1,8 @@
 import { Component, OnInit, EventEmitter, OnDestroy, Output, Input } from '@angular/core';
-import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import { Subscription } from 'rxjs';
 import { ProductCountingModel, UpdateRecord, DeleteRecord } from '../product-counting.model';
 import { CountingsService } from '../countings.service';
-import { MxIndex } from 'libs/@marxa/index/src/public-api';
+import { MxIndex } from '@marxa/index';
 
 @Component({
   selector: 'app-counting-report',

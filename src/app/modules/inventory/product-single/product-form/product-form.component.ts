@@ -1,7 +1,7 @@
 import { Component, Input, OnInit, OnDestroy, Inject } from '@angular/core';
 import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { MxText } from 'libs/@marxa/devkit/text/mx-text.service';
+import { MxText } from '@marxa/devkit';
 import { Subscription } from 'rxjs';
 import { skip } from 'rxjs/operators';
 import { listenChanges } from 'src/app/models/operators-chains.model';

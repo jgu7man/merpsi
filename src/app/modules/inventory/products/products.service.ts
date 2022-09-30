@@ -2,9 +2,9 @@ import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { map } from 'rxjs/operators';
 import { Product, ProductModel } from 'src/app/modules/inventory/products/products.model';
-import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
-import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
-import { MxText } from 'libs/@marxa/devkit/text/mx-text.service';
+import { MxAlert, MxCache } from '@marxa/devkit';
+
+import { MxText } from '@marxa/devkit';
 import { DatabasePathsService } from 'src/app/services/database-paths.service';
 
 @Injectable({

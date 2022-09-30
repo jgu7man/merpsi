@@ -2,8 +2,7 @@ import { EventEmitter, Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import firebase from 'firebase/app'
-import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
-import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
+import { MxAlert, MxCache } from '@marxa/devkit';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { DashboardService } from 'src/app/dashboard/dashboard.service';

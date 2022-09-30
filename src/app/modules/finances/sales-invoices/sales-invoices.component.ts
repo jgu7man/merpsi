@@ -1,12 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
+import { MxCache } from '@marxa/devkit';
 import { SalesInvoiceReadingModel } from 'src/app/modules/finances/sales-invoices/sales-invoice.model';
 import { AuthService } from 'src/app/services/auth.service';
-import { iStub } from '../shared/stubs/stub.model';
 import { SalesService } from './sales.service';
-import { MxIndex } from 'libs/@marxa/index/src/lib/mx-index.service';
+import { MxIndex, mxIndexCenterMessage } from '@marxa/index';
 import { Subscription } from 'rxjs';
-import { mxIndexCenterMessage } from 'libs/@marxa/index/src/public-api';
 import { FooterService } from '../shared/footer-invoice/footer.service';
 import { StubService } from '../shared/stubs/stub.service';
 import { TaxesService } from '../shared/taxes/taxes.service';

@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { MatBottomSheetRef } from '@angular/material/bottom-sheet';
 import { FormControl } from '@angular/forms';
 import { MxScannerComponent } from 'libs/@marxa/scanner/mx-scanner-component/mx-scanner.component';
-import { MxLoading } from 'libs/@marxa/devkit/loading/loading.service';
+import { MxLoading } from '@marxa/devkit';
 
 @Component({
   templateUrl: './scan-product.bottom.html',

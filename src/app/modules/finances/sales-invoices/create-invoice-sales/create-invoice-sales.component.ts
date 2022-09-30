@@ -2,8 +2,7 @@ import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angu
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSelectChange } from '@angular/material/select';
-import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
-import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
+import { MxAlert, MxCache } from '@marxa/devkit';
 import { ClientCreationModel } from 'src/app/modules/clients/clients.model';
 import Swal from 'sweetalert2';
 import { CreditNoteService } from '../../credit-note/credit-note.service';

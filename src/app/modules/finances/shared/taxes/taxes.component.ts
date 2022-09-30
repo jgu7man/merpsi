@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { MxCrudPanelColumns } from 'libs/@marxa/crud-panel/src/lib/mx-crud-panel.model';
+import { MxCrudPanelColumns } from '@marxa/crud-panel';
 import { TaxesService } from './taxes.service';
 
 @Component({

@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
+import { MxAlert, MxCache } from '@marxa/devkit';
 import { MenuItem } from 'primeng/api';
 import { from, Subscription } from 'rxjs';
 import { map, mergeMap, tap } from 'rxjs/operators';

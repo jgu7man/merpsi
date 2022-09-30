@@ -1,8 +1,5 @@
-import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { MatSelectChange } from '@angular/material/select';
-import { MxLoading } from 'libs/@marxa/devkit/loading/loading.service';
 import { Subscription } from 'rxjs';
 import { ProductCategoriesService } from '../product-categories.service';
 import { ProductCategory } from '../product-category.model';

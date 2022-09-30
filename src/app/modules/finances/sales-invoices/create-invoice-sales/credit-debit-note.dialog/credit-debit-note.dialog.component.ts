@@ -2,7 +2,7 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
+import { MxAlert } from '@marxa/devkit';
 import { DashboardService } from 'src/app/dashboard/dashboard.service';
 import Swal from 'sweetalert2';
 import { ProductNoteModel } from '../../../credit-note/creditNote.model';

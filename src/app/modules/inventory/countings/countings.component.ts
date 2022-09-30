@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatDrawer } from '@angular/material/sidenav';
-import { MxLoading } from 'libs/@marxa/devkit/loading/loading.service';
+import { MxLoading } from '@marxa/devkit';
 import { first } from 'rxjs/operators';
 import { ProductCountingModel } from './product-counting.model';
 import { CountingsService } from './countings.service';

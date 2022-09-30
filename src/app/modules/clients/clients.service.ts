@@ -1,11 +1,9 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
-import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
-import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
+import { MxAlert, MxCache } from '@marxa/devkit';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { Client, ClientCreationModel } from 'src/app/modules/clients/clients.model';
-import { FireDoc } from 'src/app/models/firestore.model';
 import Swal from 'sweetalert2';
 import { DatabasePathsService } from 'src/app/services/database-paths.service';
 

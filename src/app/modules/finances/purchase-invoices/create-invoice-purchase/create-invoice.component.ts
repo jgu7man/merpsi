@@ -1,13 +1,12 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
-import { MxAlert } from 'libs/@marxa/devkit/alert-v2/alert.service';
+import { MxAlert, MxCache } from '@marxa/devkit';
 import { Observable } from 'rxjs';
 import { Product } from 'src/app/modules/inventory/products/products.model';
 import firebase from "firebase/app";
 import { FireDoc } from 'src/app/models/firestore.model';
 import { MatSelectChange } from '@angular/material/select';
-import { MxCache } from 'libs/@marxa/devkit/cache/mx-cache.service';
 import { SelectConceptDialogComponent } from '../../shared/select-concept.dialog/select-concept.dialog.component';
 import { InventoryProductsService } from 'src/app/modules/inventory/products/products.service';
 import { iSede } from '../../../admin/stores/sede.model';
