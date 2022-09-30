@@ -8,20 +8,20 @@
       [addTemplate]="add"
       [list]="list"
       [height_vh]="100"
-      [itemSelector]="['name']"
+      [itemSelector]="'name'"
       #crudPanel
       (onDelete)="onDeleteItem($event)"
-      [addConfig]="{'label': 'Crear'}"
+      [addBtnConfig]="{'label': 'Crear'}"
 
       [columns]="columns"
        >
 
         <ng-template #add>
-          <app-set-usuario (submited)="crudPanel.closeAll()" ></app-set-usuario>
+          <app-set-usuario (submited)="crudPanel.closeItemPanel()" ></app-set-usuario>
         </ng-template>
 
         <ng-template #select let-user="item" >
-          <app-set-usuario (submited)="crudPanel.closeAll()" [usuario]="user"></app-set-usuario>
+          <app-set-usuario (submited)="crudPanel.closeItemPanel()" [usuario]="user"></app-set-usuario>
         </ng-template>
       </mx-crud-panel>
     </div>

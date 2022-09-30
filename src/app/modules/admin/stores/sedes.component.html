@@ -8,19 +8,19 @@
       [addTemplate]="add"
       [list]="list"
       [height_vh]="100"
-      [itemSelector]="['referencia']"
-      [addConfig]="{'label': 'Crear'}"
+      [itemSelector]="'referencia'"
+      [addBtnConfig]="{'label': 'Crear'}"
       #crudPanel
       (onDelete)="onDeleteItem($event)"
        >
 
         <ng-template #add>
-          <app-set-sede (saved)="crudPanel.closeAll()" ></app-set-sede>
+          <app-set-sede (saved)="crudPanel.closeItemPanel()" ></app-set-sede>
         </ng-template>
 
         <ng-template #select let-sede="item" >
           <app-set-sede
-          (saved)="crudPanel.closeAll()"
+          (saved)="crudPanel.closeItemPanel()"
           [sede]="sede"
           ></app-set-sede>
         </ng-template>

@@ -8,14 +8,14 @@
       [list]="listDebits"
       [addTemplate]="add"
       [height_vh]="100"
-      [itemSelector]="['id']"
-      [addConfig]="{'label': 'Crear Factura'}"
+      [itemSelector]="'id'"
+      [addBtnConfig]="{'label': 'Crear Factura'}"
 
       #crudPanel
        >
         <ng-template #add>
           <app-create-debit-note
-          (submited)="crudPanel.closeAll()"
+          (submited)="crudPanel.closeItemPanel()"
           ></app-create-debit-note>
         </ng-template>
 

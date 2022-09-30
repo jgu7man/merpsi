@@ -7,18 +7,18 @@
       [addTemplate]="add"
       [list]="clients"
       [height_vh]="100"
-      [itemSelector]="['name']"
-      [addConfig]="{'label': 'Crear'}"
+      [itemSelector]="'name'"
+      [addBtnConfig]="{'label': 'Crear'}"
 
       #crudPanel
       (onDelete)="onDeleteItem($event)"
        >
         <ng-template #add>
-          <mx-client-form (submited)="crudPanel.closeAll()" ></mx-client-form>
+          <mx-client-form (submited)="crudPanel.closeItemPanel()" ></mx-client-form>
         </ng-template>
 
         <ng-template #select let-client="item" >
-          <mx-client-form [client]="client" (submited)="crudPanel.closeAll()" ></mx-client-form>
+          <mx-client-form [client]="client" (submited)="crudPanel.closeItemPanel()" ></mx-client-form>
         </ng-template>
       </mx-crud-panel>
     </div>

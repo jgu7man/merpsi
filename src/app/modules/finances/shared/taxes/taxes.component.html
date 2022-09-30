@@ -4,12 +4,12 @@ listName="Tipos de impuesto"
 [selectTemplate]="select"
 [addTemplate]="add"
 [list]="list"
-[itemSelector]="['name']"
+[itemSelector]="'name'"
 [drawerWidth]="50"
 #crudPanel
 (onDelete)="taxes.delete($event)"
 [columns]="columns"
-[addConfig]="{'label': 'Crear'}"
+[addBtnConfig]="{'label': 'Crear'}"
 
 >
 
@@ -20,7 +20,7 @@ listName="Tipos de impuesto"
         <mat-card-subtitle>Agrega un tipo de impuesto que después deberás usar en las facturas.</mat-card-subtitle>
       </mat-card-header>
       <mat-card-content>
-        <app-tax-form (submited)="crudPanel.closeAll()"></app-tax-form>
+        <app-tax-form (submited)="crudPanel.closeItemPanel()"></app-tax-form>
       </mat-card-content>
     </mat-card>
   </ng-template>
@@ -32,7 +32,7 @@ listName="Tipos de impuesto"
         <mat-card-subtitle></mat-card-subtitle>
       </mat-card-header>
       <mat-card-content>
-        <app-tax-form [value]="tax" (submited)="crudPanel.closeAll()"></app-tax-form>
+        <app-tax-form [value]="tax" (submited)="crudPanel.closeItemPanel()"></app-tax-form>
       </mat-card-content>
     </mat-card>
   </ng-template>

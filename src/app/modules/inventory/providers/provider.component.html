@@ -14,11 +14,11 @@
       >
 
         <ng-template #add>
-          <app-set-provider (submited)="crudPanel.closeAll()" ></app-set-provider>
+          <app-set-provider (submited)="crudPanel.closeItemPanel()" ></app-set-provider>
         </ng-template>
 
         <ng-template #select let-providers="item" >
-           <app-set-provider (submited)="crudPanel.closeAll()" [provider]="providers"></app-set-provider> 
+           <app-set-provider (submited)="crudPanel.closeItemPanel()" [provider]="providers"></app-set-provider> 
         </ng-template>
       </mx-crud-panel>
     </div>

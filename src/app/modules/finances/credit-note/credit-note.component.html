@@ -8,14 +8,14 @@
       [list]="listCredits"
       [addTemplate]="add"
       [height_vh]="100"
-      [itemSelector]="['id']"
-      [addConfig]="{'label': 'Crear Factura'}"
+      [itemSelector]="'id'"
+      [addBtnConfig]="{'label': 'Crear Factura'}"
       (onAdd)="create()"
       #crudPanel
        >
         <ng-template #add>
           <app-form-credit-note
-          (submited)="crudPanel.closeAll()"
+          (submited)="crudPanel.closeItemPanel()"
           ></app-form-credit-note>
         </ng-template>
 

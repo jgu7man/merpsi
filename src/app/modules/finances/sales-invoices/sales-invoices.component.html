@@ -9,15 +9,15 @@
         [list]="listInvoice"
         [selectTemplate]="select"
         [height_vh]="82"
-        [itemSelector]="['invoiceId','status','action_date_formated']"
+        [itemSelector]="'invoiceId'"
         #crudPanel
-        [addConfig]="{'label': 'Crear Factura'}"
+        [addBtnConfig]="{'label': 'Crear Factura'}"
         (onAdd)="onCreate()"
         (onClose)="onClose()"
         >
           <ng-template #add >
             <app-create-invoice-sales
-            (submited)="crudPanel.closeAll()"
+            (submited)="crudPanel.closeItemPanel()"
             ></app-create-invoice-sales>
           </ng-template>
 

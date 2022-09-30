@@ -4,18 +4,18 @@ listName="Talonarios de Factura de Venta"
 [addTemplate]="add"
 [list]="list"
 [selectTemplate]="select"
-[itemSelector]="['name']"
+[itemSelector]="'name'"
 [drawerWidth]="50"
 #crudPanel
 (onDelete)="stub.delete($event)"
-[addConfig]="{'label': 'Crear'}"
+[addBtnConfig]="{'label': 'Crear'}"
 
 >
 
 <ng-template #add>
 
       <app-stub-form-create
-      (saved)="crudPanel.closeAll()"></app-stub-form-create>
+      (saved)="crudPanel.closeItemPanel()"></app-stub-form-create>
     
 </ng-template>
 
@@ -27,7 +27,7 @@ listName="Talonarios de Factura de Venta"
     </mat-card-header>
     <mat-card-content>
       <app-stub-form-create [value] = "stub"
-      (saved)="crudPanel.closeAll()"
+      (saved)="crudPanel.closeItemPanel()"
       ></app-stub-form-create>
     </mat-card-content>
   </mat-card>
