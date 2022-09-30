@@ -4,8 +4,8 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "lib-build": "ng build \"@marxa/%LIB%\" && npm run lib-install",
-    "export:styles": "cpx \"projects/marxa/%LIB%/src/lib/styles/**/*\" \"dist/marxa/%LIB%/styles\" ",
+    "lib-build": "ng build \"@marxa/%LIB%\" && npm run export:styles && npm run lib-update",
+    "export:styles": "cpx \"libs/@marxa/%LIB%/src/lib/styles/**/*\" \"dist/marxa/%LIB%/styles\" ",
     "lib-install": "npm i \"./dist/marxa/%LIB%\" --legacy-peer-deps",
     "lib-uninstall": "npm uninstall @marxa/%LIB% --legacy-peer-deps",
     "lib-update": "npm run lib-uninstall && npm run lib-install",

@@ -1,9 +1,9 @@
 @use '~@angular/material' as mat;
 @include mat.core();
-@import 'libs/@marxa/devkit/styles/colors.scss';
-@import 'libs/@marxa/devkit/styles/material.scss';
-@import 'libs/@marxa/devkit/styles/responsive.scss';
-@import 'libs/@marxa/devkit/styles/text.scss';
+@import '@marxa/devkit/styles/colors.scss';
+@import '@marxa/devkit/styles/material.scss';
+@import '@marxa/devkit/styles/responsive.scss';
+@import '@marxa/devkit/styles/text.scss';
 @import 'assets/design/merpsi-palette.scss';
 @import 'primeng/resources/primeng.min.css';
 @import 'primeng/resources/themes/md-light-indigo/theme.css';
