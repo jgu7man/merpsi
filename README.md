@@ -1,31 +1,82 @@
-# Merpsi
+# 🏢 MERPSI (Multi-Tenant ERP Domain Architecture Case Study)
 
-Sistema ERP para el consumo y administración de inventario multiempresa
+[![Angular](https://img.shields.io/badge/Frontend-Angular%20SPA-DD0031?style=flat-square&logo=angular&logoColor=white)](https://angular.io)
+[![Firebase](https://img.shields.io/badge/Backend-Firebase%20%2F%20Firestore-FFCA28?style=flat-square&logo=firebase&logoColor=black)](https://firebase.google.com)
+[![Architecture](https://img.shields.io/badge/Architecture-Modular%20ERP-0052CC?style=flat-square)](https://github.com/jgu7man/merpsi)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg?style=flat-square)](LICENSE)
 
-## Proceso de instalación de entorno de desarrollo
+An architectural case study and reference implementation of a **multi-tenant Enterprise Resource Planning (ERP) platform** designed for wholesale distribution, multi-store inventory routing, sales management, and operational governance.
 
-1. Una vez clonado el proyecto, hacer `npm i` para descargar las dependencias
-2. Obtener las credenciales de [firebase](https://console.firebase.google.com/u/0/project/merpsi/overview) del proyecto en los environments.
-  1. Iniciar sesión con una cuenta de firebase con permisos para este proyecto.
-  2. Darle click al engrane ⚙ debajo del logo de firebase y seguido de **Configuración del proyecto**
-  3. Dar scroll hasta la parte inferior y copiar el objeto `firebaseConfig`.
-  4. Copiar el mismo objeto en `environment.ts` y `environment.prod.ts` con la propiedad `firebaseConfig`
-  ```ts
-    export const environment = {
-      production: false,
-      firebaseConfig: {
-        apiKey: "AIza**************",
-        authDomain: "merpsi.firebaseapp.com",
-        projectId: "merpsi",
-        storageBucket: "merpsi.appspot.com",
-        messagingSenderId: "*********",
-        appId: "1:769**********************",
-        measurementId: "G-**********"
-      }
-    };
-  ```
-  5. Corre `ng serve` para correr en tu computadora. En tu navegador favorito, ve a `http://localhost:4200/`.
+---
 
+## 🏛️ Domain Architecture Breakdown
 
-## Ayuda
-Háblenle a Mariana
+```mermaid
+graph TD
+    subgraph CoreDomain ["🏢 Core ERP Domain Modules"]
+        Inventory["📦 Inventory & Warehouse<br/>(Kardex, Stock In/Out, Locations)"]
+        Sales["💰 Sales & Point of Sale<br/>(Transactions, Quotations, Invoicing)"]
+        CRM["👥 CRM & Accounts<br/>(Customers, Credit Lines, Vendors)"]
+        Distribution["🚚 Multi-Store Distribution<br/>(Inter-branch Transfers, Logistics)"]
+    end
+
+    subgraph Infrastructure ["⚡ Infrastructure & Persistence Layer"]
+        Auth["🔐 Multi-Tenant RBAC Security (Firebase Auth)"]
+        Database[("🔥 Cloud Firestore Document Database")]
+        Storage[("📁 Cloud Storage for Documents & Media")]
+    end
+
+    Inventory --> Database
+    Sales --> Database
+    CRM --> Database
+    Distribution --> Database
+    Auth -.-> CoreDomain
+```
+
+---
+
+## 💡 Key Architectural Decisions & Takeaways
+
+1. **Multi-Tenant Partitioning:** Evaluated data partitioning strategies to isolate company tenant data while maintaining centralized product master catalogs.
+2. **Kardex Consistency:** Built atomic transaction patterns to ensure concurrent point-of-sale checkouts never produce negative stock anomalies.
+3. **Decoupled Business Rules:** Separated financial calculation rules from Angular UI views for long-term maintainability.
+
+---
+
+## 🚀 Development Setup
+
+1. **Clone the repository and install dependencies:**
+   ```bash
+   git clone https://github.com/jgu7man/merpsi.git
+   cd merpsi
+   npm install
+   ```
+
+2. **Configure Firebase Credentials:**
+   Set up your project credentials in `src/environments/environment.ts` and `src/environments/environment.prod.ts`:
+   ```typescript
+   export const environment = {
+     production: false,
+     firebaseConfig: {
+       apiKey: "AIza***********************************",
+       authDomain: "merpsi.firebaseapp.com",
+       projectId: "merpsi",
+       storageBucket: "merpsi.appspot.com",
+       messagingSenderId: "************",
+       appId: "1:************************************",
+       measurementId: "G-**********"
+     }
+   };
+   ```
+
+3. **Start the local development server:**
+   ```bash
+   ng serve
+   ```
+   Open your browser at `http://localhost:4200/`.
+
+---
+
+## 📄 License
+
+Distributed under the [MIT License](LICENSE). Created by [Jorge Guzmán (@jgu7man)](https://github.com/jgu7man).
